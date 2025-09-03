@@ -56,8 +56,8 @@ namespace HavenCNCServer
                 // Navigate to the URL
                 webView.CoreWebView2.Navigate(_url);
                 
-                // Start in full screen mode
-                EnterFullScreen();
+                // Start in windowed mode
+                ExitFullScreen();
             }
             catch (Exception ex)
             {

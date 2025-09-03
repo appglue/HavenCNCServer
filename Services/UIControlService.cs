@@ -84,9 +84,9 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Get current full screen state
+        /// Get current browser open state (not using full screen for now)
         /// </summary>
-        public static bool IsFullScreen => _isBrowserOpen && (_browserForm?.IsFullScreen ?? false);
+        public static bool IsFullScreen => _isBrowserOpen;
 
         private static bool OpenBrowserFullScreen()
         {
@@ -104,7 +104,8 @@ namespace HavenCNCServer.Services
                     _isBrowserOpen = true;
                 }
 
-                _browserForm.EnterFullScreen();
+                // Open in normal windowed mode instead of full screen for now
+                _browserForm.ExitFullScreen(); // Ensure it's not in full screen
                 _browserForm.BringToFront();
                 return true;
             }
@@ -120,7 +121,7 @@ namespace HavenCNCServer.Services
             {
                 if (_browserForm != null && !_browserForm.IsDisposed)
                 {
-                    _browserForm.ExitFullScreen();
+                    // Just hide the browser 
                     _browserForm.Hide();
                     _isBrowserOpen = false;
                     return true;

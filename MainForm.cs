@@ -20,7 +20,6 @@ namespace HavenCNCServer
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
-        private bool _isWebViewVisible = false;
 
         public MainForm()
         {
@@ -194,39 +193,44 @@ namespace HavenCNCServer
         {
             try
             {
-                if (!_isWebViewVisible)
+                if (!Services.UIControlService.IsFullScreen)
                 {
-                    // Initialize WebView2 if needed
-                    await webView.EnsureCoreWebView2Async(null);
+                    // Open the browser in full screen mode
+                    bool success = await Services.UIControlService.EnterFullScreenAsync();
                     
-                    // Show the WebView and navigate to React app
-                    webView.Visible = true;
-                    _isWebViewVisible = true;
-                    
-                    // Navigate to React app
-                    webView.CoreWebView2.Navigate(ReactAppUrl);
-                    
-                    // Update button text
-                    btnOpenReactApp.Text = "Hide React App";
-                    
-                    LogMessage($"WebView opened and navigated to {ReactAppUrl}");
+                    if (success)
+                    {
+                        // Update button text
+                        btnOpenReactApp.Text = "Hide React App";
+                        LogMessage($"Browser opened in full screen mode at {ReactAppUrl}");
+                    }
+                    else
+                    {
+                        LogMessage("Failed to open browser in full screen mode");
+                        MessageBox.Show("Failed to open browser", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
                 else
                 {
-                    // Hide the WebView
-                    webView.Visible = false;
-                    _isWebViewVisible = false;
+                    // Close/hide the browser
+                    bool success = await Services.UIControlService.ExitFullScreenAsync();
                     
-                    // Update button text
-                    btnOpenReactApp.Text = "Open React App";
-                    
-                    LogMessage("WebView hidden");
+                    if (success)
+                    {
+                        // Update button text
+                        btnOpenReactApp.Text = "Open React App";
+                        LogMessage("Browser closed");
+                    }
+                    else
+                    {
+                        LogMessage("Failed to close browser");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                LogMessage($"Failed to open React app in WebView: {ex.Message}");
-                MessageBox.Show($"Failed to open React app: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogMessage($"Failed to control browser: {ex.Message}");
+                MessageBox.Show($"Failed to control browser: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
