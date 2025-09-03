@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using HavenCNCServer.Models;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Controllers
 {
@@ -20,9 +21,22 @@ namespace HavenCNCServer.Controllers
         [HttpPost("EnterFullScreen")]
         public async Task<IActionResult> EnterFullScreen()
         {
-            // TODO: Implement full screen functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Entered full screen mode" });
+            try
+            {
+                bool success = await UIControlService.EnterFullScreenAsync();
+                if (success)
+                {
+                    return Ok(new { message = "Entered full screen mode", isFullScreen = true });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Failed to enter full screen mode", isFullScreen = false });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error entering full screen mode", error = ex.Message });
+            }
         }
 
         /// <summary>
@@ -32,9 +46,32 @@ namespace HavenCNCServer.Controllers
         [HttpPost("ExitFullScreen")]
         public async Task<IActionResult> ExitFullScreen()
         {
-            // TODO: Implement exit full screen functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Exited full screen mode" });
+            try
+            {
+                bool success = await UIControlService.ExitFullScreenAsync();
+                if (success)
+                {
+                    return Ok(new { message = "Exited full screen mode", isFullScreen = false });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Failed to exit full screen mode", isFullScreen = UIControlService.IsFullScreen });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error exiting full screen mode", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get current full screen state
+        /// </summary>
+        /// <returns>Current full screen status</returns>
+        [HttpGet("GetFullScreenState")]
+        public IActionResult GetFullScreenState()
+        {
+            return Ok(new { isFullScreen = UIControlService.IsFullScreen });
         }
 
         /// <summary>

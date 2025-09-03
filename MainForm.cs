@@ -26,6 +26,9 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             
+            // Register this form with the UI control service
+            Services.UIControlService.RegisterMainForm(this);
+            
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
         }
