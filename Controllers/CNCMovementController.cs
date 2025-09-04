@@ -92,90 +92,16 @@ namespace HavenCNCServer.Controllers
         #region Fixture Management
 
         /// <summary>
-        /// Change to a specific fixture
+        /// Set fixture point using current machine position or specified coordinates
         /// </summary>
-        /// <param name="fixtureNumber">Fixture number to change to</param>
+        /// <param name="point">Point coordinates to set for the fixture</param>
         /// <returns>Success response</returns>
-        [HttpPost("ChangeToFixture/{fixtureNumber}")]
-        public async Task<IActionResult> ChangeToFixture(string fixtureNumber)
+        [HttpPost("SetFixturePoint")]
+        public async Task<IActionResult> SetFixturePoint([FromBody] CNCPoint point)
         {
-            // TODO: Implement fixture change functionality
+            // TODO: Implement set fixture point functionality
             await Task.Delay(1);
-            return Ok(new { message = $"Changed to fixture {fixtureNumber}", fixtureNumber });
-        }
-
-        /// <summary>
-        /// Set fixture to specific point
-        /// </summary>
-        /// <param name="request">Fixture setting request</param>
-        /// <returns>Success response</returns>
-        [HttpPost("SetFixtureToPoint")]
-        public async Task<IActionResult> SetFixtureToPoint([FromBody] SetFixtureRequest request)
-        {
-            // TODO: Implement set fixture to point functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Set fixture {request.FixtureNumber} to {request.Point}", fixture = request.FixtureNumber, point = request.Point });
-        }
-
-        /// <summary>
-        /// Set current fixture to specified point
-        /// </summary>
-        /// <param name="point">Point to set current fixture to</param>
-        /// <returns>Success response</returns>
-        [HttpPost("SetCurrentFixturePoint")]
-        public async Task<IActionResult> SetCurrentFixturePoint([FromBody] CNCPoint point)
-        {
-            // TODO: Implement set current fixture point functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Set current fixture to {point}", point });
-        }
-
-        /// <summary>
-        /// Get current fixture number
-        /// </summary>
-        /// <returns>Current fixture number</returns>
-        [HttpGet("GetCurrentFixtureNumber")]
-        public async Task<IActionResult> GetCurrentFixtureNumber()
-        {
-            // TODO: Implement get current fixture number
-            await Task.Delay(1);
-            return Ok(new { fixtureNumber = "G54" });
-        }
-
-        /// <summary>
-        /// Save current Z position to current fixture
-        /// </summary>
-        /// <returns>Success response</returns>
-        [HttpPost("SaveCurrentZToCurrentFixture")]
-        public async Task<IActionResult> SaveCurrentZToCurrentFixture()
-        {
-            // TODO: Implement save Z to fixture functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Saved current Z to current fixture" });
-        }
-
-        /// <summary>
-        /// Save current XY position to current fixture
-        /// </summary>
-        /// <returns>Success response</returns>
-        [HttpPost("SaveCurrentXYToCurrentFixture")]
-        public async Task<IActionResult> SaveCurrentXYToCurrentFixture()
-        {
-            // TODO: Implement save XY to fixture functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Saved current XY to current fixture" });
-        }
-
-        /// <summary>
-        /// Save current XYZ position to current fixture
-        /// </summary>
-        /// <returns>Success response</returns>
-        [HttpPost("SaveCurrentXYZToCurrentFixture")]
-        public async Task<IActionResult> SaveCurrentXYZToCurrentFixture()
-        {
-            // TODO: Implement save XYZ to fixture functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Saved current XYZ to current fixture" });
+            return Ok(new { message = $"Set fixture point to {point}", point });
         }
 
         #endregion

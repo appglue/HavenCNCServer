@@ -3,7 +3,54 @@ using System.Collections.Generic;
 namespace HavenCNCServer.Models
 {
     /// <summary>
-    /// Request model for moving to a specific point
+    /// Reque    /// <summary>
+    /// Request model for setting IO override
+    /// </summary>
+    public class IOOverrideRequest
+    {
+        /// <summary>
+        /// Input/Output number
+        /// </summary>
+        public int Number { get; set; }
+
+        /// <summary>
+        /// Override value
+        /// </summary>
+        public bool Value { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for configuration data operations
+    /// </summary>
+    public class ConfigurationDataRequest
+    {
+        /// <summary>
+        /// Name of the data item
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Content/value of the data item
+        /// </summary>
+        public string Content { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Request model for saving checkpoints
+    /// </summary>
+    public class CheckpointSaveRequest
+    {
+        /// <summary>
+        /// Name of the checkpoint
+        /// </summary>
+        public string CheckpointName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Array of data items to save in the checkpoint
+        /// </summary>
+        public IEnumerable<ConfigurationDataRequest> Data { get; set; } = new List<ConfigurationDataRequest>();
+    }
+}ing to a specific point
     /// </summary>
     public class MoveToRequest
     {
