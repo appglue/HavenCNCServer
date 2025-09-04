@@ -86,7 +86,7 @@ namespace HavenCNCServer.Controllers
         {
             // TODO: Implement set output state functionality
             await Task.Delay(1);
-            return Ok(new { message = $"Output {request.OutputNumber} set to {request.State}", outputNumber = request.OutputNumber, state = request.State });
+            return Ok(new { message = $"Output {request.Number} set to {request.Value}", outputNumber = request.Number, state = request.Value });
         }
 
         #endregion

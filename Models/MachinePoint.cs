@@ -3,9 +3,9 @@ using System;
 namespace HavenCNCServer.Models
 {
     /// <summary>
-    /// Represents a point in CNC machine coordinates with X, Y, Z, and A axis values
+    /// Represents a point in machine coordinates with X, Y, Z, and A axis values
     /// </summary>
-    public class CNCPoint
+    public class MachinePoint
     {
         /// <summary>
         /// X-axis coordinate
@@ -30,7 +30,7 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Default constructor
         /// </summary>
-        public CNCPoint()
+        public MachinePoint()
         {
         }
 
@@ -40,7 +40,7 @@ namespace HavenCNCServer.Models
         /// <param name="x">X-axis coordinate</param>
         /// <param name="y">Y-axis coordinate</param>
         /// <param name="z">Z-axis coordinate</param>
-        public CNCPoint(double x, double y, double z)
+        public MachinePoint(double x, double y, double z)
         {
             X = x;
             Y = y;
@@ -55,7 +55,7 @@ namespace HavenCNCServer.Models
         /// <param name="y">Y-axis coordinate</param>
         /// <param name="z">Z-axis coordinate</param>
         /// <param name="a">A-axis coordinate</param>
-        public CNCPoint(double x, double y, double z, double a)
+        public MachinePoint(double x, double y, double z, double a)
         {
             X = x;
             Y = y;
@@ -64,7 +64,7 @@ namespace HavenCNCServer.Models
         }
 
         /// <summary>
-        /// Returns a string representation of the CNC point
+        /// Returns a string representation of the machine point
         /// </summary>
         /// <returns>String in format "X:{X}, Y:{Y}, Z:{Z}, A:{A}"</returns>
         public override string ToString()

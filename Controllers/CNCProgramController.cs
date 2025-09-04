@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HavenCNCServer.Models;
@@ -103,7 +104,8 @@ namespace HavenCNCServer.Controllers
         {
             // TODO: Implement load G-code functionality
             await Task.Delay(1);
-            return Ok(new { message = $"Loaded {request.GCode.Count} G-code lines", lineCount = request.GCode.Count });
+            var lineCount = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length;
+            return Ok(new { message = $"Loaded {lineCount} G-code lines", lineCount });
         }
 
         /// <summary>

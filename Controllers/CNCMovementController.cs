@@ -44,7 +44,7 @@ namespace HavenCNCServer.Controllers
         public IActionResult GetCurrentPosition()
         {
             // TODO: Implement get current position
-            var position = new CNCPoint(0, 0, 0, 0);
+            var position = new MachinePoint(0, 0, 0, 0);
             return Ok(position);
         }
 
@@ -97,7 +97,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="point">Point coordinates to set for the fixture</param>
         /// <returns>Success response</returns>
         [HttpPost("SetFixturePoint")]
-        public async Task<IActionResult> SetFixturePoint([FromBody] CNCPoint point)
+        public async Task<IActionResult> SetFixturePoint([FromBody] MachinePoint point)
         {
             // TODO: Implement set fixture point functionality
             await Task.Delay(1);

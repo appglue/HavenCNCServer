@@ -3,7 +3,91 @@ using System.Collections.Generic;
 namespace HavenCNCServer.Models
 {
     /// <summary>
-    /// Reque    /// <summary>
+    /// Request model for moving to a specific point
+    /// </summary>
+    public class MoveToRequest
+    {
+        /// <summary>
+        /// Target point to move to
+        /// </summary>
+        public MachinePoint Point { get; set; } = new MachinePoint();
+
+        /// <summary>
+        /// XY movement speed (optional)
+        /// </summary>
+        public double? XYSpeed { get; set; }
+
+        /// <summary>
+        /// Z movement speed (optional)
+        /// </summary>
+        public double? ZSpeed { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for moving until an IO event occurs
+    /// </summary>
+    public class MoveToUntilRequest : MoveToRequest
+    {
+        /// <summary>
+        /// IO event to wait for
+        /// </summary>
+        public IOEvent Event { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for directional movement until an event
+    /// </summary>
+    public class MoveDirectionUntilRequest
+    {
+        /// <summary>
+        /// Direction to move
+        /// </summary>
+        public MoveDirection Direction { get; set; }
+
+        /// <summary>
+        /// IO event to wait for
+        /// </summary>
+        public IOEvent Event { get; set; }
+
+        /// <summary>
+        /// Movement speed (optional)
+        /// </summary>
+        public double? Speed { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for setting fixture to a point
+    /// </summary>
+    public class SetFixtureRequest
+    {
+        /// <summary>
+        /// Fixture number (e.g., "G54", "G55", etc.)
+        /// </summary>
+        public string FixtureNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Point to set the fixture to
+        /// </summary>
+        public MachinePoint Point { get; set; } = new MachinePoint();
+    }
+
+    /// <summary>
+    /// Request model for program execution
+    /// </summary>
+    public class ProgramExecuteRequest
+    {
+        /// <summary>
+        /// Program name or identifier
+        /// </summary>
+        public string ProgramName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Optional starting line number
+        /// </summary>
+        public int? StartLine { get; set; }
+    }
+
+    /// <summary>
     /// Request model for setting IO override
     /// </summary>
     public class IOOverrideRequest
@@ -50,77 +134,21 @@ namespace HavenCNCServer.Models
         /// </summary>
         public IEnumerable<ConfigurationDataRequest> Data { get; set; } = new List<ConfigurationDataRequest>();
     }
-}ing to a specific point
-    /// </summary>
-    public class MoveToRequest
-    {
-        /// <summary>
-        /// Target point to move to
-        /// </summary>
-        public CNCPoint Point { get; set; } = new CNCPoint();
-
-        /// <summary>
-        /// XY movement speed (optional)
-        /// </summary>
-        public double? XYSpeed { get; set; }
-
-        /// <summary>
-        /// Z movement speed (optional)
-        /// </summary>
-        public double? ZSpeed { get; set; }
-    }
 
     /// <summary>
-    /// Request model for moving until an IO event occurs
+    /// Request model for setting output values
     /// </summary>
-    public class MoveToUntilRequest : MoveToRequest
+    public class SetOutputRequest
     {
         /// <summary>
-        /// IO event to wait for
+        /// Output number
         /// </summary>
-        public IOEvent Event { get; set; }
-    }
-
-    /// <summary>
-    /// Request model for directional movement until an event
-    /// </summary>
-    public class MoveDirectionUntilRequest
-    {
-        /// <summary>
-        /// Direction to move
-        /// </summary>
-        public MoveDirection Direction { get; set; }
+        public int Number { get; set; }
 
         /// <summary>
-        /// IO event to wait for
+        /// Output value
         /// </summary>
-        public IOEvent Event { get; set; }
-
-        /// <summary>
-        /// Maximum distance to move (optional)
-        /// </summary>
-        public double? MaxDistance { get; set; }
-
-        /// <summary>
-        /// Movement speed (optional)
-        /// </summary>
-        public double? Speed { get; set; }
-    }
-
-    /// <summary>
-    /// Request model for setting fixture
-    /// </summary>
-    public class SetFixtureRequest
-    {
-        /// <summary>
-        /// Fixture number
-        /// </summary>
-        public string FixtureNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Point to set the fixture to
-        /// </summary>
-        public CNCPoint Point { get; set; } = new CNCPoint();
+        public bool Value { get; set; }
     }
 
     /// <summary>
@@ -129,34 +157,23 @@ namespace HavenCNCServer.Models
     public class LoadGCodeRequest
     {
         /// <summary>
-        /// G-code lines to load
+        /// G-code content
         /// </summary>
-        public List<string> GCode { get; set; } = new List<string>();
+        public string GCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Optional program name
+        /// </summary>
+        public string? ProgramName { get; set; }
     }
 
     /// <summary>
-    /// Request model for setting output state
-    /// </summary>
-    public class SetOutputRequest
-    {
-        /// <summary>
-        /// Output number
-        /// </summary>
-        public int OutputNumber { get; set; }
-
-        /// <summary>
-        /// Desired state (true = on, false = off)
-        /// </summary>
-        public bool State { get; set; }
-    }
-
-    /// <summary>
-    /// Request model for input/output overrides (testing only)
+    /// Request model for IO override operations
     /// </summary>
     public class OverrideIORequest
     {
         /// <summary>
-        /// Input/Output number
+        /// IO number
         /// </summary>
         public int Number { get; set; }
 
