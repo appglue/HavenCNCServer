@@ -37,6 +37,7 @@ namespace HavenCNCServer
             this.btnStartServer = new System.Windows.Forms.Button();
             this.btnOpenReactApp = new System.Windows.Forms.Button();
             this.btnGenerateOpenApi = new System.Windows.Forms.Button();
+            this.btnTest = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
@@ -134,6 +135,16 @@ namespace HavenCNCServer
             this.btnGenerateOpenApi.UseVisualStyleBackColor = true;
             this.btnGenerateOpenApi.Click += new System.EventHandler(this.btnGenerateOpenApi_Click);
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(670, 70);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(100, 30);
+            this.btnTest.TabIndex = 11;
+            this.btnTest.Text = "Test";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
             // webView
             // 
             this.webView.AllowExternalDrop = true;
@@ -160,6 +171,7 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnStopServer);
             this.pnlControls.Controls.Add(this.btnOpenReactApp);
             this.pnlControls.Controls.Add(this.btnGenerateOpenApi);
+            this.pnlControls.Controls.Add(this.btnTest);
             this.pnlControls.Controls.Add(this.lblLog);
             this.pnlControls.Controls.Add(this.txtLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
@@ -195,6 +207,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnStartServer;
         private System.Windows.Forms.Button btnOpenReactApp;
         private System.Windows.Forms.Button btnGenerateOpenApi;
+        private System.Windows.Forms.Button btnTest;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
     }

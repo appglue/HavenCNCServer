@@ -1,3 +1,4 @@
+using CentroidAPI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -325,6 +326,66 @@ namespace HavenCNCServer
                 MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogMessage("Test button clicked!");
+
+                // CentroidAPI test code
+                CNCPipe cnc12_pipe;
+                string[] allowedAxisLabels = { "A", "B", "C", "N", "W", "X", "Y", "Z" };
+
+                cnc12_pipe = new CNCPipe();
+
+                // Wait for cnc12_pipe to be constructed before continuing.
+                while (!cnc12_pipe.IsConstructed())
+                {
+                    Thread.Sleep(100);
+                }
+
+                LogMessage("CNCPipe constructed successfully!");
+
+                // Add your test code here
+                MessageBox.Show("Test button working! CNCPipe is ready for use.",
+                    "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Example: Test Centroid API connection
+                    // TestCentroidAPI();
+
+                    LogMessage("Test completed successfully.");
+                }
+                catch (Exception ex)
+                {
+                    var errorMessage = $"Test error: {ex.Message}";
+                    LogMessage(errorMessage);
+                    MessageBox.Show(errorMessage, "Test Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+        }
+
+        // Uncomment and modify this method when you're ready to test Centroid API
+        /*
+        private void TestCentroidAPI()
+        {
+            try
+            {
+                LogMessage("Testing Centroid API connection...");
+                
+                // Example Centroid API test code:
+                // var centroidAPI = new CentroidAPI(); // Replace with actual class name
+                // bool isConnected = centroidAPI.Connect();
+                // LogMessage($"Centroid API connection: {(isConnected ? "Success" : "Failed")}");
+                
+                LogMessage("Centroid API test completed.");
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Centroid API test failed: {ex.Message}");
+                throw;
+            }
+        }
+        */
 
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
