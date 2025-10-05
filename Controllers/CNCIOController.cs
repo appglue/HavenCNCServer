@@ -184,5 +184,267 @@ namespace HavenCNCServer.Controllers
         }
 
         #endregion
+
+        #region I/O Port Information
+
+        /// <summary>
+        /// Get available input port numbers for the current CNC system
+        /// </summary>
+        /// <returns>Array of available input port numbers</returns>
+        [HttpGet("GetAvailableInputs")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetAvailableInputs()
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var availableInputs = HavenCNCServer.CentriodAPI.CNCUtils.GetAvailableInputPorts();
+                
+                return Ok(new { 
+                    inputs = availableInputs,
+                    count = availableInputs.Length,
+                    message = $"Found {availableInputs.Length} available input ports"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get available inputs: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get available output port numbers for the current CNC system
+        /// </summary>
+        /// <returns>Array of available output port numbers</returns>
+        [HttpGet("GetAvailableOutputs")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetAvailableOutputs()
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var availableOutputs = HavenCNCServer.CentriodAPI.CNCUtils.GetAvailableOutputPorts();
+                
+                return Ok(new { 
+                    outputs = availableOutputs,
+                    count = availableOutputs.Length,
+                    message = $"Found {availableOutputs.Length} available output ports"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get available outputs: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get both available inputs and outputs with system information
+        /// </summary>
+        /// <returns>Complete I/O availability information</returns>
+        [HttpGet("GetIOAvailability")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetIOAvailability()
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var availableInputs = HavenCNCServer.CentriodAPI.CNCUtils.GetAvailableInputPorts();
+                var availableOutputs = HavenCNCServer.CentriodAPI.CNCUtils.GetAvailableOutputPorts();
+                var systemInfo = HavenCNCServer.CentriodAPI.CNCUtils.GetSystemInfo();
+                
+                var response = new IOAvailabilityResponse
+                {
+                    AvailableInputs = availableInputs,
+                    AvailableOutputs = availableOutputs,
+                    SystemInfo = systemInfo
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get I/O availability: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Check if a specific input port is available
+        /// </summary>
+        /// <param name="inputNumber">Input port number to check</param>
+        /// <returns>Availability status</returns>
+        [HttpGet("IsInputAvailable/{inputNumber}")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> IsInputAvailable(int inputNumber)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var isAvailable = HavenCNCServer.CentriodAPI.CNCUtils.IsInputAvailable(inputNumber);
+                
+                return Ok(new { 
+                    inputNumber,
+                    available = isAvailable,
+                    message = $"Input {inputNumber} is {(isAvailable ? "available" : "not available")}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to check input availability: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Check if a specific output port is available
+        /// </summary>
+        /// <param name="outputNumber">Output port number to check</param>
+        /// <returns>Availability status</returns>
+        [HttpGet("IsOutputAvailable/{outputNumber}")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> IsOutputAvailable(int outputNumber)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var isAvailable = HavenCNCServer.CentriodAPI.CNCUtils.IsOutputAvailable(outputNumber);
+                
+                return Ok(new { 
+                    outputNumber,
+                    available = isAvailable,
+                    message = $"Output {outputNumber} is {(isAvailable ? "available" : "not available")}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to check output availability: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get comprehensive system information
+        /// </summary>
+        /// <returns>System information string</returns>
+        [HttpGet("GetSystemInfo")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetSystemInfo()
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var systemInfo = HavenCNCServer.CentriodAPI.CNCUtils.GetSystemInfo();
+                
+                return Ok(new { 
+                    systemInfo,
+                    message = "System information retrieved successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get system information: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Invert input polarity using CNC12 parameters
+        /// </summary>
+        /// <param name="inputNumber">Input number to invert (1-80)</param>
+        /// <param name="invert">True to invert, false to restore normal polarity</param>
+        /// <returns>Inversion result</returns>
+        [HttpPost("InvertInput/{inputNumber}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> InvertInput(int inputNumber, [FromQuery] bool invert = true)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.InvertInput(inputNumber, invert);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true,
+                        inputNumber,
+                        inverted = invert,
+                        message = $"Input {inputNumber} polarity {(invert ? "inverted" : "restored to normal")}"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false,
+                        inputNumber,
+                        message = $"Failed to {(invert ? "invert" : "restore")} input {inputNumber}"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to invert input {inputNumber}: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Invert multiple inputs using CNC12 parameters
+        /// </summary>
+        /// <param name="config">Input inversion configuration</param>
+        /// <returns>Inversion result</returns>
+        [HttpPost("InvertInputs")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> InvertInputs([FromBody] InputInversionConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.InvertInputs(config.InputSettings);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true,
+                        inputCount = config.InputSettings.Count,
+                        settings = config.InputSettings,
+                        message = $"Successfully configured {config.InputSettings.Count} input inversions"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false,
+                        message = "Failed to configure input inversions"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to invert inputs: {ex.Message}" 
+                });
+            }
+        }
+
+        #endregion
     }
 }

@@ -317,5 +317,375 @@ namespace HavenCNCServer.Controllers
         }
 
         #endregion
+
+        #region Machine Configuration
+
+        /// <summary>
+        /// Configure complete machine setup with all systems
+        /// </summary>
+        /// <param name="config">Complete machine configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureCompleteMachine")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureCompleteMachine([FromBody] CompleteMachineConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureCompleteMachine(
+                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
+                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>(),
+                    config.Axes ?? new List<CentroidConfigUtil.AxisConfiguration>(),
+                    config.Spindle,
+                    config.Probe,
+                    config.PWMOutputs,
+                    config.ATC
+                );
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = "Machine configuration completed successfully",
+                        configured = new {
+                            inputs = config.Inputs?.Count ?? 0,
+                            outputs = config.Outputs?.Count ?? 0,
+                            axes = config.Axes?.Count ?? 0,
+                            spindle = config.Spindle != null,
+                            probe = config.Probe != null,
+                            pwm = config.PWMOutputs?.Count ?? 0,
+                            atc = config.ATC != null
+                        }
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "Machine configuration failed" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure machine: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure only inputs and outputs in PLC file
+        /// </summary>
+        /// <param name="config">I/O configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureInputsOutputs")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureInputsOutputs([FromBody] IOConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureInputsOutputs(
+                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
+                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>()
+                );
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = "I/O configuration completed successfully",
+                        configured = new {
+                            inputs = config.Inputs?.Count ?? 0,
+                            outputs = config.Outputs?.Count ?? 0
+                        }
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "I/O configuration failed" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure I/O: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure axis settings
+        /// </summary>
+        /// <param name="config">Axis configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureAxis")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureAxis([FromBody] CentroidConfigUtil.AxisConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureAxis(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = $"Axis {config.AxisNumber} ({config.Label}) configured successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = $"Failed to configure axis {config.AxisNumber}" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure axis: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure spindle settings
+        /// </summary>
+        /// <param name="config">Spindle configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureSpindle")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureSpindle([FromBody] CentroidConfigUtil.SpindleConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureSpindle(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = "Spindle configured successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "Failed to configure spindle" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure spindle: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure PWM output settings
+        /// </summary>
+        /// <param name="config">PWM configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigurePWM")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigurePWM([FromBody] CentroidConfigUtil.PWMConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigurePWM(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = $"PWM output {config.OutputNumber} configured successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = $"Failed to configure PWM output {config.OutputNumber}" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure PWM: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure ATC settings
+        /// </summary>
+        /// <param name="config">ATC configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureATC")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureATC([FromBody] CentroidConfigUtil.ATCConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureATC(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = $"ATC configured successfully (Type: {config.Type})"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "Failed to configure ATC" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure ATC: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure probe settings
+        /// </summary>
+        /// <param name="config">Probe configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureProbe")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureProbe([FromBody] CentroidConfigUtil.ProbeConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureProbe(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = "Probe configured successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "Failed to configure probe" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure probe: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Validate I/O configuration for conflicts and issues
+        /// </summary>
+        /// <param name="config">I/O configuration to validate</param>
+        /// <returns>Validation results</returns>
+        [HttpPost("ValidateIOConfiguration")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> ValidateIOConfiguration([FromBody] IOConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var issues = CentroidConfigUtil.ValidateIOConfiguration(
+                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
+                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>()
+                );
+
+                return Ok(new { 
+                    valid = issues.Count == 0, 
+                    issues = issues.ToArray(),
+                    inputCount = config.Inputs?.Count ?? 0,
+                    outputCount = config.Outputs?.Count ?? 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to validate I/O configuration: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Validate ATC configuration for issues
+        /// </summary>
+        /// <param name="config">ATC configuration to validate</param>
+        /// <returns>Validation results</returns>
+        [HttpPost("ValidateATCConfiguration")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> ValidateATCConfiguration([FromBody] CentroidConfigUtil.ATCConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var issues = CentroidConfigUtil.ValidateATCConfiguration(config);
+
+                return Ok(new { 
+                    valid = issues.Count == 0, 
+                    issues = issues.ToArray(),
+                    type = config.Type.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to validate ATC configuration: {ex.Message}" 
+                });
+            }
+        }
+
+        #endregion
     }
 }

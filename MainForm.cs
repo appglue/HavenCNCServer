@@ -14,6 +14,9 @@ using System.Windows.Forms;
 
 namespace HavenCNCServer
 {
+    /// <summary>
+    /// Main Windows Forms application that hosts the ASP.NET Core Web API server
+    /// </summary>
     public partial class MainForm : Form
     {
         private IHost? _webHost;
@@ -22,6 +25,9 @@ namespace HavenCNCServer
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
 
+        /// <summary>
+        /// Initializes a new instance of the MainForm class
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -33,7 +39,7 @@ namespace HavenCNCServer
             this.Load += MainForm_Load;
         }
 
-        private async void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object? sender, EventArgs e)
         {
             await StartApiServerAsync();
         }
@@ -148,6 +154,10 @@ namespace HavenCNCServer
             lblStatus.ForeColor = color;
         }
 
+        /// <summary>
+        /// Logs a message to the application log display with timestamp
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public void LogMessage(string message)
         {
             if (InvokeRequired)

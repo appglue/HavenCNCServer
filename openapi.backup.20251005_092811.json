@@ -2488,7 +2488,7 @@
         "properties": {
           "axisNumber": {
             "type": "integer",
-            "description": "Axis number (1-8) - Required",
+            "description": "Axis number (1-8)",
             "format": "int32"
           },
           "label": {
@@ -2499,96 +2499,79 @@
           "stepsPerRevolution": {
             "type": "integer",
             "description": "Steps per revolution (motor/drive steps)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "turnRatio": {
             "type": "number",
             "description": "Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "plusTravelLimit": {
             "type": "number",
             "description": "Plus travel limit",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "minusTravelLimit": {
             "type": "number",
             "description": "Minus travel limit",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "backlashCompensation": {
             "type": "number",
             "description": "Backlash compensation amount",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "slowJogRate": {
             "type": "number",
             "description": "Slow jog rate",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "fastJogRate": {
             "type": "number",
             "description": "Fast jog rate",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "accelerationTime": {
             "type": "number",
             "description": "Acceleration time in seconds",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "isReversed": {
             "type": "boolean",
-            "description": "Whether axis direction is reversed",
-            "nullable": true
+            "description": "Whether axis direction is reversed"
           },
           "masterAxis": {
             "type": "integer",
             "description": "Master axis for pairing (0 = none, 1-8 = master axis number)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "isRotary": {
             "type": "boolean",
-            "description": "Whether this is a rotary axis (Parameter bit 0)",
-            "nullable": true
+            "description": "Whether this is a rotary axis (Parameter bit 0)"
           },
           "rotaryWrapAround": {
             "type": "boolean",
-            "description": "Rotary DRO wrap around display mode (Parameter bit 1)",
-            "nullable": true
+            "description": "Rotary DRO wrap around display mode (Parameter bit 1)"
           },
           "cAxisEnabled": {
             "type": "boolean",
-            "description": "C-Axis enable (Parameter bit 4)",
-            "nullable": true
+            "description": "C-Axis enable (Parameter bit 4)"
           },
           "preventDivideBy360": {
             "type": "boolean",
-            "description": "Prevent divide by 360 for C-Axis (Parameter bit 7)",
-            "nullable": true
+            "description": "Prevent divide by 360 for C-Axis (Parameter bit 7)"
           },
           "hideFromDRO": {
             "type": "boolean",
-            "description": "Hide axis from DRO display - ATC Turret (Parameter bit 9)",
-            "nullable": true
+            "description": "Hide axis from DRO display - ATC Turret (Parameter bit 9)"
           },
           "parallelToX": {
             "type": "boolean",
-            "description": "Rotary axis parallel to X (Parameter bit 11)",
-            "nullable": true
+            "description": "Rotary axis parallel to X (Parameter bit 11)"
           },
           "parallelToY": {
             "type": "boolean",
-            "description": "Rotary axis parallel to Y (Parameter bit 12)",
-            "nullable": true
+            "description": "Rotary axis parallel to Y (Parameter bit 12)"
           }
         },
         "additionalProperties": false,
@@ -2824,13 +2807,11 @@
           "number": {
             "type": "integer",
             "description": "I/O number (1-64 for standard I/O)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "isInverted": {
             "type": "boolean",
-            "description": "Whether the input/output is inverted",
-            "nullable": true
+            "description": "Whether the input/output is inverted"
           }
         },
         "additionalProperties": false,
@@ -3004,41 +2985,35 @@
         "properties": {
           "outputNumber": {
             "type": "integer",
-            "description": "Output number for PWM signal - Required",
+            "description": "Output number for PWM signal",
             "format": "int32"
           },
           "frequency": {
             "type": "integer",
             "description": "PWM frequency in Hz",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "floor": {
             "type": "number",
             "description": "PWM floor value (minimum duty cycle)",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "velocityScaling": {
             "type": "number",
             "description": "Velocity scaling factor",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "isInverted": {
             "type": "boolean",
-            "description": "Whether PWM signal is inverted",
-            "nullable": true
+            "description": "Whether PWM signal is inverted"
           },
           "inverseEnabled": {
             "type": "boolean",
-            "description": "Inverse enable bit (parameter 815, bit 0)",
-            "nullable": true
+            "description": "Inverse enable bit (parameter 815, bit 0)"
           },
           "velocity100": {
             "type": "boolean",
-            "description": "Velocity 100% mode (parameter 815, bit 1) - true = 0-100%, false = 0-10%",
-            "nullable": true
+            "description": "Velocity 100% mode (parameter 815, bit 1) - true = 0-100%, false = 0-10%"
           }
         },
         "additionalProperties": false,
@@ -3050,38 +3025,32 @@
           "inputNumber": {
             "type": "integer",
             "description": "Probe input number",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "inputType": {
             "type": "integer",
             "description": "Probe input type (0=Normally Open, 1=Normally Closed)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "feedRate": {
             "type": "number",
             "description": "Probe feed rate",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "touchPlateThickness": {
             "type": "number",
             "description": "Touch plate thickness",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "touchPlateInputNumber": {
             "type": "integer",
             "description": "Touch plate input number (if different from probe)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "touchPlateInputType": {
             "type": "integer",
             "description": "Touch plate input type",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           }
         },
         "additionalProperties": false,
@@ -3136,82 +3105,68 @@
           "encoderCounts": {
             "type": "integer",
             "description": "Encoder counts per spindle revolution",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "spindleAxis": {
             "type": "integer",
             "description": "Spindle axis number (5 standard, 8 for AcornSix/Hickory)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "lowGearRatio": {
             "type": "number",
             "description": "Low gear ratio",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "mediumGearRatio": {
             "type": "number",
             "description": "Medium gear ratio",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "highGearRatio": {
             "type": "number",
             "description": "High gear ratio",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "maxSpeed": {
             "type": "integer",
             "description": "Maximum spindle speed",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "minSpeed": {
             "type": "integer",
             "description": "Minimum spindle speed",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "analogRange": {
             "type": "integer",
             "description": "Analog output voltage range (0-3)",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "okDelay": {
             "type": "number",
             "description": "Spindle OK delay in seconds",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "fanDelay": {
             "type": "number",
             "description": "Cooling fan delay in seconds",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
           "encoderEnabled": {
             "type": "boolean",
-            "description": "Enable spindle encoder",
-            "nullable": true
+            "description": "Enable spindle encoder"
           },
           "rigidTappingEnabled": {
             "type": "boolean",
-            "description": "Enable rigid tapping",
-            "nullable": true
+            "description": "Enable rigid tapping"
           },
           "rtgDisplay": {
             "type": "boolean",
-            "description": "Enable RTG (Real Time Graphics) display",
-            "nullable": true
+            "description": "Enable RTG (Real Time Graphics) display"
           },
           "secondSpindleEnabled": {
             "type": "boolean",
-            "description": "Enable second spindle",
-            "nullable": true
+            "description": "Enable second spindle"
           }
         },
         "additionalProperties": false,

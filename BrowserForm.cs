@@ -6,12 +6,19 @@ using System.Windows.Forms;
 
 namespace HavenCNCServer
 {
+    /// <summary>
+    /// A Windows Forms browser interface using WebView2 for displaying web content
+    /// </summary>
     public partial class BrowserForm : Form
     {
-        private WebView2 webView;
+        private WebView2? webView;
         private string _url;
         private bool _isFullScreen = false;
 
+        /// <summary>
+        /// Initializes a new instance of the BrowserForm with the specified URL
+        /// </summary>
+        /// <param name="url">The URL to navigate to</param>
         public BrowserForm(string url)
         {
             _url = url;
@@ -46,15 +53,18 @@ namespace HavenCNCServer
             this.FormClosing += BrowserForm_FormClosing;
         }
 
-        private async void BrowserForm_Load(object sender, EventArgs e)
+        private async void BrowserForm_Load(object? sender, EventArgs e)
         {
             try
             {
                 // Initialize WebView2
-                await webView.EnsureCoreWebView2Async(null);
-                
-                // Navigate to the URL
-                webView.CoreWebView2.Navigate(_url);
+                if (webView != null)
+                {
+                    await webView.EnsureCoreWebView2Async(null);
+                    
+                    // Navigate to the URL
+                    webView.CoreWebView2.Navigate(_url);
+                }
                 
                 // Start in windowed mode
                 ExitFullScreen();
@@ -66,7 +76,7 @@ namespace HavenCNCServer
             }
         }
 
-        private void BrowserForm_KeyDown(object sender, KeyEventArgs e)
+        private void BrowserForm_KeyDown(object? sender, KeyEventArgs e)
         {
             // ESC key to toggle full screen
             if (e.KeyCode == Keys.Escape)
@@ -78,12 +88,15 @@ namespace HavenCNCServer
             }
         }
 
-        private void BrowserForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void BrowserForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             // Cleanup WebView2
             webView?.Dispose();
         }
 
+        /// <summary>
+        /// Enters full screen mode by removing borders and maximizing the window
+        /// </summary>
         public void EnterFullScreen()
         {
             if (_isFullScreen) return;
@@ -96,6 +109,9 @@ namespace HavenCNCServer
             _isFullScreen = true;
         }
 
+        /// <summary>
+        /// Exits full screen mode by restoring borders and normal window state
+        /// </summary>
         public void ExitFullScreen()
         {
             if (!_isFullScreen) return;
@@ -108,8 +124,15 @@ namespace HavenCNCServer
             _isFullScreen = false;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the form is currently in full screen mode
+        /// </summary>
         public bool IsFullScreen => _isFullScreen;
 
+        /// <summary>
+        /// Navigates the WebView2 control to the specified URL
+        /// </summary>
+        /// <param name="url">The URL to navigate to</param>
         public void NavigateToUrl(string url)
         {
             if (webView?.CoreWebView2 != null)

@@ -10,8 +10,15 @@ using System.Reflection;
 
 namespace HavenCNCServer
 {
+    /// <summary>
+    /// Startup configuration class for the embedded ASP.NET Core Web API
+    /// </summary>
     public class ApiStartup
     {
+        /// <summary>
+        /// Configures the services for dependency injection
+        /// </summary>
+        /// <param name="services">The service collection to configure</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -56,6 +63,11 @@ namespace HavenCNCServer
             });
         }
 
+        /// <summary>
+        /// Configures the HTTP request pipeline
+        /// </summary>
+        /// <param name="app">The application builder</param>
+        /// <param name="env">The web host environment</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

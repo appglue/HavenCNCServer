@@ -45,17 +45,17 @@ namespace HavenCNCServer.Models
             /// <summary>
             /// Function name (e.g., "EStopOk", "SpindleEnable")
             /// </summary>
-            public string Name { get; set; } = string.Empty;
+            public string? Name { get; set; }
             
             /// <summary>
             /// I/O number (1-64 for standard I/O)
             /// </summary>
-            public int Number { get; set; }
+            public int? Number { get; set; }
             
             /// <summary>
             /// Whether the input/output is inverted
             /// </summary>
-            public bool IsInverted { get; set; }
+            public bool? IsInverted { get; set; }
         }
 
         #endregion
@@ -68,99 +68,99 @@ namespace HavenCNCServer.Models
         public class AxisConfiguration
         {
             /// <summary>
-            /// Axis number (1-8)
+            /// Axis number (1-8) - Required
             /// </summary>
             public int AxisNumber { get; set; }
             
             /// <summary>
             /// Axis label (X, Y, Z, A, B, C, U, V, W)
             /// </summary>
-            public string Label { get; set; } = string.Empty;
+            public string? Label { get; set; }
             
             /// <summary>
             /// Steps per revolution (motor/drive steps)
             /// </summary>
-            public int StepsPerRevolution { get; set; }
+            public int? StepsPerRevolution { get; set; }
             
             /// <summary>
             /// Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)
             /// </summary>
-            public double TurnRatio { get; set; }
+            public double? TurnRatio { get; set; }
             
             /// <summary>
             /// Plus travel limit
             /// </summary>
-            public double PlusTravelLimit { get; set; }
+            public double? PlusTravelLimit { get; set; }
             
             /// <summary>
             /// Minus travel limit
             /// </summary>
-            public double MinusTravelLimit { get; set; }
+            public double? MinusTravelLimit { get; set; }
             
             /// <summary>
             /// Backlash compensation amount
             /// </summary>
-            public double BacklashCompensation { get; set; }
+            public double? BacklashCompensation { get; set; }
             
             /// <summary>
             /// Slow jog rate
             /// </summary>
-            public double SlowJogRate { get; set; }
+            public double? SlowJogRate { get; set; }
             
             /// <summary>
             /// Fast jog rate
             /// </summary>
-            public double FastJogRate { get; set; }
+            public double? FastJogRate { get; set; }
             
             /// <summary>
             /// Acceleration time in seconds
             /// </summary>
-            public double AccelerationTime { get; set; }
+            public double? AccelerationTime { get; set; }
             
             /// <summary>
             /// Whether axis direction is reversed
             /// </summary>
-            public bool IsReversed { get; set; }
+            public bool? IsReversed { get; set; }
             
             /// <summary>
             /// Master axis for pairing (0 = none, 1-8 = master axis number)
             /// </summary>
-            public int MasterAxis { get; set; }
+            public int? MasterAxis { get; set; }
             
             /// <summary>
             /// Whether this is a rotary axis (Parameter bit 0)
             /// </summary>
-            public bool IsRotary { get; set; }
+            public bool? IsRotary { get; set; }
             
             /// <summary>
             /// Rotary DRO wrap around display mode (Parameter bit 1)
             /// </summary>
-            public bool RotaryWrapAround { get; set; }
+            public bool? RotaryWrapAround { get; set; }
             
             /// <summary>
             /// C-Axis enable (Parameter bit 4)
             /// </summary>
-            public bool CAxisEnabled { get; set; }
+            public bool? CAxisEnabled { get; set; }
             
             /// <summary>
             /// Prevent divide by 360 for C-Axis (Parameter bit 7)
             /// </summary>
-            public bool PreventDivideBy360 { get; set; }
+            public bool? PreventDivideBy360 { get; set; }
             
             /// <summary>
             /// Hide axis from DRO display - ATC Turret (Parameter bit 9)
             /// </summary>
-            public bool HideFromDRO { get; set; }
+            public bool? HideFromDRO { get; set; }
             
             /// <summary>
             /// Rotary axis parallel to X (Parameter bit 11)
             /// </summary>
-            public bool ParallelToX { get; set; }
+            public bool? ParallelToX { get; set; }
             
             /// <summary>
             /// Rotary axis parallel to Y (Parameter bit 12)
             /// </summary>
-            public bool ParallelToY { get; set; }
+            public bool? ParallelToY { get; set; }
         }
 
         /// <summary>
@@ -171,72 +171,72 @@ namespace HavenCNCServer.Models
             /// <summary>
             /// Encoder counts per spindle revolution
             /// </summary>
-            public int EncoderCounts { get; set; }
+            public int? EncoderCounts { get; set; }
             
             /// <summary>
             /// Spindle axis number (5 standard, 8 for AcornSix/Hickory)
             /// </summary>
-            public int SpindleAxis { get; set; } = 5;
+            public int? SpindleAxis { get; set; }
             
             /// <summary>
             /// Low gear ratio
             /// </summary>
-            public double LowGearRatio { get; set; } = 1.0;
+            public double? LowGearRatio { get; set; }
             
             /// <summary>
             /// Medium gear ratio
             /// </summary>
-            public double MediumGearRatio { get; set; } = 1.0;
+            public double? MediumGearRatio { get; set; }
             
             /// <summary>
             /// High gear ratio
             /// </summary>
-            public double HighGearRatio { get; set; } = 1.0;
+            public double? HighGearRatio { get; set; }
             
             /// <summary>
             /// Maximum spindle speed
             /// </summary>
-            public int MaxSpeed { get; set; }
+            public int? MaxSpeed { get; set; }
             
             /// <summary>
             /// Minimum spindle speed
             /// </summary>
-            public int MinSpeed { get; set; }
+            public int? MinSpeed { get; set; }
             
             /// <summary>
             /// Analog output voltage range (0-3)
             /// </summary>
-            public int AnalogRange { get; set; }
+            public int? AnalogRange { get; set; }
             
             /// <summary>
             /// Spindle OK delay in seconds
             /// </summary>
-            public double OkDelay { get; set; }
+            public double? OkDelay { get; set; }
             
             /// <summary>
             /// Cooling fan delay in seconds
             /// </summary>
-            public double FanDelay { get; set; }
+            public double? FanDelay { get; set; }
             
             /// <summary>
             /// Enable spindle encoder
             /// </summary>
-            public bool EncoderEnabled { get; set; } = true;
+            public bool? EncoderEnabled { get; set; }
             
             /// <summary>
             /// Enable rigid tapping
             /// </summary>
-            public bool RigidTappingEnabled { get; set; }
+            public bool? RigidTappingEnabled { get; set; }
             
             /// <summary>
             /// Enable RTG (Real Time Graphics) display
             /// </summary>
-            public bool RTGDisplay { get; set; }
+            public bool? RTGDisplay { get; set; }
             
             /// <summary>
             /// Enable second spindle
             /// </summary>
-            public bool SecondSpindleEnabled { get; set; }
+            public bool? SecondSpindleEnabled { get; set; }
         }
 
         /// <summary>
@@ -245,39 +245,39 @@ namespace HavenCNCServer.Models
         public class PWMConfiguration
         {
             /// <summary>
-            /// Output number for PWM signal
+            /// Output number for PWM signal - Required
             /// </summary>
             public int OutputNumber { get; set; }
             
             /// <summary>
             /// PWM frequency in Hz
             /// </summary>
-            public int Frequency { get; set; } = 1221;
+            public int? Frequency { get; set; }
             
             /// <summary>
             /// PWM floor value (minimum duty cycle)
             /// </summary>
-            public double Floor { get; set; } = 15.0;
+            public double? Floor { get; set; }
             
             /// <summary>
             /// Velocity scaling factor
             /// </summary>
-            public double VelocityScaling { get; set; } = 1.0;
+            public double? VelocityScaling { get; set; }
             
             /// <summary>
             /// Whether PWM signal is inverted
             /// </summary>
-            public bool IsInverted { get; set; }
+            public bool? IsInverted { get; set; }
             
             /// <summary>
             /// Inverse enable bit (parameter 815, bit 0)
             /// </summary>
-            public bool InverseEnabled { get; set; }
+            public bool? InverseEnabled { get; set; }
             
             /// <summary>
             /// Velocity 100% mode (parameter 815, bit 1) - true = 0-100%, false = 0-10%
             /// </summary>
-            public bool Velocity100 { get; set; }
+            public bool? Velocity100 { get; set; }
         }
 
         /// <summary>
@@ -288,32 +288,32 @@ namespace HavenCNCServer.Models
             /// <summary>
             /// Probe input number
             /// </summary>
-            public int InputNumber { get; set; }
+            public int? InputNumber { get; set; }
             
             /// <summary>
             /// Probe input type (0=Normally Open, 1=Normally Closed)
             /// </summary>
-            public int InputType { get; set; }
+            public int? InputType { get; set; }
             
             /// <summary>
             /// Probe feed rate
             /// </summary>
-            public double FeedRate { get; set; }
+            public double? FeedRate { get; set; }
             
             /// <summary>
             /// Touch plate thickness
             /// </summary>
-            public double TouchPlateThickness { get; set; }
+            public double? TouchPlateThickness { get; set; }
             
             /// <summary>
             /// Touch plate input number (if different from probe)
             /// </summary>
-            public int TouchPlateInputNumber { get; set; }
+            public int? TouchPlateInputNumber { get; set; }
             
             /// <summary>
             /// Touch plate input type
             /// </summary>
-            public int TouchPlateInputType { get; set; }
+            public int? TouchPlateInputType { get; set; }
         }
 
         /// <summary>
@@ -524,17 +524,25 @@ namespace HavenCNCServer.Models
                 return result;
             }
 
+            // Filter out functions with missing required properties
+            var validFunctions = ioFunctions.Where(f => f.Number.HasValue && !string.IsNullOrEmpty(f.Name)).ToList();
+            
+            if (!validFunctions.Any())
+            {
+                return result;
+            }
+
             // Sort by I/O number for consistent ordering
-            var sortedFunctions = ioFunctions.OrderBy(f => f.Number).ToList();
+            var sortedFunctions = validFunctions.OrderBy(f => f.Number!.Value).ToList();
 
             // Find the longest function name for alignment
-            int maxNameLength = sortedFunctions.Max(f => f.Name.Length);
+            int maxNameLength = sortedFunctions.Max(f => f.Name!.Length);
             int alignmentColumn = Math.Max(maxNameLength + 4, 16);
 
             foreach (var function in sortedFunctions)
             {
-                var definition = $"{ioType}{function.Number}";
-                var spacing = new string(' ', alignmentColumn - function.Name.Length);
+                var definition = $"{ioType}{function.Number!.Value}";
+                var spacing = new string(' ', alignmentColumn - function.Name!.Length);
                 var line = $"{function.Name}{spacing}IS {definition}";
                 result.Add(line);
             }
@@ -569,19 +577,38 @@ namespace HavenCNCServer.Models
                 // Convert axis number to enum (1-based to 0-based)
                 var axisEnum = (CNCPipe.Axes)(config.AxisNumber - 1);
                 
-                // Set basic axis parameters
-                cncPipe.axis.SetCountsPerTurn(axisEnum, config.StepsPerRevolution);
-                cncPipe.axis.SetScrewPitch(axisEnum, config.TurnRatio);
-                cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PlusTravelLimit);
-                cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.MinusTravelLimit);
-                cncPipe.axis.SetLashComp(axisEnum, config.BacklashCompensation);
-                cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.SLOW_JOG, config.SlowJogRate);
-                cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG, config.FastJogRate);
-                cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime);
-                cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
-                cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed);
+                // Set basic axis parameters only if provided
+                if (config.StepsPerRevolution.HasValue)
+                    cncPipe.axis.SetCountsPerTurn(axisEnum, config.StepsPerRevolution.Value);
+                
+                if (config.TurnRatio.HasValue)
+                    cncPipe.axis.SetScrewPitch(axisEnum, config.TurnRatio.Value);
+                
+                if (config.PlusTravelLimit.HasValue)
+                    cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PlusTravelLimit.Value);
+                
+                if (config.MinusTravelLimit.HasValue)
+                    cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.MinusTravelLimit.Value);
+                
+                if (config.BacklashCompensation.HasValue)
+                    cncPipe.axis.SetLashComp(axisEnum, config.BacklashCompensation.Value);
+                
+                if (config.SlowJogRate.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.SLOW_JOG, config.SlowJogRate.Value);
+                
+                if (config.FastJogRate.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG, config.FastJogRate.Value);
+                
+                if (config.AccelerationTime.HasValue)
+                    cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime.Value);
+                
+                if (!string.IsNullOrEmpty(config.Label))
+                    cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
+                
+                if (config.IsReversed.HasValue)
+                    cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
 
-                System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} ({config.Label}): {config.StepsPerRevolution} steps/rev");
+                System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} ({config.Label ?? "unknown"}): {config.StepsPerRevolution?.ToString() ?? "not set"} steps/rev");
                 
                 return true;
             }
@@ -601,38 +628,68 @@ namespace HavenCNCServer.Models
             try
             {
                 // Determine parameter number based on axis number
-                int parameterNumber = GetAxisPropertyParameter(config.AxisNumber);
-                if (parameterNumber == -1) return false;
+                CentroidParameters parameterNumber = GetAxisPropertyParameter(config.AxisNumber);
 
                 // Get current parameter value
                 int axisProperties = (int)CNCUtils.GetParameterValue(parameterNumber);
+                bool parameterModified = false;
                 
-                // Configure bit fields according to documentation
+                // Configure bit fields according to documentation - only if values are provided
                 // Bit 0: Linear/Rotary (0=Linear, 1=Rotary)
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 0, config.IsRotary);
+                if (config.IsRotary.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 0, config.IsRotary.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 1: Rotary DRO Display (0=Show Rotations, 1=Wrap Around)  
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 1, config.RotaryWrapAround);
+                if (config.RotaryWrapAround.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 1, config.RotaryWrapAround.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 4: C-Axis Enable
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 4, config.CAxisEnabled);
+                if (config.CAxisEnabled.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 4, config.CAxisEnabled.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 7: Prevent Divide by 360 for C-Axis
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 7, config.PreventDivideBy360);
+                if (config.PreventDivideBy360.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 7, config.PreventDivideBy360.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 9: Hide Axis from DRO (ATC Turret)
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 9, config.HideFromDRO);
+                if (config.HideFromDRO.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 9, config.HideFromDRO.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 11: Parallel to X (Rotary)
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 11, config.ParallelToX);
+                if (config.ParallelToX.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 11, config.ParallelToX.Value);
+                    parameterModified = true;
+                }
                 
                 // Bit 12: Parallel to Y (Rotary)
-                axisProperties = CNCUtils.ModifyBit(axisProperties, 12, config.ParallelToY);
+                if (config.ParallelToY.HasValue)
+                {
+                    axisProperties = CNCUtils.ModifyBit(axisProperties, 12, config.ParallelToY.Value);
+                    parameterModified = true;
+                }
 
-                // Set the updated parameter value
-                CNCUtils.SetParameterValue(parameterNumber, axisProperties);
-
-                System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} properties: Parameter {parameterNumber} = {axisProperties}");
+                // Only update the parameter if we modified something
+                if (parameterModified)
+                {
+                    CNCUtils.SetParameterValue(parameterNumber, axisProperties);
+                    System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} properties: Parameter {parameterNumber} = {axisProperties}");
+                }
                 
                 return true;
             }
@@ -647,19 +704,19 @@ namespace HavenCNCServer.Models
         /// </summary>
         /// <param name="axisNumber">Axis number (1-8)</param>
         /// <returns>Parameter number or -1 if invalid</returns>
-        private static int GetAxisPropertyParameter(int axisNumber)
+        private static CentroidParameters GetAxisPropertyParameter(int axisNumber)
         {
             return axisNumber switch
             {
-                1 => 91,   // Axis 1
-                2 => 92,   // Axis 2  
-                3 => 93,   // Axis 3
-                4 => 94,   // Axis 4
-                5 => 166,  // Axis 5
-                6 => 167,  // Axis 6
-                7 => 168,  // Axis 7
-                8 => 169,  // Axis 8
-                _ => -1    // Invalid axis
+                1 => CentroidParameters.AXIS_1_PROPERTIES,
+                2 => CentroidParameters.AXIS_2_PROPERTIES,
+                3 => CentroidParameters.AXIS_3_PROPERTIES,
+                4 => CentroidParameters.AXIS_4_PROPERTIES,
+                5 => CentroidParameters.AXIS_5_PROPERTIES,
+                6 => CentroidParameters.AXIS_6_PROPERTIES,
+                7 => CentroidParameters.AXIS_7_PROPERTIES,
+                8 => CentroidParameters.AXIS_8_PROPERTIES,
+                _ => throw new ArgumentException($"Invalid axis number: {axisNumber}")
             };
         }
 
@@ -674,14 +731,12 @@ namespace HavenCNCServer.Models
             try
             {
                 // Parameter mapping for axis pairing
-                int parameterNumber = slaveAxis switch
+                CentroidParameters parameterNumber = slaveAxis switch
                 {
-                    4 => 554, // 4th Axis Master/Slave Pairing
-                    5 => 555, // 5th Axis Master/Slave Pairing
-                    _ => -1
+                    4 => CentroidParameters.AXIS_4_PAIRING,
+                    5 => CentroidParameters.AXIS_5_PAIRING,
+                    _ => throw new ArgumentException($"Invalid slave axis number: {slaveAxis}")
                 };
-
-                if (parameterNumber == -1) return false;
 
                 CNCUtils.SetParameterValue(parameterNumber, masterAxis);
                 
@@ -718,29 +773,53 @@ namespace HavenCNCServer.Models
                     System.Threading.Thread.Sleep(10);
                 }
 
-                // Core parameters via CNCUtils.SetParameterValue()
-                CNCUtils.SetParameterValue(34, config.EncoderCounts);    // SPINDLE_COUNTS_REV_PARM
-                CNCUtils.SetParameterValue(35, config.SpindleAxis);      // Spindle axis
-                CNCUtils.SetParameterValue(36, config.RigidTappingEnabled ? 1 : 0);  // Rigid tapping parameter
-                CNCUtils.SetParameterValue(65, (int)(config.LowGearRatio * 1000));    // LOW_GEAR_RATIO_PARM
-                CNCUtils.SetParameterValue(66, (int)(config.MediumGearRatio * 1000)); // MED_LOW_GEAR_RATIO_PARM
-                CNCUtils.SetParameterValue(67, (int)(config.HighGearRatio * 1000));   // HIGH_GEAR_RATIO_PARM
-                CNCUtils.SetParameterValue(420, config.AnalogRange);     // PLC_ANALOG_PARM
-                CNCUtils.SetParameterValue(430, config.RTGDisplay ? 1 : 0);  // RTG display parameter
-                CNCUtils.SetParameterValue(996, (int)(config.OkDelay * 1000));       // SPINDLE_OK_DELAY_PARM
-                CNCUtils.SetParameterValue(997, (int)(config.FanDelay * 1000));      // SPINDLE_COOLING_FAN_DELAY_TIMER
+                // Core parameters via CNCUtils.SetParameterValue() - only set if provided
+                if (config.EncoderCounts.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                
+                if (config.SpindleAxis.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                
+                if (config.RigidTappingEnabled.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, config.RigidTappingEnabled.Value ? 1 : 0);
+                
+                if (config.LowGearRatio.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
+                
+                if (config.MediumGearRatio.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
+                
+                if (config.HighGearRatio.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
+                
+                if (config.AnalogRange.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
+                
+                if (config.RTGDisplay.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RTGDisplay.Value ? 1 : 0);
+                
+                if (config.OkDelay.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_OK_DELAY_PARM, (int)(config.OkDelay.Value * 1000));
+                
+                if (config.FanDelay.HasValue)
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
 
-                // Speed configuration via API calls
-                // MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed);
-                // MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed);
+                // Speed configuration via API calls (commented out as it depends on MainWindow)
+                // if (config.MaxSpeed.HasValue)
+                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed.Value);
+                // if (config.MinSpeed.HasValue)
+                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
 
-                // Configure spindle parameter 78 bit field
-                int spindleControl = 0;
-                if (config.EncoderEnabled) spindleControl |= 1;        // Bit 0: Primary Encoder Enable
-                if (config.SecondSpindleEnabled) spindleControl |= 8;   // Bit 3: Second Spindle Encoder
-                CNCUtils.SetParameterValue(78, spindleControl);
+                // Configure spindle parameter 78 bit field only if encoder settings are provided
+                if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue)
+                {
+                    int spindleControl = 0;
+                    if (config.EncoderEnabled == true) spindleControl |= 1;        // Bit 0: Primary Encoder Enable
+                    if (config.SecondSpindleEnabled == true) spindleControl |= 8;   // Bit 3: Second Spindle Encoder
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
+                }
 
-                System.Diagnostics.Debug.WriteLine($"Configuring Spindle: {config.EncoderCounts} counts, Max: {config.MaxSpeed}, Min: {config.MinSpeed}");
+                System.Diagnostics.Debug.WriteLine($"Configuring Spindle: {config.EncoderCounts?.ToString() ?? "not set"} counts, Max: {config.MaxSpeed?.ToString() ?? "not set"}, Min: {config.MinSpeed?.ToString() ?? "not set"}");
                 
                 return true;
             }
@@ -763,24 +842,42 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                // PWM parameters are output-specific
-                // Base parameter numbers: 814 (frequency), 815 (options), 817 (floor), etc.
-                int frequencyParam = 814 + (config.OutputNumber - 1) * 10; // Example calculation
-                int optionsParam = 815 + (config.OutputNumber - 1) * 10;
-                int floorParam = 817 + (config.OutputNumber - 1) * 10;
+                bool parametersSet = false;
+                
+                if (config.Frequency.HasValue)
+                {
+                    CNCUtils.SetPWMFrequency(config.OutputNumber, config.Frequency.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.Floor.HasValue)
+                {
+                    CNCUtils.SetPWMFloor(config.OutputNumber, (int)(config.Floor.Value * 100));
+                    parametersSet = true;
+                }
 
-                CNCUtils.SetParameterValue(frequencyParam, config.Frequency);
-                CNCUtils.SetParameterValue(floorParam, (int)(config.Floor * 100));
+                // Configure PWM Options parameter bit field only if options are provided
+                if (config.InverseEnabled.HasValue || config.Velocity100.HasValue || config.Floor.HasValue)
+                {
+                    int pwmOptions = (int)CNCUtils.GetPWMOptions(config.OutputNumber);
+                    
+                    if (config.InverseEnabled.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 0, config.InverseEnabled.Value);
+                    
+                    if (config.Velocity100.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 1, config.Velocity100.Value);
+                    
+                    if (config.Floor.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.Floor.Value > 0);
+                    
+                    CNCUtils.SetPWMOptions(config.OutputNumber, pwmOptions);
+                    parametersSet = true;
+                }
 
-                // Configure PWM Options parameter (815) bit field
-                // Bit 0: Inverse Enable, Bit 1: Velocity 100%, Bit 2: Minimum Floor Enable
-                int pwmOptions = (int)CNCUtils.GetParameterValue(optionsParam);
-                pwmOptions = CNCUtils.ModifyBit(pwmOptions, 0, config.InverseEnabled);
-                pwmOptions = CNCUtils.ModifyBit(pwmOptions, 1, config.Velocity100);
-                pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.Floor > 0);
-                CNCUtils.SetParameterValue(optionsParam, pwmOptions);
-
-                System.Diagnostics.Debug.WriteLine($"Configuring PWM Output {config.OutputNumber}: {config.Frequency}Hz, Floor: {config.Floor}%, Options: {pwmOptions}");
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring PWM Output {config.OutputNumber}: {config.Frequency?.ToString() ?? "not set"}Hz, Floor: {config.Floor?.ToString() ?? "not set"}%");
+                }
                 
                 return true;
             }
@@ -804,40 +901,40 @@ namespace HavenCNCServer.Models
             try
             {
                 // Core ATC parameters:
-                CNCUtils.SetParameterValue(6, config.Type != ATCType.None ? 1 : 0);    // Tool Changer Installed
-                CNCUtils.SetParameterValue(830, (int)config.Type);                     // ATC Type
-                CNCUtils.SetParameterValue(161, config.MaxBins);                       // ATC Max Bins
+                CNCUtils.SetParameterValue(CentroidParameters.TOOL_CHANGER_INSTALLED, config.Type != ATCType.None ? 1 : 0);
+                CNCUtils.SetParameterValue(CentroidParameters.ATC_TYPE, (int)config.Type);
+                CNCUtils.SetParameterValue(CentroidParameters.ATC_MAX_BINS, config.MaxBins);
 
                 // Type-specific parameters
                 switch (config.Type)
                 {
                     case ATCType.Carousel:
-                        CNCUtils.SetParameterValue(852, config.SkipFirstCountOnReversal ? 1 : 0);
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_SKIP_FIRST_COUNT_ON_REVERSAL, config.SkipFirstCountOnReversal ? 1 : 0);
                         // Set G30 reference points for tool change position
                         // MainWindow.skin.reference.SetG30(config.ChangePositionX, config.ChangePositionY, config.ChangePositionZ);
                         break;
 
                     case ATCType.RackMount:
-                        CNCUtils.SetParameterValue(431, config.HoldingConfiguration);
-                        CNCUtils.SetParameterValue(432, config.ToolLengthMethod);
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_HOLDING_CONFIGURATION, config.HoldingConfiguration);
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TOOL_LENGTH_METHOD, config.ToolLengthMethod);
                         break;
 
                     case ATCType.CounterTurret:
                     case ATCType.TimeTurret:
                     case ATCType.ElectricTurret:
-                        CNCUtils.SetParameterValue(850, (int)(config.TimeDelayToStart * 1000));
-                        CNCUtils.SetParameterValue(848, (int)(config.TimeToReverse * 1000));
-                        CNCUtils.SetParameterValue(849, (int)(config.TimeToFault * 1000));
-                        CNCUtils.SetParameterValue(851, (int)(config.TimeDelayToStart * 1000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_DELAY_TO_START, (int)(config.TimeDelayToStart * 1000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_TO_REVERSE, (int)(config.TimeToReverse * 1000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_TO_FAULT, (int)(config.TimeToFault * 1000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_DELAY_TO_START_ALT, (int)(config.TimeDelayToStart * 1000));
                         if (config.Type == ATCType.TimeTurret)
                         {
-                            CNCUtils.SetParameterValue(975, (int)(config.TimePerToolPosition * 1000));
+                            CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_PER_TOOL_POSITION, (int)(config.TimePerToolPosition * 1000));
                         }
                         break;
 
                     case ATCType.AxisDrivenTurret:
-                        CNCUtils.SetParameterValue(853, (int)(config.TravelPastDistance * 10000));
-                        CNCUtils.SetParameterValue(854, (int)(config.TravelBehindDistance * 10000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TRAVEL_PAST_DISTANCE, (int)(config.TravelPastDistance * 10000));
+                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TRAVEL_BEHIND_DISTANCE, (int)(config.TravelBehindDistance * 10000));
                         break;
                 }
 
@@ -864,14 +961,37 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                // Set probe parameters using CNCUtils
-                // Note: Using direct parameter numbers until probe parameters are added to CNC12Parameters enum
-                CNCUtils.SetParameterValue(405, config.InputNumber);      // PROBE_INPUT_PARM
-                CNCUtils.SetParameterValue((int)CNC12Parameters.PROBE_INPUT_TYPE, config.InputType);
-                CNCUtils.SetParameterValue(407, config.TouchPlateInputNumber);  // TOUCH_PLATE_INPUT_PARM
-                CNCUtils.SetParameterValue(408, config.TouchPlateInputType);    // TOUCH_PLATE_INPUT_TYPE_PARM
+                bool parametersSet = false;
+                
+                // Set probe parameters using CNCUtils - only if provided
+                if (config.InputNumber.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_PARM, config.InputNumber.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.InputType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_TYPE, config.InputType.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.TouchPlateInputNumber.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_NUMBER, config.TouchPlateInputNumber.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.TouchPlateInputType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_TYPE, config.TouchPlateInputType.Value);
+                    parametersSet = true;
+                }
 
-                System.Diagnostics.Debug.WriteLine($"Configuring Probe: Input {config.InputNumber}, Type: {config.InputType}");
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Probe: Input {config.InputNumber?.ToString() ?? "not set"}, Type: {config.InputType?.ToString() ?? "not set"}");
+                }
                 
                 return true;
             }
@@ -1007,39 +1127,9 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                // Determine which parameter to use based on input number
-                int parameterNumber;
-                int bitPosition;
-                
-                if (inputNumber >= 1 && inputNumber <= 16)
-                {
-                    parameterNumber = 911;
-                    bitPosition = inputNumber - 1;
-                }
-                else if (inputNumber >= 17 && inputNumber <= 32)
-                {
-                    parameterNumber = 912;
-                    bitPosition = inputNumber - 17;
-                }
-                else if (inputNumber >= 33 && inputNumber <= 48)
-                {
-                    parameterNumber = 913;
-                    bitPosition = inputNumber - 33;
-                }
-                else if (inputNumber >= 49 && inputNumber <= 64)
-                {
-                    parameterNumber = 914;
-                    bitPosition = inputNumber - 49;
-                }
-                else if (inputNumber >= 65 && inputNumber <= 80)
-                {
-                    parameterNumber = 915;
-                    bitPosition = inputNumber - 65;
-                }
-                else
-                {
-                    return false; // Invalid input number
-                }
+                // Get bit position for this input
+                int bitPosition = GetBitPosition(inputNumber);
+                if (bitPosition == -1) return false;
 
                 var cncPipe = new CNCPipe();
                 
@@ -1055,6 +1145,9 @@ namespace HavenCNCServer.Models
                 
                 try
                 {
+                    // Get the parameter number for this input
+                    CentroidParameters parameterNumber = GetInputInversionParameter(inputNumber);
+                    
                     // Get current parameter value and cast to int for bit operations
                     var currentValue = (int)CNCUtils.GetParameterValue(parameterNumber);
                     
@@ -1106,12 +1199,11 @@ namespace HavenCNCServer.Models
                 }
 
                 // Group inputs by parameter number for efficiency
-                var parameterGroups = new Dictionary<int, List<(int inputNum, bool invert)>>();
+                var parameterGroups = new Dictionary<CentroidParameters, List<(int inputNum, bool invert)>>();
                 
                 foreach (var setting in inputSettings)
                 {
-                    int parameterNumber = GetInputInversionParameter(setting.Key);
-                    if (parameterNumber == -1) continue; // Invalid input number
+                    CentroidParameters parameterNumber = GetInputInversionParameter(setting.Key);
                     
                     if (!parameterGroups.ContainsKey(parameterNumber))
                     {
@@ -1127,7 +1219,7 @@ namespace HavenCNCServer.Models
                 {
                     try
                     {
-                        int parameterNumber = group.Key;
+                        CentroidParameters parameterNumber = group.Key;
                         
                         // Get current parameter value
                         double currentValue = CNCUtils.GetParameterValue(parameterNumber);
@@ -1296,15 +1388,15 @@ namespace HavenCNCServer.Models
         /// Gets the parameter number for input inversion based on input number
         /// </summary>
         /// <param name="inputNumber">Input number (1-80)</param>
-        /// <returns>Parameter number or -1 if invalid</returns>
-        private static int GetInputInversionParameter(int inputNumber)
+        /// <returns>Parameter enum value</returns>
+        private static CentroidParameters GetInputInversionParameter(int inputNumber)
         {
-            if (inputNumber >= 1 && inputNumber <= 16) return 911;
-            if (inputNumber >= 17 && inputNumber <= 32) return 912;
-            if (inputNumber >= 33 && inputNumber <= 48) return 913;
-            if (inputNumber >= 49 && inputNumber <= 64) return 914;
-            if (inputNumber >= 65 && inputNumber <= 80) return 915;
-            return -1;
+            if (inputNumber >= 1 && inputNumber <= 16) return CentroidParameters.INPUT_INVERSION_1_16;
+            if (inputNumber >= 17 && inputNumber <= 32) return CentroidParameters.INPUT_INVERSION_17_32;
+            if (inputNumber >= 33 && inputNumber <= 48) return CentroidParameters.INPUT_INVERSION_33_48;
+            if (inputNumber >= 49 && inputNumber <= 64) return CentroidParameters.INPUT_INVERSION_49_64;
+            if (inputNumber >= 65 && inputNumber <= 80) return CentroidParameters.INPUT_INVERSION_65_80;
+            throw new ArgumentException($"Invalid input number: {inputNumber}");
         }
 
         /// <summary>
