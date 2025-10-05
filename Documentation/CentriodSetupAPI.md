@@ -1714,3 +1714,1097 @@ switch (definition) {
 - **Respect hardware limitations** (pin counts, capabilities)
 
 This I/O definition management system provides the foundation for all wizard I/O configuration, working with the axis, spindle, PWM, probe, touch plate, and ATC systems to create complete machine configurations.
+
+---
+
+# CentroidAPI - CNC12 Programming Interface
+
+The CentroidAPI provides a comprehensive interface for communicating with Centroid CNC12 control systems. This section covers the primary components and usage patterns for direct API integration.
+
+## CentroidAPI Overview
+
+The CentroidAPI is the official programming interface for Centroid CNC12 systems, providing access to:
+- Machine parameters and configuration
+- Real-time system state
+- Axis control and feedback
+- Spindle control and monitoring
+- I/O board management
+- Workpiece coordinate systems
+- System diagnostics and status
+
+## API Structure and Method Access Patterns
+
+### CNCPipe Object Structure
+The CentroidAPI uses a hierarchical structure to organize different functional areas:
+
+```csharp
+CNCPipe cncPipe = new CNCPipe();
+
+// Parameter access
+cncPipe.parameter.GetMachineParameterValue(paramNum, out double value);
+cncPipe.parameter.SetMachineParameter(paramNum, value);
+
+// System information and hardware detection  
+cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
+cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+
+// Axis control
+cncPipe.axis.SetTravelLimit(axis, direction, limit);
+cncPipe.axis.SetRate(axis, rate, value);
+
+// System state
+cncPipe.state.SetHighRangeSpindleSpeed(valueType, speed);
+cncPipe.state.GetHighRangeSpindleSpeed(valueType, out double speed);
+
+// Workpiece references (direct on CNCPipe)
+cncPipe.GetWorkpieceReference(reference, axis, out double value);
+cncPipe.SetWorkpieceReference(reference, axis, value);
+```
+
+### Return Code Patterns
+Different CentroidAPI method categories use different return patterns:
+
+#### Parameter Methods - Return CNCPipe.ReturnCode
+```csharp
+CNCPipe.ReturnCode result = cncPipe.parameter.GetMachineParameterValue(paramNum, out double value);
+if (result != CNCPipe.ReturnCode.SUCCESS)
+{
+    // Handle error
+}
+```
+
+#### System Detection Methods - Void with Out Parameters  
+```csharp
+// These methods do not return error codes
+cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
+cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+cncPipe.system.GetPLCEXP1616NumberofDevices(out int count);
+```
+
+#### Workpiece Reference Methods - Void with Out Parameters
+```csharp
+// These methods also do not return error codes
+cncPipe.GetWorkpieceReference(reference, axis, out double value);
+cncPipe.SetWorkpieceReference(reference, axis, value);  // void return
+```
+
+## Core CentroidAPI Components
+
+### CNCPipe Class
+The main interface class that provides access to all CNC12 functionality.
+
+```csharp
+using CentroidAPI;
+
+// Typical initialization pattern
+CNCPipe cncConnection = new CNCPipe();
+// Connection logic would go here
+```
+
+### CNCPipe Namespaces and Subcomponents
+
+#### Parameter Management (`CNCPipe.parameter`)
+Provides access to machine parameters (the numbered configuration values in CNC12).
+
+**Key Methods:**
+- `GetMachineParameterValue(int parameter, out double value)` - Read parameter values
+- `SetMachineParameter(int parameter, double value)` - Write parameter values
+
+#### System State (`CNCPipe.state`)
+Manages real-time system state and operational values.
+
+**Key Methods:**
+- `SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX/MIN, value)` - Set spindle speed limits
+- `GetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX/MIN, out value)` - Read spindle speed limits
+
+#### System Information (`CNCPipe.system`)
+Provides hardware detection and system information.
+
+**Key Methods:**
+- `GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version)` - Detect system type
+- `GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices)` - Acorn expansion boards
+- `GetPLCEXP1616NumberofDevices(out int count)` - AcornSix expansion boards
+- `GetECAT1616NumberOfDevices(out int count)` - Hickory expansion boards
+
+#### Axis Control (`CNCPipe.axis`)
+Controls individual axis properties and settings.
+
+**Key Methods:**
+- `SetCountsPerTurn(axis, counts)` - Set steps per revolution
+- `SetTravelLimit(axis, direction, limit)` - Set axis travel limits
+- `SetRate(axis, rateType, value)` - Set axis jog rates
+
+## System Type Detection
+
+### Detecting CNC System Type
+```csharp
+cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
+
+if (version.ToString().Contains("HICKORY"))
+{
+    // Hickory system
+    Console.WriteLine("Hickory CNC detected");
+}
+else if (version.ToString().Contains("ACORN_SIX"))
+{
+    // AcornSix system  
+    Console.WriteLine("AcornSix CNC detected");
+}
+else if (version.ToString().Contains("ACORN"))
+{
+    // Standard Acorn system
+    Console.WriteLine("Acorn CNC detected");
+}
+```
+
+### System-Specific I/O Detection Example
+```csharp
+if (version.ToString().Contains("HICKORY"))
+{
+    cncPipe.system.GetECAT1616NumberOfDevices(out int expansions);
+    Console.WriteLine($"Hickory with {expansions} ECAT1616 boards");
+    Console.WriteLine($"Total I/O: {32 + (expansions * 16)} inputs/outputs");
+}
+else if (version.ToString().Contains("ACORN_SIX"))
+{
+    cncPipe.system.GetPLCEXP1616NumberofDevices(out int expansions);
+    Console.WriteLine($"AcornSix with {expansions} PLCEXP1616 boards");
+    Console.WriteLine($"Total I/O: {16 + (expansions * 16)} inputs/outputs");
+}
+else if (version.ToString().Contains("ACORN"))
+{
+    cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+    Console.WriteLine($"Acorn with {devices.Count} Ether1616 boards");
+    Console.WriteLine($"Total I/O: {8 + (devices.Count * 16)} inputs/outputs");
+}
+```
+
+## Global Axis Configuration Settings
+
+Several axis-related settings are global and apply to the entire system rather than individual axes. These settings affect all stepper axes simultaneously and must be configured carefully.
+
+### Global Step Frequency Configuration
+
+The stepper pulse rate (pulses per second) is a **global system setting** that applies to all axes, not individual per-axis configuration.
+
+**Parameter**: 968 (`ACORN_STEPPER_PULSE_RATE_PARM`)
+
+#### Supported Step Frequencies
+The system supports these step frequencies for stepper motor control:
+- 100,000 steps/second
+- 200,000 steps/second (default if parameter is 0)
+- 240,000 steps/second
+- 300,000 steps/second
+- 400,000 steps/second
+
+#### Step Frequency API Usage
+```csharp
+// Reading current step frequency
+cncPipe.parameter.GetMachineParameterValue(968, out double paramValue);
+
+// Calculate actual step frequency
+const int PulseStepFrequency = 1200000;  // Base frequency constant
+double stepFrequency = paramValue != 0 ? (PulseStepFrequency / paramValue) : 200000;
+
+Console.WriteLine($"Current step frequency: {stepFrequency:N0} steps/second");
+
+// Setting step frequency  
+double desiredStepFrequency = 300000;  // 300,000 steps/second
+double parameterValue = PulseStepFrequency / desiredStepFrequency;
+cncPipe.parameter.SetMachineParameter(968, parameterValue);
+```
+
+#### Step Frequency Calculation
+The relationship between the parameter value and actual step frequency is:
+```
+StepFrequency = PulseStepFrequency / ParameterValue
+ParameterValue = PulseStepFrequency / StepFrequency
+
+Where PulseStepFrequency = 1,200,000 (constant)
+```
+
+#### Examples
+```csharp
+// For 200,000 steps/second:
+// Parameter 968 = 1,200,000 / 200,000 = 6.0
+
+// For 300,000 steps/second:  
+// Parameter 968 = 1,200,000 / 300,000 = 4.0
+
+// For 400,000 steps/second:
+// Parameter 968 = 1,200,000 / 400,000 = 3.0
+```
+
+### Global Axis Signal Inversion
+**Parameter**: 961 (`ACORN_OUTPUT_INVERSION_PARM`)
+
+Controls signal inversion for Step, Direction, Enable, and Quadrature signals across all axes. Uses 4-bit nibbles per axis to encode inversion settings.
+
+```csharp
+// Read global axis signal inversions
+cncPipe.parameter.GetMachineParameterValue(961, out double inversionValue);
+int axisInversions = (int)inversionValue;
+
+// Set global axis signal inversions
+cncPipe.parameter.SetMachineParameter(961, newInversionValue);
+```
+
+### Global Drive Fault Delay
+**Parameter**: 991 (`PLC_CLEARPATH_OR_G540`)
+
+Sets the drive fault timeout delay in milliseconds for all axes. Used for Clearpath servos and G540 drives.
+
+```csharp
+// Read current drive fault delay (milliseconds)
+cncPipe.parameter.GetMachineParameterValue(991, out double faultDelay);
+Console.WriteLine($"Current drive fault delay: {faultDelay:N0} ms");
+
+// Set drive fault delay to 1500ms for all axes
+cncPipe.parameter.SetMachineParameter(991, 1500);
+```
+
+**Default Value**: 1000 milliseconds
+
+### Global Low Resolution Mode
+**Parameter**: 225 (`AD2_LOW_RESOLUTION_PARM`)
+
+Controls plasma low-resolution adjustment mode for the entire system.
+
+```csharp
+// This setting is typically managed through the wizard interface
+// and affects plasma cutting precision across all axes
+```
+
+### Summary of Global vs Per-Axis Settings
+
+#### Global Settings (Apply to ALL Axes):
+- **Step Frequency**: 1200000/Parameter968 (pulses per second)
+- **Signal Inversions**: Parameter 961 (4-bit nibbles per axis)
+- **Drive Fault Delay**: Parameter 991 (milliseconds)
+- **Low Resolution Mode**: Parameter 225 (plasma systems)
+
+#### Per-Axis Settings:
+- **Steps per Revolution**: Individual via `cncPipe.axis.SetCountsPerTurn(axis, value)`
+- **Travel Limits**: Individual via `cncPipe.axis.SetTravelLimit(axis, direction, limit)`
+- **Jog Rates**: Individual via `cncPipe.axis.SetRate(axis, rateType, value)`
+- **Axis Properties**: Individual linear/rotary, reversed, etc.
+- **Homing Configuration**: Individual homing methods and order
+- **Acceleration Rates**: Individual axis acceleration settings
+
+### Global Settings API Examples
+
+```csharp
+// Configure global axis settings
+public void ConfigureGlobalAxisSettings(CNCPipe cncPipe)
+{
+    // Set 300,000 steps/second for all axes
+    double stepFreqParam = 1200000.0 / 300000.0;
+    cncPipe.parameter.SetMachineParameter(968, stepFreqParam);
+    
+    // Set 1500ms drive fault delay for all axes
+    cncPipe.parameter.SetMachineParameter(991, 1500);
+    
+    // Read current signal inversion settings
+    cncPipe.parameter.GetMachineParameterValue(961, out double inversions);
+    Console.WriteLine($"Current axis signal inversions: {(int)inversions:X}");
+}
+
+// Read all global axis settings
+public void ReadGlobalAxisSettings(CNCPipe cncPipe)
+{
+    // Step frequency
+    cncPipe.parameter.GetMachineParameterValue(968, out double stepParam);
+    double stepFreq = stepParam != 0 ? (1200000 / stepParam) : 200000;
+    
+    // Drive fault delay
+    cncPipe.parameter.GetMachineParameterValue(991, out double faultDelay);
+    
+    // Signal inversions
+    cncPipe.parameter.GetMachineParameterValue(961, out double inversions);
+    
+    Console.WriteLine($"Global Settings:");
+    Console.WriteLine($"  Step Frequency: {stepFreq:N0} steps/second");
+    Console.WriteLine($"  Drive Fault Delay: {faultDelay:N0} ms");
+    Console.WriteLine($"  Signal Inversions: 0x{(int)inversions:X}");
+}
+```
+
+### Important Notes About Global Settings
+
+1. **System-Wide Impact**: All global settings affect every axis simultaneously
+2. **Hardware Compatibility**: Settings must be compatible with all connected drives
+3. **Validation**: CNC12 firmware validates settings and may revert to defaults for invalid values
+4. **Coordination**: Changes to global settings should be coordinated across the entire machine setup
+5. **Backup**: Always backup current settings before making changes to global parameters
+
+## Additional CentroidAPI Configuration Areas
+
+Beyond axis configuration, the CentroidAPI provides access to many other configuration areas discovered in the Centroid Wizard codebase:
+
+### Spindle Configuration Settings
+
+#### Spindle Encoder Settings
+```csharp
+// Spindle encoder configuration
+cncPipe.parameter.GetMachineParameterValue(34, out double encoderCounts); // SPINDLE_COUNTS_REV_PARM
+cncPipe.parameter.SetMachineParameter(34, encoderCountsValue);
+
+// Spindle parameter bits (Parameter 78)
+cncPipe.parameter.GetMachineParameterValue(78, out double spindleParam);
+bool encoderEnabled = GeneralUtils.IsBitSet((int)spindleParam, 0);
+bool scalingEnabled = GeneralUtils.IsBitSet((int)spindleParam, 4);
+```
+
+#### Spindle Speed Ranges and Gear Ratios
+```csharp
+// High range spindle speed limits (State API)
+cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, maxSpeed);
+cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, minSpeed);
+
+// Gear ratios
+cncPipe.parameter.SetMachineParameter(65, lowGearRatio);    // LOW_GEAR_RATIO_PARM
+cncPipe.parameter.SetMachineParameter(66, mediumGearRatio); // MED_LOW_GEAR_RATIO_PARM
+```
+
+#### Rigid Tapping Configuration
+```csharp
+// Rigid tapping enable/disable and options (Parameter 36)
+cncPipe.parameter.GetMachineParameterValue(36, out double rigidTappingParam);
+bool rigidTappingEnabled = rigidTappingParam != 0;
+bool doNotWaitForIndex = GeneralUtils.IsBitSet((int)rigidTappingParam, 1);
+bool allowSpindleOverride = GeneralUtils.IsBitSet((int)rigidTappingParam, 2);
+
+// Rigid tapping speeds and distances
+cncPipe.parameter.SetMachineParameter(68, minimumRpmForTapping);  // RT_SLOW_SPINDLE_SPEED_PARM
+cncPipe.parameter.SetMachineParameter(69, slowSpindleTime);       // RT_SLOW_SPINDLE_TIME_PARM
+```
+
+### PWM and Laser Configuration
+
+#### PWM Output Settings
+```csharp
+// PWM options (Acorn systems)
+cncPipe.parameter.GetMachineParameterValue(969, out double pwmOptions); // ACORN_PWM_OPTIONS_PARM
+bool pwmInverted = GeneralUtils.IsBitSet((int)pwmOptions, 0);
+bool velocity100Mode = GeneralUtils.IsBitSet((int)pwmOptions, 1);
+
+// PWM frequency and floor settings
+cncPipe.parameter.SetMachineParameter(970, pwmFrequency); // ACORN_PWM_FREQUENCY_PARM
+cncPipe.parameter.SetMachineParameter(971, pwmFloor);     // ACORN_PWM_FLOOR_PARM
+
+// Laser cooling fan delay
+cncPipe.parameter.SetMachineParameter(972, fanDelayMs);   // LASER_COOLING_FAN_DELAY_TIMER
+```
+
+### Probing Configuration
+
+#### Probe Settings and Types
+```csharp
+// Probe input type and settings
+cncPipe.parameter.SetMachineParameter(11, probeInputState); // PROBE_NUMBER_AND_STATE_PARM
+cncPipe.parameter.SetMachineParameter(12, probeToolNumber); // PROBE_TOOL_NUMBER_PARM
+
+// Probe rates and distances
+cncPipe.parameter.SetMachineParameter(14, fastProbeRate);  // FAST_PROBING_RATE_PARM
+cncPipe.parameter.SetMachineParameter(15, slowProbeRate);  // SLOW_PROBING_RATE_PARM
+cncPipe.parameter.SetMachineParameter(16, maxSearchDistance); // PROBING_MAX_SEARCH_DISTANCE_PARM
+cncPipe.parameter.SetMachineParameter(13, recoveryDistance);  // PROBING_RECOVERY_DISTANCE_PARM
+
+// Probe protection and warnings
+cncPipe.parameter.SetMachineParameter(153, probeProtection); // PROBE_PROTECTION_PARM
+cncPipe.parameter.SetMachineParameter(899, probeWarning);    // DISPLAY_PROBE_WARNING_PARAM
+```
+
+#### Per-Axis Probe Jog Rates
+```csharp
+// Set probe-specific jog rates for each axis
+cncPipe.axis.SetRate(CNCPipe.Axes.AXIS_1, CNCPipe.Axis.Rate.SLOW_JOG_PROBE, slowJogRate);
+cncPipe.axis.SetRate(CNCPipe.Axes.AXIS_1, CNCPipe.Axis.Rate.FAST_JOG_MINUS_PROBE, fastMinusRate);
+cncPipe.axis.SetRate(CNCPipe.Axes.AXIS_1, CNCPipe.Axis.Rate.FAST_JOG_PLUS_PROBE, fastPlusRate);
+```
+
+### Control Panel and Interface Settings
+
+#### VCP (Virtual Control Panel) Configuration
+```csharp
+// Rapid override and jogging options
+cncPipe.parameter.GetMachineParameterValue(56, out double rapidOverrideParam); // ENABLE_RAPID_OVERRIDE_PARM
+bool rapidOverrideEnabled = GeneralUtils.IsBitSet((int)rapidOverrideParam, 0) && 
+                           GeneralUtils.IsBitSet((int)rapidOverrideParam, 1);
+bool rapidFeedLinkEnabled = GeneralUtils.IsBitSet((int)rapidOverrideParam, 2);
+
+// Jogging startup options
+cncPipe.parameter.GetMachineParameterValue(148, out double joggingOptions); // JOGGING_OPTIONS
+bool continuousJogOnStart = GeneralUtils.IsBitSet((int)joggingOptions, 0);
+bool fastJogOnStart = GeneralUtils.IsBitSet((int)joggingOptions, 1);
+
+// Console type setting (State API)
+cncPipe.state.SetConsoleType(CNCPipe.State.ConsoleTypes.VIRTUAL);           // VCP only
+cncPipe.state.SetConsoleType(CNCPipe.State.ConsoleTypes.JOGBOARD);          // Jog panel only
+cncPipe.state.SetConsoleType(CNCPipe.State.ConsoleTypes.JOGBOARD_WITH_VCP); // Both
+```
+
+#### Operator Control Panel Settings
+```csharp
+// USB panel knob multipliers
+cncPipe.parameter.SetMachineParameter(580, feedKnobMultiplier);   // EXT_USB_FEED_KNOB_MULTIPLIER
+cncPipe.parameter.SetMachineParameter(581, spindleKnobMultiplier); // EXT_USB_SPINDLE_KNOB_MULTIPLIER
+cncPipe.parameter.SetMachineParameter(582, rapidKnobMultiplier);   // EXT_USB_RAPID_KNOB_MULTIPLIER
+
+// Custom knob rates
+cncPipe.parameter.SetMachineParameter(583, feedCustomRate);     // EXT_USB_FEED_KNOB_CUSTOM_RATE
+cncPipe.parameter.SetMachineParameter(584, spindleCustomRate);  // EXT_USB_SPINDLE_KNOB_CUSTOM_RATE
+cncPipe.parameter.SetMachineParameter(585, rapidCustomRate);   // EXT_USB_RAPID_KNOB_CUSTOM_RATE
+```
+
+### ATC (Automatic Tool Changer) Configuration
+
+#### Basic ATC Settings
+```csharp
+// Tool changer type and features
+cncPipe.parameter.SetMachineParameter(6, toolChangerType);    // TOOL_CHANGER_INSTALLED_PARM
+cncPipe.parameter.SetMachineParameter(160, enhancedATCMode); // ENHANCED_ATC_PARM
+cncPipe.parameter.SetMachineParameter(161, maxBins);         // ATC_MAX_BINS_PARM
+cncPipe.parameter.SetMachineParameter(164, atcFeatures);     // ATC_FEATURE_PARM
+```
+
+### Auxiliary Functions
+
+#### Auxiliary Key Programming
+```csharp
+// Auxiliary key functions (Parameters 188-199)
+for (int auxKey = 1; auxKey <= 12; auxKey++)
+{
+    int paramNumber = 187 + auxKey; // AUX_KEY_FUNC_BASE_PARM + offset
+    cncPipe.parameter.SetMachineParameter(paramNumber, auxKeyFunction);
+}
+```
+
+#### Lube Pump Configuration
+```csharp
+// Lube pump settings
+cncPipe.parameter.SetMachineParameter(179, lubePumpOptions); // LUBE_PUMP_PARM
+```
+
+### Touch Plate and Tool Measurement
+
+#### Touch Plate Configuration
+```csharp
+// Touch plate dimensions and settings (typically stored in wizard settings)
+// These are used to calculate touch plate operations but may not directly
+// correspond to CNC12 parameters as they're wizard-specific configurations
+
+// Touch plate input state
+cncPipe.parameter.SetMachineParameter(11, touchPlateInputType); // Shares with probe input
+```
+
+#### Tool Touch-Off Settings
+```csharp
+// Tool offset measurement and reference methods
+// These settings control automatic tool measurement and offset calculation
+// Implementation depends on specific measurement device (touch plate, probe, etc.)
+```
+
+### System Preferences and Display Options
+
+#### CNC Control Preferences
+```csharp
+// Various display and control preferences
+cncPipe.parameter.SetMachineParameter(7, colorScheme);     // COLOR_SCHEME_PARM
+cncPipe.parameter.SetMachineParameter(9, languageOption); // LANGUAGE_PARM
+cncPipe.parameter.SetMachineParameter(113, hideMenus);    // HIDE_MENUS_PARM
+```
+
+### Hardware-Specific Settings
+
+#### MPG (Manual Pulse Generator) Configuration
+```csharp
+// Hardwired MPG axis assignments
+for (int mpgIndex = 0; mpgIndex < 6; mpgIndex++)
+{
+    int axisParam = 530 + mpgIndex;      // HARDWIRED_MPG_4_AXIS base
+    int encoderParam = 533 + (mpgIndex * 3); // MPG_4_ENCODER_INPUT base
+    
+    cncPipe.parameter.SetMachineParameter(axisParam, selectedAxis);
+    cncPipe.parameter.SetMachineParameter(encoderParam, encoderInput);
+}
+```
+
+#### Scale and Rotary Input Configuration
+```csharp
+// Scale input settings for measurement devices
+// Rotary axis configuration for 4th/5th axis setups
+// These involve complex parameter relationships specific to rotary operations
+```
+
+### Error Handling for Configuration Settings
+
+```csharp
+public bool SetConfigurationParameter(int paramNumber, double value, string settingName)
+{
+    try
+    {
+        CNCPipe.ReturnCode result = cncPipe.parameter.SetMachineParameter(paramNumber, value);
+        
+        if (result == CNCPipe.ReturnCode.SUCCESS)
+        {
+            Console.WriteLine($"{settingName} set successfully to {value}");
+            return true;
+        }
+        else if (result == CNCPipe.ReturnCode.STATUS_UNKNOWN)
+        {
+            Console.WriteLine($"Parameter {paramNumber} ({settingName}) is read-only or invalid");
+            return false;
+        }
+        else
+        {
+            Console.WriteLine($"Failed to set {settingName}: {result}");
+            return false;
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception setting {settingName}: {ex.Message}");
+        return false;
+    }
+}
+```
+
+### Configuration Validation and Dependencies
+
+Many configuration settings have interdependencies and validation requirements:
+
+1. **PWM frequency** is shared between spindle and laser configurations
+2. **Probe settings** affect both probing and touch plate operations  
+3. **Axis properties** must be coordinated with drive types and step frequencies
+4. **ATC settings** require compatible I/O assignments
+5. **MPG assignments** must not conflict with other encoder uses
+
+Always verify configuration changes don't conflict with existing settings and hardware capabilities.
+
+## I/O Board Detection and Configuration
+
+The CentroidAPI provides sophisticated I/O board detection capabilities that allow automatic discovery of available inputs and outputs across different Centroid system types.
+
+### System-Specific I/O Characteristics
+
+#### Acorn System I/O Layout
+- **Base I/O**: 8 inputs, 8 outputs (numbered 1-8)
+- **Expansion**: Ether1616 boards (16 inputs + 16 outputs each)
+- **Expansion Start**: I/O 17 for first expansion board
+- **Maximum Expansion**: Multiple Ether1616 boards supported
+
+#### AcornSix System I/O Layout  
+- **Base I/O**: 16 inputs, 16 outputs (numbered 1-16)
+- **Expansion**: PLCEXP1616 boards (16 inputs + 16 outputs each)
+- **Expansion Start**: I/O 65 for first expansion board
+- **Maximum Expansion**: Multiple PLCEXP1616 boards supported
+
+#### Hickory System I/O Layout
+- **Base I/O**: 32 inputs, 32 outputs (numbered 1-32)
+- **Expansion**: ECAT1616 boards (16 inputs + 16 outputs each)
+- **Expansion Start**: I/O 129 for first expansion board
+- **Maximum Expansion**: Multiple ECAT1616 boards supported
+
+### I/O Detection Implementation
+
+#### Acorn I/O Detection
+```csharp
+public static int[] GetAcornAvailableInputs(CNCPipe cncPipe)
+{
+    var availableInputs = new List<int>();
+    
+    // Acorn has 8 base inputs (inputs 1-8)
+    for (int i = 1; i <= 8; i++)
+    {
+        availableInputs.Add(i);
+    }
+    
+    // Check for Ether1616 expansion boards (inputs 17+)
+    cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+    
+    if (devices != null && devices.Count > 0)
+    {
+        int startIO = 17;  // Acorn expansion starts at I/O 17
+        for (int board = 0; board < devices.Count; board++)
+        {
+            for (int i = 0; i < 16; i++)  // Each Ether1616 provides 16 I/O
+            {
+                availableInputs.Add(startIO + (board * 16) + i);
+            }
+        }
+    }
+    
+    return availableInputs.ToArray();
+    
+    // Example results:
+    // No expansion boards: [1, 2, 3, 4, 5, 6, 7, 8]
+    // 1 Ether1616 board:   [1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, ..., 32]
+    // 2 Ether1616 boards:  [1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, ..., 32, 33, 34, ..., 48]
+}
+```
+
+#### AcornSix I/O Detection
+```csharp
+public static int[] GetAcornSixAvailableInputs(CNCPipe cncPipe)
+{
+    var availableInputs = new List<int>();
+    
+    // AcornSix has 16 base inputs (inputs 1-16)
+    for (int i = 1; i <= 16; i++)
+    {
+        availableInputs.Add(i);
+    }
+    
+    // Check for PLCEXP1616 expansion boards (inputs 65+)
+    cncPipe.system.GetPLCEXP1616NumberofDevices(out int numExpansions);
+    
+    if (numExpansions > 0)
+    {
+        int startIO = 65;  // AcornSix expansion starts at I/O 65
+        for (int board = 0; board < numExpansions; board++)
+        {
+            for (int i = 0; i < 16; i++)  // Each PLCEXP1616 provides 16 I/O
+            {
+                availableInputs.Add(startIO + (board * 16) + i);
+            }
+        }
+    }
+    
+    return availableInputs.ToArray();
+    
+    // Example results:
+    // No expansion boards: [1, 2, 3, 4, ..., 16]
+    // 1 PLCEXP1616 board:  [1, 2, 3, 4, ..., 16, 65, 66, 67, ..., 80]
+    // 2 PLCEXP1616 boards: [1, 2, 3, 4, ..., 16, 65, 66, 67, ..., 80, 81, 82, ..., 96]
+}
+```
+
+#### Hickory I/O Detection
+```csharp
+public static int[] GetHickoryAvailableInputs(CNCPipe cncPipe)
+{
+    var availableInputs = new List<int>();
+    
+    // Hickory has 32 base inputs (inputs 1-32)
+    for (int i = 1; i <= 32; i++)
+    {
+        availableInputs.Add(i);
+    }
+    
+    // Check for ECAT1616 expansion boards (inputs 129+)
+    cncPipe.system.GetECAT1616NumberOfDevices(out int numExpansions);
+    
+    if (numExpansions > 0)
+    {
+        int startIO = 129;  // Hickory expansion starts at I/O 129
+        for (int board = 0; board < numExpansions; board++)
+        {
+            for (int i = 0; i < 16; i++)  // Each ECAT1616 provides 16 I/O
+            {
+                availableInputs.Add(startIO + (board * 16) + i);
+            }
+        }
+    }
+    
+    return availableInputs.ToArray();
+    
+    // Example results:
+    // No expansion boards: [1, 2, 3, 4, ..., 32]
+    // 1 ECAT1616 board:    [1, 2, 3, 4, ..., 32, 129, 130, 131, ..., 144]
+    // 2 ECAT1616 boards:   [1, 2, 3, 4, ..., 32, 129, 130, 131, ..., 144, 145, 146, ..., 160]
+}
+```
+
+### Universal I/O Detection Implementation
+
+#### Complete System-Agnostic Implementation
+```csharp
+public static int[] GetAllAvailableInputs(CNCPipe cncPipe)
+{
+    var availableInputs = new List<int>();
+    
+    // Get system type to determine I/O layout
+    cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
+    
+    // Base I/O available on all systems (minimum 8 inputs)
+    int baseInputCount = 8;
+    int expansionStartIO = 17;
+    
+    // Determine system-specific configuration
+    bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
+    bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
+    bool isHickory = unlockVersion.ToString().Contains("HICKORY");
+    
+    if (isAcornSix)
+    {
+        baseInputCount = 16;
+        expansionStartIO = 65;
+    }
+    else if (isHickory)
+    {
+        baseInputCount = 32;
+        expansionStartIO = 129;
+    }
+    
+    // Add base inputs
+    for (int i = 1; i <= baseInputCount; i++)
+    {
+        availableInputs.Add(i);
+    }
+    
+    // Add expansion board inputs
+    int expansionCount = 0;
+    if (isAcorn)
+    {
+        cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+        expansionCount = devices?.Count ?? 0;
+    }
+    else if (isAcornSix)
+    {
+        cncPipe.system.GetPLCEXP1616NumberofDevices(out expansionCount);
+    }
+    else if (isHickory)
+    {
+        cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
+    }
+    
+    // Calculate expansion I/O numbers
+    if (expansionCount > 0)
+    {
+        for (int board = 0; board < expansionCount; board++)
+        {
+            for (int i = 0; i < 16; i++)  // All expansion boards provide 16 I/O each
+            {
+                availableInputs.Add(expansionStartIO + (board * 16) + i);
+            }
+        }
+    }
+    
+    return availableInputs.ToArray();
+}
+
+public static int[] GetAllAvailableOutputs(CNCPipe cncPipe)
+{
+    // Output numbering follows identical pattern to inputs
+    return GetAllAvailableInputs(cncPipe);
+}
+```
+
+### Board Information Data Structure
+
+#### Comprehensive Board Detection
+```csharp
+public class BoardInfo
+{
+    public string SystemType { get; set; }
+    public int BaseInputs { get; set; }
+    public int BaseOutputs { get; set; }
+    public int ExpansionInputs { get; set; }
+    public int ExpansionOutputs { get; set; }
+    public int Ether1616Count { get; set; }
+    public int PLCEXP1616Count { get; set; }
+    public int ECAT1616Count { get; set; }
+    
+    public int TotalInputs => BaseInputs + ExpansionInputs;
+    public int TotalOutputs => BaseOutputs + ExpansionOutputs;
+    
+    public override string ToString()
+    {
+        return $"{SystemType}: {TotalInputs} inputs, {TotalOutputs} outputs " +
+               $"(Base: {BaseInputs}/{BaseOutputs}, Expansion: {ExpansionInputs}/{ExpansionOutputs})";
+    }
+}
+
+public static BoardInfo GetBoardInfo(CNCPipe cncPipe)
+{
+    cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
+    
+    var boardInfo = new BoardInfo
+    {
+        SystemType = GetSystemTypeName(unlockVersion),
+        BaseInputs = 8,
+        BaseOutputs = 8
+    };
+    
+    bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
+    bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
+    bool isHickory = unlockVersion.ToString().Contains("HICKORY");
+    
+    if (isAcorn)
+    {
+        cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+        boardInfo.Ether1616Count = devices?.Count ?? 0;
+        boardInfo.ExpansionInputs = boardInfo.Ether1616Count * 16;
+        boardInfo.ExpansionOutputs = boardInfo.Ether1616Count * 16;
+    }
+    else if (isAcornSix)
+    {
+        boardInfo.BaseInputs = 16;
+        boardInfo.BaseOutputs = 16;
+        
+        cncPipe.system.GetPLCEXP1616NumberofDevices(out int numExpansions);
+        boardInfo.PLCEXP1616Count = numExpansions;
+        boardInfo.ExpansionInputs = numExpansions * 16;
+        boardInfo.ExpansionOutputs = numExpansions * 16;
+    }
+    else if (isHickory)
+    {
+        boardInfo.BaseInputs = 32;
+        boardInfo.BaseOutputs = 32;
+        
+        cncPipe.system.GetECAT1616NumberOfDevices(out int numExpansions);
+        boardInfo.ECAT1616Count = numExpansions;
+        boardInfo.ExpansionInputs = numExpansions * 16;
+        boardInfo.ExpansionOutputs = numExpansions * 16;
+    }
+    
+    return boardInfo;
+}
+
+private static string GetSystemTypeName(CNCPipe.Sys.UnlockVersions version)
+{
+    if (version.ToString().Contains("HICKORY")) return "Hickory";
+    if (version.ToString().Contains("ACORN_SIX")) return "AcornSix";
+    if (version.ToString().Contains("ACORN")) return "Acorn";
+    return "Unknown";
+}
+```
+
+### Key I/O Numbering Rules
+
+#### Base I/O Numbering
+- All systems start at I/O number 1
+- **Acorn**: 1-8 (8 total)
+- **AcornSix**: 1-16 (16 total)  
+- **Hickory**: 1-32 (32 total)
+
+#### Expansion Starting Points
+Each system has a specific starting point for expansion I/O:
+- **Acorn**: Expansion starts at 17
+- **AcornSix**: Expansion starts at 65
+- **Hickory**: Expansion starts at 129
+
+#### Expansion Board Capacity
+All expansion boards provide 16 I/O each:
+- **Ether1616**: 16 inputs + 16 outputs
+- **PLCEXP1616**: 16 inputs + 16 outputs
+- **ECAT1616**: 16 inputs + 16 outputs
+
+#### Sequential Board Numbering
+Multiple expansion boards are numbered sequentially:
+- **Board 0**: startIO + (0 * 16) = startIO to startIO + 15
+- **Board 1**: startIO + (1 * 16) = startIO + 16 to startIO + 31
+- **Board 2**: startIO + (2 * 16) = startIO + 32 to startIO + 47
+
+#### Input and Output Symmetry
+- Input and output numbering follows identical patterns
+- Each expansion board adds the same count to both inputs and outputs
+- Available inputs and outputs use the same numbering schemes
+
+### Practical I/O Detection Examples
+
+#### Complete System Detection Example
+```csharp
+// Initialize CNCPipe
+CNCPipe cncPipe = new CNCPipe();
+// ... connection setup ...
+
+// Get system information
+BoardInfo info = GetBoardInfo(cncPipe);
+Console.WriteLine($"System: {info}");
+
+// Get all available I/O
+int[] inputs = GetAllAvailableInputs(cncPipe);
+int[] outputs = GetAllAvailableOutputs(cncPipe);
+
+Console.WriteLine($"Available inputs: {string.Join(", ", inputs)}");
+Console.WriteLine($"Available outputs: {string.Join(", ", outputs)}");
+
+// Check specific I/O availability
+if (IsInputAvailable(cncPipe, 25))
+{
+    Console.WriteLine("Input 25 is available for use");
+}
+else
+{
+    Console.WriteLine("Input 25 is not available on this system");
+}
+```
+
+#### Real-World Configuration Examples
+
+**Acorn with 2 Ether1616 Boards**
+```
+Base I/O: [1, 2, 3, 4, 5, 6, 7, 8]
+Board 0:  [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+Board 1:  [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+Total:    56 inputs, 56 outputs
+```
+
+**AcornSix with 1 PLCEXP1616 Board**
+```
+Base I/O: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+Board 0:  [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80]
+Total:    32 inputs, 32 outputs
+```
+
+**Hickory with 1 ECAT1616 Board**
+```
+Base I/O: [1, 2, 3, ..., 32]
+Board 0:  [129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144]
+Total:    48 inputs, 48 outputs
+```
+
+### I/O Detection Notes and Considerations
+
+#### Ether1616 Device Information
+The `CNCPipe.Sys.Ether1616Device` class contains:
+- `DeviceNumber`: Device identifier
+- `IP`: IP address of the device
+
+The Centroid Wizard code shows a different calculation for Ether1616 starting I/O numbers:
+```csharp
+StartingIONumber = 32 + (Convert.ToInt32(device.DeviceNumber) * 16)
+```
+This suggests there may be variations in I/O numbering depending on implementation context.
+
+#### Error Handling
+System detection methods do not return error codes like parameter methods. They use void returns with out parameters. Always check for null device lists when working with Ether1616 devices.
+
+#### Performance
+I/O detection involves multiple API calls and should not be called frequently. Consider caching results when possible.
+
+## Best Practices for CentroidAPI Integration
+
+### Connection Management
+- Always check return codes before using output values
+- Implement proper error handling for communication failures
+- Use appropriate exception handling for parameter validation
+
+### Parameter Safety
+- Verify parameter numbers against CNC12 documentation
+- Check for STATUS_UNKNOWN return codes on write operations
+- Be aware that some parameters are read-only or conditional
+
+### Performance Considerations
+- Parameter reads/writes involve communication with CNC12
+- Cache frequently accessed values when appropriate
+- Avoid excessive polling of real-time values
+
+### System Compatibility
+- Always detect system type before using system-specific features
+- Use appropriate I/O numbering schemes for each system type
+- Test expansion board detection before relying on extended I/O
+
+## Typical CentroidAPI Integration Pattern
+
+```csharp
+public class CNCInterface
+{
+    private CNCPipe _cncPipe;
+    
+    public bool Initialize()
+    {
+        try
+        {
+            _cncPipe = new CNCPipe();
+            // Add your connection logic here
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"CNC initialization failed: {ex.Message}");
+            return false;
+        }
+    }
+    
+    public double GetParameter(int paramNum)
+    {
+        CNCPipe.ReturnCode result = _cncPipe.parameter.GetMachineParameterValue(paramNum, out double value);
+        
+        if (result != CNCPipe.ReturnCode.SUCCESS)
+        {
+            throw new Exception($"Parameter {paramNum} read failed: {result}");
+        }
+        
+        return value;
+    }
+    
+    public void SetParameter(int paramNum, double value)
+    {
+        CNCPipe.ReturnCode result = _cncPipe.parameter.SetMachineParameter(paramNum, value);
+        
+        if (result == CNCPipe.ReturnCode.STATUS_UNKNOWN)
+        {
+            throw new Exception($"Parameter {paramNum} is read-only or invalid");
+        }
+        else if (result != CNCPipe.ReturnCode.SUCCESS)
+        {
+            throw new Exception($"Parameter {paramNum} set failed: {result}");
+        }
+    }
+}
+```
+
+## CentroidAPI Dependencies and Requirements
+
+### Required References
+- CentroidAPI.dll (Centroid-provided assembly)
+- Appropriate .NET Framework version (typically .NET Framework 4.x)
+
+### System Requirements
+- Active CNC12 installation
+- Proper licensing for CentroidAPI usage
+- Compatible Centroid hardware (Acorn, AcornSix, Hickory systems)
+
+### Development Environment
+- Visual Studio or compatible IDE
+- Reference to CentroidAPI project or assembly
+- Access to CNC12 system for testing
+
+## CentroidAPI Troubleshooting
+
+### Common Issues
+
+1. **Parameter Access Failures**
+   - Check parameter number validity
+   - Verify CNC12 system is running
+   - Ensure proper API initialization
+
+2. **STATUS_UNKNOWN Return Codes**
+   - Parameter may be read-only
+   - Parameter may not apply to current machine configuration
+   - Check CNC12 parameter documentation
+
+3. **I/O Detection Issues**
+   - Verify expansion board connections
+   - Check system startup sequence
+   - Ensure proper board addressing
+
+4. **Connection Problems**
+   - Verify CNC12 service is running
+   - Check for proper API licensing
+   - Ensure compatible system versions
+
+### Debug Information
+```csharp
+// System diagnostic information
+cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
+Console.WriteLine($"System: {version}");
+
+// Test basic parameter access
+try
+{
+    CNCPipe.ReturnCode result = cncPipe.parameter.GetMachineParameterValue(0, out double testValue);
+    Console.WriteLine($"Parameter 0 access: {result}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Basic parameter test failed: {ex.Message}");
+}
+```
+
+---
+
+*This comprehensive documentation combines PLC file management, I/O definition handling, axis configuration, and CentroidAPI integration for complete Centroid CNC system setup and control.*

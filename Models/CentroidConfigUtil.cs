@@ -237,6 +237,41 @@ namespace HavenCNCServer.Models
             /// Enable second spindle
             /// </summary>
             public bool? SecondSpindleEnabled { get; set; }
+            
+            /// <summary>
+            /// Spindle deceleration time in seconds
+            /// </summary>
+            public double? DecelTime { get; set; }
+            
+            /// <summary>
+            /// Rigid tapping slow spindle speed
+            /// </summary>
+            public double? RigidTappingSlowSpeed { get; set; }
+            
+            /// <summary>
+            /// Rigid tapping slow spindle time
+            /// </summary>
+            public double? RigidTappingSlowTime { get; set; }
+            
+            /// <summary>
+            /// Threading and tapping acceleration/deceleration distance
+            /// </summary>
+            public double? ThreadingTappingAccelDecelDistance { get; set; }
+            
+            /// <summary>
+            /// SSV (Spindle Speed Variation) cycle time
+            /// </summary>
+            public double? SSVCycleTime { get; set; }
+            
+            /// <summary>
+            /// SSV (Spindle Speed Variation) amount percentage
+            /// </summary>
+            public double? SSVAmount { get; set; }
+            
+            /// <summary>
+            /// FRV (Feed Rate Variation) cycle time
+            /// </summary>
+            public double? FRVCycleTime { get; set; }
         }
 
         /// <summary>
@@ -314,6 +349,191 @@ namespace HavenCNCServer.Models
             /// Touch plate input type
             /// </summary>
             public int? TouchPlateInputType { get; set; }
+            
+            /// <summary>
+            /// Probe type configuration
+            /// </summary>
+            public int? ProbeType { get; set; }
+            
+            /// <summary>
+            /// Display probe warning
+            /// </summary>
+            public bool? DisplayProbeWarning { get; set; }
+            
+            /// <summary>
+            /// Probe protection/inhibit settings
+            /// </summary>
+            public int? ProbeInhibit { get; set; }
+        }
+
+        /// <summary>
+        /// Represents touch plate configuration system
+        /// </summary>
+        public class TouchPlateConfiguration
+        {
+            /// <summary>
+            /// Touch plate input number
+            /// </summary>
+            public int? InputNumber { get; set; }
+            
+            /// <summary>
+            /// Touch plate detection input
+            /// </summary>
+            public int? DetectInput { get; set; }
+            
+            /// <summary>
+            /// Touch plate input type (0=Normally Open, 1=Normally Closed)
+            /// </summary>
+            public int? InputType { get; set; }
+            
+            /// <summary>
+            /// Wall height dimension
+            /// </summary>
+            public double? WallHeight { get; set; }
+            
+            /// <summary>
+            /// Wall thickness dimension
+            /// </summary>
+            public double? WallThickness { get; set; }
+            
+            /// <summary>
+            /// Internal diameter
+            /// </summary>
+            public double? InternalDiameter { get; set; }
+            
+            /// <summary>
+            /// Maximum search distance
+            /// </summary>
+            public double? MaxDistance { get; set; }
+            
+            /// <summary>
+            /// Retract distance after touch
+            /// </summary>
+            public double? RetractDistance { get; set; }
+            
+            /// <summary>
+            /// Fast probing rate
+            /// </summary>
+            public double? FastRate { get; set; }
+            
+            /// <summary>
+            /// Slow probing rate
+            /// </summary>
+            public double? SlowRate { get; set; }
+            
+            /// <summary>
+            /// Inside touch mode enabled
+            /// </summary>
+            public bool? InsideTouch { get; set; }
+            
+            /// <summary>
+            /// Bore operations enabled
+            /// </summary>
+            public bool? BoreEnabled { get; set; }
+            
+            /// <summary>
+            /// Surface plate mode
+            /// </summary>
+            public bool? SurfacePlate { get; set; }
+        }
+
+        /// <summary>
+        /// Represents second spindle configuration
+        /// </summary>
+        public class SecondSpindleConfiguration
+        {
+            /// <summary>
+            /// Enable second spindle
+            /// </summary>
+            public bool? Enabled { get; set; }
+            
+            /// <summary>
+            /// Second spindle maximum speed
+            /// </summary>
+            public int? MaxSpeed { get; set; }
+            
+            /// <summary>
+            /// Second spindle minimum speed
+            /// </summary>
+            public int? MinSpeed { get; set; }
+            
+            /// <summary>
+            /// Second spindle encoder counts per revolution
+            /// </summary>
+            public int? EncoderCounts { get; set; }
+        }
+
+        /// <summary>
+        /// Represents global system configuration settings
+        /// </summary>
+        public class GlobalSystemConfiguration
+        {
+            /// <summary>
+            /// Global step frequency for all axes (steps per second)
+            /// Supported values: 100000, 200000, 240000, 300000, 400000
+            /// </summary>
+            public int? StepFrequency { get; set; }
+            
+            /// <summary>
+            /// Global drive fault delay for all axes (milliseconds)
+            /// </summary>
+            public int? DriveFaultDelay { get; set; }
+            
+            /// <summary>
+            /// Global axis signal inversion settings
+            /// </summary>
+            public int? AxisSignalInversion { get; set; }
+            
+            /// <summary>
+            /// Low resolution mode for plasma systems
+            /// </summary>
+            public bool? LowResolutionMode { get; set; }
+        }
+
+        /// <summary>
+        /// Represents system hardware detection and capabilities
+        /// </summary>
+        public class SystemHardwareInfo
+        {
+            /// <summary>
+            /// System type (Acorn, AcornSix, Hickory)
+            /// </summary>
+            public string? SystemType { get; set; }
+            
+            /// <summary>
+            /// Number of base I/O points
+            /// </summary>
+            public int BaseInputs { get; set; }
+            
+            /// <summary>
+            /// Number of base I/O points
+            /// </summary>
+            public int BaseOutputs { get; set; }
+            
+            /// <summary>
+            /// Number of expansion boards detected
+            /// </summary>
+            public int ExpansionBoards { get; set; }
+            
+            /// <summary>
+            /// Total available inputs
+            /// </summary>
+            public int TotalInputs { get; set; }
+            
+            /// <summary>
+            /// Total available outputs
+            /// </summary>
+            public int TotalOutputs { get; set; }
+            
+            /// <summary>
+            /// Available input numbers
+            /// </summary>
+            public List<int> AvailableInputs { get; set; } = new List<int>();
+            
+            /// <summary>
+            /// Available output numbers
+            /// </summary>
+            public List<int> AvailableOutputs { get; set; } = new List<int>();
         }
 
         /// <summary>
@@ -819,6 +1039,46 @@ namespace HavenCNCServer.Models
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
                 }
 
+                // Configure deceleration time
+                if (config.DecelTime.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
+                }
+
+                // Configure rigid tapping parameters
+                if (config.RigidTappingSlowSpeed.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, config.RigidTappingSlowSpeed.Value);
+                }
+
+                if (config.RigidTappingSlowTime.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, config.RigidTappingSlowTime.Value);
+                }
+
+                // Configure threading/tapping acceleration/deceleration distance
+                if (config.ThreadingTappingAccelDecelDistance.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
+                }
+
+                // Configure SSV parameters
+                if (config.SSVCycleTime.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SSVCycleTime.Value);
+                }
+
+                if (config.SSVAmount.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SSVAmount.Value);
+                }
+
+                // Configure FRV parameters
+                if (config.FRVCycleTime.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FRVCycleTime.Value);
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Configuring Spindle: {config.EncoderCounts?.ToString() ?? "not set"} counts, Max: {config.MaxSpeed?.ToString() ?? "not set"}, Min: {config.MinSpeed?.ToString() ?? "not set"}");
                 
                 return true;
@@ -987,6 +1247,25 @@ namespace HavenCNCServer.Models
                     CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_TYPE, config.TouchPlateInputType.Value);
                     parametersSet = true;
                 }
+                
+                // Enhanced probe configuration parameters
+                if (config.ProbeType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_TYPE, config.ProbeType.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.DisplayProbeWarning.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.DISPLAY_PROBE_WARNING_PARAM, config.DisplayProbeWarning.Value ? 1 : 0);
+                    parametersSet = true;
+                }
+                
+                if (config.ProbeInhibit.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INHIBIT_PARM, config.ProbeInhibit.Value);
+                    parametersSet = true;
+                }
 
                 if (parametersSet)
                 {
@@ -998,6 +1277,283 @@ namespace HavenCNCServer.Models
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        #endregion
+
+        #region Touch Plate Configuration Methods
+
+        /// <summary>
+        /// Configures touch plate parameters
+        /// </summary>
+        /// <param name="config">Touch plate configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureTouchPlate(TouchPlateConfiguration config)
+        {
+            try
+            {
+                bool parametersSet = false;
+                
+                // Set touch plate parameters using CNCUtils - only if provided
+                if (config.InputNumber.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT, config.InputNumber.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.DetectInput.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_DETECT, config.DetectInput.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.InputType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_TYPE_PARM, config.InputType.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.WallHeight.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_HEIGHT_PARM, config.WallHeight.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.WallThickness.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_THICKNESS_PARM, config.WallThickness.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.InternalDiameter.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INTERNAL_DIAMETER_PARM, config.InternalDiameter.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.MaxDistance.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_MAX_DISTANCE_PARM, config.MaxDistance.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.RetractDistance.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_RETRACT_DISTANCE_PARM, config.RetractDistance.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.FastRate.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_FAST_RATE_PARM, config.FastRate.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.SlowRate.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_SLOW_RATE_PARM, config.SlowRate.Value);
+                    parametersSet = true;
+                }
+
+                // Configure touch plate attributes bit field only if options are provided
+                if (config.InsideTouch.HasValue || config.BoreEnabled.HasValue || config.SurfacePlate.HasValue)
+                {
+                    int touchPlateAttributes = (int)CNCUtils.GetParameterValue(CentroidParameters.TOUCH_PLATE_ATTRIBUTES_PARM);
+                    
+                    if (config.InsideTouch.HasValue)
+                        touchPlateAttributes = CNCUtils.ModifyBit(touchPlateAttributes, 0, config.InsideTouch.Value);
+                    
+                    if (config.BoreEnabled.HasValue)
+                        touchPlateAttributes = CNCUtils.ModifyBit(touchPlateAttributes, 1, config.BoreEnabled.Value);
+                    
+                    if (config.SurfacePlate.HasValue)
+                        touchPlateAttributes = CNCUtils.ModifyBit(touchPlateAttributes, 2, config.SurfacePlate.Value);
+                    
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_ATTRIBUTES_PARM, touchPlateAttributes);
+                    parametersSet = true;
+                }
+
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Touch Plate: Fast Rate: {config.FastRate?.ToString() ?? "not set"}, Slow Rate: {config.SlowRate?.ToString() ?? "not set"}");
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Second Spindle Configuration Methods
+
+        /// <summary>
+        /// Configures second spindle parameters
+        /// </summary>
+        /// <param name="config">Second spindle configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureSecondSpindle(SecondSpindleConfiguration config)
+        {
+            try
+            {
+                bool parametersSet = false;
+                
+                // Set second spindle parameters using CNCUtils - only if provided
+                if (config.Enabled.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SECOND_SPINDLE_ENABLE, config.Enabled.Value ? 1 : 0);
+                    parametersSet = true;
+                }
+                
+                if (config.MaxSpeed.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SECOND_SPINDLE_MAX_SPEED, config.MaxSpeed.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.MinSpeed.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SECOND_SPINDLE_MIN_SPEED, config.MinSpeed.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.EncoderCounts.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SECOND_SPINDLE_ENCODER_COUNTS, config.EncoderCounts.Value);
+                    parametersSet = true;
+                }
+
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Second Spindle: Enabled: {config.Enabled?.ToString() ?? "not set"}, Max Speed: {config.MaxSpeed?.ToString() ?? "not set"}");
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Global System Configuration Methods
+
+        /// <summary>
+        /// Configures global system parameters
+        /// </summary>
+        /// <param name="config">Global system configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureGlobalSystem(GlobalSystemConfiguration config)
+        {
+            try
+            {
+                bool parametersSet = false;
+                
+                // Set global step frequency - only if provided
+                if (config.StepFrequency.HasValue)
+                {
+                    // Calculate parameter value from step frequency
+                    const int PulseStepFrequency = 1200000;
+                    double parameterValue = PulseStepFrequency / (double)config.StepFrequency.Value;
+                    CNCUtils.SetParameterValue(CentroidParameters.ACORN_STEPPER_PULSE_RATE_PARM, parameterValue);
+                    parametersSet = true;
+                }
+                
+                if (config.DriveFaultDelay.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PLC_CLEARPATH_OR_G540, config.DriveFaultDelay.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.AxisSignalInversion.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.ACORN_OUTPUT_INVERSION_PARM, config.AxisSignalInversion.Value);
+                    parametersSet = true;
+                }
+                
+                if (config.LowResolutionMode.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.AD2_LOW_RESOLUTION_PARM, config.LowResolutionMode.Value ? 1 : 0);
+                    parametersSet = true;
+                }
+
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Global System: Step Frequency: {config.StepFrequency?.ToString() ?? "not set"}, Drive Fault Delay: {config.DriveFaultDelay?.ToString() ?? "not set"}");
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region System Hardware Detection Methods
+
+        /// <summary>
+        /// Detects system hardware capabilities and I/O configuration
+        /// </summary>
+        /// <returns>System hardware information</returns>
+        public static SystemHardwareInfo DetectSystemHardware()
+        {
+            try
+            {
+                var cncPipe = new CNCPipe();
+                
+                // Wait for CNCPipe to be constructed
+                while (!cncPipe.IsConstructed())
+                {
+                    System.Threading.Thread.Sleep(10);
+                }
+
+                var info = new SystemHardwareInfo();
+                
+                // Detect system type
+                // Note: This would require access to system detection methods
+                // For now, we'll set defaults and this can be enhanced when the API is available
+                info.SystemType = "Unknown";
+                info.BaseInputs = 8;
+                info.BaseOutputs = 8;
+                info.ExpansionBoards = 0;
+                info.TotalInputs = info.BaseInputs;
+                info.TotalOutputs = info.BaseOutputs;
+                
+                // Populate available I/O lists
+                for (int i = 1; i <= info.TotalInputs; i++)
+                {
+                    info.AvailableInputs.Add(i);
+                }
+                
+                for (int i = 1; i <= info.TotalOutputs; i++)
+                {
+                    info.AvailableOutputs.Add(i);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Detected System: {info.SystemType}, I/O: {info.TotalInputs} inputs, {info.TotalOutputs} outputs");
+                
+                return info;
+            }
+            catch (Exception)
+            {
+                // Return minimal system info on error
+                return new SystemHardwareInfo
+                {
+                    SystemType = "Error",
+                    BaseInputs = 8,
+                    BaseOutputs = 8,
+                    TotalInputs = 8,
+                    TotalOutputs = 8
+                };
             }
         }
 
@@ -1025,15 +1581,50 @@ namespace HavenCNCServer.Models
             List<PWMConfiguration>? pwmOutputs = null,
             ATCConfiguration? atc = null)
         {
+            return ConfigureCompleteMachine(inputs, outputs, axes, spindle, probe, pwmOutputs, atc, null, null, null);
+        }
+
+        /// <summary>
+        /// Configures a complete machine setup with all systems including enhanced features
+        /// </summary>
+        /// <param name="inputs">Input I/O functions</param>
+        /// <param name="outputs">Output I/O functions</param>
+        /// <param name="axes">Axis configurations</param>
+        /// <param name="spindle">Spindle configuration</param>
+        /// <param name="probe">Probe configuration (optional)</param>
+        /// <param name="pwmOutputs">PWM output configurations (optional)</param>
+        /// <param name="atc">ATC configuration (optional)</param>
+        /// <param name="touchPlate">Touch plate configuration (optional)</param>
+        /// <param name="secondSpindle">Second spindle configuration (optional)</param>
+        /// <param name="globalSystem">Global system configuration (optional)</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureCompleteMachine(
+            List<IOFunction> inputs,
+            List<IOFunction> outputs,
+            List<AxisConfiguration> axes,
+            SpindleConfiguration spindle,
+            ProbeConfiguration? probe = null,
+            List<PWMConfiguration>? pwmOutputs = null,
+            ATCConfiguration? atc = null,
+            TouchPlateConfiguration? touchPlate = null,
+            SecondSpindleConfiguration? secondSpindle = null,
+            GlobalSystemConfiguration? globalSystem = null)
+        {
             try
             {
-                // Step 1: Configure I/O in PLC file
+                // Step 1: Configure global system settings first if provided
+                if (globalSystem != null && !ConfigureGlobalSystem(globalSystem))
+                {
+                    return false;
+                }
+
+                // Step 2: Configure I/O in PLC file
                 if (!ConfigureInputsOutputs(inputs, outputs))
                 {
                     return false;
                 }
 
-                // Step 2: Configure all axes
+                // Step 3: Configure all axes
                 foreach (var axis in axes)
                 {
                     if (!ConfigureAxis(axis))
@@ -1042,19 +1633,31 @@ namespace HavenCNCServer.Models
                     }
                 }
 
-                // Step 3: Configure spindle
+                // Step 4: Configure spindle
                 if (!ConfigureSpindle(spindle))
                 {
                     return false;
                 }
 
-                // Step 4: Configure probe if provided
+                // Step 5: Configure second spindle if provided
+                if (secondSpindle != null && !ConfigureSecondSpindle(secondSpindle))
+                {
+                    return false;
+                }
+
+                // Step 6: Configure probe if provided
                 if (probe != null && !ConfigureProbe(probe))
                 {
                     return false;
                 }
 
-                // Step 5: Configure PWM outputs if provided
+                // Step 7: Configure touch plate if provided
+                if (touchPlate != null && !ConfigureTouchPlate(touchPlate))
+                {
+                    return false;
+                }
+
+                // Step 8: Configure PWM outputs if provided
                 if (pwmOutputs != null)
                 {
                     foreach (var pwm in pwmOutputs)
@@ -1066,7 +1669,7 @@ namespace HavenCNCServer.Models
                     }
                 }
 
-                // Step 6: Configure ATC if provided
+                // Step 9: Configure ATC if provided
                 if (atc != null && !ConfigureATC(atc))
                 {
                     return false;

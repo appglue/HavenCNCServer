@@ -658,6 +658,382 @@
         }
       }
     },
+    "/api/CNCConfiguration/ConfigureTouchPlate": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Configure touch plate system",
+        "requestBody": {
+          "description": "Touch plate configuration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TouchPlateConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TouchPlateConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TouchPlateConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/ConfigureSecondSpindle": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Configure second spindle",
+        "requestBody": {
+          "description": "Second spindle configuration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecondSpindleConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecondSpindleConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecondSpindleConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/ConfigureGlobalSystem": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Configure global system settings",
+        "requestBody": {
+          "description": "Global system configuration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalSystemConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalSystemConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalSystemConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/GetStepFrequency": {
+      "get": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Get current step frequency",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/SetStepFrequency": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Set step frequency",
+        "requestBody": {
+          "description": "Step frequency request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepFrequencyRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepFrequencyRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepFrequencyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/GetSystemHardwareInfo": {
+      "get": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Get system hardware information",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/GetParameter/{parameter}": {
+      "get": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Get individual parameter value",
+        "parameters": [
+          {
+            "name": "parameter",
+            "in": "path",
+            "description": "Parameter identifier",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/SetParameter": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Set individual parameter value",
+        "requestBody": {
+          "description": "Parameter set request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParameterSetRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParameterSetRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParameterSetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/GetAvailableParameters": {
+      "get": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Get all available parameters",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
     "/api/CNCFeatures/ChangeToTool/{toolNumber}": {
       "post": {
         "tags": [
@@ -2778,6 +3154,36 @@
         "additionalProperties": false,
         "description": "Request model for configuration data operations"
       },
+      "GlobalSystemConfiguration": {
+        "type": "object",
+        "properties": {
+          "stepFrequency": {
+            "type": "integer",
+            "description": "Global step frequency for all axes (steps per second)\r\nSupported values: 100000, 200000, 240000, 300000, 400000",
+            "format": "int32",
+            "nullable": true
+          },
+          "driveFaultDelay": {
+            "type": "integer",
+            "description": "Global drive fault delay for all axes (milliseconds)",
+            "format": "int32",
+            "nullable": true
+          },
+          "axisSignalInversion": {
+            "type": "integer",
+            "description": "Global axis signal inversion settings",
+            "format": "int32",
+            "nullable": true
+          },
+          "lowResolutionMode": {
+            "type": "boolean",
+            "description": "Low resolution mode for plasma systems",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents global system configuration settings"
+      },
       "IOConfiguration": {
         "type": "object",
         "properties": {
@@ -3044,6 +3450,23 @@
         "additionalProperties": false,
         "description": "Represents PWM output configuration"
       },
+      "ParameterSetRequest": {
+        "type": "object",
+        "properties": {
+          "parameter": {
+            "type": "integer",
+            "description": "Parameter number",
+            "format": "int32"
+          },
+          "value": {
+            "type": "number",
+            "description": "Parameter value",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for setting individual parameters"
+      },
       "ProbeConfiguration": {
         "type": "object",
         "properties": {
@@ -3082,6 +3505,23 @@
             "description": "Touch plate input type",
             "format": "int32",
             "nullable": true
+          },
+          "probeType": {
+            "type": "integer",
+            "description": "Probe type configuration",
+            "format": "int32",
+            "nullable": true
+          },
+          "displayProbeWarning": {
+            "type": "boolean",
+            "description": "Display probe warning",
+            "nullable": true
+          },
+          "probeInhibit": {
+            "type": "integer",
+            "description": "Probe protection/inhibit settings",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -3113,6 +3553,36 @@
           }
         },
         "additionalProperties": { }
+      },
+      "SecondSpindleConfiguration": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable second spindle",
+            "nullable": true
+          },
+          "maxSpeed": {
+            "type": "integer",
+            "description": "Second spindle maximum speed",
+            "format": "int32",
+            "nullable": true
+          },
+          "minSpeed": {
+            "type": "integer",
+            "description": "Second spindle minimum speed",
+            "format": "int32",
+            "nullable": true
+          },
+          "encoderCounts": {
+            "type": "integer",
+            "description": "Second spindle encoder counts per revolution",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents second spindle configuration"
       },
       "SetOutputRequest": {
         "type": "object",
@@ -3212,10 +3682,146 @@
             "type": "boolean",
             "description": "Enable second spindle",
             "nullable": true
+          },
+          "decelTime": {
+            "type": "number",
+            "description": "Spindle deceleration time in seconds",
+            "format": "double",
+            "nullable": true
+          },
+          "rigidTappingSlowSpeed": {
+            "type": "number",
+            "description": "Rigid tapping slow spindle speed",
+            "format": "double",
+            "nullable": true
+          },
+          "rigidTappingSlowTime": {
+            "type": "number",
+            "description": "Rigid tapping slow spindle time",
+            "format": "double",
+            "nullable": true
+          },
+          "threadingTappingAccelDecelDistance": {
+            "type": "number",
+            "description": "Threading and tapping acceleration/deceleration distance",
+            "format": "double",
+            "nullable": true
+          },
+          "ssvCycleTime": {
+            "type": "number",
+            "description": "SSV (Spindle Speed Variation) cycle time",
+            "format": "double",
+            "nullable": true
+          },
+          "ssvAmount": {
+            "type": "number",
+            "description": "SSV (Spindle Speed Variation) amount percentage",
+            "format": "double",
+            "nullable": true
+          },
+          "frvCycleTime": {
+            "type": "number",
+            "description": "FRV (Feed Rate Variation) cycle time",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false,
         "description": "Represents spindle configuration parameters"
+      },
+      "StepFrequencyRequest": {
+        "type": "object",
+        "properties": {
+          "frequency": {
+            "type": "integer",
+            "description": "Step frequency in Hz (100,000 - 400,000)",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for setting step frequency"
+      },
+      "TouchPlateConfiguration": {
+        "type": "object",
+        "properties": {
+          "inputNumber": {
+            "type": "integer",
+            "description": "Touch plate input number",
+            "format": "int32",
+            "nullable": true
+          },
+          "detectInput": {
+            "type": "integer",
+            "description": "Touch plate detection input",
+            "format": "int32",
+            "nullable": true
+          },
+          "inputType": {
+            "type": "integer",
+            "description": "Touch plate input type (0=Normally Open, 1=Normally Closed)",
+            "format": "int32",
+            "nullable": true
+          },
+          "wallHeight": {
+            "type": "number",
+            "description": "Wall height dimension",
+            "format": "double",
+            "nullable": true
+          },
+          "wallThickness": {
+            "type": "number",
+            "description": "Wall thickness dimension",
+            "format": "double",
+            "nullable": true
+          },
+          "internalDiameter": {
+            "type": "number",
+            "description": "Internal diameter",
+            "format": "double",
+            "nullable": true
+          },
+          "maxDistance": {
+            "type": "number",
+            "description": "Maximum search distance",
+            "format": "double",
+            "nullable": true
+          },
+          "retractDistance": {
+            "type": "number",
+            "description": "Retract distance after touch",
+            "format": "double",
+            "nullable": true
+          },
+          "fastRate": {
+            "type": "number",
+            "description": "Fast probing rate",
+            "format": "double",
+            "nullable": true
+          },
+          "slowRate": {
+            "type": "number",
+            "description": "Slow probing rate",
+            "format": "double",
+            "nullable": true
+          },
+          "insideTouch": {
+            "type": "boolean",
+            "description": "Inside touch mode enabled",
+            "nullable": true
+          },
+          "boreEnabled": {
+            "type": "boolean",
+            "description": "Bore operations enabled",
+            "nullable": true
+          },
+          "surfacePlate": {
+            "type": "boolean",
+            "description": "Surface plate mode",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents touch plate configuration system"
       }
     }
   }

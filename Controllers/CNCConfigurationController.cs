@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using HavenCNCServer.Models;
+using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Controllers
 {
@@ -687,5 +689,393 @@ namespace HavenCNCServer.Controllers
         }
 
         #endregion
+
+        #region New Configuration Endpoints
+
+        /// <summary>
+        /// Configure touch plate system
+        /// </summary>
+        /// <param name="config">Touch plate configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureTouchPlate")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult ConfigureTouchPlate([FromBody] CentroidConfigUtil.TouchPlateConfiguration config)
+        {
+            try
+            {
+                if (config == null)
+                {
+                    return BadRequest(new { message = "Touch plate configuration is required" });
+                }
+
+                bool success = CentroidConfigUtil.ConfigureTouchPlate(config);
+                
+                if (success)
+                {
+                    return Ok(new { 
+                        message = "Touch plate configured successfully",
+                        config = config
+                    });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to configure touch plate" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to configure touch plate: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure second spindle
+        /// </summary>
+        /// <param name="config">Second spindle configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureSecondSpindle")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult ConfigureSecondSpindle([FromBody] CentroidConfigUtil.SecondSpindleConfiguration config)
+        {
+            try
+            {
+                if (config == null)
+                {
+                    return BadRequest(new { message = "Second spindle configuration is required" });
+                }
+
+                bool success = CentroidConfigUtil.ConfigureSecondSpindle(config);
+                
+                if (success)
+                {
+                    return Ok(new { 
+                        message = "Second spindle configured successfully",
+                        config = config
+                    });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to configure second spindle" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to configure second spindle: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Configure global system settings
+        /// </summary>
+        /// <param name="config">Global system configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureGlobalSystem")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult ConfigureGlobalSystem([FromBody] CentroidConfigUtil.GlobalSystemConfiguration config)
+        {
+            try
+            {
+                if (config == null)
+                {
+                    return BadRequest(new { message = "Global system configuration is required" });
+                }
+
+                bool success = CentroidConfigUtil.ConfigureGlobalSystem(config);
+                
+                if (success)
+                {
+                    return Ok(new { 
+                        message = "Global system configured successfully",
+                        config = config
+                    });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to configure global system" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to configure global system: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get current step frequency
+        /// </summary>
+        /// <returns>Current step frequency value</returns>
+        [HttpGet("GetStepFrequency")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(500)]
+        public IActionResult GetStepFrequency()
+        {
+            try
+            {
+                int frequency = CNCUtils.GetStepFrequency();
+                return Ok(new { 
+                    stepFrequency = frequency,
+                    message = $"Current step frequency: {frequency} Hz"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get step frequency: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Set step frequency
+        /// </summary>
+        /// <param name="request">Step frequency request</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("SetStepFrequency")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult SetStepFrequency([FromBody] StepFrequencyRequest request)
+        {
+            try
+            {
+                if (request?.Frequency == null)
+                {
+                    return BadRequest(new { message = "Step frequency is required" });
+                }
+
+                // Validate frequency range (100kHz to 400kHz)
+                if (request.Frequency < 100000 || request.Frequency > 400000)
+                {
+                    return BadRequest(new { 
+                        message = "Step frequency must be between 100,000 and 400,000 Hz",
+                        providedFrequency = request.Frequency,
+                        validRange = "100,000 - 400,000 Hz"
+                    });
+                }
+
+                CNCUtils.SetStepFrequency(request.Frequency);
+                
+                return Ok(new { 
+                    message = "Step frequency set successfully",
+                    stepFrequency = request.Frequency
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to set step frequency: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get system hardware information
+        /// </summary>
+        /// <returns>Hardware information</returns>
+        [HttpGet("GetSystemHardwareInfo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(500)]
+        public IActionResult GetSystemHardwareInfo()
+        {
+            try
+            {
+                var hardwareInfo = new CentroidConfigUtil.SystemHardwareInfo
+                {
+                    AvailableInputs = CNCUtils.GetAvailableInputPorts()?.ToList() ?? new List<int>(),
+                    AvailableOutputs = CNCUtils.GetAvailableOutputPorts()?.ToList() ?? new List<int>(),
+                    TotalInputs = CNCUtils.GetAvailableInputPorts()?.Length ?? 0,
+                    TotalOutputs = CNCUtils.GetAvailableOutputPorts()?.Length ?? 0
+                };
+
+                return Ok(new { 
+                    message = "Hardware information retrieved successfully",
+                    hardwareInfo = hardwareInfo
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get system hardware info: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get individual parameter value
+        /// </summary>
+        /// <param name="parameter">Parameter identifier</param>
+        /// <returns>Parameter value</returns>
+        [HttpGet("GetParameter/{parameter}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult GetParameter(int parameter)
+        {
+            try
+            {
+                if (!Enum.IsDefined(typeof(CentroidParameters), parameter))
+                {
+                    return BadRequest(new { 
+                        message = "Invalid parameter number",
+                        parameter = parameter
+                    });
+                }
+
+                var centroidParam = (CentroidParameters)parameter;
+                double value = CNCUtils.GetParameterValue(centroidParam);
+                
+                return Ok(new { 
+                    parameter = parameter,
+                    parameterName = centroidParam.ToString(),
+                    value = value,
+                    message = $"Parameter {parameter} ({centroidParam}) = {value}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get parameter {parameter}: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Set individual parameter value
+        /// </summary>
+        /// <param name="request">Parameter set request</param>
+        /// <returns>Set result</returns>
+        [HttpPost("SetParameter")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult SetParameter([FromBody] ParameterSetRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return BadRequest(new { message = "Parameter request is required" });
+                }
+
+                if (!Enum.IsDefined(typeof(CentroidParameters), request.Parameter))
+                {
+                    return BadRequest(new { 
+                        message = "Invalid parameter number",
+                        parameter = request.Parameter
+                    });
+                }
+
+                var centroidParam = (CentroidParameters)request.Parameter;
+                CNCUtils.SetParameterValue(centroidParam, request.Value);
+                
+                return Ok(new { 
+                    parameter = request.Parameter,
+                    parameterName = centroidParam.ToString(),
+                    value = request.Value,
+                    message = $"Parameter {request.Parameter} ({centroidParam}) set to {request.Value}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to set parameter {request?.Parameter}: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get all available parameters
+        /// </summary>
+        /// <returns>List of available parameters</returns>
+        [HttpGet("GetAvailableParameters")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(500)]
+        public IActionResult GetAvailableParameters()
+        {
+            try
+            {
+                var parameters = Enum.GetValues<CentroidParameters>()
+                    .Select(p => new 
+                    { 
+                        number = (int)p,
+                        name = p.ToString(),
+                        description = GetParameterDescription(p)
+                    })
+                    .OrderBy(p => p.number)
+                    .ToList();
+
+                return Ok(new { 
+                    message = "Available parameters retrieved successfully",
+                    parameterCount = parameters.Count,
+                    parameters = parameters
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    message = $"Failed to get available parameters: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
+        /// Helper method to get parameter description from XML documentation
+        /// </summary>
+        private string GetParameterDescription(CentroidParameters parameter)
+        {
+            // This could be enhanced to read XML documentation at runtime
+            // For now, return a basic description
+            return parameter switch
+            {
+                CentroidParameters.SPINDLE_COUNTS_REV_PARM => "Spindle encoder counts per revolution",
+                CentroidParameters.SPINDLE_AXIS_PARM => "Spindle axis assignment",
+                CentroidParameters.RIGID_TAPPING_PARM => "Rigid tapping enable",
+                CentroidParameters.SPINDLE_DECEL_TIME_PARM => "Spindle deceleration time",
+                CentroidParameters.LOW_GEAR_RATIO_PARM => "Low gear ratio",
+                CentroidParameters.HIGH_GEAR_RATIO_PARM => "High gear ratio",
+                _ => "CNC parameter"
+            };
+        }
+
+        #endregion
     }
+}
+
+/// <summary>
+/// Request model for setting step frequency
+/// </summary>
+public class StepFrequencyRequest
+{
+    /// <summary>
+    /// Step frequency in Hz (100,000 - 400,000)
+    /// </summary>
+    public int Frequency { get; set; }
+}
+
+/// <summary>
+/// Request model for setting individual parameters
+/// </summary>
+public class ParameterSetRequest
+{
+    /// <summary>
+    /// Parameter number
+    /// </summary>
+    public int Parameter { get; set; }
+
+    /// <summary>
+    /// Parameter value
+    /// </summary>
+    public double Value { get; set; }
 }
