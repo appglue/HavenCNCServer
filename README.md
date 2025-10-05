@@ -1,84 +1,43 @@
-# HavenCNCServer
+# HavenCNCServer Documentation and API
 
-A C# Windows Forms application that hosts an ASP.NET Core Web API internally for CNC server management.
+This directory contains documentation and API wrappers for the HavenCNCServer project.
 
-## Features
-- **WinForms Desktop UI**: Native Windows interface for server management
-- **Self-Hosted Web API**: REST services hosted internally within the WinForms app
-- **Automatic Startup**: API services start automatically when the application launches
-- **Live Monitoring**: Real-time server logs and status monitoring in the desktop UI
-- **Swagger Integration**: Built-in API documentation accessible via web browser
-- **Auto-Generated OpenAPI**: Automatically generates `openapi.json` on startup if it doesn't exist
-- **Manual OpenAPI Generation**: "Generate OpenAPI" button to regenerate the specification file
-- **Embedded React App**: Chromium-based WebView2 control to display your React frontend at localhost:3000
-- **Maximized Window**: Application starts maximized for optimal viewing experience
-- **CORS Enabled**: Ready for React frontend integration
+## Files Overview
 
-## Requirements
-- .NET 8.0 or later
-- Windows operating system
+### API Classes (/CentriodAPI/)
+- CNCUtils_Final.cs - Clean CNC12 API wrapper with no dependencies
+  - Replaces GeneralUtils from Centroid Wizard project
+  - Provides parameter access, workpiece reference points, and bit manipulation
+  - Requires only CentroidAPI reference
 
-## Getting Started
+### Documentation (/Documentation/)
+- CNCUtils_Integration_Guide.md - Setup and usage guide for CNCUtils
+- PLC_File_Format_Guide.md - Complete PLC programming guide (updated for CNCUtils)
+- PLC_IO_Writing_Documentation.md - PLC I/O configuration guide (updated for CNCUtils)
+- GeneralUtils_API_Documentation.md - Original API reference for comparison
 
-### Build and Run
-```bash
-dotnet build
-dotnet run
-```
+## Quick Start
 
-### Application Features
-When you run the application:
-1. **Desktop Interface Opens**: A maximized WinForms window provides server management
-2. **API Auto-Starts**: Web API services automatically start hosting on `http://localhost:5000`
-3. **Auto-Generate OpenAPI**: If `openapi.json` doesn't exist, it's automatically generated on startup
-4. **Live Status**: Real-time server status and logs displayed in the UI
-5. **Browser Integration**: Click "Open Swagger UI" to access API documentation
-6. **React App Integration**: Click "Open React App" to display your React frontend in an embedded Chromium browser pointing to `http://localhost:3000`
-7. **Manual OpenAPI Generation**: Click "Generate OpenAPI" to manually regenerate the specification file
+1. Initialize CNCUtils:
+   using HavenCNCServer.CentriodAPI;
+   CNCUtils.Initialize(yourCentroidApiInstance);
 
-### API Endpoints
-The hosted API provides these REST endpoints:
-- `GET /api/person/GetAllPersons` - Get all persons
-- `GET /api/person/GetPerson/{id}` - Get person by ID
-- `POST /api/person/SavePerson` - Save/create a person
+2. Use in PLC code:
+   double value = CNCUtils.GetParameterValue(CNC12Parameters.SPINDLE_COUNTS_REV_PARM);
+   CNCUtils.SetWorkpieceReferencePoint(ReferencePoints.G30, 1, newXPos);
 
-### Access Points
-- **Desktop UI**: Native Windows Forms interface
-- **API Base URL**: `http://localhost:5000`
-- **Swagger Documentation**: `http://localhost:5000/swagger`
-- **OpenAPI Spec**: `http://localhost:5000/swagger/v1/swagger.json`
+3. Read the guides:
+   - Start with CNCUtils_Integration_Guide.md
+   - Reference PLC_File_Format_Guide.md for PLC programming
+   - Use PLC_IO_Writing_Documentation.md for I/O configuration
 
-### Generate OpenAPI Specification
-The OpenAPI specification is automatically generated on startup if the `openapi.json` file doesn't exist.
+## Migration from GeneralUtils
 
-**Manual Generation:**
-While the application is running, you can regenerate the OpenAPI specification by:
-1. Clicking the "Generate OpenAPI" button in the application
-2. Or downloading directly:
-```bash
-curl -o openapi.json http://localhost:5000/swagger/v1/swagger.json
-```
+All documentation has been updated to use CNCUtils instead of GeneralUtils:
+- 124 method calls updated across documentation
+- Zero external dependencies
+- Same API surface as GeneralUtils
+- Real CNC12 parameter values included
 
-Or using PowerShell:
-```powershell
-Invoke-WebRequest -Uri "http://localhost:5000/swagger/v1/swagger.json" -OutFile "openapi.json"
-```
-
-The generated file will be saved to:
-- `openapi.json` (project root)
-- `bin/Debug/net8.0-windows/openapi.json` (build output)
-
-## Architecture
-This hybrid application combines:
-- **WinForms Frontend**: Desktop interface for local management
-- **ASP.NET Core Web API**: Self-hosted REST services for remote/web access
-- **Shared Business Logic**: Controllers and models used by both interfaces
-- **Integrated Logging**: Server logs displayed in both console and desktop UI
-
-## Project Structure
-- `Program.cs` - WinForms application entry point
-- `MainForm.cs/.Designer.cs` - Main desktop interface with API hosting logic
-- `ApiStartup.cs` - ASP.NET Core Web API configuration
-- `Controllers/` - API controllers with REST endpoints
-- `Models/` - Data models/DTOs
-- `WinFormsLogger.cs` - Custom logger for desktop UI integration
+Generated on: 2025-10-04 13:26:37
+From: Centroid Wizard project
