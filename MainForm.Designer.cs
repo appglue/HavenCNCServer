@@ -38,6 +38,7 @@ namespace HavenCNCServer
             this.btnOpenReactApp = new System.Windows.Forms.Button();
             this.btnGenerateOpenApi = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
+            this.btnGCodeTest = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
@@ -83,7 +84,7 @@ namespace HavenCNCServer
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(760, 120);
+            this.txtLog.Size = new System.Drawing.Size(880, 120);
             this.txtLog.TabIndex = 3;
             // 
             // lblLog
@@ -135,12 +136,22 @@ namespace HavenCNCServer
             this.btnGenerateOpenApi.UseVisualStyleBackColor = true;
             this.btnGenerateOpenApi.Click += new System.EventHandler(this.btnGenerateOpenApi_Click);
             // 
+            // btnGCodeTest
+            // 
+            this.btnGCodeTest.Location = new System.Drawing.Point(670, 70);
+            this.btnGCodeTest.Name = "btnGCodeTest";
+            this.btnGCodeTest.Size = new System.Drawing.Size(100, 30);
+            this.btnGCodeTest.TabIndex = 9;
+            this.btnGCodeTest.Text = "G-Code Test";
+            this.btnGCodeTest.UseVisualStyleBackColor = true;
+            this.btnGCodeTest.Click += new System.EventHandler(this.btnGCodeTest_Click);
+            // 
             // btnTest
             // 
-            this.btnTest.Location = new System.Drawing.Point(670, 70);
+            this.btnTest.Location = new System.Drawing.Point(790, 70);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(100, 30);
-            this.btnTest.TabIndex = 11;
+            this.btnTest.TabIndex = 10;
             this.btnTest.Text = "Test";
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
@@ -171,19 +182,20 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnStopServer);
             this.pnlControls.Controls.Add(this.btnOpenReactApp);
             this.pnlControls.Controls.Add(this.btnGenerateOpenApi);
+            this.pnlControls.Controls.Add(this.btnGCodeTest);
             this.pnlControls.Controls.Add(this.btnTest);
             this.pnlControls.Controls.Add(this.lblLog);
             this.pnlControls.Controls.Add(this.txtLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(784, 274);
+            this.pnlControls.Size = new System.Drawing.Size(904, 274);
             this.pnlControls.TabIndex = 10;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 692);
+            this.ClientSize = new System.Drawing.Size(904, 692);
             this.Controls.Add(this.pnlControls);
             this.Controls.Add(this.webView);
             this.Name = "MainForm";
@@ -208,6 +220,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnOpenReactApp;
         private System.Windows.Forms.Button btnGenerateOpenApi;
         private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.Button btnGCodeTest;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
     }

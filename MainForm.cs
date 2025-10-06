@@ -374,6 +374,27 @@ namespace HavenCNCServer
                 }
         }
 
+        private void btnGCodeTest_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogMessage("Opening G-Code Test Dialog...");
+                
+                using (var gCodeDialog = new GCodeTestDialog(this))
+                {
+                    gCodeDialog.ShowDialog(this);
+                }
+                
+                LogMessage("G-Code Test Dialog closed.");
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"Error opening G-Code Test Dialog: {ex.Message}";
+                LogMessage(errorMessage);
+                MessageBox.Show(errorMessage, "Dialog Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         // Uncomment and modify this method when you're ready to test Centroid API
         /*
         private void TestCentroidAPI()

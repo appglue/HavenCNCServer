@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Code API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button.success {
+            background-color: #28a745;
+        }
+        .button.success:hover {
+            background-color: #1e7e34;
+        }
+        .button.warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        .button.warning:hover {
+            background-color: #e0a800;
+        }
+        .button.danger {
+            background-color: #dc3545;
+        }
+        .button.danger:hover {
+            background-color: #c82333;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .input-group label {
+            min-width: 120px;
+            margin-right: 10px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>G-Code API Test Interface</h1>
+    <p>Test the HavenCNC Server G-Code API endpoints</p>
+
+    <div class="container">
+        <h2>G-Code Editor</h2>
+        <div class="input-group">
+            <label for="programName">Program Name:</label>
+            <input type="text" id="programName" value="test_program" placeholder="Enter program name">
+        </div>
+        <textarea id="gcodeInput" placeholder="Enter G-code here...">G00 X0 Y0 Z1
+G01 Z-0.1 F100
+G01 X10 Y10 F500
+G01 X0 Y10
+G01 X0 Y0
+G00 Z1
+M30</textarea>
+        
+        <div>
+            <button class="button" onclick="loadSampleGCode()">Load Sample G-Code</button>
+            <button class="button" onclick="clearGCode()">Clear</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>API Controls</h2>
+        <div>
+            <button class="button success" onclick="loadGCode()">Load G-Code</button>
+            <button class="button success" onclick="runGCode()">Run G-Code</button>
+            <button class="button warning" onclick="pauseGCode()">Pause</button>
+            <button class="button" onclick="resumeGCode()">Resume</button>
+            <button class="button danger" onclick="stopGCode()">Stop</button>
+        </div>
+        
+        <div>
+            <button class="button" onclick="getCurrentGCode()">Get Current G-Code</button>
+            <button class="button" onclick="getCurrentLine()">Get Current Line</button>
+            <button class="button" onclick="testConnection()">Test API Connection</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>API Response</h2>
+        <div id="responseArea" class="response">Ready to test API...</div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        function updateResponse(text, isError = false) {
+            const responseArea = document.getElementById('responseArea');
+            const timestamp = new Date().toLocaleTimeString();
+            responseArea.textContent = `[${timestamp}] ${text}\n` + responseArea.textContent;
+            
+            if (isError) {
+                responseArea.style.color = '#dc3545';
+            } else {
+                responseArea.style.color = '#28a745';
+            }
+        }
+
+        function clearResponse() {
+            document.getElementById('responseArea').textContent = '';
+        }
+
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                updateResponse(`Making ${method} request to ${endpoint}...`);
+                
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    updateResponse(`Success: ${JSON.stringify(result, null, 2)}`);
+                } else {
+                    updateResponse(`Error: ${JSON.stringify(result, null, 2)}`, true);
+                }
+                
+                return result;
+            } catch (error) {
+                updateResponse(`Network Error: ${error.message}`, true);
+                throw error;
+            }
+        }
+
+        function loadSampleGCode() {
+            const samples = [
+                "G00 X0 Y0 Z1\nG01 Z-0.1 F100\nG01 X10 Y10 F500\nG01 X0 Y10\nG01 X0 Y0\nG00 Z1\nM30",
+                "G21 ; mm units\nG90 ; absolute positioning\nG00 X0 Y0 Z5\nM03 S1000\nG04 P2\nG01 Z-1 F100\nG01 X20 F500\nG01 Y20\nG01 X0\nG01 Y0\nG00 Z5\nM05\nM30",
+                "G20 ; inch units\nG90 ; absolute positioning\nG00 X0 Y0 Z0.2\nG01 Z-0.05 F10\nG02 X1 Y0 I0.5 J0 F20\nG01 Z0.2\nG00 X0 Y0\nM30"
+            ];
+            
+            const randomSample = samples[Math.floor(Math.random() * samples.length)];
+            document.getElementById('gcodeInput').value = randomSample;
+            updateResponse('Sample G-code loaded');
+        }
+
+        function clearGCode() {
+            document.getElementById('gcodeInput').value = '';
+            updateResponse('G-code cleared');
+        }
+
+        async function loadGCode() {
+            const gcode = document.getElementById('gcodeInput').value;
+            const programName = document.getElementById('programName').value;
+            
+            if (!gcode.trim()) {
+                updateResponse('Error: G-code is empty', true);
+                return;
+            }
+            
+            await apiCall('/CNCProgram/LoadGCode', 'POST', {
+                GCode: gcode,
+                ProgramName: programName
+            });
+        }
+
+        async function runGCode() {
+            await apiCall('/CNCProgram/RunGCode', 'POST');
+        }
+
+        async function pauseGCode() {
+            // Note: Pause endpoint may not be implemented yet
+            try {
+                await apiCall('/CNCProgram/Pause', 'POST');
+            } catch (error) {
+                updateResponse('Pause endpoint not implemented yet', true);
+            }
+        }
+
+        async function resumeGCode() {
+            await apiCall('/CNCProgram/Resume', 'POST');
+        }
+
+        async function stopGCode() {
+            await apiCall('/CNCProgram/Stop', 'POST');
+        }
+
+        async function getCurrentGCode() {
+            await apiCall('/CNCProgram/GetCurrentGCode', 'GET');
+        }
+
+        async function getCurrentLine() {
+            await apiCall('/CNCProgram/GetCurrentLineNumber', 'GET');
+        }
+
+        async function testConnection() {
+            try {
+                await fetch(`${API_BASE}/CNCSystem/GetStatus`);
+                updateResponse('API connection successful');
+            } catch (error) {
+                updateResponse(`API connection failed: ${error.message}`, true);
+            }
+        }
+
+        // Auto-test connection on page load
+        window.onload = function() {
+            updateResponse('G-Code API Test Interface loaded');
+            updateResponse('Click "Test API Connection" to verify server is running');
+        };
+    </script>
+</body>
+</html>
