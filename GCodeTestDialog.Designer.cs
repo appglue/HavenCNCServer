@@ -33,9 +33,6 @@ namespace HavenCNCServer
             this.btnSaveFile = new System.Windows.Forms.Button();
             this.btnLoadFile = new System.Windows.Forms.Button();
             this.btnRunGCode = new System.Windows.Forms.Button();
-            this.btnStop = new System.Windows.Forms.Button();
-            this.btnPause = new System.Windows.Forms.Button();
-            this.btnResume = new System.Windows.Forms.Button();
             this.btnTestConnection = new System.Windows.Forms.Button();
             this.txtStatus = new System.Windows.Forms.TextBox();
             this.lblStatus = new System.Windows.Forms.Label();
@@ -111,47 +108,11 @@ namespace HavenCNCServer
             this.btnRunGCode.UseVisualStyleBackColor = false;
             this.btnRunGCode.Click += new System.EventHandler(this.btnRunGCode_Click);
             // 
-            // btnStop
-            // 
-            this.btnStop.BackColor = System.Drawing.Color.LightCoral;
-            this.btnStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnStop.Location = new System.Drawing.Point(125, 25);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(80, 40);
-            this.btnStop.TabIndex = 5;
-            this.btnStop.Text = "Stop";
-            this.btnStop.UseVisualStyleBackColor = false;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // btnPause
-            // 
-            this.btnPause.BackColor = System.Drawing.Color.LightYellow;
-            this.btnPause.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnPause.Location = new System.Drawing.Point(215, 25);
-            this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new System.Drawing.Size(80, 40);
-            this.btnPause.TabIndex = 6;
-            this.btnPause.Text = "Pause";
-            this.btnPause.UseVisualStyleBackColor = false;
-            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
-            // 
-            // btnResume
-            // 
-            this.btnResume.BackColor = System.Drawing.Color.LightBlue;
-            this.btnResume.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnResume.Location = new System.Drawing.Point(305, 25);
-            this.btnResume.Name = "btnResume";
-            this.btnResume.Size = new System.Drawing.Size(80, 40);
-            this.btnResume.TabIndex = 7;
-            this.btnResume.Text = "Resume";
-            this.btnResume.UseVisualStyleBackColor = false;
-            this.btnResume.Click += new System.EventHandler(this.btnResume_Click);
-            // 
             // btnTestConnection
             // 
             this.btnTestConnection.BackColor = System.Drawing.Color.LightGray;
             this.btnTestConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnTestConnection.Location = new System.Drawing.Point(395, 25);
+            this.btnTestConnection.Location = new System.Drawing.Point(125, 25);
             this.btnTestConnection.Name = "btnTestConnection";
             this.btnTestConnection.Size = new System.Drawing.Size(120, 40);
             this.btnTestConnection.TabIndex = 8;
@@ -218,9 +179,6 @@ namespace HavenCNCServer
             this.grpControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpControls.Controls.Add(this.btnRunGCode);
-            this.grpControls.Controls.Add(this.btnStop);
-            this.grpControls.Controls.Add(this.btnPause);
-            this.grpControls.Controls.Add(this.btnResume);
             this.grpControls.Controls.Add(this.btnTestConnection);
             this.grpControls.Location = new System.Drawing.Point(15, 450);
             this.grpControls.Name = "grpControls";
@@ -305,9 +263,6 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnSaveFile;
         private System.Windows.Forms.Button btnLoadFile;
         private System.Windows.Forms.Button btnRunGCode;
-        private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.Button btnPause;
-        private System.Windows.Forms.Button btnResume;
         private System.Windows.Forms.Button btnTestConnection;
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Label lblStatus;

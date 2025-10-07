@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer
 {
@@ -45,9 +46,9 @@ namespace HavenCNCServer
                 _isConnected = false;
                 _cncPipe = null;
                 
-                // Attempt to create CNCPipe with retry logic
-                int maxRetries = 3;
-                int retryDelay = 1000; // 1 second between retries
+                // Attempt to create CNCPipe with retry logic from settings
+                int maxRetries = SettingsManager.Settings.Cnc.ConnectionRetries;
+                int retryDelay = SettingsManager.Settings.Cnc.RetryDelayMs;
                 
                 for (int attempt = 1; attempt <= maxRetries; attempt++)
                 {
@@ -326,18 +327,119 @@ namespace HavenCNCServer
 
                 LogStatus("Starting G-code execution...");
                 LogToMainWindow("G-Code Test: Starting G-code execution...");
-
-                // First, save the current G-code to a temporary file
-                string tempFilePath = Path.Combine(Path.GetTempPath(), $"gcode_test_{DateTime.Now:yyyyMMdd_HHmmss}.nc");
+                
+                // Create a unique temporary file to avoid conflicts using settings
+                var guid = Guid.NewGuid();
+                string tempFileName = $"gcode_test_{DateTime.Now:yyyyMMdd_HHmmss}_{guid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
+                string tempFilePath = Path.Combine(SettingsManager.Settings.Files.TempFilesDirectory, tempFileName);
+                
+                // Ensure temp directory exists
+                Directory.CreateDirectory(SettingsManager.Settings.Files.TempFilesDirectory);
+                
+                // Write G-code content directly to avoid file locking
                 File.WriteAllText(tempFilePath, txtGCode.Text);
-                LogStatus($"✓ G-code saved to temporary file: {tempFilePath}");
+                LogStatus($"✓ G-code saved to temporary file: {Path.GetFileName(tempFilePath)}");
                 LogToMainWindow($"G-Code Test: ✓ G-code saved to temporary file: {Path.GetFileName(tempFilePath)}");
 
                 // Load the G-code file into CNC12 via API
-                LoadGCodeFile(tempFilePath);
+                LogStatus($"Loading G-code file into CNC12...");
+                
+                // Read the G-code content
+                string[] gCodeLines = File.ReadAllLines(tempFilePath);
+                
+                // Get CNC programs directory from settings
+                string cncProgramsPath = SettingsManager.GetCncProgramsDirectory();
+                
+                // Create a unique filename to avoid conflicts
+                var targetGuid = Guid.NewGuid();
+                string uniqueFileName = $"gcode_test_{DateTime.Now:yyyyMMdd_HHmmss}_{targetGuid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
+                string targetPath = Path.Combine(cncProgramsPath, uniqueFileName);
+                
+                // Ensure target directory exists
+                Directory.CreateDirectory(cncProgramsPath);
+                
+                // Use File.WriteAllLines instead of File.Copy to avoid file locking issues
+                File.WriteAllLines(targetPath, gCodeLines);
+                
+                LogStatus($"✓ G-code file written to CNC12 programs directory");
+                LogToMainWindow($"G-Code Test: ✓ G-code file written to CNC12 programs directory");
+                
+                // Store the target path for execution
+                _currentFilePath = targetPath;
+                
+                // Clean up the temporary file if it's different from target
+                if (!string.Equals(tempFilePath, targetPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        File.Delete(tempFilePath);
+                    }
+                    catch (Exception cleanupEx)
+                    {
+                        LogStatus($"⚠ Could not delete temporary file: {cleanupEx.Message}");
+                        // Not critical - continue execution
+                    }
+                }
 
-                // Start G-code execution
-                RunGCode();
+                // Execute the G-code program
+                LogStatus("Starting G-code program execution...");
+                
+                if (_cncPipe == null || !_isConnected)
+                {
+                    LogStatus("✗ Cannot execute: No CNC connection");
+                    return;
+                }
+
+                // Load the program into CNC12 using the Job.Load method
+                var loadResult = _cncPipe.job.Load(_currentFilePath);
+                
+                if (loadResult == CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogStatus("✓ Program loaded successfully into CNC12");
+                    LogToMainWindow("G-Code Test: ✓ Program loaded successfully into CNC12");
+                    
+                    LogStatus("✓ Program ready for execution");
+                    LogToMainWindow("G-Code Test: ✓ Program ready for execution");
+
+                    // *** WANT TO RUN IT HERE ***
+                    // LogStatus("  To run the program:");
+                    // LogStatus("  1. Go to CNC12 main interface");
+                    // LogStatus("  2. Press the Cycle Start button");
+                    // LogStatus("  3. Monitor execution progress in CNC12");
+                    LogStatus($"  Loaded program: {Path.GetFileName(_currentFilePath)}");
+                }
+                else
+                {
+                    LogStatus($"✗ Failed to load program: {loadResult}");
+                    LogToMainWindow($"G-Code Test: ✗ Failed to load program: {loadResult}");
+                    LogStatus("  Check that the G-code file is valid and CNC12 is ready");
+                    
+                    // Log detailed information for debugging on failure
+                    LogStatus($"  Failed file path: {_currentFilePath}");
+                    LogStatus($"  File exists: {File.Exists(_currentFilePath)}");
+                    if (File.Exists(_currentFilePath))
+                    {
+                        try
+                        {
+                            string[] debugGCodeLines = File.ReadAllLines(_currentFilePath);
+                            LogStatus($"  File contents ({debugGCodeLines.Length} lines):");
+                            LogStatus("  --- G-code Start ---");
+                            for (int i = 0; i < Math.Min(debugGCodeLines.Length, 20); i++) // Show max 20 lines
+                            {
+                                LogStatus($"  {i + 1:D3}: {debugGCodeLines[i].TrimEnd('\r')}");
+                            }
+                            if (debugGCodeLines.Length > 20)
+                            {
+                                LogStatus($"  ... ({debugGCodeLines.Length - 20} more lines)");
+                            }
+                            LogStatus("  --- G-code End ---");
+                        }
+                        catch (Exception readEx)
+                        {
+                            LogStatus($"  Could not read file for debugging: {readEx.Message}");
+                        }
+                    }
+                }
 
             }
             catch (Exception ex)
@@ -352,216 +454,6 @@ namespace HavenCNCServer
             {
                 // Re-enable the run button
                 btnRunGCode.Enabled = true;
-            }
-        }
-
-        /// <summary>
-        /// Load G-code file into CNC12 system
-        /// </summary>
-        /// <param name="filePath">Path to G-code file</param>
-        private void LoadGCodeFile(string filePath)
-        {
-            try
-            {
-                LogStatus($"Loading G-code file into CNC12: {filePath}");
-                
-                // Read the G-code content
-                string[] gCodeLines = File.ReadAllLines(filePath);
-                LogStatus($"G-code lines read: {gCodeLines.Length}");
-                
-                // For CentroidAPI, we typically need to use MDI (Manual Data Input) 
-                // or save the file to a location where CNC12 can access it
-                // The exact method depends on the CentroidAPI version and implementation
-                
-                // Method 1: Try using MDI for line-by-line execution
-                // This would be for immediate execution of individual G-code lines
-                
-                // Method 2: Save to CNC12 programs directory
-                // Copy file to where CNC12 expects program files
-                string cncProgramsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
-                    "CNC12", "Programs");
-                
-                if (!Directory.Exists(cncProgramsPath))
-                {
-                    // Try alternative common paths
-                    cncProgramsPath = @"C:\CNC12\Programs";
-                    if (!Directory.Exists(cncProgramsPath))
-                    {
-                        cncProgramsPath = Path.GetDirectoryName(filePath) ?? Path.GetTempPath(); // Use temp as fallback
-                    }
-                }
-                
-                string targetPath = Path.Combine(cncProgramsPath!, Path.GetFileName(filePath));
-                File.Copy(filePath, targetPath, true);
-                
-                LogStatus($"✓ G-code file copied to CNC12 programs directory: {targetPath}");
-                LogToMainWindow($"G-Code Test: ✓ G-code file copied to CNC12 programs directory: {Path.GetFileName(targetPath)}");
-                LogStatus($"  File: {Path.GetFileName(targetPath)}");
-                LogStatus($"  Lines: {gCodeLines.Length}");
-                
-                // Store the target path for execution
-                _currentFilePath = targetPath;
-            }
-            catch (Exception ex)
-            {
-                LogStatus($"✗ Error loading G-code file: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Execute the loaded G-code program
-        /// </summary>
-        private void RunGCode()
-        {
-            try
-            {
-                LogStatus("Executing G-code program...");
-                
-                // The CentroidAPI provides different ways to execute G-code:
-                // 1. Load a file and run it as a program
-                // 2. Execute individual G-code commands via MDI (Manual Data Input)
-                // 3. Use the program execution control
-                
-                // For testing purposes, we'll try multiple approaches:
-                
-                // Approach 1: Try to send individual lines via MDI
-                string[] gCodeLines = txtGCode.Text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                LogStatus($"Attempting to execute {gCodeLines.Length} G-code lines...");
-                
-                // Note: The actual CentroidAPI may have methods like:
-                // _cncPipe.mdi.SendCommand(gcodeLine);
-                // or 
-                // _cncPipe.program.Execute(programName);
-                // or
-                // _cncPipe.runtime.StartProgram();
-                
-                // Since we don't have the exact API documentation, we'll log what we would do:
-                foreach (var line in gCodeLines)
-                {
-                    string trimmedLine = line.Trim();
-                    if (!string.IsNullOrEmpty(trimmedLine) && !trimmedLine.StartsWith(";") && !trimmedLine.StartsWith("("))
-                    {
-                        LogStatus($"  Executing: {trimmedLine}");
-                        // Simulate execution time
-                        Thread.Sleep(100);
-                    }
-                }
-                
-                LogStatus("✓ G-code execution simulation completed");
-                LogToMainWindow("G-Code Test: ✓ G-code execution simulation completed");
-                LogStatus("  Note: This is a test simulation. Real execution requires proper CNC12 connection.");
-                LogStatus("  To enable real execution, implement actual CentroidAPI calls.");
-            }
-            catch (Exception ex)
-            {
-                LogStatus($"✗ Error executing G-code: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Stop G-code execution
-        /// </summary>
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            if (!_isConnected || _cncPipe == null)
-            {
-                LogStatus("✗ Cannot stop: Centroid API not connected");
-                LogToMainWindow("G-Code Test: ✗ Cannot stop: Centroid API not connected");
-                return;
-            }
-
-            try
-            {
-                LogStatus("Stopping G-code execution...");
-                LogToMainWindow("G-Code Test: Stopping G-code execution...");
-                
-                // CentroidAPI stop methods might include:
-                // _cncPipe.control.Stop();
-                // _cncPipe.runtime.EmergencyStop();
-                // _cncPipe.program.Stop();
-                
-                // For testing, we'll simulate the stop
-                LogStatus("✓ G-code execution stopped");
-                LogToMainWindow("G-Code Test: ✓ G-code execution stopped");
-                LogStatus("  Note: This is a simulation. Real stop requires proper CentroidAPI implementation.");
-            }
-            catch (Exception ex)
-            {
-                var errorMsg = $"✗ Error stopping execution: {ex.Message}";
-                LogStatus(errorMsg);
-                LogToMainWindow($"G-Code Test: {errorMsg}");
-            }
-        }
-
-        /// <summary>
-        /// Pause G-code execution
-        /// </summary>
-        private void btnPause_Click(object sender, EventArgs e)
-        {
-            if (!_isConnected || _cncPipe == null)
-            {
-                LogStatus("✗ Cannot pause: Centroid API not connected");
-                LogToMainWindow("G-Code Test: ✗ Cannot pause: Centroid API not connected");
-                return;
-            }
-
-            try
-            {
-                LogStatus("Pausing G-code execution...");
-                LogToMainWindow("G-Code Test: Pausing G-code execution...");
-                
-                // CentroidAPI pause methods might include:
-                // _cncPipe.control.Pause();
-                // _cncPipe.runtime.FeedHold();
-                // _cncPipe.program.Pause();
-                
-                // For testing, we'll simulate the pause
-                LogStatus("✓ G-code execution paused");
-                LogToMainWindow("G-Code Test: ✓ G-code execution paused");
-                LogStatus("  Note: This is a simulation. Real pause requires proper CentroidAPI implementation.");
-            }
-            catch (Exception ex)
-            {
-                var errorMsg = $"✗ Error pausing execution: {ex.Message}";
-                LogStatus(errorMsg);
-                LogToMainWindow($"G-Code Test: {errorMsg}");
-            }
-        }
-
-        /// <summary>
-        /// Resume G-code execution
-        /// </summary>
-        private void btnResume_Click(object sender, EventArgs e)
-        {
-            if (!_isConnected || _cncPipe == null)
-            {
-                LogStatus("✗ Cannot resume: Centroid API not connected");
-                LogToMainWindow("G-Code Test: ✗ Cannot resume: Centroid API not connected");
-                return;
-            }
-
-            try
-            {
-                LogStatus("Resuming G-code execution...");
-                LogToMainWindow("G-Code Test: Resuming G-code execution...");
-                
-                // CentroidAPI resume methods might include:
-                // _cncPipe.control.Resume();
-                // _cncPipe.runtime.CycleStart();
-                // _cncPipe.program.Resume();
-                
-                // For testing, we'll simulate the resume
-                LogStatus("✓ G-code execution resumed");
-                LogToMainWindow("G-Code Test: ✓ G-code execution resumed");
-                LogStatus("  Note: This is a simulation. Real resume requires proper CentroidAPI implementation.");
-            }
-            catch (Exception ex)
-            {
-                var errorMsg = $"✗ Error resuming execution: {ex.Message}";
-                LogStatus(errorMsg);
-                LogToMainWindow($"G-Code Test: {errorMsg}");
             }
         }
 

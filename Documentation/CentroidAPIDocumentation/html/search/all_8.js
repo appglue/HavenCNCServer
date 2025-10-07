@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['importing_20user_20controls_0',['Importing User Controls',['../usercontrols.html',1,'']]],
+  ['importlicense_1',['ImportLicense',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_sys.html#addb4fb8f3262e63fd018b047a9f6f7a9',1,'CentroidAPI::CNCPipe::Sys']]],
+  ['in_5fmdi_2',['IN_MDI',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#ab7983c5b906d560dc8afdf6545527d1aaa81d6aa4ee61df525d867674ebff10ba',1,'CentroidAPI::CNCPipe::State']]],
+  ['inbound_5fcommunications_3',['inbound_communications',['../class_centroid_a_p_i_1_1_c_n_c_pipe.html#a6cc88babb469d648411a30acb33b41df',1,'CentroidAPI::CNCPipe']]],
+  ['inboundcomm_4',['InboundComm',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_inbound_comm.html',1,'CentroidAPI.CNCPipe.InboundComm'],['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_inbound_comm.html#a618fefc21cdebd523f26c9ed23255cf6',1,'CentroidAPI.CNCPipe.InboundComm.InboundComm()']]],
+  ['inch_5funits_5',['INCH_UNITS',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#a90e515193a0efe697eadd79651acd685a1062bbe2f59ae3f444ad3155af8582ba',1,'CentroidAPI::CNCPipe::State']]],
+  ['incremental_6',['INCREMENTAL',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#a915ce7832f4baa7ef608e6c4bf93da4ea9c098c060958933384cc3fde595a1c07',1,'CentroidAPI::CNCPipe::State']]],
+  ['info_7',['Info',['../struct_centroid_a_p_i_1_1_c_n_c_pipe_1_1_tool_1_1_info.html',1,'CentroidAPI::CNCPipe::Tool']]],
+  ['input_8',['Input',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#aec74834a2be57a8bc3b466d17cbb61f4a324118a6721dd6b8a9b9f4e327df2bf5',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['inversionstate_9',['InversionState',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#ad9e2a4dc4071b89da459f8d0a1e5f99a',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['inverted_10',['Inverted',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#ad9e2a4dc4071b89da459f8d0a1e5f99aacf4c2a4bf7c328c4e51f902350475343',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['io_5findex_5fout_5fof_5frange_11',['IO_INDEX_OUT_OF_RANGE',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#a7f5629351b24d229f8aedaeab884a28aa0a6506d27b72b93b6869e9f73493aff2',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['io_5flogical_5f0_12',['IO_LOGICAL_0',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#a7f5629351b24d229f8aedaeab884a28aaea326b35129bb42986fe24487e900103',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['io_5flogical_5f1_13',['IO_LOGICAL_1',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#a7f5629351b24d229f8aedaeab884a28aa2e89bb6940f2cd837d85f5573ab81db7',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['io_5fstate_5funknown_14',['IO_STATE_UNKNOWN',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#a7f5629351b24d229f8aedaeab884a28aadedde2c52bc34c40bac8569b6bf6d900',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['iombit_15',['IOMBit',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc_1_1_i_o_m_bit.html',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['iostate_16',['IOState',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_plc.html#a7f5629351b24d229f8aedaeab884a28a',1,'CentroidAPI::CNCPipe::Plc']]],
+  ['ip_17',['IP',['../struct_centroid_a_p_i_1_1_c_n_c_pipe_1_1_sys_1_1_ether1616_device.html#a92bcbd46cdc51ed0ef7347763b84021b',1,'CentroidAPI::CNCPipe::Sys::Ether1616Device']]],
+  ['isapirestricted_18',['IsAPIRestricted',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#ab1df1498b8d2b78c8268970d302f9b1a',1,'CentroidAPI::CNCPipe::State']]],
+  ['isconstructed_19',['IsConstructed',['../class_centroid_a_p_i_1_1_c_n_c_pipe.html#a4b3a032b11f5027e18c6be471137270c',1,'CentroidAPI::CNCPipe']]],
+  ['isencexp12connected_20',['IsENCEXP12Connected',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_sys.html#a266351e3da131cf270495d01104201fd',1,'CentroidAPI::CNCPipe::Sys']]],
+  ['isjobrunning_21',['IsJobRunning',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#a639223ceb715a303b58cfdd5fadf6d2e',1,'CentroidAPI::CNCPipe::State']]],
+  ['ispcpoweringoff_22',['IsPCPoweringOff',['../class_centroid_a_p_i_1_1_c_n_c_pipe_1_1_state.html#ab78a39f5752ba6a948c5fe3e115ee514',1,'CentroidAPI::CNCPipe::State']]]
+];

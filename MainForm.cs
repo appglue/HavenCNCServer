@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer
 {
@@ -31,6 +32,19 @@ namespace HavenCNCServer
         public MainForm()
         {
             InitializeComponent();
+            
+            // Initialize application settings
+            try
+            {
+                SettingsManager.LoadSettings();
+                LogMessage($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}");
+                LogMessage($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}");
+                LogMessage($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}");
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Warning: Settings initialization failed: {ex.Message}");
+            }
             
             // Register this form with the UI control service
             Services.UIControlService.RegisterMainForm(this);
