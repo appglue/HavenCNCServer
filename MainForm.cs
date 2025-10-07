@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HavenCNCServer.Services;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer
 {
@@ -33,17 +34,26 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             
+            // Set up centralized logging
+            SetupLogging();
+            
             // Initialize application settings
             try
             {
                 SettingsManager.LoadSettings();
-                LogMessage($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}");
-                LogMessage($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}");
-                LogMessage($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}");
+                LogSuccess($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}", "Settings");
+                LogInfo($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}", "Settings");
+                LogInfo($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}", "Settings");
+                
+                // Subscribe to CNC connection status changes
+                CNCConnectionManager.ConnectionStatusChanged += OnCNCConnectionStatusChanged;
+                
+                // Try auto-connect if enabled
+                _ = Task.Run(async () => await CNCConnectionManager.TryAutoConnectAsync());
             }
             catch (Exception ex)
             {
-                LogMessage($"Warning: Settings initialization failed: {ex.Message}");
+                LogWarning($"Settings initialization failed: {ex.Message}", "Settings");
             }
             
             // Register this form with the UI control service
@@ -51,6 +61,21 @@ namespace HavenCNCServer
             
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
+        }
+
+        /// <summary>
+        /// Set up the centralized logging system
+        /// </summary>
+        private void SetupLogging()
+        {
+            // Create and register a log target for the main form's text box
+            var logTarget = new TextBoxLogTarget(txtLog, this);
+            LoggingService.AddTarget(logTarget);
+            
+            // Set maximum log entries from settings or default
+            LoggingService.MaxLogEntries = 2000;
+            
+            LogInfo("Logging system initialized", "System");
         }
 
         private async void MainForm_Load(object? sender, EventArgs e)
@@ -62,8 +87,8 @@ namespace HavenCNCServer
         {
             try
             {
+                LogInfo("Initializing API server...", "API");
                 UpdateStatus("Starting API Server...", Color.Orange);
-                LogMessage("Initializing API server...");
 
                 _cancellationTokenSource = new CancellationTokenSource();
 
@@ -97,7 +122,7 @@ namespace HavenCNCServer
                     {
                         this.Invoke(() =>
                         {
-                            LogMessage($"Error running web host: {ex.Message}");
+                            LogError($"Error running web host: {ex.Message}", "API");
                             UpdateStatus("API Server Error", Color.Red);
                         });
                     }
@@ -107,8 +132,8 @@ namespace HavenCNCServer
                 await Task.Delay(2000);
 
                 UpdateStatus("API Server Running", Color.Green);
-                LogMessage($"API server started successfully at {ApiUrl}");
-                LogMessage($"Swagger UI available at {SwaggerUrl}");
+                LogSuccess($"API server started successfully at {ApiUrl}", "API");
+                LogInfo($"Swagger UI available at {SwaggerUrl}", "API");
                 
                 btnStartServer.Enabled = false;
                 btnStopServer.Enabled = true;
@@ -119,7 +144,7 @@ namespace HavenCNCServer
             catch (Exception ex)
             {
                 UpdateStatus("Failed to Start", Color.Red);
-                LogMessage($"Failed to start API server: {ex.Message}");
+                LogError($"Failed to start API server: {ex.Message}", "API");
                 btnStartServer.Enabled = true;
                 btnStopServer.Enabled = false;
             }
@@ -130,7 +155,7 @@ namespace HavenCNCServer
             try
             {
                 UpdateStatus("Stopping API Server...", Color.Orange);
-                LogMessage("Stopping API server...");
+                LogInfo("Stopping API server...", "API");
 
                 _cancellationTokenSource?.Cancel();
                 
@@ -145,14 +170,14 @@ namespace HavenCNCServer
                 _cancellationTokenSource = null;
 
                 UpdateStatus("API Server Stopped", Color.Gray);
-                LogMessage("API server stopped successfully");
+                LogSuccess("API server stopped successfully", "API");
                 
                 btnStartServer.Enabled = true;
                 btnStopServer.Enabled = false;
             }
             catch (Exception ex)
             {
-                LogMessage($"Error stopping API server: {ex.Message}");
+                LogError($"Error stopping API server: {ex.Message}", "API");
             }
         }
 
@@ -169,21 +194,58 @@ namespace HavenCNCServer
         }
 
         /// <summary>
+        /// Handle CNC connection status changes
+        /// </summary>
+        private void OnCNCConnectionStatusChanged(bool connected, string message)
+        {
+            // Use Invoke to ensure we're on the UI thread
+            if (InvokeRequired)
+            {
+                Invoke(() => OnCNCConnectionStatusChanged(connected, message));
+                return;
+            }
+
+            if (connected)
+            {
+                LogSuccess(message, "CNC");
+            }
+            else
+            {
+                LogWarning(message, "CNC");
+            }
+        }
+
+        /// <summary>
+        /// Cleanup when form is closing
+        /// </summary>
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            try
+            {
+                // Unsubscribe from CNC events
+                CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
+                
+                // Cleanup the CNC connection manager
+                CNCConnectionManager.Disconnect();
+                
+                LogInfo("Application shutting down", "System");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during shutdown cleanup: {ex.Message}", "System");
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        /// <summary>
         /// Logs a message to the application log display with timestamp
         /// </summary>
         /// <param name="message">The message to log</param>
         public void LogMessage(string message)
         {
-            if (InvokeRequired)
-            {
-                Invoke(() => LogMessage(message));
-                return;
-            }
-
-            var timestamp = DateTime.Now.ToString("HH:mm:ss");
-            txtLog.AppendText($"[{timestamp}] {message}{Environment.NewLine}");
-            txtLog.SelectionStart = txtLog.Text.Length;
-            txtLog.ScrollToCaret();
+            // Delegate to the centralized logging service
+            LogInfo(message, "MainForm");
         }
 
         private void btnOpenSwagger_Click(object sender, EventArgs e)

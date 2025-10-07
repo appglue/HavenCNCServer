@@ -77,14 +77,15 @@ namespace HavenCNCServer
             // 
             // txtLog
             // 
-            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.Location = new System.Drawing.Point(12, 140);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(880, 120);
+            this.txtLog.Size = new System.Drawing.Size(880, 530);
             this.txtLog.TabIndex = 3;
             // 
             // lblLog
@@ -164,9 +165,9 @@ namespace HavenCNCServer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.webView.CreationProperties = null;
             this.webView.DefaultBackgroundColor = System.Drawing.Color.White;
-            this.webView.Location = new System.Drawing.Point(12, 280);
+            this.webView.Location = new System.Drawing.Point(12, 140);
             this.webView.Name = "webView";
-            this.webView.Size = new System.Drawing.Size(760, 400);
+            this.webView.Size = new System.Drawing.Size(880, 530);
             this.webView.TabIndex = 9;
             this.webView.Visible = false;
             this.webView.ZoomFactor = 1D;
@@ -185,10 +186,9 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnGCodeTest);
             this.pnlControls.Controls.Add(this.btnTest);
             this.pnlControls.Controls.Add(this.lblLog);
-            this.pnlControls.Controls.Add(this.txtLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(904, 274);
+            this.pnlControls.Size = new System.Drawing.Size(904, 130);
             this.pnlControls.TabIndex = 10;
             // 
             // MainForm
@@ -197,6 +197,7 @@ namespace HavenCNCServer
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 692);
             this.Controls.Add(this.pnlControls);
+            this.Controls.Add(this.txtLog);
             this.Controls.Add(this.webView);
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";

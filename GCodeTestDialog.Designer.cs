@@ -34,6 +34,8 @@ namespace HavenCNCServer
             this.btnLoadFile = new System.Windows.Forms.Button();
             this.btnRunGCode = new System.Windows.Forms.Button();
             this.btnTestConnection = new System.Windows.Forms.Button();
+            this.btnJobInfoListener = new System.Windows.Forms.Button();
+            this.btnRunSingleCommand = new System.Windows.Forms.Button();
             this.txtStatus = new System.Windows.Forms.TextBox();
             this.lblStatus = new System.Windows.Forms.Label();
             this.txtFileName = new System.Windows.Forms.TextBox();
@@ -120,6 +122,30 @@ namespace HavenCNCServer
             this.btnTestConnection.UseVisualStyleBackColor = false;
             this.btnTestConnection.Click += new System.EventHandler(this.btnTestConnection_Click);
             // 
+            // btnJobInfoListener
+            // 
+            this.btnJobInfoListener.BackColor = System.Drawing.Color.LightBlue;
+            this.btnJobInfoListener.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnJobInfoListener.Location = new System.Drawing.Point(255, 25);
+            this.btnJobInfoListener.Name = "btnJobInfoListener";
+            this.btnJobInfoListener.Size = new System.Drawing.Size(140, 40);
+            this.btnJobInfoListener.TabIndex = 9;
+            this.btnJobInfoListener.Text = "Stop Listener (Debug)";
+            this.btnJobInfoListener.UseVisualStyleBackColor = false;
+            this.btnJobInfoListener.Click += new System.EventHandler(this.btnJobInfoListener_Click);
+            // 
+            // btnRunSingleCommand
+            // 
+            this.btnRunSingleCommand.BackColor = System.Drawing.Color.LightGreen;
+            this.btnRunSingleCommand.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnRunSingleCommand.Location = new System.Drawing.Point(405, 25);
+            this.btnRunSingleCommand.Name = "btnRunSingleCommand";
+            this.btnRunSingleCommand.Size = new System.Drawing.Size(140, 40);
+            this.btnRunSingleCommand.TabIndex = 10;
+            this.btnRunSingleCommand.Text = "Run Single Command";
+            this.btnRunSingleCommand.UseVisualStyleBackColor = false;
+            this.btnRunSingleCommand.Click += new System.EventHandler(this.btnRunSingleCommand_Click);
+            // 
             // txtStatus
             // 
             this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -180,6 +206,8 @@ namespace HavenCNCServer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpControls.Controls.Add(this.btnRunGCode);
             this.grpControls.Controls.Add(this.btnTestConnection);
+            this.grpControls.Controls.Add(this.btnJobInfoListener);
+            this.grpControls.Controls.Add(this.btnRunSingleCommand);
             this.grpControls.Location = new System.Drawing.Point(15, 450);
             this.grpControls.Name = "grpControls";
             this.grpControls.Size = new System.Drawing.Size(780, 80);
@@ -264,6 +292,8 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnLoadFile;
         private System.Windows.Forms.Button btnRunGCode;
         private System.Windows.Forms.Button btnTestConnection;
+        private System.Windows.Forms.Button btnJobInfoListener;
+        private System.Windows.Forms.Button btnRunSingleCommand;
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.TextBox txtFileName;

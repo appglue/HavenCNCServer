@@ -1,7 +1,7 @@
 {
   "files": {
-    "tempFilesDirectory": "%TEMP%\\HavenCNCServer",
-    "cncProgramsDirectory": null,
+    "tempFilesDirectory": "./temp",
+    "cncProgramsDirectory": "./cncfiles",
     "defaultGCodeExtension": ".nc",
     "maxTempFiles": 50
   },

@@ -30,15 +30,15 @@ namespace HavenCNCServer.Models
     {
         /// <summary>
         /// Directory for temporary G-code files
-        /// Default: %TEMP%\HavenCNCServer
+        /// Default: ./temp
         /// </summary>
-        public string TempFilesDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "HavenCNCServer");
+        public string TempFilesDirectory { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), "temp");
 
         /// <summary>
         /// Directory for CNC12 program files
-        /// Default: Auto-detect from Documents\CNC12\Programs or C:\CNC12\Programs
+        /// Default: ./cncfiles
         /// </summary>
-        public string? CncProgramsDirectory { get; set; } = null;
+        public string? CncProgramsDirectory { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), "cncfiles");
 
         /// <summary>
         /// Default file extension for G-code files
