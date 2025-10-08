@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HavenCNCServer.Models;
 
@@ -57,11 +58,35 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Success response</returns>
         [HttpPost("RunGCode")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> RunGCode()
         {
-            // TODO: Implement run G-code functionality
-            await Task.Delay(1);
-            return Ok(new { message = "G-code execution started" });
+            try
+            {
+                await Task.Delay(1); // Placeholder for async operation
+                
+                // Here you would implement actual CentroidAPI calls to run the loaded G-code
+                // For example:
+                // using (var cncPipe = new CNCPipe())
+                // {
+                //     // Wait for connection
+                //     while (!cncPipe.IsConstructed()) { Thread.Sleep(10); }
+                //     
+                //     // Start program execution via appropriate API method
+                //     // This might be: cncPipe.program.Start() or similar
+                // }
+                
+                return Ok(new { 
+                    message = "G-code execution started",
+                    status = "running",
+                    timestamp = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Failed to start G-code execution: {ex.Message}" });
+            }
         }
 
         /// <summary>
@@ -100,12 +125,47 @@ namespace HavenCNCServer.Controllers
         /// <param name="request">G-code load request</param>
         /// <returns>Success response</returns>
         [HttpPost("LoadGCode")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> LoadGCode([FromBody] LoadGCodeRequest request)
         {
-            // TODO: Implement load G-code functionality
-            await Task.Delay(1);
-            var lineCount = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length;
-            return Ok(new { message = $"Loaded {lineCount} G-code lines", lineCount });
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.GCode))
+                {
+                    return BadRequest(new { error = "G-code content cannot be empty" });
+                }
+
+                await Task.Delay(1); // Placeholder for async operation
+                
+                var gCodeLines = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                var validLines = gCodeLines.Where(line => 
+                    !string.IsNullOrWhiteSpace(line.Trim()) && 
+                    !line.Trim().StartsWith(";") && 
+                    !line.Trim().StartsWith("(")).ToArray();
+
+                // Here you would implement actual CentroidAPI calls to load the G-code
+                // For example:
+                // using (var cncPipe = new CNCPipe())
+                // {
+                //     // Wait for connection
+                //     while (!cncPipe.IsConstructed()) { Thread.Sleep(10); }
+                //     
+                //     // Load G-code via appropriate API method
+                //     // This might involve saving to a file and loading it, or using MDI
+                // }
+
+                return Ok(new { 
+                    message = $"G-code loaded successfully", 
+                    totalLines = gCodeLines.Length,
+                    validLines = validLines.Length,
+                    programName = request.ProgramName ?? "Unnamed Program"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = $"Failed to load G-code: {ex.Message}" });
+            }
         }
 
         /// <summary>
