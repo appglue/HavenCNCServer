@@ -1,0 +1,22 @@
+{
+  "files": {
+    "tempFilesDirectory": "./temp",
+    "cncProgramsDirectory": "./cncfiles",
+    "defaultGCodeExtension": ".nc",
+    "maxTempFiles": 50
+  },
+  "logging": {
+    "enableDebugLogging": false,
+    "enableFileLogging": true,
+    "logDirectory": "%APPDATA%\\HavenCNCServer\\Logs",
+    "maxLogFileSizeMB": 10,
+    "maxLogFiles": 5,
+    "logLevel": "Info"
+  },
+  "cnc": {
+    "connectionTimeoutMs": 10000,
+    "connectionRetries": 3,
+    "retryDelayMs": 1000,
+    "autoConnectOnStartup": false
+  }
+}
