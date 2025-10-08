@@ -108,6 +108,26 @@ namespace HavenCNCServer.CentriodAPI
         /// <summary>Probe protection/inhibit settings parameter</summary>
         PROBE_INHIBIT_PARM = 416,
 
+        // Tool Touch Off Parameters
+        /// <summary>Modal tool parameter (used for height calculation method bit 1)</summary>
+        MODAL_TOOL_PARM = 3,
+        /// <summary>Fixed location mode parameter</summary>
+        FIXED_LOCATION_MODE_PARM = 17,
+        /// <summary>Tool measure properties bit field parameter (Mill only)</summary>
+        TOOL_MEASURE_PROPERTIES_PARM = 43,
+        /// <summary>Touch off tool PLC input parameter (Mill)</summary>
+        TOUCH_OFF_TOOL_PLC_INPUT_MILL = 44,
+        /// <summary>Tool touch off height parameter</summary>
+        TOOL_TOUCH_OFF_HEIGHT_PARM = 71,
+        /// <summary>Touch off tool PLC input parameter (Lathe)</summary>
+        TOUCH_OFF_TOOL_PLC_INPUT_LATHE = 244,
+        /// <summary>Tool touch off detect input parameter</summary>
+        TOOL_TOUCH_OFF_DETECT_INPUT_PARM = 257,
+        /// <summary>Tool touch off type parameter</summary>
+        TOOL_TOUCH_OFF_TYPE_PARM = 405,
+        /// <summary>Tool touch off input type parameter</summary>
+        TOOL_TOUCH_OFF_INPUT_TYPE_PARM = 407,
+
         // PLC Parameters
         /// <summary>PLC analog parameter</summary>
         PLC_ANALOG_PARM = 420,

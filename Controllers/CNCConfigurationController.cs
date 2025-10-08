@@ -627,6 +627,46 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
+        /// Configure tool touch off settings
+        /// </summary>
+        /// <param name="config">Tool touch off configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureToolTouchOff")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ConfigureToolTouchOff([FromBody] CentroidConfigUtil.ToolTouchOffConfiguration config)
+        {
+            try
+            {
+                await Task.Delay(1); // For async pattern
+
+                var result = CentroidConfigUtil.ConfigureToolTouchOff(config);
+
+                if (result)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        message = "Tool touch off configured successfully"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { 
+                        success = false, 
+                        message = "Failed to configure tool touch off" 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    success = false, 
+                    message = $"Failed to configure tool touch off: {ex.Message}" 
+                });
+            }
+        }
+
+        /// <summary>
         /// Validate I/O configuration for conflicts and issues
         /// </summary>
         /// <param name="config">I/O configuration to validate</param>

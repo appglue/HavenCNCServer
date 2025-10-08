@@ -548,5 +548,36 @@ namespace HavenCNCServer.CentriodAPI
             SetParameterValue(CentroidParameters.GANG_TOOL_ENABLE, newValue);
         }
 
+        /// <summary>
+        /// Set axis rate for specific axis and rate type
+        /// </summary>
+        /// <param name="axis">Axis number (1-based)</param>
+        /// <param name="rateType">Type of rate to set</param>
+        /// <param name="value">Rate value</param>
+        public static void SetAxisRate(int axis, CNCPipe.Axis.Rate rateType, double value)
+        {
+            if (_api == null)
+                throw new InvalidOperationException("CNCUtils not initialized. Call Initialize() first.");
+
+            var axisEnum = (CNCPipe.Axes)axis;
+            _api.axis.SetRate(axisEnum, rateType, value);
+        }
+
+        /// <summary>
+        /// Get axis rate for specific axis and rate type
+        /// </summary>
+        /// <param name="axis">Axis number (1-based)</param>
+        /// <param name="rateType">Type of rate to get</param>
+        /// <returns>Rate value</returns>
+        public static double GetAxisRate(int axis, CNCPipe.Axis.Rate rateType)
+        {
+            if (_api == null)
+                throw new InvalidOperationException("CNCUtils not initialized. Call Initialize() first.");
+
+            var axisEnum = (CNCPipe.Axes)axis;
+            _api.axis.GetRate(axisEnum, rateType, out double value);
+            return value;
+        }
+
     }
 }

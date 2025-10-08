@@ -835,37 +835,30 @@ namespace HavenCNCServer.Models
                 }
                 
                 // Configure jogging speed limits for each axis
-                // TODO: Implement axis jog rate configuration when CNCPipe instance is available
                 if (config.ProbeSlowJogSpeeds != null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Probe slow jog speeds configured for {config.ProbeSlowJogSpeeds.Length} axes (implementation pending)");
-                    // for (int axis = 0; axis < Math.Min(config.ProbeSlowJogSpeeds.Length, 4); axis++)
-                    // {
-                    //     var axisEnum = (CNCPipe.Axes)(axis + 1); // AXIS_1, AXIS_2, etc.
-                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.SLOW_JOG_PROBE, config.ProbeSlowJogSpeeds[axis]);
-                    // }
+                    for (int axis = 0; axis < Math.Min(config.ProbeSlowJogSpeeds.Length, 4); axis++)
+                    {
+                        CNCUtils.SetAxisRate(axis + 1, CNCPipe.Axis.Rate.SLOW_JOG_PROBE, config.ProbeSlowJogSpeeds[axis]);
+                    }
                     parametersSet = true;
                 }
                 
                 if (config.ProbeFastJogNegativeSpeeds != null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Probe fast jog negative speeds configured for {config.ProbeFastJogNegativeSpeeds.Length} axes (implementation pending)");
-                    // for (int axis = 0; axis < Math.Min(config.ProbeFastJogNegativeSpeeds.Length, 4); axis++)
-                    // {
-                    //     var axisEnum = (CNCPipe.Axes)(axis + 1);
-                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS_PROBE, config.ProbeFastJogNegativeSpeeds[axis]);
-                    // }
+                    for (int axis = 0; axis < Math.Min(config.ProbeFastJogNegativeSpeeds.Length, 4); axis++)
+                    {
+                        CNCUtils.SetAxisRate(axis + 1, CNCPipe.Axis.Rate.FAST_JOG_MINUS_PROBE, config.ProbeFastJogNegativeSpeeds[axis]);
+                    }
                     parametersSet = true;
                 }
                 
                 if (config.ProbeFastJogPositiveSpeeds != null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Probe fast jog positive speeds configured for {config.ProbeFastJogPositiveSpeeds.Length} axes (implementation pending)");
-                    // for (int axis = 0; axis < Math.Min(config.ProbeFastJogPositiveSpeeds.Length, 4); axis++)
-                    // {
-                    //     var axisEnum = (CNCPipe.Axes)(axis + 1);
-                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS_PROBE, config.ProbeFastJogPositiveSpeeds[axis]);
-                    // }
+                    for (int axis = 0; axis < Math.Min(config.ProbeFastJogPositiveSpeeds.Length, 4); axis++)
+                    {
+                        CNCUtils.SetAxisRate(axis + 1, CNCPipe.Axis.Rate.FAST_JOG_PLUS_PROBE, config.ProbeFastJogPositiveSpeeds[axis]);
+                    }
                     parametersSet = true;
                 }
                 
@@ -996,6 +989,122 @@ namespace HavenCNCServer.Models
                 if (parametersSet)
                 {
                     System.Diagnostics.Debug.WriteLine($"Configuring Touch Plate: Fast Rate: {config.FastRate?.ToString() ?? "not set"}, Slow Rate: {config.SlowRate?.ToString() ?? "not set"}");
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Tool Touch Off Configuration Methods
+
+        /// <summary>
+        /// Configures tool touch off parameters
+        /// </summary>
+        /// <param name="config">Tool touch off configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureToolTouchOff(ToolTouchOffConfiguration config)
+        {
+            try
+            {
+                bool parametersSet = false;
+                
+                // Set touch off tool PLC input (Parameter 44 for Mill, 244 for Lathe)
+                if (config.TouchOffToolPLCInput.HasValue)
+                {
+                    // TODO: Determine if this is Mill or Lathe - for now use Mill parameter
+                    CNCUtils.SetParameterValue(CentroidParameters.TOUCH_OFF_TOOL_PLC_INPUT_MILL, config.TouchOffToolPLCInput.Value);
+                    parametersSet = true;
+                }
+                
+                // Set tool touch off type (Parameter 405)
+                if (config.ToolTouchOffType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOOL_TOUCH_OFF_TYPE_PARM, (int)config.ToolTouchOffType.Value);
+                    parametersSet = true;
+                }
+                
+                // Set input state when triggered (Parameter 407)
+                if (config.InputStateWhenTriggered.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOOL_TOUCH_OFF_INPUT_TYPE_PARM, (int)config.InputStateWhenTriggered.Value);
+                    parametersSet = true;
+                }
+                
+                // Set tool touch off detect input (Parameter 257)
+                if (config.DetectInputNumber.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOOL_TOUCH_OFF_DETECT_INPUT_PARM, config.DetectInputNumber.Value);
+                    parametersSet = true;
+                }
+                
+                // Set TT height (Parameter 71)
+                if (config.TTHeight.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.TOOL_TOUCH_OFF_HEIGHT_PARM, config.TTHeight.Value);
+                    parametersSet = true;
+                }
+                
+                // Set fixed location mode (Parameter 17)
+                if (config.UseFixedLocation.HasValue)
+                {
+                    int locationMode = config.UseFixedLocation.Value ? 3 : 0; // 3=Fixed, 0=Moveable
+                    CNCUtils.SetParameterValue(CentroidParameters.FIXED_LOCATION_MODE_PARM, locationMode);
+                    parametersSet = true;
+                }
+                
+                // Set G30 P3 reference points for fixed location coordinates
+                if (config.FixedLocationX.HasValue)
+                {
+                    CNCUtils.SetWorkpieceReferencePoint(ReferencePoints.G30P3, 1, config.FixedLocationX.Value); // X axis
+                    parametersSet = true;
+                }
+                
+                if (config.FixedLocationY.HasValue)
+                {
+                    CNCUtils.SetWorkpieceReferencePoint(ReferencePoints.G30P3, 2, config.FixedLocationY.Value); // Y axis
+                    parametersSet = true;
+                }
+                
+                if (config.ZClearanceHeight.HasValue)
+                {
+                    CNCUtils.SetWorkpieceReferencePoint(ReferencePoints.G30P3, 3, config.ZClearanceHeight.Value); // Z axis
+                    parametersSet = true;
+                }
+                
+                // Configure tool measure properties bit field (Parameter 43) and modal tool parameter (Parameter 3)
+                if (config.ProbeProtectionEnabled.HasValue || config.SubtractHeightWhenSettingOffsets.HasValue)
+                {
+                    // Set probe protection in tool measure properties (Parameter 43)
+                    if (config.ProbeProtectionEnabled.HasValue)
+                    {
+                        int toolMeasureProps = (int)CNCUtils.GetParameterValue(CentroidParameters.TOOL_MEASURE_PROPERTIES_PARM);
+                        toolMeasureProps = CNCUtils.ModifyBit(toolMeasureProps, 0, config.ProbeProtectionEnabled.Value);
+                        CNCUtils.SetParameterValue(CentroidParameters.TOOL_MEASURE_PROPERTIES_PARM, toolMeasureProps);
+                        parametersSet = true;
+                    }
+                    
+                    // Set height calculation method in modal tool parameter (Parameter 3 bit 1)
+                    if (config.SubtractHeightWhenSettingOffsets.HasValue)
+                    {
+                        int modalToolParam = (int)CNCUtils.GetParameterValue(CentroidParameters.MODAL_TOOL_PARM);
+                        modalToolParam = CNCUtils.ModifyBit(modalToolParam, 1, config.SubtractHeightWhenSettingOffsets.Value);
+                        CNCUtils.SetParameterValue(CentroidParameters.MODAL_TOOL_PARM, modalToolParam);
+                        parametersSet = true;
+                    }
+                }
+
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Tool Touch Off: Input {config.TouchOffToolPLCInput?.ToString() ?? "not set"}, " +
+                        $"Type: {config.ToolTouchOffType?.ToString() ?? "not set"}, " +
+                        $"Fixed Location: {config.UseFixedLocation?.ToString() ?? "not set"}, " +
+                        $"TT Height: {config.TTHeight?.ToString() ?? "not set"}");
                 }
                 
                 return true;
