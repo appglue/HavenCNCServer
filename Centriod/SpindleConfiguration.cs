@@ -73,6 +73,11 @@ public static partial class CentroidConfigUtil
             public bool? RTGDisplay { get; set; }
             
             /// <summary>
+            /// Enable spindle speed scaling (Parameter 78 bit 4)
+            /// </summary>
+            public bool? SpindleScalingEnabled { get; set; }
+            
+            /// <summary>
             /// Enable second spindle
             /// </summary>
             public bool? SecondSpindleEnabled { get; set; }
@@ -96,6 +101,61 @@ public static partial class CentroidConfigUtil
             /// Threading and tapping acceleration/deceleration distance
             /// </summary>
             public double? ThreadingTappingAccelDecelDistance { get; set; }
+            
+            /// <summary>
+            /// Minimum Rigid Tapping RPM (Parameter 68)
+            /// </summary>
+            public int? MinimumRigidTappingRPM { get; set; }
+            
+            /// <summary>
+            /// Duration For Min. Rigid Tapping RPM in seconds (Parameter 69)
+            /// </summary>
+            public double? DurationForMinRigidTappingRPM { get; set; }
+            
+            /// <summary>
+            /// Spindle Drift in degrees (Parameter 82)
+            /// </summary>
+            public int? SpindleDrift { get; set; }
+            
+            /// <summary>
+            /// Spindle Accel/Decel Time
+            /// </summary>
+            public int? SpindleAccelDecelTime { get; set; }
+            
+            /// <summary>
+            /// M Func To Run At Bottom Of Hole G84 Tapping
+            /// </summary>
+            public string? MFuncBottomHoleG84 { get; set; }
+            
+            /// <summary>
+            /// M Func To Run At Top Of Hole For G74 Counter Tapping
+            /// </summary>
+            public string? MFuncTopHoleG74Counter { get; set; }
+            
+            /// <summary>
+            /// M Func To Run At Bottom Of Hole G74 Tapping (Left Hand Taps)
+            /// </summary>
+            public string? MFuncBottomHoleG74LeftHand { get; set; }
+            
+            /// <summary>
+            /// M Func To Run At Top Of Hole For G84 Counter Tapping
+            /// </summary>
+            public string? MFuncTopHoleG84Counter { get; set; }
+            
+            /// <summary>
+            /// Rigid Tapping Z Axis Sync Distance (Parameter 241)
+            /// </summary>
+            public int? RigidTappingZAxisSyncDistance { get; set; }
+            
+            /// <summary>
+            /// Allow Spindle Override (Parameter 36 bit 2)
+            /// </summary>
+            public bool? AllowSpindleOverride { get; set; }
+            
+            /// <summary>
+            /// Do Not Wait For Index Pulse (Parameter 36 bit 1)
+            /// </summary>
+            public bool? DoNotWaitForIndexPulse { get; set; }
             
             /// <summary>
             /// SSV (Spindle Speed Variation) cycle time

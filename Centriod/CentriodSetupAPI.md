@@ -2829,6 +2829,7 @@ public void ConfigureSpindleSettings(CNCPipe cncPipe)
 | **Speed Variation Cycle** | 982 | Value (sec) | Speed variation cycle time |
 | **Speed Variation Amount** | 983 | Value (RPM) | Speed variation amount |
 | **Feed Variation Cycle** | 984 | Value (ms) | Feed rate variation cycle time |
+| **Spindle Accel/Decel Time** | ❌ Not Found | Value (ms) | Spindle acceleration/deceleration timing |
 
 ## Additional Rigid Tapping and Advanced Spindle Settings
 
@@ -2839,9 +2840,11 @@ The CentroidAPI also supports advanced rigid tapping and spindle configuration p
 | Setting | Parameter | Description | API Example |
 |---------|-----------|-------------|-------------|
 | **Spindle Drift (Degrees)** | 82 | Spindle cutoff drift tolerance in degrees for rigid tapping | `cncPipe.parameter.SetMachineParameter(82, 2.5)` |
-| **Spindle Accel/Decel Time** | 37 | Spindle acceleration/deceleration time in seconds | `cncPipe.parameter.SetMachineParameter(37, 1.0)` |
-| **M Func To Run At Bottom Of Hole G84 Tapping** | 74 | M function executed at bottom of G84 (right-hand) tapping cycle | `cncPipe.parameter.SetMachineParameter(74, 5)` |
-| **M Func To Run At Bottom Of Hole G74 Tapping (Left Hand)** | 84 | M function executed at bottom of G74 (left-hand) tapping cycle | `cncPipe.parameter.SetMachineParameter(84, 4)` |
+| **Spindle Accel/Decel Time** | ❌ Not Found | Spindle acceleration/deceleration time in seconds | Parameter not found in current system |
+| **M Func To Run At Bottom Of Hole G84 Tapping** | ❌ Not Found | M function executed at bottom of G84 (right-hand) tapping cycle | Parameter not found in current system |
+| **M Func To Run At Top Of Hole For G84 Counter Tapping** | ❌ Not Found | M function executed at top of hole for G84 counter tapping | Parameter not found in current system |
+| **M Func To Run At Bottom Of Hole G74 Tapping (Left Hand)** | ❌ Not Found | M function executed at bottom of G74 (left-hand) tapping cycle | Parameter not found in current system |
+| **M Func To Run At Top Of Hole For G74 Counter Tapping** | ❌ Not Found | M function executed at top of hole for G74 counter tapping | Parameter not found in current system |
 | **Rigid Tapping Z Axis Sync Distance** | 241 | Z-axis synchronization distance for rigid tapping in rotational degrees | `cncPipe.parameter.SetMachineParameter(241, 360.0)` |
 | **Allow Spindle Override** | 36 (bit 2) | Bit 2 in rigid tapping parameter enables spindle override during tapping | See below |
 | **Do Not Wait For Index Pulse** | 36 (bit 1) | Bit 1 in rigid tapping parameter disables index pulse wait | See below |
@@ -4044,6 +4047,32 @@ catch (Exception ex)
     Console.WriteLine($"Basic parameter test failed: {ex.Message}");
 }
 ```
+
+## Missing Parameters - Not Found in Current System
+
+The following parameters were requested but do not appear to have corresponding parameter numbers in the current CNC12 system:
+
+### Spindle Configuration
+- **❌ Spindle Accel/Decel Time** - Spindle acceleration/deceleration timing control
+  - *Note*: This functionality may be controlled through spindle drive configuration rather than CNC12 parameters
+
+### Tapping Cycle M-Functions
+- **❌ M Func To Run At Bottom Of Hole G84 Tapping** - M function for G84 right-hand tapping bottom
+- **❌ M Func To Run At Top Of Hole For G84 Counter Tapping** - M function for G84 counter tapping top
+- **❌ M Func To Run At Bottom Of Hole G74 Tapping (Left Hand)** - M function for G74 left-hand tapping bottom  
+- **❌ M Func To Run At Top Of Hole For G74 Counter Tapping** - M function for G74 counter tapping top
+
+### Implementation Notes
+These parameters may be:
+1. **Not implemented** in the current CNC12 version
+2. **Controlled differently** through PLC logic or M-code programming
+3. **Hardware-specific** settings managed by the spindle drive rather than CNC12 parameters
+4. **Future features** not yet released in the current system version
+
+For tapping cycle customization, consider using:
+- Custom M-code programs in the PLC
+- Subroutine calls within tapping cycles
+- Manual G-code sequences rather than canned cycles
 
 ---
 

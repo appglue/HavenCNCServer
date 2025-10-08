@@ -83,6 +83,16 @@ namespace HavenCNCServer.CentriodAPI
         ENCODER_PORT_ASSIGNMENT = 315,
 
         // Probe Parameters
+        /// <summary>Probe tool number parameter</summary>
+        PROBE_TOOL_NUMBER_PARM = 12,
+        /// <summary>Probe recovery distance parameter</summary>
+        PROBING_RECOVERY_DISTANCE_PARM = 13,
+        /// <summary>Fast probing rate parameter</summary>
+        FAST_PROBING_RATE_PARM = 14,
+        /// <summary>Slow probing rate parameter</summary>
+        SLOW_PROBING_RATE_PARM = 15,
+        /// <summary>Probe protection parameter</summary>
+        PROBE_PROTECTION_PARM = 153,
         /// <summary>Probe input parameter</summary>
         PROBE_INPUT_PARM = 405,
         /// <summary>Probe input type parameter</summary>

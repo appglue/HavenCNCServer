@@ -2,6 +2,22 @@ using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Models
 {
+    /// <summary>
+    /// Tool height offset measurement method
+    /// </summary>
+    public enum ToolHeightMeasurementMethod
+    {
+        /// <summary>
+        /// Tool heights measured from machine Z home position
+        /// </summary>
+        ZHomeEqualsZRef = 0,
+        
+        /// <summary>
+        /// Tool heights measured against a standard reference tool
+        /// </summary>
+        ReferenceTool = 1
+    }
+
 public static partial class CentroidConfigUtil
     {
         /// <summary>
@@ -36,6 +52,11 @@ public static partial class CentroidConfigUtil
             /// Formula: 1,200,000 / divider = frequency in Hz
             /// </summary>
             public int? ChargePumpDivider { get; set; }
+            
+            /// <summary>
+            /// Tool height offset measurement method
+            /// </summary>
+            public ToolHeightMeasurementMethod? ToolHeightMeasurementMethod { get; set; }
         }
 
     }

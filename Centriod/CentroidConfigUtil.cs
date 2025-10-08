@@ -466,9 +466,6 @@ namespace HavenCNCServer.Models
                 if (config.SpindleAxis.HasValue)
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
                 
-                if (config.RigidTappingEnabled.HasValue)
-                    CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, config.RigidTappingEnabled.Value ? 1 : 0);
-                
                 if (config.LowGearRatio.HasValue)
                     CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
                 
@@ -496,12 +493,13 @@ namespace HavenCNCServer.Models
                 // if (config.MinSpeed.HasValue)
                 //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
 
-                // Configure spindle parameter 78 bit field only if encoder settings are provided
-                if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue)
+                // Configure spindle parameter 78 bit field only if encoder or scaling settings are provided
+                if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue || config.SpindleScalingEnabled.HasValue)
                 {
                     int spindleControl = 0;
-                    if (config.EncoderEnabled == true) spindleControl |= 1;        // Bit 0: Primary Encoder Enable
-                    if (config.SecondSpindleEnabled == true) spindleControl |= 8;   // Bit 3: Second Spindle Encoder
+                    if (config.EncoderEnabled == true) spindleControl |= 1;          // Bit 0: Primary Encoder Enable
+                    if (config.SecondSpindleEnabled == true) spindleControl |= 8;     // Bit 3: Second Spindle Encoder
+                    if (config.SpindleScalingEnabled == true) spindleControl |= 16;   // Bit 4: Spindle Scaling Enable
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
                 }
 
@@ -512,14 +510,36 @@ namespace HavenCNCServer.Models
                 }
 
                 // Configure rigid tapping parameters
-                if (config.RigidTappingSlowSpeed.HasValue)
+                if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue)
                 {
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, config.RigidTappingSlowSpeed.Value);
+                    double rpmValue = config.MinimumRigidTappingRPM ?? config.RigidTappingSlowSpeed ?? 0;
+                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, rpmValue);
                 }
 
-                if (config.RigidTappingSlowTime.HasValue)
+                if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue)
                 {
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, config.RigidTappingSlowTime.Value);
+                    double timeValue = config.DurationForMinRigidTappingRPM ?? config.RigidTappingSlowTime ?? 0;
+                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, timeValue);
+                }
+
+                if (config.SpindleDrift.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
+                }
+
+                if (config.RigidTappingZAxisSyncDistance.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
+                }
+
+                // Configure rigid tapping parameter 36 bit field for enable, override and index pulse settings
+                if (config.RigidTappingEnabled.HasValue || config.AllowSpindleOverride.HasValue || config.DoNotWaitForIndexPulse.HasValue)
+                {
+                    int rigidTappingControl = 0;
+                    if (config.RigidTappingEnabled == true) rigidTappingControl |= 1;           // Enable rigid tapping
+                    if (config.DoNotWaitForIndexPulse == true) rigidTappingControl |= 2;       // Bit 1: Do Not Wait For Index Pulse
+                    if (config.AllowSpindleOverride == true) rigidTappingControl |= 4;         // Bit 2: Allow Spindle Override
+                    CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, rigidTappingControl);
                 }
 
                 // Configure threading/tapping acceleration/deceleration distance
@@ -582,27 +602,48 @@ namespace HavenCNCServer.Models
                     parametersSet = true;
                 }
 
-                // Configure PWM Options parameter bit field only if options are provided
-                if (config.InverseEnabled.HasValue || config.Velocity100.HasValue || config.Floor.HasValue)
+                // Configure PWM Options parameter bit field
+                if (config.InverseOutput.HasValue || config.InverseEnabled.HasValue || 
+                    config.SCommandRange1000.HasValue || config.Velocity100.HasValue || 
+                    config.OnlyApplyFloorDuringVelocityMoves.HasValue || config.Floor.HasValue)
                 {
                     int pwmOptions = (int)CNCUtils.GetPWMOptions(config.OutputNumber);
                     
-                    if (config.InverseEnabled.HasValue)
-                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 0, config.InverseEnabled.Value);
+                    // Bit 0: Inverse Output
+                    bool inverseValue = config.InverseOutput ?? config.InverseEnabled ?? false;
+                    if (config.InverseOutput.HasValue || config.InverseEnabled.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 0, inverseValue);
                     
-                    if (config.Velocity100.HasValue)
-                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 1, config.Velocity100.Value);
+                    // Bit 1: S Command Range (true = 0-1000, false = 0-100)  
+                    bool sRange1000 = config.SCommandRange1000 ?? config.Velocity100 ?? false;
+                    if (config.SCommandRange1000.HasValue || config.Velocity100.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 1, sRange1000);
                     
-                    if (config.Floor.HasValue)
+                    // Bit 2: Only Apply Floor During Velocity Moves
+                    if (config.OnlyApplyFloorDuringVelocityMoves.HasValue)
+                        pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.OnlyApplyFloorDuringVelocityMoves.Value);
+                    else if (config.Floor.HasValue && !config.OnlyApplyFloorDuringVelocityMoves.HasValue)
                         pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.Floor.Value > 0);
                     
                     CNCUtils.SetPWMOptions(config.OutputNumber, pwmOptions);
                     parametersSet = true;
                 }
 
+                // Configure laser cooling fan delay timer
+                if (config.LaserCoolingFanDelayTimer.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.LASER_COOLING_FAN_DELAY_TIMER, config.LaserCoolingFanDelayTimer.Value);
+                    parametersSet = true;
+                }
+
                 if (parametersSet)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Configuring PWM Output {config.OutputNumber}: {config.Frequency?.ToString() ?? "not set"}Hz, Floor: {config.Floor?.ToString() ?? "not set"}%");
+                    System.Diagnostics.Debug.WriteLine($"Configuring PWM Output {config.OutputNumber}: " +
+                        $"Freq: {config.Frequency?.ToString() ?? "not set"}Hz, " +
+                        $"Floor: {config.Floor?.ToString() ?? "not set"}%, " +
+                        $"S Range: {(config.SCommandRange1000 == true ? "0-1000" : config.SCommandRange1000 == false ? "0-100" : "not set")}, " +
+                        $"Inverse: {config.InverseOutput?.ToString() ?? "not set"}, " +
+                        $"Fan Delay: {config.LaserCoolingFanDelayTimer?.ToString() ?? "not set"}s");
                 }
                 
                 return true;
@@ -689,19 +730,146 @@ namespace HavenCNCServer.Models
             {
                 bool parametersSet = false;
                 
-                // Set probe parameters using CNCUtils - only if provided
-                if (config.InputNumber.HasValue)
+                // Set probe PLC input (parameter 405) - support both new and legacy properties
+                int? inputNumber = config.ProbePLCInput ?? config.InputNumber;
+                if (inputNumber.HasValue)
                 {
-                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_PARM, config.InputNumber.Value);
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_PARM, inputNumber.Value);
                     parametersSet = true;
                 }
                 
-                if (config.InputType.HasValue)
+                // Set probe input type/state when tripped (parameter 406)
+                int? inputType = null;
+                if (config.InputStateWhenTripped.HasValue)
+                    inputType = (int)config.InputStateWhenTripped.Value;
+                else if (config.InputType.HasValue)
+                    inputType = config.InputType.Value;
+                
+                if (inputType.HasValue)
                 {
-                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_TYPE, config.InputType.Value);
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INPUT_TYPE, inputType.Value);
                     parametersSet = true;
                 }
                 
+                // Set probe type (parameter 409)
+                int? probeType = null;
+                if (config.ProbeType.HasValue)
+                    probeType = (int)config.ProbeType.Value;
+                else if (config.ProbeTypeInt.HasValue)
+                    probeType = config.ProbeTypeInt.Value;
+                
+                if (probeType.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_TYPE, probeType.Value);
+                    parametersSet = true;
+                }
+                
+                // Set probe tool number (parameter 12)
+                if (config.ProbeToolNumber.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_TOOL_NUMBER_PARM, config.ProbeToolNumber.Value);
+                    parametersSet = true;
+                }
+                
+                // Set fast probe rate (parameter 14)
+                if (config.FastProbeRate.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.FAST_PROBING_RATE_PARM, config.FastProbeRate.Value);
+                    parametersSet = true;
+                }
+                else if (config.FeedRate.HasValue) // Legacy support
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.FAST_PROBING_RATE_PARM, config.FeedRate.Value);
+                    parametersSet = true;
+                }
+                
+                // Set slow probe rate (parameter 15)
+                if (config.SlowProbeRate.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.SLOW_PROBING_RATE_PARM, config.SlowProbeRate.Value);
+                    parametersSet = true;
+                }
+                
+                // Set recovery distance (parameter 13)
+                if (config.RecoveryDistance.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBING_RECOVERY_DISTANCE_PARM, config.RecoveryDistance.Value);
+                    parametersSet = true;
+                }
+                
+                // Set maximum probing distance (need parameter number)
+                if (config.MaximumProbingDistance.HasValue)
+                {
+                    // TODO: Add parameter number when available
+                    System.Diagnostics.Debug.WriteLine($"Maximum probing distance: {config.MaximumProbingDistance.Value} (parameter number needed)");
+                }
+                
+                // Configure probe protection bit field (parameter 416 or 153)
+                if (config.ProbeProtectionEnabled.HasValue || config.ProbeProtectionBasedOnToolNumber.HasValue || config.ProbeInhibit.HasValue)
+                {
+                    int protectionValue = config.ProbeInhibit ?? 0;
+                    
+                    if (config.ProbeProtectionEnabled.HasValue)
+                        protectionValue = CNCUtils.ModifyBit(protectionValue, 0, config.ProbeProtectionEnabled.Value);
+                    
+                    if (config.ProbeProtectionBasedOnToolNumber.HasValue)
+                        protectionValue = CNCUtils.ModifyBit(protectionValue, 1, config.ProbeProtectionBasedOnToolNumber.Value);
+                    
+                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INHIBIT_PARM, protectionValue);
+                    parametersSet = true;
+                }
+                
+                // Set display warning (parameter 410 or 153)
+                bool? displayWarning = config.DisplayWarningToVerifyProbe ?? config.DisplayProbeWarning;
+                if (displayWarning.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.DISPLAY_PROBE_WARNING_PARAM, displayWarning.Value ? 1 : 0);
+                    parametersSet = true;
+                }
+                
+                // Set inhibit spindle when detect is on
+                if (config.InhibitSpindleWhenDetectOn.HasValue)
+                {
+                    // TODO: Add parameter number when available
+                    System.Diagnostics.Debug.WriteLine($"Inhibit spindle when detect on: {config.InhibitSpindleWhenDetectOn.Value} (parameter number needed)");
+                }
+                
+                // Configure jogging speed limits for each axis
+                // TODO: Implement axis jog rate configuration when CNCPipe instance is available
+                if (config.ProbeSlowJogSpeeds != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Probe slow jog speeds configured for {config.ProbeSlowJogSpeeds.Length} axes (implementation pending)");
+                    // for (int axis = 0; axis < Math.Min(config.ProbeSlowJogSpeeds.Length, 4); axis++)
+                    // {
+                    //     var axisEnum = (CNCPipe.Axes)(axis + 1); // AXIS_1, AXIS_2, etc.
+                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.SLOW_JOG_PROBE, config.ProbeSlowJogSpeeds[axis]);
+                    // }
+                    parametersSet = true;
+                }
+                
+                if (config.ProbeFastJogNegativeSpeeds != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Probe fast jog negative speeds configured for {config.ProbeFastJogNegativeSpeeds.Length} axes (implementation pending)");
+                    // for (int axis = 0; axis < Math.Min(config.ProbeFastJogNegativeSpeeds.Length, 4); axis++)
+                    // {
+                    //     var axisEnum = (CNCPipe.Axes)(axis + 1);
+                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS_PROBE, config.ProbeFastJogNegativeSpeeds[axis]);
+                    // }
+                    parametersSet = true;
+                }
+                
+                if (config.ProbeFastJogPositiveSpeeds != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Probe fast jog positive speeds configured for {config.ProbeFastJogPositiveSpeeds.Length} axes (implementation pending)");
+                    // for (int axis = 0; axis < Math.Min(config.ProbeFastJogPositiveSpeeds.Length, 4); axis++)
+                    // {
+                    //     var axisEnum = (CNCPipe.Axes)(axis + 1);
+                    //     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS_PROBE, config.ProbeFastJogPositiveSpeeds[axis]);
+                    // }
+                    parametersSet = true;
+                }
+                
+                // Legacy touch plate configuration
                 if (config.TouchPlateInputNumber.HasValue)
                 {
                     CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_NUMBER, config.TouchPlateInputNumber.Value);
@@ -713,29 +881,14 @@ namespace HavenCNCServer.Models
                     CNCUtils.SetParameterValue(CentroidParameters.TOUCH_PLATE_INPUT_TYPE, config.TouchPlateInputType.Value);
                     parametersSet = true;
                 }
-                
-                // Enhanced probe configuration parameters
-                if (config.ProbeType.HasValue)
-                {
-                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_TYPE, config.ProbeType.Value);
-                    parametersSet = true;
-                }
-                
-                if (config.DisplayProbeWarning.HasValue)
-                {
-                    CNCUtils.SetParameterValue(CentroidParameters.DISPLAY_PROBE_WARNING_PARAM, config.DisplayProbeWarning.Value ? 1 : 0);
-                    parametersSet = true;
-                }
-                
-                if (config.ProbeInhibit.HasValue)
-                {
-                    CNCUtils.SetParameterValue(CentroidParameters.PROBE_INHIBIT_PARM, config.ProbeInhibit.Value);
-                    parametersSet = true;
-                }
 
                 if (parametersSet)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Configuring Probe: Input {config.InputNumber?.ToString() ?? "not set"}, Type: {config.InputType?.ToString() ?? "not set"}");
+                    System.Diagnostics.Debug.WriteLine($"Configuring Probe: Input {inputNumber?.ToString() ?? "not set"}, " +
+                        $"Type: {config.ProbeType?.ToString() ?? "not set"}, " +
+                        $"Tool: {config.ProbeToolNumber?.ToString() ?? "not set"}, " +
+                        $"Fast Rate: {config.FastProbeRate?.ToString() ?? "not set"}, " +
+                        $"Slow Rate: {config.SlowProbeRate?.ToString() ?? "not set"}");
                 }
                 
                 return true;
