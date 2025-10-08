@@ -1,3 +1,5 @@
+using HavenCNCServer.CentriodAPI;
+
 namespace HavenCNCServer.Models
 {
 public static partial class CentroidConfigUtil
@@ -8,13 +10,14 @@ public static partial class CentroidConfigUtil
         public class GlobalSystemConfiguration
         {
             /// <summary>
-            /// Global step frequency for all axes (steps per second)
-            /// Supported values: 100000, 200000, 240000, 300000, 400000
+            /// Maximum number of steps that can be pulsed per second
+            /// Global step frequency setting for all axes
             /// </summary>
-            public int? StepFrequency { get; set; }
+            public StepFrequency? StepFrequency { get; set; }
             
             /// <summary>
-            /// Global drive fault delay for all axes (milliseconds)
+            /// Axis Motor Drive fault delay time (milliseconds)
+            /// Global drive fault delay for all axes
             /// </summary>
             public int? DriveFaultDelay { get; set; }
             

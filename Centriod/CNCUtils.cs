@@ -293,6 +293,16 @@ namespace HavenCNCServer.CentriodAPI
         }
 
         /// <summary>
+        /// Get the current global step frequency as enum value
+        /// </summary>
+        /// <returns>Step frequency enum value</returns>
+        public static StepFrequency GetStepFrequencyEnum()
+        {
+            int frequency = GetStepFrequency();
+            return (StepFrequency)frequency;
+        }
+
+        /// <summary>
         /// Set the global step frequency for all axes
         /// Supported frequencies: 100000, 200000, 240000, 300000, 400000 steps/second
         /// </summary>
@@ -313,39 +323,12 @@ namespace HavenCNCServer.CentriodAPI
         }
 
         /// <summary>
-        /// Get the global drive fault delay for all axes
+        /// Set the global step frequency using enum value
         /// </summary>
-        /// <returns>Drive fault delay in milliseconds</returns>
-        public static int GetDriveFaultDelay()
+        /// <param name="frequency">Step frequency enum value</param>
+        public static void SetStepFrequency(StepFrequency frequency)
         {
-            return (int)GetParameterValue(CentroidParameters.PLC_CLEARPATH_OR_G540);
-        }
-
-        /// <summary>
-        /// Set the global drive fault delay for all axes
-        /// </summary>
-        /// <param name="delayMs">Drive fault delay in milliseconds</param>
-        public static void SetDriveFaultDelay(int delayMs)
-        {
-            SetParameterValue(CentroidParameters.PLC_CLEARPATH_OR_G540, delayMs);
-        }
-
-        /// <summary>
-        /// Get the global axis signal inversion settings
-        /// </summary>
-        /// <returns>Axis signal inversion bit field</returns>
-        public static int GetAxisSignalInversion()
-        {
-            return (int)GetParameterValue(CentroidParameters.ACORN_OUTPUT_INVERSION_PARM);
-        }
-
-        /// <summary>
-        /// Set the global axis signal inversion settings
-        /// </summary>
-        /// <param name="inversionBits">Axis signal inversion bit field</param>
-        public static void SetAxisSignalInversion(int inversionBits)
-        {
-            SetParameterValue(CentroidParameters.ACORN_OUTPUT_INVERSION_PARM, inversionBits);
+            SetStepFrequency((int)frequency);
         }
 
         /// <summary>
@@ -525,158 +508,8 @@ namespace HavenCNCServer.CentriodAPI
         }
 
         /// <summary>
-        /// Get touch plate wall height
-        /// </summary>
-        /// <returns>Touch plate wall height</returns>
-        public static double GetTouchPlateWallHeight()
-        {
-            return GetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_HEIGHT_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate wall height
-        /// </summary>
-        /// <param name="height">Wall height value</param>
-        public static void SetTouchPlateWallHeight(double height)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_HEIGHT_PARM, height);
-        }
-
-        /// <summary>
-        /// Get touch plate wall thickness
-        /// </summary>
-        /// <returns>Touch plate wall thickness</returns>
-        public static double GetTouchPlateWallThickness()
-        {
-            return GetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_THICKNESS_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate wall thickness
-        /// </summary>
-        /// <param name="thickness">Wall thickness value</param>
-        public static void SetTouchPlateWallThickness(double thickness)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_WALL_THICKNESS_PARM, thickness);
-        }
-
-        /// <summary>
-        /// Get touch plate internal diameter
-        /// </summary>
-        /// <returns>Touch plate internal diameter</returns>
-        public static double GetTouchPlateInternalDiameter()
-        {
-            return GetParameterValue(CentroidParameters.TOUCH_PLATE_INTERNAL_DIAMETER_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate internal diameter
-        /// </summary>
-        /// <param name="diameter">Internal diameter value</param>
-        public static void SetTouchPlateInternalDiameter(double diameter)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_INTERNAL_DIAMETER_PARM, diameter);
-        }
-
-        /// <summary>
-        /// Get touch plate fast probing rate
-        /// </summary>
-        /// <returns>Touch plate fast rate</returns>
-        public static double GetTouchPlateFastRate()
-        {
-            return GetParameterValue(CentroidParameters.TOUCH_PLATE_FAST_RATE_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate fast probing rate
-        /// </summary>
-        /// <param name="rate">Fast probing rate</param>
-        public static void SetTouchPlateFastRate(double rate)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_FAST_RATE_PARM, rate);
-        }
-
-        /// <summary>
-        /// Get touch plate slow probing rate
-        /// </summary>
-        /// <returns>Touch plate slow rate</returns>
-        public static double GetTouchPlateSlowRate()
-        {
-            return GetParameterValue(CentroidParameters.TOUCH_PLATE_SLOW_RATE_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate slow probing rate
-        /// </summary>
-        /// <param name="rate">Slow probing rate</param>
-        public static void SetTouchPlateSlowRate(double rate)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_SLOW_RATE_PARM, rate);
-        }
-
-        /// <summary>
-        /// Get touch plate attributes bit field
-        /// </summary>
-        /// <returns>Touch plate attributes</returns>
-        public static int GetTouchPlateAttributes()
-        {
-            return (int)GetParameterValue(CentroidParameters.TOUCH_PLATE_ATTRIBUTES_PARM);
-        }
-
-        /// <summary>
-        /// Set touch plate attributes bit field
-        /// </summary>
-        /// <param name="attributes">Touch plate attributes bit field</param>
-        public static void SetTouchPlateAttributes(int attributes)
-        {
-            SetParameterValue(CentroidParameters.TOUCH_PLATE_ATTRIBUTES_PARM, attributes);
-        }
-
-        /// <summary>
         /// Get second spindle maximum speed
         /// </summary>
-        /// <returns>Second spindle maximum speed</returns>
-        public static int GetSecondSpindleMaxSpeed()
-        {
-            return (int)GetParameterValue(CentroidParameters.SECOND_SPINDLE_MAX_SPEED);
-        }
-
-        /// <summary>
-        /// Set second spindle maximum speed
-        /// </summary>
-        /// <param name="maxSpeed">Maximum speed value</param>
-        public static void SetSecondSpindleMaxSpeed(int maxSpeed)
-        {
-            SetParameterValue(CentroidParameters.SECOND_SPINDLE_MAX_SPEED, maxSpeed);
-        }
-
-        /// <summary>
-        /// Get second spindle minimum speed
-        /// </summary>
-        /// <returns>Second spindle minimum speed</returns>
-        public static int GetSecondSpindleMinSpeed()
-        {
-            return (int)GetParameterValue(CentroidParameters.SECOND_SPINDLE_MIN_SPEED);
-        }
-
-        /// <summary>
-        /// Set second spindle minimum speed
-        /// </summary>
-        /// <param name="minSpeed">Minimum speed value</param>
-        public static void SetSecondSpindleMinSpeed(int minSpeed)
-        {
-            SetParameterValue(CentroidParameters.SECOND_SPINDLE_MIN_SPEED, minSpeed);
-        }
-
-        /// <summary>
-        /// Check if second spindle is enabled
-        /// </summary>
-        /// <returns>True if second spindle is enabled</returns>
-        public static bool IsSecondSpindleEnabled()
-        {
-            return GetParameterValue(CentroidParameters.SECOND_SPINDLE_ENABLE) != 0;
-        }
-
         /// <summary>
         /// Enable or disable second spindle
         /// </summary>
@@ -684,15 +517,6 @@ namespace HavenCNCServer.CentriodAPI
         public static void SetSecondSpindleEnabled(bool enabled)
         {
             SetParameterValue(CentroidParameters.SECOND_SPINDLE_ENABLE, enabled ? 1 : 0);
-        }
-
-        /// <summary>
-        /// Check if enhanced ATC is enabled
-        /// </summary>
-        /// <returns>True if enhanced ATC is enabled</returns>
-        public static bool IsEnhancedATCEnabled()
-        {
-            return GetParameterValue(CentroidParameters.ENHANCED_ATC_PARM) != 0;
         }
 
         /// <summary>
@@ -722,132 +546,6 @@ namespace HavenCNCServer.CentriodAPI
             int currentValue = (int)GetParameterValue(CentroidParameters.GANG_TOOL_ENABLE);
             int newValue = ModifyBit(currentValue, 0, enabled);
             SetParameterValue(CentroidParameters.GANG_TOOL_ENABLE, newValue);
-        }
-
-        /// <summary>
-        /// Get SSV (Spindle Speed Variation) cycle time
-        /// </summary>
-        /// <returns>SSV cycle time</returns>
-        public static double GetSSVCycleTime()
-        {
-            return GetParameterValue(CentroidParameters.SSV_CYCLE_TIME);
-        }
-
-        /// <summary>
-        /// Set SSV (Spindle Speed Variation) cycle time
-        /// </summary>
-        /// <param name="cycleTime">SSV cycle time</param>
-        public static void SetSSVCycleTime(double cycleTime)
-        {
-            SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, cycleTime);
-        }
-
-        /// <summary>
-        /// Get SSV (Spindle Speed Variation) amount
-        /// </summary>
-        /// <returns>SSV amount percentage</returns>
-        public static double GetSSVAmount()
-        {
-            return GetParameterValue(CentroidParameters.SSV_AMOUNT);
-        }
-
-        /// <summary>
-        /// Set SSV (Spindle Speed Variation) amount
-        /// </summary>
-        /// <param name="amount">SSV amount percentage</param>
-        public static void SetSSVAmount(double amount)
-        {
-            SetParameterValue(CentroidParameters.SSV_AMOUNT, amount);
-        }
-
-        /// <summary>
-        /// Get FRV (Feed Rate Variation) cycle time
-        /// </summary>
-        /// <returns>FRV cycle time</returns>
-        public static double GetFRVCycleTime()
-        {
-            return GetParameterValue(CentroidParameters.FRV_CYCLE_TIME);
-        }
-
-        /// <summary>
-        /// Set FRV (Feed Rate Variation) cycle time
-        /// </summary>
-        /// <param name="cycleTime">FRV cycle time</param>
-        public static void SetFRVCycleTime(double cycleTime)
-        {
-            SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, cycleTime);
-        }
-
-        /// <summary>
-        /// Get spindle deceleration time
-        /// </summary>
-        /// <returns>Spindle deceleration time in seconds</returns>
-        public static double GetSpindleDecelTime()
-        {
-            return GetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM);
-        }
-
-        /// <summary>
-        /// Set spindle deceleration time
-        /// </summary>
-        /// <param name="decelTime">Spindle deceleration time in seconds</param>
-        public static void SetSpindleDecelTime(double decelTime)
-        {
-            SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, decelTime);
-        }
-
-        /// <summary>
-        /// Get rigid tapping slow spindle speed
-        /// </summary>
-        /// <returns>Rigid tapping slow spindle speed</returns>
-        public static double GetRigidTappingSlowSpindleSpeed()
-        {
-            return GetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM);
-        }
-
-        /// <summary>
-        /// Set rigid tapping slow spindle speed
-        /// </summary>
-        /// <param name="speed">Rigid tapping slow spindle speed</param>
-        public static void SetRigidTappingSlowSpindleSpeed(double speed)
-        {
-            SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, speed);
-        }
-
-        /// <summary>
-        /// Get rigid tapping slow spindle time
-        /// </summary>
-        /// <returns>Rigid tapping slow spindle time</returns>
-        public static double GetRigidTappingSlowSpindleTime()
-        {
-            return GetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM);
-        }
-
-        /// <summary>
-        /// Set rigid tapping slow spindle time
-        /// </summary>
-        /// <param name="time">Rigid tapping slow spindle time</param>
-        public static void SetRigidTappingSlowSpindleTime(double time)
-        {
-            SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, time);
-        }
-
-        /// <summary>
-        /// Get threading and tapping acceleration/deceleration distance
-        /// </summary>
-        /// <returns>Acceleration/deceleration distance</returns>
-        public static double GetThreadingTappingAccelDecelDistance()
-        {
-            return GetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM);
-        }
-
-        /// <summary>
-        /// Set threading and tapping acceleration/deceleration distance
-        /// </summary>
-        /// <param name="distance">Acceleration/deceleration distance</param>
-        public static void SetThreadingTappingAccelDecelDistance(double distance)
-        {
-            SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, distance);
         }
 
     }

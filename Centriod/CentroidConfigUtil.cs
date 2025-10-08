@@ -216,8 +216,26 @@ namespace HavenCNCServer.Models
                 if (config.FastJogRate.HasValue)
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG, config.FastJogRate.Value);
                 
+                if (config.MaxRate.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.MAX, config.MaxRate.Value);
+                
+                if (config.FastJogPlusDirection.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS, config.FastJogPlusDirection.Value);
+                
+                if (config.FastJogMinusDirection.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS, config.FastJogMinusDirection.Value);
+                
                 if (config.AccelerationTime.HasValue)
                     cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime.Value);
+                
+                // Note: DriveEnableDelay may be a global parameter rather than per-axis
+                // This would need to be set via parameter if it's per-axis specific
+                if (config.DriveEnableDelay.HasValue)
+                {
+                    // This might be a parameter-based setting rather than API call
+                    // Implementation depends on actual parameter structure
+                    System.Diagnostics.Debug.WriteLine($"DriveEnableDelay for Axis {config.AxisNumber}: {config.DriveEnableDelay.Value}ms - parameter implementation needed");
+                }
                 
                 if (!string.IsNullOrEmpty(config.Label))
                     cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
@@ -857,7 +875,7 @@ namespace HavenCNCServer.Models
                 {
                     // Calculate parameter value from step frequency
                     const int PulseStepFrequency = 1200000;
-                    double parameterValue = PulseStepFrequency / (double)config.StepFrequency.Value;
+                    double parameterValue = PulseStepFrequency / (double)(int)config.StepFrequency.Value;
                     CNCUtils.SetParameterValue(CentroidParameters.ACORN_STEPPER_PULSE_RATE_PARM, parameterValue);
                     parametersSet = true;
                 }

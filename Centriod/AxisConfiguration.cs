@@ -53,9 +53,29 @@ public static partial class CentroidConfigUtil
             public double? FastJogRate { get; set; }
             
             /// <summary>
+            /// Maximum rate for axis movement
+            /// </summary>
+            public double? MaxRate { get; set; }
+            
+            /// <summary>
+            /// Fast jog rate in plus direction
+            /// </summary>
+            public double? FastJogPlusDirection { get; set; }
+            
+            /// <summary>
+            /// Fast jog rate in minus direction
+            /// </summary>
+            public double? FastJogMinusDirection { get; set; }
+            
+            /// <summary>
             /// Acceleration time in seconds
             /// </summary>
             public double? AccelerationTime { get; set; }
+            
+            /// <summary>
+            /// Drive enable delay in milliseconds
+            /// </summary>
+            public int? DriveEnableDelay { get; set; }
             
             /// <summary>
             /// Whether axis direction is reversed
