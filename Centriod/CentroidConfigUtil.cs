@@ -228,6 +228,9 @@ namespace HavenCNCServer.Models
                 if (config.AccelerationTime.HasValue)
                     cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime.Value);
                 
+                if (config.HomingFeedrate.HasValue)
+                    cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.HOME_JOG, config.HomingFeedrate.Value);
+                
                 // Note: DriveEnableDelay may be a global parameter rather than per-axis
                 // This would need to be set via parameter if it's per-axis specific
                 if (config.DriveEnableDelay.HasValue)
@@ -325,6 +328,54 @@ namespace HavenCNCServer.Models
                     CNCUtils.SetParameterValue(parameterNumber, axisProperties);
                     System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} properties: Parameter {parameterNumber} = {axisProperties}");
                 }
+                
+                // Handle axis signal inversions (Parameter 961 - 4-bit nibbles per axis)
+                if (config.StepSignalInverted.HasValue || config.DirectionSignalInverted.HasValue || config.EnableSignalInverted.HasValue)
+                {
+                    ConfigureAxisSignalInversion(config);
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Configures axis signal inversions using parameter 961 (4-bit nibbles per axis)
+        /// </summary>
+        /// <param name="config">Axis configuration with signal inversion settings</param>
+        /// <returns>True if successful</returns>
+        private static bool ConfigureAxisSignalInversion(AxisConfiguration config)
+        {
+            try
+            {
+                // Get current axis signal inversion parameter (961)
+                int currentInversions = (int)CNCUtils.GetParameterValue(CentroidParameters.ACORN_OUTPUT_INVERSION_PARM);
+                
+                // Calculate the nibble position for this axis (4 bits per axis)
+                int nibblePosition = (config.AxisNumber - 1) * 4;
+                
+                // Clear the current nibble for this axis (4 bits)
+                int nibbleMask = 0xF << nibblePosition;
+                int clearedInversions = currentInversions & ~nibbleMask;
+                
+                // Build the new nibble value
+                int newNibble = 0;
+                if (config.StepSignalInverted == true) newNibble |= 0x1;      // Bit 0: Step
+                if (config.DirectionSignalInverted == true) newNibble |= 0x2; // Bit 1: Direction  
+                if (config.EnableSignalInverted == true) newNibble |= 0x4;    // Bit 2: Enable
+                // Bit 3: Quadrature (not exposed in this UI)
+                
+                // Set the new nibble in the correct position
+                int newInversions = clearedInversions | (newNibble << nibblePosition);
+                
+                // Update the parameter
+                CNCUtils.SetParameterValue(CentroidParameters.ACORN_OUTPUT_INVERSION_PARM, newInversions);
+                
+                System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} signal inversions: Parameter 961 = {newInversions:X} (nibble: {newNibble:X})");
                 
                 return true;
             }
@@ -897,10 +948,73 @@ namespace HavenCNCServer.Models
                     CNCUtils.SetParameterValue(CentroidParameters.AD2_LOW_RESOLUTION_PARM, config.LowResolutionMode.Value ? 1 : 0);
                     parametersSet = true;
                 }
+                
+                if (config.ChargePumpDivider.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.CHARGE_PUMP_PARM, config.ChargePumpDivider.Value);
+                    parametersSet = true;
+                }
 
                 if (parametersSet)
                 {
                     System.Diagnostics.Debug.WriteLine($"Configuring Global System: Step Frequency: {config.StepFrequency?.ToString() ?? "not set"}, Drive Fault Delay: {config.DriveFaultDelay?.ToString() ?? "not set"}");
+                }
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Rotary Configuration Methods
+
+        /// <summary>
+        /// Configures global rotary axis parameters
+        /// </summary>
+        /// <param name="config">Rotary configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureRotary(RotaryConfiguration config)
+        {
+            try
+            {
+                bool parametersSet = false;
+                
+                // Set rotary jog increment - only if provided
+                if (config.JogIncrement.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.JogIncrement.Value);
+                    parametersSet = true;
+                }
+                
+                // Handle CNC compatibility parameter bit flags
+                if (config.SlaveRotaryFeedrateToLinear.HasValue || config.PreventRotaryModalFeedrate.HasValue)
+                {
+                    // Get current CNC compatibility parameter value
+                    int compatibilityFlags = (int)CNCUtils.GetParameterValue(CentroidParameters.CNC_COMPATIBILITY_PARM);
+                    
+                    // Bit 3: Slave rotary axis feedrate to linear move feedrate
+                    if (config.SlaveRotaryFeedrateToLinear.HasValue)
+                    {
+                        compatibilityFlags = CNCUtils.ModifyBit(compatibilityFlags, 3, config.SlaveRotaryFeedrateToLinear.Value);
+                    }
+                    
+                    // Bit 5: Rotary-only moves won't use modal feedrate
+                    if (config.PreventRotaryModalFeedrate.HasValue)
+                    {
+                        compatibilityFlags = CNCUtils.ModifyBit(compatibilityFlags, 5, config.PreventRotaryModalFeedrate.Value);
+                    }
+                    
+                    CNCUtils.SetParameterValue(CentroidParameters.CNC_COMPATIBILITY_PARM, compatibilityFlags);
+                    parametersSet = true;
+                }
+
+                if (parametersSet)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Configuring Rotary: Jog Increment: {config.JogIncrement?.ToString() ?? "not set"} degrees");
                 }
                 
                 return true;
@@ -996,7 +1110,7 @@ namespace HavenCNCServer.Models
             List<PWMConfiguration>? pwmOutputs = null,
             ATCConfiguration? atc = null)
         {
-            return ConfigureCompleteMachine(inputs, outputs, axes, spindle, probe, pwmOutputs, atc, null, null, null);
+            return ConfigureCompleteMachine(inputs, outputs, axes, spindle, probe, pwmOutputs, atc, null, null, null, null);
         }
 
         /// <summary>
@@ -1012,6 +1126,7 @@ namespace HavenCNCServer.Models
         /// <param name="touchPlate">Touch plate configuration (optional)</param>
         /// <param name="secondSpindle">Second spindle configuration (optional)</param>
         /// <param name="globalSystem">Global system configuration (optional)</param>
+        /// <param name="rotary">Rotary axis configuration (optional)</param>
         /// <returns>True if successful</returns>
         public static bool ConfigureCompleteMachine(
             List<IOFunction> inputs,
@@ -1023,7 +1138,8 @@ namespace HavenCNCServer.Models
             ATCConfiguration? atc = null,
             TouchPlateConfiguration? touchPlate = null,
             SecondSpindleConfiguration? secondSpindle = null,
-            GlobalSystemConfiguration? globalSystem = null)
+            GlobalSystemConfiguration? globalSystem = null,
+            RotaryConfiguration? rotary = null)
         {
             try
             {
@@ -1086,6 +1202,12 @@ namespace HavenCNCServer.Models
 
                 // Step 9: Configure ATC if provided
                 if (atc != null && !ConfigureATC(atc))
+                {
+                    return false;
+                }
+
+                // Step 10: Configure rotary settings if provided
+                if (rotary != null && !ConfigureRotary(rotary))
                 {
                     return false;
                 }

@@ -11,8 +11,14 @@ namespace HavenCNCServer.CentriodAPI
         ESTOP_INPUT_PARM = 0,
         /// <summary>X axis orientation parameter</summary>
         X_ORIENTATION_PARM = 1,
+        /// <summary>CNC compatibility parameter - bit field for various compatibility flags</summary>
+        CNC_COMPATIBILITY_PARM = 2,
         /// <summary>Tool changer installed parameter</summary>
         TOOL_CHANGER_INSTALLED = 6,
+
+        // Rotary Axis Parameters
+        /// <summary>Rotary axis jog increment parameter (degrees)</summary>
+        ROTARY_JOG_INCREMENT_PARM = 41,
 
         // Spindle Parameters
         /// <summary>Spindle encoder counts per revolution parameter</summary>
@@ -143,6 +149,8 @@ namespace HavenCNCServer.CentriodAPI
         AXIS_5_PAIRING = 555,
 
         // Global System Parameters
+        /// <summary>Charge pump frequency divider parameter</summary>
+        CHARGE_PUMP_PARM = 960,
         /// <summary>Global axis signal inversion parameter</summary>
         ACORN_OUTPUT_INVERSION_PARM = 961,
         /// <summary>Global drive fault delay parameter</summary>

@@ -73,6 +73,11 @@ public static partial class CentroidConfigUtil
             public double? AccelerationTime { get; set; }
             
             /// <summary>
+            /// Homing feedrate - the feedrate that the machine will run at to home each axis
+            /// </summary>
+            public double? HomingFeedrate { get; set; }
+            
+            /// <summary>
             /// Drive enable delay in milliseconds
             /// </summary>
             public int? DriveEnableDelay { get; set; }
@@ -121,6 +126,21 @@ public static partial class CentroidConfigUtil
             /// Rotary axis parallel to Y (Parameter bit 12)
             /// </summary>
             public bool? ParallelToY { get; set; }
+            
+            /// <summary>
+            /// Invert step signal for this axis (Parameter 961 - 4-bit nibble per axis)
+            /// </summary>
+            public bool? StepSignalInverted { get; set; }
+            
+            /// <summary>
+            /// Invert direction signal for this axis (Parameter 961 - 4-bit nibble per axis)
+            /// </summary>
+            public bool? DirectionSignalInverted { get; set; }
+            
+            /// <summary>
+            /// Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)
+            /// </summary>
+            public bool? EnableSignalInverted { get; set; }
         }
 
     }

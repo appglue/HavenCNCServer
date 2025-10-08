@@ -2396,6 +2396,51 @@ Controls plasma low-resolution adjustment mode for the entire system.
 // and affects plasma cutting precision across all axes
 ```
 
+### Charge Pump Configuration
+**Parameter**: 960 (`CHARGE_PUMP_PARM`)
+
+Controls the charge pump frequency divider for systems that require charge pump signals for drive enable functionality. The charge pump provides a safety signal that must be present for drives to operate.
+
+#### Charge Pump Frequency Calculation
+The charge pump frequency is calculated using a divider from a base frequency of 1,200,000 Hz:
+```
+Charge Pump Frequency = 1,200,000 / Divider
+```
+
+#### Common Charge Pump Settings
+```csharp
+// Disable charge pump (set divider to 0)
+cncPipe.parameter.SetMachineParameter(960, 0);
+
+// Enable charge pump with 12.5 kHz frequency (divider = 96)
+cncPipe.parameter.SetMachineParameter(960, 96);
+// Result: 1,200,000 / 96 = 12,500 Hz
+
+// Custom frequency calculation
+double desiredFrequency = 10000;  // 10 kHz
+double divider = 1200000 / desiredFrequency;
+cncPipe.parameter.SetMachineParameter(960, divider);
+
+// Read current charge pump setting
+cncPipe.parameter.GetMachineParameterValue(960, out double chargePumpDivider);
+if (chargePumpDivider == 0)
+{
+    Console.WriteLine("Charge pump is disabled");
+}
+else
+{
+    double frequency = 1200000 / chargePumpDivider;
+    Console.WriteLine($"Charge pump frequency: {frequency:N0} Hz (divider: {chargePumpDivider})");
+}
+```
+
+#### Charge Pump Usage Notes
+- **Divider = 0**: Charge pump disabled (turned off)
+- **Default Divider**: 96 (produces 12.5 kHz frequency) when charge pump is enabled
+- **Safety Feature**: Many drives require charge pump signal for operation
+- **Output Assignment**: Charge pump output must be assigned to a physical output pin in PLC configuration
+- **Frequency Range**: Typically 10-15 kHz for most drive systems
+
 ### Summary of Global vs Per-Axis Settings
 
 #### Global Settings (Apply to ALL Axes):
@@ -2403,6 +2448,7 @@ Controls plasma low-resolution adjustment mode for the entire system.
 - **Signal Inversions**: Parameter 961 (4-bit nibbles per axis)
 - **Drive Fault Delay**: Parameter 991 (milliseconds)
 - **Low Resolution Mode**: Parameter 225 (plasma systems)
+- **Charge Pump**: Parameter 960 (frequency divider)
 
 #### Per-Axis Settings:
 - **Steps per Revolution**: Individual via `cncPipe.axis.SetCountsPerTurn(axis, value)`

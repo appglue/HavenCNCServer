@@ -30,6 +30,12 @@ public static partial class CentroidConfigUtil
             /// Low resolution mode for plasma systems
             /// </summary>
             public bool? LowResolutionMode { get; set; }
+            
+            /// <summary>
+            /// Divider for charge pump frequency. 0 = turned off, 96 = default (12.5kHz)
+            /// Formula: 1,200,000 / divider = frequency in Hz
+            /// </summary>
+            public int? ChargePumpDivider { get; set; }
         }
 
     }
