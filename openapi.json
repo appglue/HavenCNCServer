@@ -592,6 +592,59 @@
         }
       }
     },
+    "/api/CNCConfiguration/ConfigureToolTouchOff": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Configure tool touch off settings",
+        "requestBody": {
+          "description": "Tool touch off configuration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolTouchOffConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolTouchOffConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolTouchOffConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCConfiguration/ValidateIOConfiguration": {
       "post": {
         "tags": [
@@ -1153,6 +1206,90 @@
         }
       }
     },
+    "/api/CNCIO/GetAvailableInputs": {
+      "get": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Get available input port numbers",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCIO/GetAvailableOutputs": {
+      "get": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Get available output port numbers",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCIO/GetCurrentInputs": {
       "get": {
         "tags": [
@@ -1161,7 +1298,33 @@
         "summary": "Get current input states",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1174,7 +1337,33 @@
         "summary": "Get current output states",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1189,7 +1378,6 @@
           {
             "name": "inputNumber",
             "in": "path",
-            "description": "Input number to check",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1199,24 +1387,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
+            "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               }
             }
@@ -1234,7 +1419,6 @@
           {
             "name": "outputNumber",
             "in": "path",
-            "description": "Output number to check",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1244,24 +1428,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
+            "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               }
             }
@@ -1276,7 +1457,6 @@
         ],
         "summary": "Set output state",
         "requestBody": {
-          "description": "Output setting request",
           "content": {
             "application/json": {
               "schema": {
@@ -1298,26 +1478,6 @@
         "responses": {
           "200": {
             "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
           }
         }
       }
@@ -1327,9 +1487,8 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Override input value (for testing purposes only)",
+        "summary": "Override input for testing",
         "requestBody": {
-          "description": "Input override request",
           "content": {
             "application/json": {
               "schema": {
@@ -1351,26 +1510,38 @@
         "responses": {
           "200": {
             "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
+          }
+        }
+      }
+    },
+    "/api/CNCIO/OverrideOutput": {
+      "post": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Override output for testing",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideIORequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideIORequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideIORequest"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
           }
         }
       }
@@ -1388,59 +1559,6 @@
         }
       }
     },
-    "/api/CNCIO/OverrideOutput": {
-      "post": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Override output value (for testing purposes only)",
-        "requestBody": {
-          "description": "Output override request",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/CNCIO/ResetOutputOverrides": {
       "post": {
         "tags": [
@@ -1454,56 +1572,16 @@
         }
       }
     },
-    "/api/CNCIO/GetAvailableInputs": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Get available input port numbers for the current CNC system",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/GetAvailableOutputs": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Get available output port numbers for the current CNC system",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/GetIOAvailability": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Get both available inputs and outputs with system information",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCIO/IsInputAvailable/{inputNumber}": {
       "get": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Check if a specific input port is available",
+        "summary": "Check if input is available",
         "parameters": [
           {
             "name": "inputNumber",
             "in": "path",
-            "description": "Input port number to check",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1513,7 +1591,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -1523,12 +1618,11 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Check if a specific output port is available",
+        "summary": "Check if output is available",
         "parameters": [
           {
             "name": "outputNumber",
             "in": "path",
-            "description": "Output port number to check",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1538,7 +1632,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -1548,10 +1659,27 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get comprehensive system information",
+        "summary": "Get system information",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1561,12 +1689,11 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Invert input polarity using CNC12 parameters",
+        "summary": "Invert input polarity",
         "parameters": [
           {
             "name": "inputNumber",
             "in": "path",
-            "description": "Input number to invert (1-80)",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1576,7 +1703,6 @@
           {
             "name": "invert",
             "in": "query",
-            "description": "True to invert, false to restore normal polarity",
             "schema": {
               "type": "boolean",
               "default": true
@@ -1585,24 +1711,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
+            "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               }
             }
@@ -1615,47 +1738,52 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Invert multiple inputs using CNC12 parameters",
+        "summary": "Invert multiple inputs",
         "requestBody": {
-          "description": "Input inversion configuration",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InputInversionConfiguration"
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/InputInversionConfiguration"
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/InputInversionConfiguration"
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Success"
-          },
-          "400": {
-            "description": "Bad Request",
+            "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "boolean"
                 }
               }
             }
@@ -1670,7 +1798,6 @@
         ],
         "summary": "Set the movement type (relative or absolute)",
         "requestBody": {
-          "description": "Movement type to set",
           "content": {
             "application/json": {
               "schema": {
@@ -1704,7 +1831,24 @@
         "summary": "Get the current movement type",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoveType"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoveType"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoveType"
+                }
+              }
+            }
           }
         }
       }
@@ -1717,7 +1861,24 @@
         "summary": "Get current machine position",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
+              }
+            }
           }
         }
       }
@@ -1729,7 +1890,6 @@
         ],
         "summary": "Move to specified coordinates",
         "requestBody": {
-          "description": "Move request with coordinates and optional speeds",
           "content": {
             "application/json": {
               "schema": {
@@ -1762,7 +1922,6 @@
         ],
         "summary": "Move to coordinates until an IO event occurs",
         "requestBody": {
-          "description": "Move request with coordinates, speeds, and IO event",
           "content": {
             "application/json": {
               "schema": {
@@ -1795,7 +1954,6 @@
         ],
         "summary": "Move in a direction until an IO event occurs",
         "requestBody": {
-          "description": "Direction movement request",
           "content": {
             "application/json": {
               "schema": {
@@ -1828,7 +1986,6 @@
         ],
         "summary": "Set fixture point using current machine position or specified coordinates",
         "requestBody": {
-          "description": "Point coordinates to set for the fixture",
           "content": {
             "application/json": {
               "schema": {
@@ -1862,7 +2019,27 @@
         "summary": "Get fast feed rate",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
           }
         }
       }
@@ -1874,7 +2051,6 @@
         ],
         "summary": "Set fast feed rate",
         "requestBody": {
-          "description": "Feed rate to set",
           "content": {
             "application/json": {
               "schema": {
@@ -1911,7 +2087,27 @@
         "summary": "Get normal feed rate",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
           }
         }
       }
@@ -1923,7 +2119,6 @@
         ],
         "summary": "Set normal feed rate",
         "requestBody": {
-          "description": "Feed rate to set",
           "content": {
             "application/json": {
               "schema": {
@@ -1959,7 +2154,6 @@
         ],
         "summary": "Adjust normal feed rate by factor",
         "requestBody": {
-          "description": "Adjustment factor (-200 to +200, where 0 is no change, 100 is double, -100 is half)",
           "content": {
             "application/json": {
               "schema": {
@@ -1996,7 +2190,27 @@
         "summary": "Get current normal feed rate adjustment factor",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
           }
         }
       }
@@ -2021,7 +2235,6 @@
         ],
         "summary": "Adjust fast feed rate by factor",
         "requestBody": {
-          "description": "Adjustment factor (-200 to +200, where 0 is no change, 100 is double, -100 is half)",
           "content": {
             "application/json": {
               "schema": {
@@ -2058,7 +2271,27 @@
         "summary": "Get current fast feed rate adjustment factor",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
           }
         }
       }
@@ -2136,6 +2369,26 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -2215,6 +2468,26 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -2544,7 +2817,24 @@
         "summary": "Enter full screen mode",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -2557,7 +2847,24 @@
         "summary": "Exit full screen mode",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -2570,7 +2877,24 @@
         "summary": "Get current full screen state",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -2622,7 +2946,24 @@
         "summary": "Check if machine is homed",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -2661,7 +3002,33 @@
         "summary": "Get current error state",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2700,7 +3067,24 @@
         "summary": "Check if machine has current errors",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }
@@ -2914,10 +3298,40 @@
             "format": "double",
             "nullable": true
           },
+          "maxRate": {
+            "type": "number",
+            "description": "Maximum rate for axis movement",
+            "format": "double",
+            "nullable": true
+          },
+          "fastJogPlusDirection": {
+            "type": "number",
+            "description": "Fast jog rate in plus direction",
+            "format": "double",
+            "nullable": true
+          },
+          "fastJogMinusDirection": {
+            "type": "number",
+            "description": "Fast jog rate in minus direction",
+            "format": "double",
+            "nullable": true
+          },
           "accelerationTime": {
             "type": "number",
             "description": "Acceleration time in seconds",
             "format": "double",
+            "nullable": true
+          },
+          "homingFeedrate": {
+            "type": "number",
+            "description": "Homing feedrate - the feedrate that the machine will run at to home each axis",
+            "format": "double",
+            "nullable": true
+          },
+          "driveEnableDelay": {
+            "type": "integer",
+            "description": "Drive enable delay in milliseconds",
+            "format": "int32",
             "nullable": true
           },
           "isReversed": {
@@ -2964,6 +3378,21 @@
           "parallelToY": {
             "type": "boolean",
             "description": "Rotary axis parallel to Y (Parameter bit 12)",
+            "nullable": true
+          },
+          "stepSignalInverted": {
+            "type": "boolean",
+            "description": "Invert step signal for this axis (Parameter 961 - 4-bit nibble per axis)",
+            "nullable": true
+          },
+          "directionSignalInverted": {
+            "type": "boolean",
+            "description": "Invert direction signal for this axis (Parameter 961 - 4-bit nibble per axis)",
+            "nullable": true
+          },
+          "enableSignalInverted": {
+            "type": "boolean",
+            "description": "Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)",
             "nullable": true
           }
         },
@@ -3158,14 +3587,11 @@
         "type": "object",
         "properties": {
           "stepFrequency": {
-            "type": "integer",
-            "description": "Global step frequency for all axes (steps per second)\r\nSupported values: 100000, 200000, 240000, 300000, 400000",
-            "format": "int32",
-            "nullable": true
+            "$ref": "#/components/schemas/StepFrequency"
           },
           "driveFaultDelay": {
             "type": "integer",
-            "description": "Global drive fault delay for all axes (milliseconds)",
+            "description": "Axis Motor Drive fault delay time (milliseconds)\r\nGlobal drive fault delay for all axes",
             "format": "int32",
             "nullable": true
           },
@@ -3179,6 +3605,15 @@
             "type": "boolean",
             "description": "Low resolution mode for plasma systems",
             "nullable": true
+          },
+          "chargePumpDivider": {
+            "type": "integer",
+            "description": "Divider for charge pump frequency. 0 = turned off, 96 = default (12.5kHz)\r\nFormula: 1,200,000 / divider = frequency in Hz",
+            "format": "int32",
+            "nullable": true
+          },
+          "toolHeightMeasurementMethod": {
+            "$ref": "#/components/schemas/ToolHeightMeasurementMethod"
           }
         },
         "additionalProperties": false,
@@ -3241,21 +3676,6 @@
         },
         "additionalProperties": false,
         "description": "Represents an I/O function assignment"
-      },
-      "InputInversionConfiguration": {
-        "type": "object",
-        "properties": {
-          "inputSettings": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "boolean"
-            },
-            "description": "Dictionary of input number to invert setting",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Input inversion configuration DTO"
       },
       "LoadGCodeRequest": {
         "type": "object",
@@ -3419,9 +3839,30 @@
             "format": "int32",
             "nullable": true
           },
+          "sCommandRange1000": {
+            "type": "boolean",
+            "description": "PWM S command range: true = 0-1000, false = 0-100 (parameter 815, bit 1)",
+            "nullable": true
+          },
           "floor": {
             "type": "number",
-            "description": "PWM floor value (minimum duty cycle)",
+            "description": "PWM floor value (minimum duty cycle percentage)",
+            "format": "double",
+            "nullable": true
+          },
+          "onlyApplyFloorDuringVelocityMoves": {
+            "type": "boolean",
+            "description": "Only apply floor during PWM velocity modulation moves (parameter 815, bit 2)",
+            "nullable": true
+          },
+          "inverseOutput": {
+            "type": "boolean",
+            "description": "Inverse PWM output (parameter 815, bit 0)",
+            "nullable": true
+          },
+          "laserCoolingFanDelayTimer": {
+            "type": "number",
+            "description": "Laser cooling fan delay timer in seconds (parameter 998)",
             "format": "double",
             "nullable": true
           },
@@ -3433,17 +3874,17 @@
           },
           "isInverted": {
             "type": "boolean",
-            "description": "Whether PWM signal is inverted",
+            "description": "Whether PWM signal is inverted (legacy property - use InverseOutput instead)",
             "nullable": true
           },
           "inverseEnabled": {
             "type": "boolean",
-            "description": "Inverse enable bit (parameter 815, bit 0)",
+            "description": "Inverse enable bit (legacy property - use InverseOutput instead)",
             "nullable": true
           },
           "velocity100": {
             "type": "boolean",
-            "description": "Velocity 100% mode (parameter 815, bit 1) - true = 0-100%, false = 0-10%",
+            "description": "Velocity 100% mode (legacy property - use SCommandRange1000 instead)",
             "nullable": true
           }
         },
@@ -3470,21 +3911,110 @@
       "ProbeConfiguration": {
         "type": "object",
         "properties": {
+          "probePLCInput": {
+            "type": "integer",
+            "description": "Probe PLC input number",
+            "format": "int32",
+            "nullable": true
+          },
+          "probeType": {
+            "$ref": "#/components/schemas/ProbeType"
+          },
+          "inputStateWhenTripped": {
+            "$ref": "#/components/schemas/ProbeInputState"
+          },
+          "probeToolNumber": {
+            "type": "integer",
+            "description": "Probe tool number",
+            "format": "int32",
+            "nullable": true
+          },
+          "fastProbeRate": {
+            "type": "number",
+            "description": "Fast probe rate",
+            "format": "double",
+            "nullable": true
+          },
+          "slowProbeRate": {
+            "type": "number",
+            "description": "Slow probe rate",
+            "format": "double",
+            "nullable": true
+          },
+          "recoveryDistance": {
+            "type": "number",
+            "description": "Recovery distance after probe contact",
+            "format": "double",
+            "nullable": true
+          },
+          "maximumProbingDistance": {
+            "type": "number",
+            "description": "Maximum probing distance",
+            "format": "double",
+            "nullable": true
+          },
+          "probeProtectionEnabled": {
+            "type": "boolean",
+            "description": "Probe protection enabled",
+            "nullable": true
+          },
+          "probeProtectionBasedOnToolNumber": {
+            "type": "boolean",
+            "description": "Probe protection based on tool number",
+            "nullable": true
+          },
+          "displayWarningToVerifyProbe": {
+            "type": "boolean",
+            "description": "Display warning to verify that probe is functioning properly",
+            "nullable": true
+          },
+          "inhibitSpindleWhenDetectOn": {
+            "type": "boolean",
+            "description": "Inhibit spindle when detect is on (Green)",
+            "nullable": true
+          },
+          "probeSlowJogSpeeds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Probe slow jog speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
+            "nullable": true
+          },
+          "probeFastJogNegativeSpeeds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Probe fast jog negative speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
+            "nullable": true
+          },
+          "probeFastJogPositiveSpeeds": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Probe fast jog positive speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
+            "nullable": true
+          },
           "inputNumber": {
             "type": "integer",
-            "description": "Probe input number",
+            "description": "Probe input number (legacy - use ProbePLCInput instead)",
             "format": "int32",
             "nullable": true
           },
           "inputType": {
             "type": "integer",
-            "description": "Probe input type (0=Normally Open, 1=Normally Closed)",
+            "description": "Probe input type (legacy - use InputStateWhenTripped instead)",
             "format": "int32",
             "nullable": true
           },
           "feedRate": {
             "type": "number",
-            "description": "Probe feed rate",
+            "description": "Probe feed rate (legacy - use FastProbeRate/SlowProbeRate instead)",
             "format": "double",
             "nullable": true
           },
@@ -3506,26 +4036,44 @@
             "format": "int32",
             "nullable": true
           },
-          "probeType": {
+          "probeTypeInt": {
             "type": "integer",
-            "description": "Probe type configuration",
+            "description": "Probe type configuration (legacy - use ProbeType enum instead)",
             "format": "int32",
             "nullable": true
           },
           "displayProbeWarning": {
             "type": "boolean",
-            "description": "Display probe warning",
+            "description": "Display probe warning (legacy - use DisplayWarningToVerifyProbe instead)",
             "nullable": true
           },
           "probeInhibit": {
             "type": "integer",
-            "description": "Probe protection/inhibit settings",
+            "description": "Probe protection/inhibit settings (legacy)",
             "format": "int32",
             "nullable": true
           }
         },
         "additionalProperties": false,
         "description": "Represents probe configuration"
+      },
+      "ProbeInputState": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Probe input state when tripped",
+        "format": "int32"
+      },
+      "ProbeType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Probe type enumeration",
+        "format": "int32"
       },
       "ProblemDetails": {
         "type": "object",
@@ -3678,6 +4226,11 @@
             "description": "Enable RTG (Real Time Graphics) display",
             "nullable": true
           },
+          "spindleScalingEnabled": {
+            "type": "boolean",
+            "description": "Enable spindle speed scaling (Parameter 78 bit 4)",
+            "nullable": true
+          },
           "secondSpindleEnabled": {
             "type": "boolean",
             "description": "Enable second spindle",
@@ -3707,6 +4260,66 @@
             "format": "double",
             "nullable": true
           },
+          "minimumRigidTappingRPM": {
+            "type": "integer",
+            "description": "Minimum Rigid Tapping RPM (Parameter 68)",
+            "format": "int32",
+            "nullable": true
+          },
+          "durationForMinRigidTappingRPM": {
+            "type": "number",
+            "description": "Duration For Min. Rigid Tapping RPM in seconds (Parameter 69)",
+            "format": "double",
+            "nullable": true
+          },
+          "spindleDrift": {
+            "type": "integer",
+            "description": "Spindle Drift in degrees (Parameter 82)",
+            "format": "int32",
+            "nullable": true
+          },
+          "spindleAccelDecelTime": {
+            "type": "integer",
+            "description": "Spindle Accel/Decel Time",
+            "format": "int32",
+            "nullable": true
+          },
+          "mFuncBottomHoleG84": {
+            "type": "string",
+            "description": "M Func To Run At Bottom Of Hole G84 Tapping",
+            "nullable": true
+          },
+          "mFuncTopHoleG74Counter": {
+            "type": "string",
+            "description": "M Func To Run At Top Of Hole For G74 Counter Tapping",
+            "nullable": true
+          },
+          "mFuncBottomHoleG74LeftHand": {
+            "type": "string",
+            "description": "M Func To Run At Bottom Of Hole G74 Tapping (Left Hand Taps)",
+            "nullable": true
+          },
+          "mFuncTopHoleG84Counter": {
+            "type": "string",
+            "description": "M Func To Run At Top Of Hole For G84 Counter Tapping",
+            "nullable": true
+          },
+          "rigidTappingZAxisSyncDistance": {
+            "type": "integer",
+            "description": "Rigid Tapping Z Axis Sync Distance (Parameter 241)",
+            "format": "int32",
+            "nullable": true
+          },
+          "allowSpindleOverride": {
+            "type": "boolean",
+            "description": "Allow Spindle Override (Parameter 36 bit 2)",
+            "nullable": true
+          },
+          "doNotWaitForIndexPulse": {
+            "type": "boolean",
+            "description": "Do Not Wait For Index Pulse (Parameter 36 bit 1)",
+            "nullable": true
+          },
           "ssvCycleTime": {
             "type": "number",
             "description": "SSV (Spindle Speed Variation) cycle time",
@@ -3729,6 +4342,18 @@
         "additionalProperties": false,
         "description": "Represents spindle configuration parameters"
       },
+      "StepFrequency": {
+        "enum": [
+          100000,
+          200000,
+          240000,
+          300000,
+          400000
+        ],
+        "type": "integer",
+        "description": "Supported step frequencies for the stepper pulse rate\r\nThese are the only valid values supported by the Centroid system",
+        "format": "int32"
+      },
       "StepFrequencyRequest": {
         "type": "object",
         "properties": {
@@ -3740,6 +4365,107 @@
         },
         "additionalProperties": false,
         "description": "Request model for setting step frequency"
+      },
+      "ToolHeightMeasurementMethod": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Tool height offset measurement method",
+        "format": "int32"
+      },
+      "ToolTouchOffConfiguration": {
+        "type": "object",
+        "properties": {
+          "touchOffToolPLCInput": {
+            "type": "integer",
+            "description": "Touch Off Tool PLC input number (Parameter 44 for Mill, 244 for Lathe)",
+            "format": "int32",
+            "nullable": true
+          },
+          "toolTouchOffType": {
+            "$ref": "#/components/schemas/ToolTouchOffType"
+          },
+          "inputStateWhenTriggered": {
+            "$ref": "#/components/schemas/ToolTouchOffInputState"
+          },
+          "displayWarningToVerify": {
+            "type": "boolean",
+            "description": "Display warning to verify that Tool Touch Off is functioning properly",
+            "nullable": true
+          },
+          "inhibitSpindleWhenDetectOn": {
+            "type": "boolean",
+            "description": "Inhibit spindle when detect is on (Green) (Parameter 257)",
+            "nullable": true
+          },
+          "probeProtectionEnabled": {
+            "type": "boolean",
+            "description": "Probe protection enabled (Parameter 43 bit field)",
+            "nullable": true
+          },
+          "useFixedLocation": {
+            "type": "boolean",
+            "description": "Use fixed tool touch off (TT) location (Parameter 17)",
+            "nullable": true
+          },
+          "fixedLocationX": {
+            "type": "number",
+            "description": "Fixed Tool Touch Off X position (machine coordinates) - G30 P3 X",
+            "format": "double",
+            "nullable": true
+          },
+          "fixedLocationY": {
+            "type": "number",
+            "description": "Fixed Tool Touch Off Y position (machine coordinates) - G30 P3 Y",
+            "format": "double",
+            "nullable": true
+          },
+          "zClearanceHeight": {
+            "type": "number",
+            "description": "Z Clearance Height for Auto moves to TT (machine coordinates) - G30 P3 Z",
+            "format": "double",
+            "nullable": true
+          },
+          "subtractHeightWhenSettingOffsets": {
+            "type": "boolean",
+            "description": "Subtract height of TT when setting Tool Height Offsets (Parameter 3 bit 1)",
+            "nullable": true
+          },
+          "ttHeight": {
+            "type": "number",
+            "description": "TT Height - Height of touch-off device (Parameter 71)",
+            "format": "double",
+            "nullable": true
+          },
+          "detectInputNumber": {
+            "type": "integer",
+            "description": "Tool Touch Off Detect Input number for detection/protection (Parameter 257)",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents tool touch off configuration"
+      },
+      "ToolTouchOffInputState": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Tool touch off input state when triggered",
+        "format": "int32"
+      },
+      "ToolTouchOffType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Tool touch off type enumeration",
+        "format": "int32"
       },
       "TouchPlateConfiguration": {
         "type": "object",

@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using HavenCNCServer.Models;
 using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Controllers
@@ -12,91 +10,47 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCSystemController : ControllerBase
     {
+        private readonly ICNCSystemService _systemService;
+
+        /// <summary>
+        /// Constructor for CNC System Controller
+        /// </summary>
+        public CNCSystemController(ICNCSystemService systemService)
+        {
+            _systemService = systemService;
+        }
+
         #region System Control
 
         /// <summary>
         /// Enter full screen mode
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("EnterFullScreen")]
-        public async Task<IActionResult> EnterFullScreen()
-        {
-            try
-            {
-                bool success = await UIControlService.EnterFullScreenAsync();
-                if (success)
-                {
-                    return Ok(new { message = "Entered full screen mode", isFullScreen = true });
-                }
-                else
-                {
-                    return BadRequest(new { message = "Failed to enter full screen mode", isFullScreen = false });
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new { message = "Error entering full screen mode", error = ex.Message });
-            }
-        }
+        public async Task<bool> EnterFullScreen() => await _systemService.EnterFullScreenAsync();
 
         /// <summary>
         /// Exit full screen mode
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("ExitFullScreen")]
-        public async Task<IActionResult> ExitFullScreen()
-        {
-            try
-            {
-                bool success = await UIControlService.ExitFullScreenAsync();
-                if (success)
-                {
-                    return Ok(new { message = "Exited full screen mode", isFullScreen = false });
-                }
-                else
-                {
-                    return BadRequest(new { message = "Failed to exit full screen mode", isFullScreen = UIControlService.IsFullScreen });
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new { message = "Error exiting full screen mode", error = ex.Message });
-            }
-        }
+        public async Task<bool> ExitFullScreen() => await _systemService.ExitFullScreenAsync();
 
         /// <summary>
         /// Get current full screen state
         /// </summary>
-        /// <returns>Current full screen status</returns>
         [HttpGet("GetFullScreenState")]
-        public IActionResult GetFullScreenState()
-        {
-            return Ok(new { isFullScreen = UIControlService.IsFullScreen });
-        }
+        public bool GetFullScreenState() => _systemService.IsFullScreen;
 
         /// <summary>
         /// Shutdown the system
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("Shutdown")]
-        public async Task<IActionResult> Shutdown()
-        {
-            // TODO: Implement shutdown functionality
-            await Task.Delay(1);
-            return Ok(new { message = "System shutdown initiated" });
-        }
+        public void Shutdown() => _systemService.Shutdown();
 
         /// <summary>
         /// Restart Centroid system
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("RestartCentroid")]
-        public async Task<IActionResult> RestartCentroid()
-        {
-            // TODO: Implement Centroid restart functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Centroid system restart initiated" });
-        }
+        public void RestartCentroid() => _systemService.RestartCentroid();
 
         #endregion
 
@@ -105,98 +59,50 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Emergency stop
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("EmergencyStop")]
-        public async Task<IActionResult> EmergencyStop()
-        {
-            // TODO: Implement emergency stop functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Emergency stop activated" });
-        }
+        public void EmergencyStop() => _systemService.EmergencyStop();
 
         /// <summary>
         /// Check if machine is homed
         /// </summary>
-        /// <returns>Homed status</returns>
         [HttpGet("IsHomed")]
-        public async Task<IActionResult> IsHomed()
-        {
-            // TODO: Implement homed check
-            await Task.Delay(1);
-            return Ok(new { isHomed = true });
-        }
+        public bool IsHomed() => _systemService.IsHomed();
 
         /// <summary>
         /// Unhome the machine
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("UnhomeMachine")]
-        public async Task<IActionResult> UnhomeMachine()
-        {
-            // TODO: Implement unhome machine functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Machine unhomed" });
-        }
+        public void UnhomeMachine() => _systemService.UnhomeMachine();
 
         /// <summary>
         /// Home the machine
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("HomeMachine")]
-        public async Task<IActionResult> HomeMachine()
-        {
-            // TODO: Implement home machine functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Machine homing initiated" });
-        }
+        public void HomeMachine() => _systemService.HomeMachine();
 
         /// <summary>
         /// Get current error state
         /// </summary>
-        /// <returns>Current error messages or null if no errors</returns>
         [HttpGet("GetCurrentErrorState")]
-        public async Task<IActionResult> GetCurrentErrorState()
-        {
-            // TODO: Implement get current error state
-            await Task.Delay(1);
-            return Ok(new { errors = (string[]?)null });
-        }
+        public string[]? GetCurrentErrorState() => _systemService.GetCurrentErrorState();
 
         /// <summary>
         /// Reset error state
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("ResetErrorState")]
-        public async Task<IActionResult> ResetErrorState()
-        {
-            // TODO: Implement reset error state functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Error state reset" });
-        }
+        public void ResetErrorState() => _systemService.ResetErrorState();
 
         /// <summary>
         /// Reset the machine
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("ResetMachine")]
-        public async Task<IActionResult> ResetMachine()
-        {
-            // TODO: Implement reset machine functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Machine reset" });
-        }
+        public void ResetMachine() => _systemService.ResetMachine();
 
         /// <summary>
         /// Check if machine has current errors
         /// </summary>
-        /// <returns>Error status</returns>
         [HttpGet("HasCurrentErrors")]
-        public async Task<IActionResult> HasCurrentErrors()
-        {
-            // TODO: Implement has current errors check
-            await Task.Delay(1);
-            return Ok(new { hasErrors = false });
-        }
+        public bool HasCurrentErrors() => _systemService.HasCurrentErrors();
 
         #endregion
     }

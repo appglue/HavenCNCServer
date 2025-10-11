@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer
 {
@@ -23,6 +24,12 @@ namespace HavenCNCServer
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
+            
+            // Register clean services
+            services.AddScoped<ICNCIOService, CNCIOService>();
+            services.AddScoped<ICNCSystemService, CNCSystemService>();
+            services.AddScoped<ICNCMovementService, CNCMovementService>();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -97,18 +104,23 @@ namespace HavenCNCServer
                 endpoints.MapControllers();
             });
 
-            // Configure SPA routing (fallback to index.html for React routing)
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "wwwroot";
-                
-                // Fallback for client-side routing - return index.html for non-API routes
-                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+            // Configure SPA routing with proper API route exclusion
+            app.MapWhen(context => !context.Request.Path.StartsWithSegments("/api") && 
+                                  !context.Request.Path.StartsWithSegments("/swagger"),
+                appBranch =>
                 {
-                    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-                        Path.Combine(env.ContentRootPath, "wwwroot"))
-                };
-            });
+                    appBranch.UseSpa(spa =>
+                    {
+                        spa.Options.SourcePath = "wwwroot";
+                        spa.Options.DefaultPage = "/index.html";
+                        
+                        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+                        {
+                            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                                Path.Combine(env.ContentRootPath, "wwwroot"))
+                        };
+                    });
+                });
         }
     }
 }

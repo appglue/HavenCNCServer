@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using HavenCNCServer.Models;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Controllers
 {
@@ -11,81 +11,53 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCMovementController : ControllerBase
     {
+        private readonly ICNCMovementService _movementService;
+
+        /// <summary>
+        /// Constructor for CNC Movement Controller
+        /// </summary>
+        public CNCMovementController(ICNCMovementService movementService)
+        {
+            _movementService = movementService;
+        }
+
         #region Movement Control
 
         /// <summary>
         /// Set the movement type (relative or absolute)
         /// </summary>
-        /// <param name="moveType">Movement type to set</param>
-        /// <returns>Success response</returns>
         [HttpPost("SetMoveType")]
-        public IActionResult SetMoveType([FromBody] MoveType moveType)
-        {
-            // TODO: Implement move type setting
-            return Ok(new { message = $"Move type set to {moveType}", moveType });
-        }
+        public void SetMoveType([FromBody] MoveType moveType) => _movementService.SetMoveType(moveType);
 
         /// <summary>
         /// Get the current movement type
         /// </summary>
-        /// <returns>Current movement type</returns>
         [HttpGet("GetMoveType")]
-        public IActionResult GetMoveType()
-        {
-            // TODO: Implement get move type
-            return Ok(new { moveType = MoveType.Absolute });
-        }
+        public MoveType GetMoveType() => _movementService.GetMoveType();
 
         /// <summary>
         /// Get current machine position
         /// </summary>
-        /// <returns>Current position coordinates</returns>
         [HttpGet("GetCurrentPosition")]
-        public IActionResult GetCurrentPosition()
-        {
-            // TODO: Implement get current position
-            var position = new MachinePoint(0, 0, 0, 0);
-            return Ok(position);
-        }
+        public MachinePoint GetCurrentPosition() => _movementService.GetCurrentPosition();
 
         /// <summary>
         /// Move to specified coordinates
         /// </summary>
-        /// <param name="request">Move request with coordinates and optional speeds</param>
-        /// <returns>Success response</returns>
         [HttpPost("MoveTo")]
-        public async Task<IActionResult> MoveTo([FromBody] MoveToRequest request)
-        {
-            // TODO: Implement move to functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Moving to {request.Point}", point = request.Point });
-        }
+        public async Task MoveTo([FromBody] MoveToRequest request) => await _movementService.MoveToAsync(request);
 
         /// <summary>
         /// Move to coordinates until an IO event occurs
         /// </summary>
-        /// <param name="request">Move request with coordinates, speeds, and IO event</param>
-        /// <returns>Success response</returns>
         [HttpPost("MoveToUtil")]
-        public async Task<IActionResult> MoveToUtil([FromBody] MoveToUntilRequest request)
-        {
-            // TODO: Implement move to until functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Moving to {request.Point} until {request.Event}", point = request.Point, ioEvent = request.Event });
-        }
+        public async Task MoveToUtil([FromBody] MoveToUntilRequest request) => await _movementService.MoveToUntilAsync(request);
 
         /// <summary>
         /// Move in a direction until an IO event occurs
         /// </summary>
-        /// <param name="request">Direction movement request</param>
-        /// <returns>Success response</returns>
         [HttpPost("MoveDirectionUntil")]
-        public async Task<IActionResult> MoveDirectionUntil([FromBody] MoveDirectionUntilRequest request)
-        {
-            // TODO: Implement directional move until functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Moving {request.Direction} until {request.Event}", direction = request.Direction, ioEvent = request.Event });
-        }
+        public async Task MoveDirectionUntil([FromBody] MoveDirectionUntilRequest request) => await _movementService.MoveDirectionUntilAsync(request);
 
         #endregion
 
@@ -94,15 +66,8 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Set fixture point using current machine position or specified coordinates
         /// </summary>
-        /// <param name="point">Point coordinates to set for the fixture</param>
-        /// <returns>Success response</returns>
         [HttpPost("SetFixturePoint")]
-        public async Task<IActionResult> SetFixturePoint([FromBody] MachinePoint point)
-        {
-            // TODO: Implement set fixture point functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Set fixture point to {point}", point });
-        }
+        public async Task SetFixturePoint([FromBody] MachinePoint point) => await _movementService.SetFixturePointAsync(point);
 
         #endregion
 
@@ -111,126 +76,62 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Get fast feed rate
         /// </summary>
-        /// <returns>Current fast feed rate</returns>
         [HttpGet("GetFastFeedRate")]
-        public async Task<IActionResult> GetFastFeedRate()
-        {
-            // TODO: Implement get fast feed rate
-            await Task.Delay(1);
-            return Ok(new { feedRate = 100.0 });
-        }
+        public async Task<double> GetFastFeedRate() => await _movementService.GetFastFeedRateAsync();
 
         /// <summary>
         /// Set fast feed rate
         /// </summary>
-        /// <param name="feedRate">Feed rate to set</param>
-        /// <returns>Success response</returns>
         [HttpPost("SetFastFeedRate")]
-        public async Task<IActionResult> SetFastFeedRate([FromBody] double feedRate)
-        {
-            // TODO: Implement set fast feed rate
-            await Task.Delay(1);
-            return Ok(new { message = $"Fast feed rate set to {feedRate}", feedRate });
-        }
+        public async Task SetFastFeedRate([FromBody] double feedRate) => await _movementService.SetFastFeedRateAsync(feedRate);
 
         /// <summary>
         /// Get normal feed rate
         /// </summary>
-        /// <returns>Current normal feed rate</returns>
         [HttpGet("GetNormalFeedRate")]
-        public async Task<IActionResult> GetNormalFeedRate()
-        {
-            // TODO: Implement get normal feed rate
-            await Task.Delay(1);
-            return Ok(new { feedRate = 50.0 });
-        }
+        public async Task<double> GetNormalFeedRate() => await _movementService.GetNormalFeedRateAsync();
 
         /// <summary>
         /// Set normal feed rate
         /// </summary>
-        /// <param name="feedRate">Feed rate to set</param>
-        /// <returns>Success response</returns>
         [HttpPost("SetNormalFeedRate")]
-        public async Task<IActionResult> SetNormalFeedRate([FromBody] double feedRate)
-        {
-            // TODO: Implement set normal feed rate
-            await Task.Delay(1);
-            return Ok(new { message = $"Normal feed rate set to {feedRate}", feedRate });
-        }
+        public async Task SetNormalFeedRate([FromBody] double feedRate) => await _movementService.SetNormalFeedRateAsync(feedRate);
 
         /// <summary>
         /// Adjust normal feed rate by factor
         /// </summary>
-        /// <param name="factor">Adjustment factor (-200 to +200, where 0 is no change, 100 is double, -100 is half)</param>
-        /// <returns>Success response</returns>
         [HttpPost("AdjustNormalFeedRate")]
-        public async Task<IActionResult> AdjustNormalFeedRate([FromBody] double factor)
-        {
-            // TODO: Implement adjust normal feed rate
-            await Task.Delay(1);
-            return Ok(new { message = $"Normal feed rate adjusted by factor {factor}", factor });
-        }
+        public async Task AdjustNormalFeedRate([FromBody] double factor) => await _movementService.AdjustNormalFeedRateAsync(factor);
 
         /// <summary>
         /// Get current normal feed rate adjustment factor
         /// </summary>
-        /// <returns>Current adjustment factor</returns>
         [HttpGet("GetCurrentNormalFeedRateFactor")]
-        public async Task<IActionResult> GetCurrentNormalFeedRateFactor()
-        {
-            // TODO: Implement get current normal feed rate factor
-            await Task.Delay(1);
-            return Ok(new { factor = 0.0 });
-        }
+        public async Task<double> GetCurrentNormalFeedRateFactor() => await _movementService.GetCurrentNormalFeedRateFactorAsync();
 
         /// <summary>
         /// Reset normal feed rate factor to default
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("ResetNormalFeedRateFactor")]
-        public async Task<IActionResult> ResetNormalFeedRateFactor()
-        {
-            // TODO: Implement reset normal feed rate factor
-            await Task.Delay(1);
-            return Ok(new { message = "Normal feed rate factor reset to default" });
-        }
+        public async Task ResetNormalFeedRateFactor() => await _movementService.ResetNormalFeedRateFactorAsync();
 
         /// <summary>
         /// Adjust fast feed rate by factor
         /// </summary>
-        /// <param name="factor">Adjustment factor (-200 to +200, where 0 is no change, 100 is double, -100 is half)</param>
-        /// <returns>Success response</returns>
         [HttpPost("AdjustFastFeedRate")]
-        public async Task<IActionResult> AdjustFastFeedRate([FromBody] double factor)
-        {
-            // TODO: Implement adjust fast feed rate
-            await Task.Delay(1);
-            return Ok(new { message = $"Fast feed rate adjusted by factor {factor}", factor });
-        }
+        public async Task AdjustFastFeedRate([FromBody] double factor) => await _movementService.AdjustFastFeedRateAsync(factor);
 
         /// <summary>
         /// Get current fast feed rate adjustment factor
         /// </summary>
-        /// <returns>Current adjustment factor</returns>
         [HttpGet("GetCurrentFastFeedRateFactor")]
-        public async Task<IActionResult> GetCurrentFastFeedRateFactor()
-        {
-            // TODO: Implement get current fast feed rate factor
-            await Task.Delay(1);
-            return Ok(new { factor = 0.0 });
-        }
+        public async Task<double> GetCurrentFastFeedRateFactor() => await _movementService.GetCurrentFastFeedRateFactorAsync();
 
         /// <summary>
         /// Reset fast feed rate factor to default
         /// </summary>
-        /// <returns>Success response</returns>
         [HttpPost("ResetFastFeedRateFactor")]
-        public async Task<IActionResult> ResetFastFeedRateFactor()
-        {
-            // TODO: Implement reset fast feed rate factor
-            await Task.Delay(1);
-            return Ok(new { message = "Fast feed rate factor reset to default" });
-        }
+        public async Task ResetFastFeedRateFactor() => await _movementService.ResetFastFeedRateFactorAsync();
 
         #endregion
     }
