@@ -1,31 +1,16 @@
 using System;
 using CentroidAPI;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.CentriodAPI
 {
     /// <summary>
-    /// Clean CNC12 API wrapper class with no external dependencies.
-    /// Replicates only the GeneralUtils methods used in PLC documentation.
-    /// Requires CentroidAPI reference and initialization.
+    /// Clean CNC12 API wrapper class using centralized CNCConnectionManager.
+    /// Provides stateless utility methods for CNC parameter operations.
+    /// All methods get CNCPipe from CNCConnectionManager automatically.
     /// </summary>
     public static class CNCUtils
     {
-        private static CNCPipe? _api;
-
-        /// <summary>
-        /// Initialize the CNCUtils with your CentroidAPI CNCPipe instance
-        /// </summary>
-        /// <param name="cncPipe">Your CentroidAPI.CNCPipe instance</param>
-        public static void Initialize(CNCPipe cncPipe)
-        {
-            _api = cncPipe ?? throw new ArgumentNullException(nameof(cncPipe));
-        }
-
-        private static void EnsureInitialized()
-        {
-            if (_api == null)
-                throw new InvalidOperationException("CNCUtils not initialized. Call Initialize() first.");
-        }
 
 
         /// <summary>
@@ -35,12 +20,14 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>Parameter value as double</returns>
         public static double GetParameterValue(CentroidParameters parameter)
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             try
             {
                 // Use the parameter property of CNCPipe to access parameter methods
-                CNCPipe.ReturnCode returnCode = _api!.parameter.GetMachineParameterValue((int)parameter, out double value);
+                CNCPipe.ReturnCode returnCode = cncPipe.parameter.GetMachineParameterValue((int)parameter, out double value);
                 
                 if (returnCode != CNCPipe.ReturnCode.SUCCESS)
                 {
@@ -64,11 +51,13 @@ namespace HavenCNCServer.CentriodAPI
         /// <param name="value">Value to set</param>
         public static void SetParameterValue(CentroidParameters parameter, double value)
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             try
             {
-                CNCPipe.ReturnCode returnCode = _api!.parameter.SetMachineParameter((int)parameter, value);
+                CNCPipe.ReturnCode returnCode = cncPipe.parameter.SetMachineParameter((int)parameter, value);
 
                 if (returnCode == CNCPipe.ReturnCode.STATUS_UNKNOWN)
                 {
@@ -97,13 +86,15 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>Reference point value</returns>
         public static double GetWorkpieceReferencePoint(ReferencePoints reference, int axis)
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             try
             {
                 // CentroidAPI uses 1-based indexing: G28=1, G30=2, G30P3=3, G30P4=4
                 int referenceIndex = (int)reference + 1;
-                _api!.wcs.GetWorkpieceReference(referenceIndex, axis, out double value);
+                cncPipe.wcs.GetWorkpieceReference(referenceIndex, axis, out double value);
                 return value;
             }
             catch (Exception ex)
@@ -120,13 +111,15 @@ namespace HavenCNCServer.CentriodAPI
         /// <param name="point">Value to set</param>
         public static void SetWorkpieceReferencePoint(ReferencePoints reference, int axis, double point)
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             try
             {
                 // CentroidAPI uses 1-based indexing: G28=1, G30=2, G30P3=3, G30P4=4
                 int referenceIndex = (int)reference + 1;
-                _api!.wcs.SetWorkpieceReference(referenceIndex, axis, point);
+                cncPipe.wcs.SetWorkpieceReference(referenceIndex, axis, point);
             }
             catch (Exception ex)
             {
@@ -338,14 +331,16 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>Array of available input port numbers</returns>
         public static int[] GetAvailableInputPorts()
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             var availableInputs = new List<int>();
             
             try
             {
                 // Get system type to determine I/O layout
-                _api!.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
+                cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
                 
                 // Base I/O available on all systems (minimum 8 inputs)
                 int baseInputCount = 8;
@@ -377,16 +372,16 @@ namespace HavenCNCServer.CentriodAPI
                 int expansionCount = 0;
                 if (isAcorn)
                 {
-                    _api.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+                    cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
                     expansionCount = devices?.Count ?? 0;
                 }
                 else if (isAcornSix)
                 {
-                    _api.system.GetPLCEXP1616NumberofDevices(out expansionCount);
+                    cncPipe.system.GetPLCEXP1616NumberofDevices(out expansionCount);
                 }
                 else if (isHickory)
                 {
-                    _api.system.GetECAT1616NumberOfDevices(out expansionCount);
+                    cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
                 }
                 
                 // Calculate expansion I/O numbers
@@ -417,8 +412,6 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>Array of available output port numbers</returns>
         public static int[] GetAvailableOutputPorts()
         {
-            EnsureInitialized();
-
             // Output numbering follows identical pattern to inputs
             // Use the same detection logic as GetAvailableInputPorts()
             return GetAvailableInputPorts();
@@ -452,11 +445,13 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>String describing the system type and I/O capabilities</returns>
         public static string GetSystemInfo()
         {
-            EnsureInitialized();
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             try
             {
-                _api!.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
+                cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
                 
                 string systemType = "Unknown";
                 int baseInputs = 8;
@@ -471,7 +466,7 @@ namespace HavenCNCServer.CentriodAPI
                 if (isAcorn)
                 {
                     systemType = "Acorn";
-                    _api.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+                    cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
                     int expansionCount = devices?.Count ?? 0;
                     expansionInputs = expansionCount * 16;
                     expansionOutputs = expansionCount * 16;
@@ -481,7 +476,7 @@ namespace HavenCNCServer.CentriodAPI
                     systemType = "AcornSix";
                     baseInputs = 16;
                     baseOutputs = 16;
-                    _api.system.GetPLCEXP1616NumberofDevices(out int expansionCount);
+                    cncPipe.system.GetPLCEXP1616NumberofDevices(out int expansionCount);
                     expansionInputs = expansionCount * 16;
                     expansionOutputs = expansionCount * 16;
                 }
@@ -490,7 +485,7 @@ namespace HavenCNCServer.CentriodAPI
                     systemType = "Hickory";
                     baseInputs = 32;
                     baseOutputs = 32;
-                    _api.system.GetECAT1616NumberOfDevices(out int expansionCount);
+                    cncPipe.system.GetECAT1616NumberOfDevices(out int expansionCount);
                     expansionInputs = expansionCount * 16;
                     expansionOutputs = expansionCount * 16;
                 }
@@ -556,11 +551,12 @@ namespace HavenCNCServer.CentriodAPI
         /// <param name="value">Rate value</param>
         public static void SetAxisRate(int axis, CNCPipe.Axis.Rate rateType, double value)
         {
-            if (_api == null)
-                throw new InvalidOperationException("CNCUtils not initialized. Call Initialize() first.");
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             var axisEnum = (CNCPipe.Axes)axis;
-            _api.axis.SetRate(axisEnum, rateType, value);
+            cncPipe.axis.SetRate(axisEnum, rateType, value);
         }
 
         /// <summary>
@@ -571,11 +567,12 @@ namespace HavenCNCServer.CentriodAPI
         /// <returns>Rate value</returns>
         public static double GetAxisRate(int axis, CNCPipe.Axis.Rate rateType)
         {
-            if (_api == null)
-                throw new InvalidOperationException("CNCUtils not initialized. Call Initialize() first.");
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             var axisEnum = (CNCPipe.Axes)axis;
-            _api.axis.GetRate(axisEnum, rateType, out double value);
+            cncPipe.axis.GetRate(axisEnum, rateType, out double value);
             return value;
         }
 

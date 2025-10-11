@@ -419,28 +419,36 @@ namespace HavenCNCServer
             {
                 LogMessage("Test button clicked!");
 
-                // CentroidAPI test code
-                CNCPipe cnc12_pipe;
-                string[] allowedAxisLabels = { "A", "B", "C", "N", "W", "X", "Y", "Z" };
-
-                cnc12_pipe = new CNCPipe();
-
-                // Wait for cnc12_pipe to be constructed before continuing.
-                while (!cnc12_pipe.IsConstructed())
+                // Test CNCConnectionManager instead of creating CNCPipe directly
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                
+                if (cncPipe != null && cncPipe.IsConstructed())
                 {
-                    Thread.Sleep(100);
+                    LogMessage("CNCPipe is available via CNCConnectionManager!");
+                    MessageBox.Show("Test button working! CNCPipe is ready for use via CNCConnectionManager.",
+                        "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    LogMessage("CNCPipe not available - attempting connection...");
+                    // Try to establish connection
+                    cncPipe = CNCConnectionManager.GetOrCreateCNCPipe();
+                    
+                    if (cncPipe != null && cncPipe.IsConstructed())
+                    {
+                        LogMessage("CNCPipe connected successfully via CNCConnectionManager!");
+                        MessageBox.Show("CNC connected successfully!",
+                            "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        LogMessage("Failed to connect to CNC via CNCConnectionManager");
+                        MessageBox.Show("Failed to connect to CNC. Make sure CNC12 is running.",
+                            "Test Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
 
-                LogMessage("CNCPipe constructed successfully!");
-
-                // Add your test code here
-                MessageBox.Show("Test button working! CNCPipe is ready for use.",
-                    "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // Example: Test Centroid API connection
-                    // TestCentroidAPI();
-
-                    LogMessage("Test completed successfully.");
+                LogMessage("Test completed successfully.");
                 }
                 catch (Exception ex)
                 {

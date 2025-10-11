@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using CentroidAPI;
 using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Models
 {
@@ -180,17 +181,14 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                var cncPipe = new CNCPipe();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
-                // Wait for CNCPipe to be constructed
-                while (!cncPipe.IsConstructed())
+                // CNCConnectionManager ensures the pipe is already constructed
+                if (cncPipe == null)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    return false;
                 }
 
-                // Configure axis using CNCPipe.Axis methods
-                CNCUtils.Initialize(cncPipe);
-                
                 // Convert axis number to enum (1-based to 0-based)
                 var axisEnum = (CNCPipe.Axes)(config.AxisNumber - 1);
                 
@@ -451,12 +449,12 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                var cncPipe = new CNCPipe();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
-                // Wait for CNCPipe to be constructed
-                while (!cncPipe.IsConstructed())
+                // CNCConnectionManager ensures the pipe is already constructed
+                if (cncPipe == null)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    return false;
                 }
 
                 // Core parameters via CNCUtils.SetParameterValue() - only set if provided
@@ -1299,12 +1297,23 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                var cncPipe = new CNCPipe();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
-                // Wait for CNCPipe to be constructed
-                while (!cncPipe.IsConstructed())
+                // CNCConnectionManager ensures the pipe is already constructed
+                if (cncPipe == null)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    // Return minimal system info on error
+                    return new SystemHardwareInfo
+                    {
+                        SystemType = "Unknown",
+                        BaseInputs = 8,
+                        BaseOutputs = 8,
+                        ExpansionBoards = 0,
+                        TotalInputs = 8,
+                        TotalOutputs = 8,
+                        AvailableInputs = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 },
+                        AvailableOutputs = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }
+                    };
                 }
 
                 var info = new SystemHardwareInfo();
@@ -1533,12 +1542,12 @@ namespace HavenCNCServer.Models
                 int bitPosition = GetBitPosition(inputNumber);
                 if (bitPosition == -1) return false;
 
-                var cncPipe = new CNCPipe();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
-                // Wait for CNCPipe to be constructed
-                while (!cncPipe.IsConstructed())
+                // CNCConnectionManager ensures the pipe is already constructed
+                if (cncPipe == null)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    return false;
                 }
 
                 // Try to use the CentroidAPI to modify input inversion parameters
@@ -1592,12 +1601,12 @@ namespace HavenCNCServer.Models
         {
             try
             {
-                var cncPipe = new CNCPipe();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
-                // Wait for CNCPipe to be constructed
-                while (!cncPipe.IsConstructed())
+                // CNCConnectionManager ensures the pipe is already constructed
+                if (cncPipe == null)
                 {
-                    System.Threading.Thread.Sleep(10);
+                    return false;
                 }
 
                 // Group inputs by parameter number for efficiency
