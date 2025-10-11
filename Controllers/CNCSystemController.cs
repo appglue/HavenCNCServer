@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Models;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Controllers
 {
@@ -10,6 +12,30 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCSystemController : ControllerBase
     {
+        /// <summary>
+        /// Get system status including current time and CNC connection status
+        /// </summary>
+        /// <returns>System status information</returns>
+        [HttpGet("Status")]
+        public SystemStatus GetSystemStatus()
+        {
+            try
+            {
+                var status = new SystemStatus
+                {
+                    CurrentDateTime = DateTime.Now,
+                    IsCNCConnected = CNCConnectionManager.IsConnected,
+                    Status = CNCConnectionManager.IsConnected ? "CNC Connected" : "CNC Disconnected"
+                };
+
+                return status;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get system status: {ex.Message}", ex);
+            }
+        }
+
         #region System Control
 
         /// <summary>
