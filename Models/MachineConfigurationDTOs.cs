@@ -91,4 +91,119 @@ namespace HavenCNCServer.Models
         /// </summary>
         public Dictionary<int, bool> InputSettings { get; set; } = new();
     }
+
+    /// <summary>
+    /// Validation result DTO for configuration validation
+    /// </summary>
+    public class ValidationResult
+    {
+        /// <summary>
+        /// Whether the configuration is valid
+        /// </summary>
+        public bool Valid { get; set; }
+
+        /// <summary>
+        /// List of validation issues found
+        /// </summary>
+        public string[] Issues { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Input count
+        /// </summary>
+        public int InputCount { get; set; }
+
+        /// <summary>
+        /// Output count
+        /// </summary>
+        public int OutputCount { get; set; }
+    }
+
+    /// <summary>
+    /// ATC validation result DTO for ATC configuration validation
+    /// </summary>
+    public class ATCValidationResult
+    {
+        /// <summary>
+        /// Whether the configuration is valid
+        /// </summary>
+        public bool Valid { get; set; }
+
+        /// <summary>
+        /// List of validation issues found
+        /// </summary>
+        public string[] Issues { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// ATC type
+        /// </summary>
+        public string Type { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Parameter value DTO for parameter operations
+    /// </summary>
+    public class ParameterValue
+    {
+        /// <summary>
+        /// Parameter number
+        /// </summary>
+        public int Parameter { get; set; }
+
+        /// <summary>
+        /// Parameter name
+        /// </summary>
+        public string ParameterName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Parameter value
+        /// </summary>
+        public double Value { get; set; }
+
+        /// <summary>
+        /// Descriptive message
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Parameter information DTO for available parameters
+    /// </summary>
+    public class ParameterInfo
+    {
+        /// <summary>
+        /// Parameter number
+        /// </summary>
+        public int Number { get; set; }
+
+        /// <summary>
+        /// Parameter name
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Parameter description
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Available parameters response DTO
+    /// </summary>
+    public class AvailableParametersResponse
+    {
+        /// <summary>
+        /// Descriptive message
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Total parameter count
+        /// </summary>
+        public int ParameterCount { get; set; }
+
+        /// <summary>
+        /// List of available parameters
+        /// </summary>
+        public ParameterInfo[] Parameters { get; set; } = Array.Empty<ParameterInfo>();
+    }
 }
