@@ -24,12 +24,10 @@ namespace HavenCNCServer
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            
+
             // Register clean services
-            services.AddScoped<ICNCIOService, CNCIOService>();
             services.AddScoped<ICNCSystemService, CNCSystemService>();
-            services.AddScoped<ICNCMovementService, CNCMovementService>();
-            
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -92,11 +90,11 @@ namespace HavenCNCServer
 
             app.UseRouting();
             app.UseCors();
-            
+
             // Enable static files from wwwroot folder
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -105,7 +103,7 @@ namespace HavenCNCServer
             });
 
             // Configure SPA routing with proper API route exclusion
-            app.MapWhen(context => !context.Request.Path.StartsWithSegments("/api") && 
+            app.MapWhen(context => !context.Request.Path.StartsWithSegments("/api") &&
                                   !context.Request.Path.StartsWithSegments("/swagger"),
                 appBranch =>
                 {
@@ -113,7 +111,7 @@ namespace HavenCNCServer
                     {
                         spa.Options.SourcePath = "wwwroot";
                         spa.Options.DefaultPage = "/index.html";
-                        
+
                         spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
                         {
                             FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
