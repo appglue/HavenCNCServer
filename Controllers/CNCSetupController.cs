@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using HavenCNCServer.Models;
+using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Controllers
 {
@@ -17,13 +17,25 @@ namespace HavenCNCServer.Controllers
         /// Update Centroid settings
         /// </summary>
         /// <param name="settings">Centroid settings to update</param>
-        /// <returns>Success response</returns>
+        /// <returns>Update operation success</returns>
         [HttpPost("UpdateCentroidSettings")]
-        public async Task<IActionResult> UpdateCentroidSettings([FromBody] CentroidSettings settings)
+        public bool UpdateCentroidSettings([FromBody] CentroidSettings settings)
         {
-            // TODO: Implement update Centroid settings functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Centroid settings updated", settings });
+            try
+            {
+                if (settings == null)
+                {
+                    throw new ArgumentNullException(nameof(settings), "Centroid settings cannot be null");
+                }
+
+                // TODO: Implement update Centroid settings functionality using CentroidAPI
+                // return CNCUtils.UpdateCentroidSettings(settings);
+                throw new NotImplementedException("Update Centroid settings functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to update Centroid settings: {ex.Message}", ex);
+            }
         }
 
         #endregion

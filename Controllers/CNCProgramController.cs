@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HavenCNCServer.Models;
+using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Controllers
 {
@@ -19,73 +16,82 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Stop G-code execution
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Stop operation success</returns>
         [HttpPost("Stop")]
-        public async Task<IActionResult> Stop()
+        public bool Stop()
         {
-            // TODO: Implement stop functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Execution stopped" });
+            try
+            {
+                // TODO: Implement stop functionality using CentroidAPI
+                // return CNCUtils.StopProgram();
+                throw new NotImplementedException("Stop functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to stop execution: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Resume G-code execution
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Resume operation success</returns>
         [HttpPost("Resume")]
-        public async Task<IActionResult> Resume()
+        public bool Resume()
         {
-            // TODO: Implement resume functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Execution resumed" });
+            try
+            {
+                // TODO: Implement resume functionality using CentroidAPI
+                // return CNCUtils.ResumeProgram();
+                throw new NotImplementedException("Resume functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to resume execution: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Resume G-code execution at specific line
         /// </summary>
         /// <param name="lineNumber">Line number to resume at</param>
-        /// <returns>Success response</returns>
+        /// <returns>Resume operation success</returns>
         [HttpPost("ResumeAt/{lineNumber}")]
-        public async Task<IActionResult> ResumeAt(int lineNumber)
+        public bool ResumeAt(int lineNumber)
         {
-            // TODO: Implement resume at line functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Execution resumed at line {lineNumber}", lineNumber });
+            try
+            {
+                if (lineNumber <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be greater than 0");
+                }
+
+                // TODO: Implement resume at line functionality using CentroidAPI
+                // return CNCUtils.ResumeAtLine(lineNumber);
+                throw new NotImplementedException("Resume at line functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to resume at line {lineNumber}: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Run G-code
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Run operation success</returns>
         [HttpPost("RunGCode")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> RunGCode()
+        public bool RunGCode()
         {
             try
             {
-                await Task.Delay(1); // Placeholder for async operation
-                
-                // Here you would implement actual CentroidAPI calls to run the loaded G-code
-                // For example:
-                // using (var cncPipe = new CNCPipe())
-                // {
-                //     // Wait for connection
-                //     while (!cncPipe.IsConstructed()) { Thread.Sleep(10); }
-                //     
-                //     // Start program execution via appropriate API method
-                //     // This might be: cncPipe.program.Start() or similar
-                // }
-                
-                return Ok(new { 
-                    message = "G-code execution started",
-                    status = "running",
-                    timestamp = DateTime.Now
-                });
+                // TODO: Implement G-code run functionality using CentroidAPI
+                // return CNCUtils.RunProgram();
+                throw new NotImplementedException("Run G-code functionality not yet implemented");
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = $"Failed to start G-code execution: {ex.Message}" });
+                throw new InvalidOperationException($"Failed to start G-code execution: {ex.Message}", ex);
             }
         }
 
@@ -93,13 +99,25 @@ namespace HavenCNCServer.Controllers
         /// Run single G-code command
         /// </summary>
         /// <param name="gcode">G-code command to run</param>
-        /// <returns>Success response</returns>
+        /// <returns>Command execution success</returns>
         [HttpPost("RunGCodeCommand")]
-        public async Task<IActionResult> RunGCodeCommand([FromBody] string gcode)
+        public bool RunGCodeCommand([FromBody] string gcode)
         {
-            // TODO: Implement run G-code command functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Executed G-code: {gcode}", gcode });
+            try
+            {
+                if (string.IsNullOrWhiteSpace(gcode))
+                {
+                    throw new ArgumentException("G-code command cannot be empty", nameof(gcode));
+                }
+
+                // TODO: Implement run G-code command functionality using CentroidAPI
+                // return CNCUtils.RunMDICommand(gcode);
+                throw new NotImplementedException("Run G-code command functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to execute G-code command: {ex.Message}", ex);
+            }
         }
 
         #endregion
@@ -111,60 +129,48 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Current G-code lines</returns>
         [HttpGet("GetCurrentGCode")]
-        public async Task<IActionResult> GetCurrentGCode()
+        public string[] GetCurrentGCode()
         {
-            // TODO: Implement get current G-code
-            await Task.Delay(1);
-            var gcode = new List<string> { "G00 X0 Y0", "G01 Z-1 F100", "M03 S1000" };
-            return Ok(new { gcode });
+            try
+            {
+                // TODO: Implement get current G-code using CentroidAPI
+                // return CNCUtils.GetCurrentGCode();
+                throw new NotImplementedException("Get current G-code functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get current G-code: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Load G-code
         /// </summary>
         /// <param name="request">G-code load request</param>
-        /// <returns>Success response</returns>
+        /// <returns>Load operation success</returns>
         [HttpPost("LoadGCode")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> LoadGCode([FromBody] LoadGCodeRequest request)
+        public bool LoadGCode([FromBody] LoadGCodeRequest request)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.GCode))
+                if (request == null)
                 {
-                    return BadRequest(new { error = "G-code content cannot be empty" });
+                    throw new ArgumentNullException(nameof(request), "Load G-code request cannot be null");
                 }
 
-                await Task.Delay(1); // Placeholder for async operation
-                
-                var gCodeLines = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                var validLines = gCodeLines.Where(line => 
-                    !string.IsNullOrWhiteSpace(line.Trim()) && 
-                    !line.Trim().StartsWith(";") && 
-                    !line.Trim().StartsWith("(")).ToArray();
+                if (string.IsNullOrWhiteSpace(request.GCode))
+                {
+                    throw new ArgumentException("G-code content cannot be empty", nameof(request));
+                }
 
-                // Here you would implement actual CentroidAPI calls to load the G-code
-                // For example:
-                // using (var cncPipe = new CNCPipe())
-                // {
-                //     // Wait for connection
-                //     while (!cncPipe.IsConstructed()) { Thread.Sleep(10); }
-                //     
-                //     // Load G-code via appropriate API method
-                //     // This might involve saving to a file and loading it, or using MDI
-                // }
-
-                return Ok(new { 
-                    message = $"G-code loaded successfully", 
-                    totalLines = gCodeLines.Length,
-                    validLines = validLines.Length,
-                    programName = request.ProgramName ?? "Unnamed Program"
-                });
+                // TODO: Implement G-code loading using CentroidAPI
+                // var gCodeLines = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                // return CNCUtils.LoadGCode(request.GCode, request.ProgramName);
+                throw new NotImplementedException("Load G-code functionality not yet implemented");
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = $"Failed to load G-code: {ex.Message}" });
+                throw new InvalidOperationException($"Failed to load G-code: {ex.Message}", ex);
             }
         }
 
@@ -172,13 +178,25 @@ namespace HavenCNCServer.Controllers
         /// Load G-code from file
         /// </summary>
         /// <param name="filePath">File path to load G-code from</param>
-        /// <returns>Success response</returns>
+        /// <returns>Load operation success</returns>
         [HttpPost("LoadGCodeFromFile")]
-        public async Task<IActionResult> LoadGCodeFromFile([FromBody] string filePath)
+        public bool LoadGCodeFromFile([FromBody] string filePath)
         {
-            // TODO: Implement load G-code from file functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"G-code loaded from {filePath}", filePath });
+            try
+            {
+                if (string.IsNullOrWhiteSpace(filePath))
+                {
+                    throw new ArgumentException("File path cannot be empty", nameof(filePath));
+                }
+
+                // TODO: Implement load G-code from file functionality using CentroidAPI
+                // return CNCUtils.LoadGCodeFromFile(filePath);
+                throw new NotImplementedException("Load G-code from file functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to load G-code from file: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -186,11 +204,18 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Current line number</returns>
         [HttpGet("GetCurrentLineNumber")]
-        public async Task<IActionResult> GetCurrentLineNumber()
+        public int GetCurrentLineNumber()
         {
-            // TODO: Implement get current line number
-            await Task.Delay(1);
-            return Ok(new { lineNumber = 1 });
+            try
+            {
+                // TODO: Implement get current line number using CentroidAPI
+                // return CNCUtils.GetCurrentLineNumber();
+                throw new NotImplementedException("Get current line number functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get current line number: {ex.Message}", ex);
+            }
         }
 
         #endregion
@@ -200,49 +225,77 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Start step run mode
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Step run start success</returns>
         [HttpPost("StartStepRun")]
-        public async Task<IActionResult> StartStepRun()
+        public bool StartStepRun()
         {
-            // TODO: Implement start step run functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Step run mode started" });
+            try
+            {
+                // TODO: Implement start step run functionality using CentroidAPI
+                // return CNCUtils.StartStepRunMode();
+                throw new NotImplementedException("Start step run functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to start step run mode: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// End step run mode
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Step run end success</returns>
         [HttpPost("EndStepRun")]
-        public async Task<IActionResult> EndStepRun()
+        public bool EndStepRun()
         {
-            // TODO: Implement end step run functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Step run mode ended" });
+            try
+            {
+                // TODO: Implement end step run functionality using CentroidAPI
+                // return CNCUtils.EndStepRunMode();
+                throw new NotImplementedException("End step run functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to end step run mode: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Execute next step in step run mode
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Next step execution success</returns>
         [HttpPost("StepRunNext")]
-        public async Task<IActionResult> StepRunNext()
+        public bool StepRunNext()
         {
-            // TODO: Implement step run next functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Next step executed" });
+            try
+            {
+                // TODO: Implement step run next functionality using CentroidAPI
+                // return CNCUtils.ExecuteNextStep();
+                throw new NotImplementedException("Step run next functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to execute next step: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Run from current step
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Run from step success</returns>
         [HttpPost("RunFromCurrentStep")]
-        public async Task<IActionResult> RunFromCurrentStep()
+        public bool RunFromCurrentStep()
         {
-            // TODO: Implement run from current step functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Running from current step" });
+            try
+            {
+                // TODO: Implement run from current step functionality using CentroidAPI
+                // return CNCUtils.RunFromCurrentStep();
+                throw new NotImplementedException("Run from current step functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to run from current step: {ex.Message}", ex);
+            }
         }
 
         #endregion

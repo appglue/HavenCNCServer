@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using HavenCNCServer.Models;
+using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Controllers
 {
@@ -17,38 +17,66 @@ namespace HavenCNCServer.Controllers
         /// Start the spindle
         /// </summary>
         /// <param name="speed">Optional speed parameter</param>
-        /// <returns>Success response</returns>
+        /// <returns>Spindle start success</returns>
         [HttpPost("StartSpindle")]
-        public async Task<IActionResult> StartSpindle([FromBody] double? speed = null)
+        public bool StartSpindle([FromBody] double? speed = null)
         {
-            // TODO: Implement start spindle
-            await Task.Delay(1);
-            string message = speed.HasValue ? $"Spindle started at {speed}" : "Spindle started";
-            return Ok(new { message, speed });
+            try
+            {
+                if (speed.HasValue && speed.Value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(speed), "Spindle speed cannot be negative");
+                }
+
+                // TODO: Implement start spindle functionality using CentroidAPI
+                // if (speed.HasValue)
+                //     return CNCUtils.StartSpindle(speed.Value);
+                // else
+                //     return CNCUtils.StartSpindle();
+                throw new NotImplementedException("Start spindle functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to start spindle: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Stop the spindle
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Spindle stop success</returns>
         [HttpPost("StopSpindle")]
-        public async Task<IActionResult> StopSpindle()
+        public bool StopSpindle()
         {
-            // TODO: Implement stop spindle
-            await Task.Delay(1);
-            return Ok(new { message = "Spindle stopped" });
+            try
+            {
+                // TODO: Implement stop spindle functionality using CentroidAPI
+                // return CNCUtils.StopSpindle();
+                throw new NotImplementedException("Stop spindle functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to stop spindle: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Warm up the spindle
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Spindle warm up success</returns>
         [HttpPost("WarmUpSpindle")]
-        public async Task<IActionResult> WarmUpSpindle()
+        public bool WarmUpSpindle()
         {
-            // TODO: Implement spindle warm up
-            await Task.Delay(1);
-            return Ok(new { message = "Spindle warm up initiated" });
+            try
+            {
+                // TODO: Implement spindle warm up functionality using CentroidAPI
+                // return CNCUtils.WarmUpSpindle();
+                throw new NotImplementedException("Spindle warm up functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to warm up spindle: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -56,10 +84,18 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Spindle running status</returns>
         [HttpGet("IsSpindleRunning")]
-        public IActionResult IsSpindleRunning()
+        public bool IsSpindleRunning()
         {
-            // TODO: Implement spindle running check
-            return Ok(new { isRunning = false });
+            try
+            {
+                // TODO: Implement spindle running check using CentroidAPI
+                // return CNCUtils.IsSpindleRunning();
+                throw new NotImplementedException("Spindle running check functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to check spindle running status: {ex.Message}", ex);
+            }
         }
 
         #endregion
@@ -71,37 +107,68 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Current spindle speed</returns>
         [HttpGet("GetSpindleSpeed")]
-        public async Task<IActionResult> GetSpindleSpeed()
+        public double GetSpindleSpeed()
         {
-            // TODO: Implement get spindle speed
-            await Task.Delay(1);
-            return Ok(new { speed = 1000 });
+            try
+            {
+                // TODO: Implement get spindle speed using CentroidAPI
+                // return CNCUtils.GetSpindleSpeed();
+                throw new NotImplementedException("Get spindle speed functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get spindle speed: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Set spindle speed
         /// </summary>
         /// <param name="speed">Speed to set</param>
-        /// <returns>Success response</returns>
+        /// <returns>Set speed success</returns>
         [HttpPost("SetSpindleSpeed")]
-        public async Task<IActionResult> SetSpindleSpeed([FromBody] double speed)
+        public bool SetSpindleSpeed([FromBody] double speed)
         {
-            // TODO: Implement set spindle speed
-            await Task.Delay(1);
-            return Ok(new { message = $"Spindle speed set to {speed}", speed });
+            try
+            {
+                if (speed < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(speed), "Spindle speed cannot be negative");
+                }
+
+                // TODO: Implement set spindle speed using CentroidAPI
+                // return CNCUtils.SetSpindleSpeed(speed);
+                throw new NotImplementedException("Set spindle speed functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to set spindle speed: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Adjust spindle speed by factor
         /// </summary>
         /// <param name="factor">Adjustment factor (-200 to +200, where 0 is no change, 100 is double, -100 is half)</param>
-        /// <returns>Success response</returns>
+        /// <returns>Adjust speed success</returns>
         [HttpPost("AdjustSpindleSpeed")]
-        public async Task<IActionResult> AdjustSpindleSpeed([FromBody] double factor)
+        public bool AdjustSpindleSpeed([FromBody] double factor)
         {
-            // TODO: Implement adjust spindle speed
-            await Task.Delay(1);
-            return Ok(new { message = $"Spindle speed adjusted by factor {factor}", factor });
+            try
+            {
+                if (factor < -200 || factor > 200)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(factor), "Adjustment factor must be between -200 and +200");
+                }
+
+                // TODO: Implement adjust spindle speed using CentroidAPI
+                // return CNCUtils.AdjustSpindleSpeed(factor);
+                throw new NotImplementedException("Adjust spindle speed functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to adjust spindle speed: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -109,23 +176,37 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Current adjustment factor</returns>
         [HttpGet("GetCurrentSpindleSpeedFactor")]
-        public async Task<IActionResult> GetCurrentSpindleSpeedFactor()
+        public double GetCurrentSpindleSpeedFactor()
         {
-            // TODO: Implement get current spindle speed factor
-            await Task.Delay(1);
-            return Ok(new { factor = 0.0 });
+            try
+            {
+                // TODO: Implement get current spindle speed factor using CentroidAPI
+                // return CNCUtils.GetCurrentSpindleSpeedFactor();
+                throw new NotImplementedException("Get current spindle speed factor functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get current spindle speed factor: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Reset spindle speed factor to default
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Reset factor success</returns>
         [HttpPost("ResetSpindleSpeedFactor")]
-        public async Task<IActionResult> ResetSpindleSpeedFactor()
+        public bool ResetSpindleSpeedFactor()
         {
-            // TODO: Implement reset spindle speed factor
-            await Task.Delay(1);
-            return Ok(new { message = "Spindle speed factor reset to default" });
+            try
+            {
+                // TODO: Implement reset spindle speed factor using CentroidAPI
+                // return CNCUtils.ResetSpindleSpeedFactor();
+                throw new NotImplementedException("Reset spindle speed factor functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to reset spindle speed factor: {ex.Message}", ex);
+            }
         }
 
         #endregion

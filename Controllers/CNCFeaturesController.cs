@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using HavenCNCServer.Models;
+using HavenCNCServer.CentriodAPI;
 
 namespace HavenCNCServer.Controllers
 {
@@ -13,26 +12,30 @@ namespace HavenCNCServer.Controllers
     {
         #region Tool Management
 
-
         /// <summary>
         /// Change to specified tool
         /// </summary>
         /// <param name="toolNumber">Tool number to change to</param>
         /// <param name="returnToCurrentPosition">Whether to return to current position after tool change</param>
-        /// <returns>Success response</returns>
+        /// <returns>Tool change success</returns>
         [HttpPost("ChangeToTool/{toolNumber}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> ChangeToTool(int toolNumber, [FromQuery] bool returnToCurrentPosition = true)
+        public bool ChangeToTool(int toolNumber, [FromQuery] bool returnToCurrentPosition = true)
         {
-            if (toolNumber <= 0)
+            try
             {
-                return BadRequest("Tool number must be greater than 0");
+                if (toolNumber <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(toolNumber), "Tool number must be greater than 0");
+                }
+
+                // TODO: Implement tool change functionality using CentroidAPI
+                // return CNCUtils.PerformToolChange(toolNumber, returnToCurrentPosition);
+                throw new NotImplementedException("Tool change functionality not yet implemented");
             }
-            
-            // TODO: Implement tool change functionality
-            await Task.Delay(1);
-            return Ok(new { message = $"Changed to tool {toolNumber}", toolNumber, returnToCurrentPosition });
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to change to tool {toolNumber}: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -40,64 +43,94 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Current tool number</returns>
         [HttpGet("GetCurrentToolNumber")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> GetCurrentToolNumber()
+        public int GetCurrentToolNumber()
         {
-            // TODO: Implement get current tool number
-            await Task.Delay(1);
-            return Ok(new { toolNumber = 1 });
+            try
+            {
+                // TODO: Implement get current tool number using CentroidAPI
+                // return CNCUtils.GetCurrentToolNumber();
+                throw new NotImplementedException("Get current tool number functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get current tool number: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Check tool (pauses and raises tool, remeasures if tool changed)
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Tool check success</returns>
         [HttpPost("CheckTool")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> CheckTool()
+        public bool CheckTool()
         {
-            // TODO: Implement check tool functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Tool checked" });
+            try
+            {
+                // TODO: Implement check tool functionality using CentroidAPI
+                // return CNCUtils.CheckTool();
+                throw new NotImplementedException("Check tool functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to check tool: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Measure current tool
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Tool measurement success</returns>
         [HttpPost("MeasureCurrentTool")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> MeasureCurrentTool()
+        public bool MeasureCurrentTool()
         {
-            // TODO: Implement measure current tool functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Current tool measured" });
+            try
+            {
+                // TODO: Implement measure current tool functionality using CentroidAPI
+                // return CNCUtils.MeasureCurrentTool();
+                throw new NotImplementedException("Measure current tool functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to measure current tool: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Measure all tools
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>All tools measurement success</returns>
         [HttpPost("MeasureAllTools")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> MeasureAllTools()
+        public bool MeasureAllTools()
         {
-            // TODO: Implement measure all tools functionality
-            await Task.Delay(1);
-            return Ok(new { message = "All tools measured" });
+            try
+            {
+                // TODO: Implement measure all tools functionality using CentroidAPI
+                // return CNCUtils.MeasureAllTools();
+                throw new NotImplementedException("Measure all tools functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to measure all tools: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
         /// Touch off operation
         /// </summary>
-        /// <returns>Success response</returns>
+        /// <returns>Touch off success</returns>
         [HttpPost("TouchOff")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> TouchOff()
+        public bool TouchOff()
         {
-            // TODO: Implement touch off functionality
-            await Task.Delay(1);
-            return Ok(new { message = "Touch off completed" });
+            try
+            {
+                // TODO: Implement touch off functionality using CentroidAPI
+                // return CNCUtils.PerformTouchOff();
+                throw new NotImplementedException("Touch off functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to perform touch off: {ex.Message}", ex);
+            }
         }
 
         #endregion

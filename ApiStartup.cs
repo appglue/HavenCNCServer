@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
-using HavenCNCServer.Services;
 
 namespace HavenCNCServer
 {
@@ -24,9 +23,6 @@ namespace HavenCNCServer
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-
-            // Register clean services
-            services.AddScoped<ICNCSystemService, CNCSystemService>();
 
             services.AddSwaggerGen(c =>
             {
