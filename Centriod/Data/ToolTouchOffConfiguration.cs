@@ -1,4 +1,4 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
     /// <summary>
     /// Tool touch off type enumeration
@@ -48,13 +48,11 @@ namespace HavenCNCServer.Models
         Fixed = 3
     }
 
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents tool touch off configuration
+    /// </summary>
+    public class ToolTouchOffConfiguration
     {
-        /// <summary>
-        /// Represents tool touch off configuration
-        /// </summary>
-        public class ToolTouchOffConfiguration
-        {
             /// <summary>
             /// Touch Off Tool PLC input number (Parameter 44 for Mill, 244 for Lathe)
             /// </summary>
@@ -120,5 +118,4 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public int? DetectInputNumber { get; set; }
         }
-    }
 }

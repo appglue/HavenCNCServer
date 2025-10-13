@@ -1,4 +1,4 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
     /// <summary>
     /// Probe type enumeration
@@ -32,13 +32,11 @@ namespace HavenCNCServer.Models
         Closed = 1
     }
 
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents probe configuration
+    /// </summary>
+    public class ProbeConfiguration
     {
-        /// <summary>
-        /// Represents probe configuration
-        /// </summary>
-        public class ProbeConfiguration
-        {
             /// <summary>
             /// Probe PLC input number
             /// </summary>
@@ -158,11 +156,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public bool? DisplayProbeWarning { get; set; }
             
-            /// <summary>
-            /// Probe protection/inhibit settings (legacy)
-            /// </summary>
-            public int? ProbeInhibit { get; set; }
-        }
-
+        /// <summary>
+        /// Probe protection/inhibit settings (legacy)
+        /// </summary>
+        public int? ProbeInhibit { get; set; }
     }
 }

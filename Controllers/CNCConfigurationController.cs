@@ -4,7 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using HavenCNCServer.Models;
-using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Centriod;
+using HavenCNCServer.Centriod.Data;
 
 namespace HavenCNCServer.Controllers
 {
@@ -315,9 +316,9 @@ namespace HavenCNCServer.Controllers
             try
             {
                 return CentroidConfigUtil.ConfigureCompleteMachine(
-                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
-                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>(),
-                    config.Axes ?? new List<CentroidConfigUtil.AxisConfiguration>(),
+                    config.Inputs ?? new List<IOFunction>(),
+                    config.Outputs ?? new List<IOFunction>(),
+                    config.Axes ?? new List<AxisConfiguration>(),
                     config.Spindle,
                     config.Probe,
                     config.PWMOutputs,
@@ -341,8 +342,8 @@ namespace HavenCNCServer.Controllers
             try
             {
                 return CentroidConfigUtil.ConfigureInputsOutputs(
-                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
-                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>()
+                    config.Inputs ?? new List<IOFunction>(),
+                    config.Outputs ?? new List<IOFunction>()
                 );
             }
             catch (Exception ex)
@@ -358,7 +359,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Axis configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureAxis")]
-        public bool ConfigureAxis([FromBody] CentroidConfigUtil.AxisConfiguration config)
+        public bool ConfigureAxis([FromBody] AxisConfiguration config)
         {
             try
             {
@@ -376,7 +377,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Spindle configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureSpindle")]
-        public bool ConfigureSpindle([FromBody] CentroidConfigUtil.SpindleConfiguration config)
+        public bool ConfigureSpindle([FromBody] SpindleConfiguration config)
         {
             try
             {
@@ -394,7 +395,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">PWM configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigurePWM")]
-        public bool ConfigurePWM([FromBody] CentroidConfigUtil.PWMConfiguration config)
+        public bool ConfigurePWM([FromBody] PWMConfiguration config)
         {
             try
             {
@@ -412,7 +413,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">ATC configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureATC")]
-        public bool ConfigureATC([FromBody] CentroidConfigUtil.ATCConfiguration config)
+        public bool ConfigureATC([FromBody] ATCConfiguration config)
         {
             try
             {
@@ -430,7 +431,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Probe configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureProbe")]
-        public bool ConfigureProbe([FromBody] CentroidConfigUtil.ProbeConfiguration config)
+        public bool ConfigureProbe([FromBody] ProbeConfiguration config)
         {
             try
             {
@@ -448,7 +449,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Tool touch off configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureToolTouchOff")]
-        public bool ConfigureToolTouchOff([FromBody] CentroidConfigUtil.ToolTouchOffConfiguration config)
+        public bool ConfigureToolTouchOff([FromBody] ToolTouchOffConfiguration config)
         {
             try
             {
@@ -471,8 +472,8 @@ namespace HavenCNCServer.Controllers
             try
             {
                 var issues = CentroidConfigUtil.ValidateIOConfiguration(
-                    config.Inputs ?? new List<CentroidConfigUtil.IOFunction>(),
-                    config.Outputs ?? new List<CentroidConfigUtil.IOFunction>()
+                    config.Inputs ?? new List<IOFunction>(),
+                    config.Outputs ?? new List<IOFunction>()
                 );
 
                 return new ValidationResult
@@ -495,7 +496,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">ATC configuration to validate</param>
         /// <returns>Validation results</returns>
         [HttpPost("ValidateATCConfiguration")]
-        public ATCValidationResult ValidateATCConfiguration([FromBody] CentroidConfigUtil.ATCConfiguration config)
+        public ATCValidationResult ValidateATCConfiguration([FromBody] ATCConfiguration config)
         {
             try
             {
@@ -524,7 +525,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Touch plate configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureTouchPlate")]
-        public bool ConfigureTouchPlate([FromBody] CentroidConfigUtil.TouchPlateConfiguration config)
+        public bool ConfigureTouchPlate([FromBody] TouchPlateConfiguration config)
         {
             try
             {
@@ -547,7 +548,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Second spindle configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureSecondSpindle")]
-        public bool ConfigureSecondSpindle([FromBody] CentroidConfigUtil.SecondSpindleConfiguration config)
+        public bool ConfigureSecondSpindle([FromBody] SecondSpindleConfiguration config)
         {
             try
             {
@@ -570,7 +571,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="config">Global system configuration</param>
         /// <returns>Configuration result</returns>
         [HttpPost("ConfigureGlobalSystem")]
-        public bool ConfigureGlobalSystem([FromBody] CentroidConfigUtil.GlobalSystemConfiguration config)
+        public bool ConfigureGlobalSystem([FromBody] GlobalSystemConfiguration config)
         {
             try
             {
@@ -639,11 +640,11 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Hardware information</returns>
         [HttpGet("GetSystemHardwareInfo")]
-        public CentroidConfigUtil.SystemHardwareInfo GetSystemHardwareInfo()
+        public SystemHardwareInfo GetSystemHardwareInfo()
         {
             try
             {
-                return new CentroidConfigUtil.SystemHardwareInfo
+                return new SystemHardwareInfo
                 {
                     AvailableInputs = CNCUtils.GetAvailableInputPorts()?.ToList() ?? new List<int>(),
                     AvailableOutputs = CNCUtils.GetAvailableOutputPorts()?.ToList() ?? new List<int>(),

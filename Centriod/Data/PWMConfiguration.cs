@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents PWM output configuration
+    /// </summary>
+    public class PWMConfiguration
     {
-        /// <summary>
-        /// Represents PWM output configuration
-        /// </summary>
-        public class PWMConfiguration
-        {
             /// <summary>
             /// Output number for PWM signal - Required
             /// </summary>
@@ -57,10 +55,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public bool? InverseEnabled { get; set; }
             
-            /// <summary>
-            /// Velocity 100% mode (legacy property - use SCommandRange1000 instead)
-            /// </summary>
-            public bool? Velocity100 { get; set; }
-        }
+        /// <summary>
+        /// Velocity 100% mode (legacy property - use SCommandRange1000 instead)
+        /// </summary>
+        public bool? Velocity100 { get; set; }
     }
 }

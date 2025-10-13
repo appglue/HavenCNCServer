@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
-using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Centriod;
 
 namespace HavenCNCServer.Controllers
 {

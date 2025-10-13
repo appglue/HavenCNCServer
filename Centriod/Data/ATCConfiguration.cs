@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents ATC (Automatic Tool Changer) configuration
+    /// </summary>
+    public class ATCConfiguration
     {
-        /// <summary>
-        /// Represents ATC (Automatic Tool Changer) configuration
-        /// </summary>
-        public class ATCConfiguration
-        {
             /// <summary>
             /// ATC type
             /// </summary>
@@ -72,10 +70,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public int HoldingConfiguration { get; set; }
             
-            /// <summary>
-            /// Tool length measurement method (0=Fixed position, 1=Surface plate)
-            /// </summary>
-            public int ToolLengthMethod { get; set; }
-        }
+        /// <summary>
+        /// Tool length measurement method (0=Fixed position, 1=Surface plate)
+        /// </summary>
+        public int ToolLengthMethod { get; set; }
     }
 }

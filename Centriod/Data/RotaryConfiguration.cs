@@ -1,14 +1,10 @@
-using HavenCNCServer.CentriodAPI;
-
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-    public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents global rotary axis configuration settings
+    /// </summary>
+    public class RotaryConfiguration
     {
-        /// <summary>
-        /// Represents global rotary axis configuration settings
-        /// </summary>
-        public class RotaryConfiguration
-        {
             /// <summary>
             /// Rotary axis jog increment in degrees
             /// Parameter 41 - Sets the jog increment for rotary axes
@@ -36,5 +32,4 @@ namespace HavenCNCServer.Models
             /// </summary>
             public bool? PreventRotaryModalFeedrate { get; set; }
         }
-    }
 }

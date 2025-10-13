@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents axis configuration parameters
+    /// </summary>
+    public class AxisConfiguration
     {
-        /// <summary>
-        /// Represents axis configuration parameters
-        /// </summary>
-        public class AxisConfiguration
-        {
             /// <summary>
             /// Axis number (1-8) - Required
             /// </summary>
@@ -137,11 +135,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public bool? DirectionSignalInverted { get; set; }
             
-            /// <summary>
-            /// Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)
-            /// </summary>
-            public bool? EnableSignalInverted { get; set; }
-        }
-
+        /// <summary>
+        /// Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)
+        /// </summary>
+        public bool? EnableSignalInverted { get; set; }
     }
 }

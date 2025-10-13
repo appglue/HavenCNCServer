@@ -1,6 +1,4 @@
-using HavenCNCServer.CentriodAPI;
-
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
     /// <summary>
     /// Tool height offset measurement method
@@ -18,13 +16,11 @@ namespace HavenCNCServer.Models
         ReferenceTool = 1
     }
 
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents global system configuration settings
+    /// </summary>
+    public class GlobalSystemConfiguration
     {
-        /// <summary>
-        /// Represents global system configuration settings
-        /// </summary>
-        public class GlobalSystemConfiguration
-        {
             /// <summary>
             /// Maximum number of steps that can be pulsed per second
             /// Global step frequency setting for all axes
@@ -53,11 +49,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public int? ChargePumpDivider { get; set; }
             
-            /// <summary>
-            /// Tool height offset measurement method
-            /// </summary>
-            public ToolHeightMeasurementMethod? ToolHeightMeasurementMethod { get; set; }
-        }
-
+        /// <summary>
+        /// Tool height offset measurement method
+        /// </summary>
+        public ToolHeightMeasurementMethod? ToolHeightMeasurementMethod { get; set; }
     }
 }

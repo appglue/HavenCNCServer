@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents second spindle configuration
+    /// </summary>
+    public class SecondSpindleConfiguration
     {
-        /// <summary>
-        /// Represents second spindle configuration
-        /// </summary>
-        public class SecondSpindleConfiguration
-        {
             /// <summary>
             /// Enable second spindle
             /// </summary>
@@ -25,8 +23,6 @@ public static partial class CentroidConfigUtil
             /// <summary>
             /// Second spindle encoder counts per revolution
             /// </summary>
-            public int? EncoderCounts { get; set; }
-        }
-
+        public int? EncoderCounts { get; set; }
     }
 }

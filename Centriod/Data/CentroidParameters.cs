@@ -1,4 +1,4 @@
-namespace HavenCNCServer.CentriodAPI
+namespace HavenCNCServer.Centriod.Data
 {
     /// <summary>
     /// Comprehensive Centroid CNC parameter enumeration

@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents spindle configuration parameters
+    /// </summary>
+    public class SpindleConfiguration
     {
-        /// <summary>
-        /// Represents spindle configuration parameters
-        /// </summary>
-        public class SpindleConfiguration
-        {
             /// <summary>
             /// Encoder counts per spindle revolution
             /// </summary>
@@ -167,11 +165,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public double? SSVAmount { get; set; }
             
-            /// <summary>
-            /// FRV (Feed Rate Variation) cycle time
-            /// </summary>
-            public double? FRVCycleTime { get; set; }
-        }
-
+        /// <summary>
+        /// FRV (Feed Rate Variation) cycle time
+        /// </summary>
+        public double? FRVCycleTime { get; set; }
     }
 }

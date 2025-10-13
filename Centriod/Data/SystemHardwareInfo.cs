@@ -1,12 +1,10 @@
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod.Data
 {
-public static partial class CentroidConfigUtil
+    /// <summary>
+    /// Represents system hardware detection and capabilities
+    /// </summary>
+    public class SystemHardwareInfo
     {
-        /// <summary>
-        /// Represents system hardware detection and capabilities
-        /// </summary>
-        public class SystemHardwareInfo
-        {
             /// <summary>
             /// System type (Acorn, AcornSix, Hickory)
             /// </summary>
@@ -42,11 +40,9 @@ public static partial class CentroidConfigUtil
             /// </summary>
             public List<int> AvailableInputs { get; set; } = new List<int>();
             
-            /// <summary>
-            /// Available output numbers
-            /// </summary>
-            public List<int> AvailableOutputs { get; set; } = new List<int>();
-        }
-
+        /// <summary>
+        /// Available output numbers
+        /// </summary>
+        public List<int> AvailableOutputs { get; set; } = new List<int>();
     }
 }

@@ -1,4 +1,4 @@
-namespace HavenCNCServer.CentriodAPI
+namespace HavenCNCServer.Centriod.Data
 {
     /// <summary>
     /// Supported step frequencies for the stepper pulse rate

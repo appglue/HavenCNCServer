@@ -1,8 +1,9 @@
 using System;
 using CentroidAPI;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centriod.Data;
 
-namespace HavenCNCServer.CentriodAPI
+namespace HavenCNCServer.Centriod
 {
     /// <summary>
     /// Clean CNC12 API wrapper class using centralized CNCConnectionManager.

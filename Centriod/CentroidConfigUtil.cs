@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CentroidAPI;
-using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Centriod.Data;
 using HavenCNCServer.Services;
 
-namespace HavenCNCServer.Models
+namespace HavenCNCServer.Centriod
 {
     /// <summary>
     /// Static class for generating PLC configuration sections with easy setup methods

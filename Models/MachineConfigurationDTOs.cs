@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HavenCNCServer.Centriod.Data;
 
 namespace HavenCNCServer.Models
 {
@@ -11,37 +12,37 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Input I/O function assignments
         /// </summary>
-        public List<CentroidConfigUtil.IOFunction>? Inputs { get; set; }
+        public List<IOFunction>? Inputs { get; set; }
 
         /// <summary>
         /// Output I/O function assignments
         /// </summary>
-        public List<CentroidConfigUtil.IOFunction>? Outputs { get; set; }
+        public List<IOFunction>? Outputs { get; set; }
 
         /// <summary>
         /// Axis configurations
         /// </summary>
-        public List<CentroidConfigUtil.AxisConfiguration>? Axes { get; set; }
+        public List<AxisConfiguration>? Axes { get; set; }
 
         /// <summary>
         /// Spindle configuration (required)
         /// </summary>
-        public CentroidConfigUtil.SpindleConfiguration Spindle { get; set; } = new();
+        public SpindleConfiguration Spindle { get; set; } = new();
 
         /// <summary>
         /// Probe configuration (optional)
         /// </summary>
-        public CentroidConfigUtil.ProbeConfiguration? Probe { get; set; }
+        public ProbeConfiguration? Probe { get; set; }
 
         /// <summary>
         /// PWM output configurations (optional)
         /// </summary>
-        public List<CentroidConfigUtil.PWMConfiguration>? PWMOutputs { get; set; }
+        public List<PWMConfiguration>? PWMOutputs { get; set; }
 
         /// <summary>
         /// ATC configuration (optional)
         /// </summary>
-        public CentroidConfigUtil.ATCConfiguration? ATC { get; set; }
+        public ATCConfiguration? ATC { get; set; }
     }
 
     /// <summary>
@@ -52,12 +53,12 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Input I/O function assignments
         /// </summary>
-        public List<CentroidConfigUtil.IOFunction>? Inputs { get; set; }
+        public List<IOFunction>? Inputs { get; set; }
 
         /// <summary>
         /// Output I/O function assignments
         /// </summary>
-        public List<CentroidConfigUtil.IOFunction>? Outputs { get; set; }
+        public List<IOFunction>? Outputs { get; set; }
     }
 
     /// <summary>
