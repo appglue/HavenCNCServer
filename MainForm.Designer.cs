@@ -39,6 +39,7 @@ namespace HavenCNCServer
             this.btnGenerateOpenApi = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
             this.btnGCodeTest = new System.Windows.Forms.Button();
+            this.btnCNCServer = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
@@ -80,18 +81,18 @@ namespace HavenCNCServer
             this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLog.Location = new System.Drawing.Point(12, 140);
+            this.txtLog.Location = new System.Drawing.Point(12, 170);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(880, 530);
+            this.txtLog.Size = new System.Drawing.Size(880, 500);
             this.txtLog.TabIndex = 3;
             // 
             // lblLog
             // 
             this.lblLog.AutoSize = true;
-            this.lblLog.Location = new System.Drawing.Point(12, 122);
+            this.lblLog.Location = new System.Drawing.Point(12, 152);
             this.lblLog.Name = "lblLog";
             this.lblLog.Size = new System.Drawing.Size(69, 15);
             this.lblLog.TabIndex = 4;
@@ -157,6 +158,16 @@ namespace HavenCNCServer
             this.btnTest.UseVisualStyleBackColor = true;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
+            // btnCNCServer
+            // 
+            this.btnCNCServer.Location = new System.Drawing.Point(12, 110);
+            this.btnCNCServer.Name = "btnCNCServer";
+            this.btnCNCServer.Size = new System.Drawing.Size(120, 30);
+            this.btnCNCServer.TabIndex = 11;
+            this.btnCNCServer.Text = "Start CNC Server";
+            this.btnCNCServer.UseVisualStyleBackColor = true;
+            this.btnCNCServer.Click += new System.EventHandler(this.btnCNCServer_Click);
+            // 
             // webView
             // 
             this.webView.AllowExternalDrop = true;
@@ -165,9 +176,9 @@ namespace HavenCNCServer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.webView.CreationProperties = null;
             this.webView.DefaultBackgroundColor = System.Drawing.Color.White;
-            this.webView.Location = new System.Drawing.Point(12, 140);
+            this.webView.Location = new System.Drawing.Point(12, 170);
             this.webView.Name = "webView";
-            this.webView.Size = new System.Drawing.Size(880, 530);
+            this.webView.Size = new System.Drawing.Size(880, 500);
             this.webView.TabIndex = 9;
             this.webView.Visible = false;
             this.webView.ZoomFactor = 1D;
@@ -185,10 +196,11 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnGenerateOpenApi);
             this.pnlControls.Controls.Add(this.btnGCodeTest);
             this.pnlControls.Controls.Add(this.btnTest);
+            this.pnlControls.Controls.Add(this.btnCNCServer);
             this.pnlControls.Controls.Add(this.lblLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(904, 130);
+            this.pnlControls.Size = new System.Drawing.Size(904, 160);
             this.pnlControls.TabIndex = 10;
             // 
             // MainForm
@@ -222,6 +234,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnGenerateOpenApi;
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.Button btnGCodeTest;
+        private System.Windows.Forms.Button btnCNCServer;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
     }

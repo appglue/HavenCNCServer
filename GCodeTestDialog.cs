@@ -18,6 +18,7 @@ namespace HavenCNCServer
         private string _currentFilePath = string.Empty;
         private readonly object _logLock = new object();
         private readonly MainForm? _mainForm;
+        private readonly ICNCProgramService _programService;
 
         /// <summary>
         /// Initializes a new instance of the GCodeTestDialog
@@ -26,6 +27,7 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             _mainForm = mainForm;
+            _programService = new CNCProgramService();
             
             // Set up logging for this dialog
             SetupDialogLogging();

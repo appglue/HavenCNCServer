@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
-using HavenCNCServer.CentriodAPI;
+using HavenCNCServer.Services;
+using CentroidAPI;
+using IOFile = System.IO.File;
 
 namespace HavenCNCServer.Controllers
 {
@@ -22,9 +24,14 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                // TODO: Implement stop functionality using CentroidAPI
-                // return CNCUtils.StopProgram();
-                throw new NotImplementedException("Stop functionality not yet implemented");
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot stop: No CNC connection");
+                }
+
+                // TODO: Implement proper stop functionality using CentroidAPI
+                throw new NotImplementedException("Stop functionality not yet fully implemented");
             }
             catch (Exception ex)
             {
@@ -41,9 +48,14 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                // TODO: Implement resume functionality using CentroidAPI
-                // return CNCUtils.ResumeProgram();
-                throw new NotImplementedException("Resume functionality not yet implemented");
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot resume: No CNC connection");
+                }
+
+                // TODO: Implement proper resume functionality using CentroidAPI
+                throw new NotImplementedException("Resume functionality not yet fully implemented");
             }
             catch (Exception ex)
             {
@@ -66,9 +78,14 @@ namespace HavenCNCServer.Controllers
                     throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be greater than 0");
                 }
 
-                // TODO: Implement resume at line functionality using CentroidAPI
-                // return CNCUtils.ResumeAtLine(lineNumber);
-                throw new NotImplementedException("Resume at line functionality not yet implemented");
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot resume: No CNC connection");
+                }
+
+                // TODO: Implement proper resume at line functionality using CentroidAPI
+                throw new NotImplementedException("Resume at line functionality not yet fully implemented");
             }
             catch (Exception ex)
             {
@@ -77,21 +94,97 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Run G-code
+        /// Run G-code from array of lines
         /// </summary>
+        /// <param name="gCodeLines">Array of G-code lines to execute</param>
+        /// <param name="startImmediately">Whether to start execution immediately or just load the program</param>
+        /// <param name="gcodeParameterString">Optional parameter string to pass to the G-code program</param>
         /// <returns>Run operation success</returns>
         [HttpPost("RunGCode")]
-        public bool RunGCode()
+        public async Task<bool> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
         {
             try
             {
-                // TODO: Implement G-code run functionality using CentroidAPI
-                // return CNCUtils.RunProgram();
-                throw new NotImplementedException("Run G-code functionality not yet implemented");
+                if (gCodeLines == null || gCodeLines.Length == 0)
+                {
+                    throw new ArgumentException("G-code lines cannot be null or empty", nameof(gCodeLines));
+                }
+
+                // Ensure CNC connection is available
+                if (!CNCConnectionManager.IsConnected)
+                {
+                    var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
+                    if (pipe == null || !pipe.IsConstructed())
+                    {
+                        throw new InvalidOperationException("Cannot proceed: CNC connection failed");
+                    }
+                }
+
+                // Create a unique temporary file to avoid conflicts
+                var guid = Guid.NewGuid();
+                string tempFileName = $"gcode_program_{DateTime.Now:yyyyMMdd_HHmmss}_{guid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
+                string tempFilePath = Path.Combine(SettingsManager.Settings.Files.TempFilesDirectory, tempFileName);
+                
+                // Ensure temp directory exists
+                Directory.CreateDirectory(SettingsManager.Settings.Files.TempFilesDirectory);
+                
+                // Write G-code content to temporary file
+                await IOFile.WriteAllLinesAsync(tempFilePath, gCodeLines);
+
+                // Get CNC programs directory from settings
+                string cncProgramsPath = SettingsManager.GetCncProgramsDirectory();
+                
+                // Create a unique filename to avoid conflicts
+                var targetGuid = Guid.NewGuid();
+                string uniqueFileName = $"gcode_program_{DateTime.Now:yyyyMMdd_HHmmss}_{targetGuid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
+                string targetPath = Path.Combine(cncProgramsPath, uniqueFileName);
+                
+                // Ensure target directory exists
+                Directory.CreateDirectory(cncProgramsPath);
+                
+                // Copy G-code to CNC programs directory
+                await IOFile.WriteAllLinesAsync(targetPath, gCodeLines);
+                
+                // Clean up the temporary file
+                try
+                {
+                    IOFile.Delete(tempFilePath);
+                }
+                catch
+                {
+                    // Not critical - continue execution
+                }
+
+                if (startImmediately)
+                {
+                    // Execute the G-code program using G65 command
+                    var cncPipe = CNCConnectionManager.GetCNCPipe();
+                    if (cncPipe == null)
+                    {
+                        throw new InvalidOperationException("Cannot execute: No CNC connection");
+                    }
+
+                    // Use G65 command to run the G-code file directly
+                    // If gcodeParameterString is provided, append it to the command
+                    string g65Command = string.IsNullOrEmpty(gcodeParameterString) 
+                        ? $"G65 \"{targetPath}\""
+                        : $"G65 \"{targetPath}\" {gcodeParameterString}";
+                    
+                    // Execute the G65 command using a new Job instance
+                    var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
+                    var executeResult = cmd.RunCommand(g65Command, false);
+                    
+                    if (executeResult != CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        throw new InvalidOperationException($"Failed to execute G65 command: {executeResult}");
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to start G-code execution: {ex.Message}", ex);
+                throw new InvalidOperationException($"Failed to run G-code: {ex.Message}", ex);
             }
         }
 
@@ -110,9 +203,39 @@ namespace HavenCNCServer.Controllers
                     throw new ArgumentException("G-code command cannot be empty", nameof(gcode));
                 }
 
-                // TODO: Implement run G-code command functionality using CentroidAPI
-                // return CNCUtils.RunMDICommand(gcode);
-                throw new NotImplementedException("Run G-code command functionality not yet implemented");
+                // Clean the command (remove extra whitespace and comments)
+                var cleanCommand = gcode.Trim();
+                if (cleanCommand.StartsWith(";") || cleanCommand.StartsWith("("))
+                {
+                    return true; // Comments are "successfully" ignored
+                }
+
+                // Ensure CNC connection is available
+                if (!CNCConnectionManager.IsConnected)
+                {
+                    var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
+                    if (pipe == null || !pipe.IsConstructed())
+                    {
+                        throw new InvalidOperationException("Cannot proceed: CNC connection failed");
+                    }
+                }
+
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot execute: No CNC connection");
+                }
+
+                // Execute the single command using a new Job instance
+                var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
+                var executeResult = cmd.RunCommand(cleanCommand, false);
+                
+                if (executeResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    throw new InvalidOperationException($"Failed to execute command: {executeResult}");
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -133,69 +256,18 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot get G-code: No CNC connection");
+                }
+
                 // TODO: Implement get current G-code using CentroidAPI
-                // return CNCUtils.GetCurrentGCode();
-                throw new NotImplementedException("Get current G-code functionality not yet implemented");
+                throw new NotImplementedException("Get current G-code functionality not yet fully implemented");
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to get current G-code: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Load G-code
-        /// </summary>
-        /// <param name="request">G-code load request</param>
-        /// <returns>Load operation success</returns>
-        [HttpPost("LoadGCode")]
-        public bool LoadGCode([FromBody] LoadGCodeRequest request)
-        {
-            try
-            {
-                if (request == null)
-                {
-                    throw new ArgumentNullException(nameof(request), "Load G-code request cannot be null");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.GCode))
-                {
-                    throw new ArgumentException("G-code content cannot be empty", nameof(request));
-                }
-
-                // TODO: Implement G-code loading using CentroidAPI
-                // var gCodeLines = request.GCode.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                // return CNCUtils.LoadGCode(request.GCode, request.ProgramName);
-                throw new NotImplementedException("Load G-code functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to load G-code: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Load G-code from file
-        /// </summary>
-        /// <param name="filePath">File path to load G-code from</param>
-        /// <returns>Load operation success</returns>
-        [HttpPost("LoadGCodeFromFile")]
-        public bool LoadGCodeFromFile([FromBody] string filePath)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    throw new ArgumentException("File path cannot be empty", nameof(filePath));
-                }
-
-                // TODO: Implement load G-code from file functionality using CentroidAPI
-                // return CNCUtils.LoadGCodeFromFile(filePath);
-                throw new NotImplementedException("Load G-code from file functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to load G-code from file: {ex.Message}", ex);
             }
         }
 
@@ -208,9 +280,14 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot get line number: No CNC connection");
+                }
+
                 // TODO: Implement get current line number using CentroidAPI
-                // return CNCUtils.GetCurrentLineNumber();
-                throw new NotImplementedException("Get current line number functionality not yet implemented");
+                throw new NotImplementedException("Get current line number functionality not yet fully implemented");
             }
             catch (Exception ex)
             {

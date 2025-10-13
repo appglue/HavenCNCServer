@@ -115,5 +115,57 @@ namespace HavenCNCServer.Models
         /// Enable automatic API connection on startup
         /// </summary>
         public bool AutoConnectOnStartup { get; set; } = false;
+
+        /// <summary>
+        /// CNC server executable settings
+        /// </summary>
+        public CncServerSettings Server { get; set; } = new();
+    }
+
+    /// <summary>
+    /// CNC server executable management settings
+    /// </summary>
+    public class CncServerSettings
+    {
+        /// <summary>
+        /// Path to the CNC server executable
+        /// Default: \cncr\cncr.exe
+        /// </summary>
+        public string ExecutablePath { get; set; } = @"\cncr\cncr.exe";
+
+        /// <summary>
+        /// Whether to auto-start the CNC server on application startup
+        /// </summary>
+        public bool AutoStartServer { get; set; } = true;
+
+        /// <summary>
+        /// Whether to auto-restart the CNC server if it stops unexpectedly
+        /// </summary>
+        public bool AutoRestartServer { get; set; } = true;
+
+        /// <summary>
+        /// Whether to stop the CNC server when the application shuts down (only if we started it)
+        /// </summary>
+        public bool StopServerOnShutdown { get; set; } = true;
+
+        /// <summary>
+        /// Delay in milliseconds to wait before restarting the server
+        /// </summary>
+        public int RestartDelayMs { get; set; } = 5000;
+
+        /// <summary>
+        /// Interval in milliseconds to check if the server is still running
+        /// </summary>
+        public int MonitorIntervalMs { get; set; } = 10000;
+
+        /// <summary>
+        /// Command line arguments to pass to the CNC server executable
+        /// </summary>
+        public string[] Arguments { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Working directory for the CNC server process
+        /// </summary>
+        public string? WorkingDirectory { get; set; }
     }
 }

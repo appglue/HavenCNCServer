@@ -1,3 +1,4 @@
+using HavenCNCServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
@@ -56,6 +57,9 @@ namespace HavenCNCServer
                           .AllowAnyHeader();
                 });
             });
+
+            // Register services
+            services.AddSingleton<ICNCServerManager, CNCServerManager>();
 
             // Add SPA services for React app
             services.AddSpaStaticFiles(configuration =>

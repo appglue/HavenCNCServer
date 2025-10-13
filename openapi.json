@@ -2618,7 +2618,55 @@
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Run G-code",
+        "summary": "Run G-code from array of lines",
+        "parameters": [
+          {
+            "name": "startImmediately",
+            "in": "query",
+            "description": "Whether to start execution immediately or just load the program",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "gcodeParameterString",
+            "in": "query",
+            "description": "Optional parameter string to pass to the G-code program",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Array of G-code lines to execute",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
@@ -2725,106 +2773,6 @@
                   "items": {
                     "type": "string"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/LoadGCode": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Load G-code",
-        "requestBody": {
-          "description": "G-code load request",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoadGCodeRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoadGCodeRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoadGCodeRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/LoadGCodeFromFile": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Load G-code from file",
-        "requestBody": {
-          "description": "File path to load G-code from",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
                 }
               }
             }
@@ -2961,6 +2909,126 @@
           "CNCProgram"
         ],
         "summary": "Run from current step",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/status": {
+      "get": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Get the current CNC server status",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCServerStatus"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCServerStatus"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCServerStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/start": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Start the CNC server",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/stop": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Stop the CNC server (only if we started it)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/restart": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Restart the CNC server",
         "responses": {
           "200": {
             "description": "Success",
@@ -4049,6 +4117,33 @@
         "additionalProperties": false,
         "description": "Represents axis configuration parameters"
       },
+      "CNCServerStatus": {
+        "type": "object",
+        "properties": {
+          "isRunning": {
+            "type": "boolean",
+            "description": "Whether the CNC server is currently running"
+          },
+          "weStartedServer": {
+            "type": "boolean",
+            "description": "Whether we started the server (and can manage it)"
+          },
+          "canStart": {
+            "type": "boolean",
+            "description": "Whether the server can be started"
+          },
+          "canStop": {
+            "type": "boolean",
+            "description": "Whether the server can be stopped"
+          },
+          "canRestart": {
+            "type": "boolean",
+            "description": "Whether the server can be restarted"
+          }
+        },
+        "additionalProperties": false,
+        "description": "CNC server status information"
+      },
       "CentroidInput": {
         "type": "object",
         "properties": {
@@ -4365,23 +4460,6 @@
         },
         "additionalProperties": false,
         "description": "Represents an I/O function assignment"
-      },
-      "LoadGCodeRequest": {
-        "type": "object",
-        "properties": {
-          "gCode": {
-            "type": "string",
-            "description": "G-code content",
-            "nullable": true
-          },
-          "programName": {
-            "type": "string",
-            "description": "Optional program name",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for loading G-code"
       },
       "MachinePoint": {
         "type": "object",

@@ -23,6 +23,7 @@ namespace HavenCNCServer
     {
         private IHost? _webHost;
         private CancellationTokenSource? _cancellationTokenSource;
+        private ICNCServerManager? _cncServerManager;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -138,6 +139,21 @@ namespace HavenCNCServer
                 btnStartServer.Enabled = false;
                 btnStopServer.Enabled = true;
 
+                // Get the CNC Server Manager from DI and start management (auto-start is enabled)
+                _cncServerManager = _webHost.Services.GetService<ICNCServerManager>();
+                if (_cncServerManager != null)
+                {
+                    await _cncServerManager.StartManagementAsync();
+                    LogInfo("CNC Server Manager started with auto-start enabled", "CNCServer");
+                    
+                    // Update CNC server button state
+                    UpdateCNCServerButtonState();
+                }
+                else
+                {
+                    LogWarning("CNC Server Manager not found in DI container", "CNCServer");
+                }
+
                 // Auto-generate OpenAPI specification if it doesn't exist
                 await AutoGenerateOpenApiIfNeeded();
             }
@@ -156,6 +172,14 @@ namespace HavenCNCServer
             {
                 UpdateStatus("Stopping API Server...", Color.Orange);
                 LogInfo("Stopping API server...", "API");
+
+                // Stop CNC Server Manager first
+                if (_cncServerManager != null)
+                {
+                    await _cncServerManager.StopManagementAsync();
+                    LogInfo("CNC Server Manager stopped", "CNCServer");
+                    _cncServerManager = null;
+                }
 
                 _cancellationTokenSource?.Cancel();
                 
@@ -222,6 +246,14 @@ namespace HavenCNCServer
         {
             try
             {
+                // Stop CNC Server Manager if it's still running
+                if (_cncServerManager != null)
+                {
+                    // This is synchronous cleanup in form closing
+                    Task.Run(async () => await _cncServerManager.StopManagementAsync()).Wait(5000);
+                    LogInfo("CNC Server Manager cleanup completed", "System");
+                }
+                
                 // Unsubscribe from CNC events
                 CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
                 
@@ -501,6 +533,133 @@ namespace HavenCNCServer
             }
         }
         */
+
+        /// <summary>
+        /// Update the CNC Server button state based on current server status
+        /// </summary>
+        private void UpdateCNCServerButtonState()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(() => UpdateCNCServerButtonState());
+                return;
+            }
+
+            try
+            {
+                if (_cncServerManager == null)
+                {
+                    btnCNCServer.Text = "CNC Manager N/A";
+                    btnCNCServer.Enabled = false;
+                    btnCNCServer.BackColor = SystemColors.Control;
+                    return;
+                }
+
+                var isRunning = _cncServerManager.IsServerRunning;
+                var weStarted = _cncServerManager.WeStartedServer;
+
+                if (isRunning && weStarted)
+                {
+                    btnCNCServer.Text = "Stop CNC Server";
+                    btnCNCServer.Enabled = true;
+                    btnCNCServer.BackColor = Color.LightGreen;
+                }
+                else if (isRunning && !weStarted)
+                {
+                    btnCNCServer.Text = "CNC Running (Ext)";
+                    btnCNCServer.Enabled = false;
+                    btnCNCServer.BackColor = Color.LightBlue;
+                }
+                else
+                {
+                    btnCNCServer.Text = "Start CNC Server";
+                    btnCNCServer.Enabled = true;
+                    btnCNCServer.BackColor = SystemColors.Control;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error updating CNC server button state: {ex.Message}", "UI");
+                btnCNCServer.Text = "CNC Server Error";
+                btnCNCServer.Enabled = false;
+            }
+        }
+
+        private async void btnCNCServer_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_cncServerManager == null)
+                {
+                    LogWarning("CNC Server Manager not available - API server must be running first", "CNCServer");
+                    MessageBox.Show("Please start the API server first before managing the CNC server.", "CNC Server", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var isRunning = _cncServerManager.IsServerRunning;
+                var weStarted = _cncServerManager.WeStartedServer;
+                
+                if (isRunning && weStarted)
+                {
+                    // Stop the server
+                    LogInfo("Stopping CNC server manually...", "CNCServer");
+                    btnCNCServer.Enabled = false;
+                    btnCNCServer.Text = "Stopping...";
+                    
+                    var result = await _cncServerManager.StopServerAsync();
+                    
+                    if (result)
+                    {
+                        LogSuccess("CNC server stopped successfully", "CNCServer");
+                    }
+                    else
+                    {
+                        LogError("Failed to stop CNC server", "CNCServer");
+                    }
+                    
+                    UpdateCNCServerButtonState();
+                }
+                else if (!isRunning)
+                {
+                    // Start the server
+                    LogInfo("Starting CNC server manually...", "CNCServer");
+                    btnCNCServer.Enabled = false;
+                    btnCNCServer.Text = "Starting...";
+                    
+                    var result = await _cncServerManager.StartServerAsync();
+                    
+                    if (result)
+                    {
+                        LogSuccess("CNC server started successfully", "CNCServer");
+                    }
+                    else
+                    {
+                        LogError("Failed to start CNC server", "CNCServer");
+                    }
+                    
+                    UpdateCNCServerButtonState();
+                }
+                else
+                {
+                    // Server is running but we didn't start it
+                    LogInfo("CNC server is running (started externally)", "CNCServer");
+                    MessageBox.Show("CNC server is already running but was started externally.\nCannot control external processes.", 
+                        "CNC Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error controlling CNC server: {ex.Message}", "CNCServer");
+                MessageBox.Show($"Error controlling CNC server: {ex.Message}", "CNC Server Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnCNCServer.Text = "Start CNC Server";
+            }
+            finally
+            {
+                UpdateCNCServerButtonState();
+            }
+        }
 
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
