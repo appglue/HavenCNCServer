@@ -37,6 +37,9 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             
+            // Set up 50/50 layout for messages and logs
+            SetupLayout();
+            
             // Set up centralized logging
             SetupLogging();
             
@@ -70,6 +73,40 @@ namespace HavenCNCServer
             
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
+            this.Resize += MainForm_Resize;
+        }
+
+        /// <summary>
+        /// Set up the 50/50 layout for messages and logs
+        /// </summary>
+        private void SetupLayout()
+        {
+            // This will be called in MainForm_Resize to dynamically adjust the layout
+        }
+
+        /// <summary>
+        /// Handle form resize to maintain 50/50 split between messages and logs
+        /// </summary>
+        private void MainForm_Resize(object? sender, EventArgs e)
+        {
+            if (txtLog != null && txtMessages != null && pnlControls != null)
+            {
+                var availableWidth = this.ClientSize.Width - 24; // Account for margins
+                var halfWidth = availableWidth / 2 - 6; // Account for gap between controls
+                
+                // Update log section (left 50%)
+                txtLog.Width = halfWidth;
+                
+                // Update messages section (right 50%)
+                txtMessages.Left = txtLog.Right + 12; // 12px gap
+                txtMessages.Width = halfWidth;
+                
+                // Update labels accordingly
+                if (lblMessages != null)
+                {
+                    lblMessages.Left = txtMessages.Left;
+                }
+            }
         }
 
         /// <summary>
@@ -1022,7 +1059,6 @@ namespace HavenCNCServer
                 case MessageEventType.CutterCompensationError:
                 case MessageEventType.ParameterSettingError:
                 case MessageEventType.CannedCycleError:
-                case MessageEventType.MiscellaneousError:
                 case MessageEventType.ScalingError:
                     return MessageSeverity.Warning;
 
@@ -1080,7 +1116,7 @@ namespace HavenCNCServer
 
             public void EventReceived(ICentroidEvent centroidEvent)
             {
-                // Only process MessageEvent types for the message display
+                // Process both MessageEvent and DROEvent types for comprehensive display
                 if (centroidEvent is MessageEvent messageEvent)
                 {
                     // Update UI on the main thread using Invoke
@@ -1091,6 +1127,18 @@ namespace HavenCNCServer
                     else
                     {
                         AddMessage(messageEvent);
+                    }
+                }
+                else if (centroidEvent is JobInfoEvent jobEvent)
+                {
+                    // Show job info events (line numbers, program changes, etc.)
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => AddJobInfoMessage(jobEvent)));
+                    }
+                    else
+                    {
+                        AddJobInfoMessage(jobEvent);
                     }
                 }
             }
@@ -1104,12 +1152,8 @@ namespace HavenCNCServer
                     var eventCode = messageEvent.EventCode > 0 ? $"[{messageEvent.EventCode}]" : "";
                     var messageText = $"[{timestamp}] {eventCode} ({messageEvent.EventType}) {messageEvent.Message}";
 
-                    // Add message to the text box
-                    _mainForm.txtMessages.AppendText(messageText + Environment.NewLine);
-                    
-                    // Scroll to bottom to show latest messages
-                    _mainForm.txtMessages.SelectionStart = _mainForm.txtMessages.Text.Length;
-                    _mainForm.txtMessages.ScrollToCaret();
+                    // Add message with color coding
+                    AddColoredMessage(messageText, GetColorForSeverity(severity));
 
                     _currentMessageCount++;
 
@@ -1118,15 +1162,81 @@ namespace HavenCNCServer
                     {
                         TrimOldMessages();
                     }
-
-                    // TODO: Implement color coding - this would require RichTextBox or custom control
-                    // For now, we're using a simple TextBox which doesn't support color coding
-                    // We could upgrade to RichTextBox in a future iteration
                 }
                 catch (Exception ex)
                 {
                     LogError($"Error adding CNC message to display: {ex.Message}", "MessageDisplay");
                 }
+            }
+
+            private void AddJobInfoMessage(JobInfoEvent jobEvent)
+            {
+                try
+                {
+                    var timestamp = jobEvent.Timestamp.ToString("HH:mm:ss.fff");
+                    var messageText = $"[{timestamp}] JOB: Line {jobEvent.LineNumber} - {jobEvent.Message}";
+
+                    // Job info messages are shown in blue
+                    AddColoredMessage(messageText, Color.Blue);
+
+                    _currentMessageCount++;
+
+                    // Trim old messages if we exceed the limit
+                    if (_currentMessageCount > _maxMessages)
+                    {
+                        TrimOldMessages();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding job info message to display: {ex.Message}", "MessageDisplay");
+                }
+            }
+
+            private void AddColoredMessage(string message, Color color)
+            {
+                try
+                {
+                    // Save current selection
+                    var originalStart = _mainForm.txtMessages.SelectionStart;
+                    var originalLength = _mainForm.txtMessages.SelectionLength;
+
+                    // Move to end and add text
+                    _mainForm.txtMessages.SelectionStart = _mainForm.txtMessages.Text.Length;
+                    _mainForm.txtMessages.SelectionLength = 0;
+                    _mainForm.txtMessages.SelectionColor = color;
+                    _mainForm.txtMessages.AppendText(message + Environment.NewLine);
+
+                    // Reset color to default
+                    _mainForm.txtMessages.SelectionColor = Color.Black;
+
+                    // Scroll to bottom to show latest messages
+                    _mainForm.txtMessages.ScrollToCaret();
+
+                    // Restore original selection (if any)
+                    if (originalLength > 0)
+                    {
+                        _mainForm.txtMessages.SelectionStart = originalStart;
+                        _mainForm.txtMessages.SelectionLength = originalLength;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding colored message: {ex.Message}", "MessageDisplay");
+                }
+            }
+
+            private Color GetColorForSeverity(MessageSeverity severity)
+            {
+                return severity switch
+                {
+                    MessageSeverity.Error => Color.Red,
+                    MessageSeverity.Warning => Color.Orange,
+                    MessageSeverity.Success => Color.Green,
+                    MessageSeverity.Info => Color.Blue,
+                    MessageSeverity.Normal => Color.Black,
+                    _ => Color.Black
+                };
             }
 
             private void TrimOldMessages()
@@ -1142,7 +1252,7 @@ namespace HavenCNCServer
                         _currentMessageCount = keepLines.Length;
                         
                         // Add separator to show where trimming occurred
-                        _mainForm.txtMessages.AppendText("--- [Previous messages trimmed] ---" + Environment.NewLine);
+                        AddColoredMessage("--- [Previous messages trimmed] ---", Color.Gray);
                     }
                 }
                 catch (Exception ex)

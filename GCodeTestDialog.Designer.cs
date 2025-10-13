@@ -66,7 +66,7 @@ namespace HavenCNCServer
             this.txtGCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtGCode.Size = new System.Drawing.Size(750, 300);
             this.txtGCode.TabIndex = 0;
-            this.txtGCode.Text = "G00 X0 Y0 Z1\r\nG01 Z-0.1 F100\r\nG01 X10 Y10 F500\r\nG01 X0 Y10\r\nG01 X0 Y0\r\nG00 Z1\r\nM30";
+            this.txtGCode.Text = "G00 X0 \r\nG01 Z-0.1 F100\r\nG01 X1 Y1 F500\r\nG01 X0 Y0\r\nG01 X1 Y1\r\nG00 Z-1\r\nM30";
             this.txtGCode.WordWrap = false;
             // 
             // lblGCode

@@ -19,6 +19,12 @@ namespace HavenCNCServer
         {
             try
             {
+                // Set up global exception handlers for GUI mode
+                if (args.Length == 0 || !IsConsoleMode(args))
+                {
+                    SetupGlobalExceptionHandlers();
+                }
+
                 // Check for command line arguments
                 if (args.Length > 0)
                 {
@@ -60,6 +66,111 @@ namespace HavenCNCServer
                     // GUI mode - show message box
                     MessageBox.Show($"Application startup error: {ex.Message}\n\nDetails: {ex}", 
                         "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if the application is running in console mode based on arguments
+        /// </summary>
+        private static bool IsConsoleMode(string[] args)
+        {
+            if (args.Length == 0) return false;
+            
+            var firstArg = args[0].ToLowerInvariant();
+            return firstArg == "--generate-openapi" || firstArg == "-g" || 
+                   firstArg == "--help" || firstArg == "-h" || firstArg == "/?";
+        }
+
+        /// <summary>
+        /// Set up global exception handlers to prevent application crashes
+        /// </summary>
+        private static void SetupGlobalExceptionHandlers()
+        {
+            // Handle unhandled exceptions in the main UI thread
+            Application.ThreadException += Application_ThreadException;
+            
+            // Set the unhandled exception mode to force all Windows Forms errors to go through our handler
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            
+            // Handle unhandled exceptions in other threads
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        /// <summary>
+        /// Handle exceptions in the main UI thread (Windows Forms)
+        /// </summary>
+        private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            HandleException(e.Exception, "UI Thread Exception", false);
+        }
+
+        /// <summary>
+        /// Handle unhandled exceptions in other threads
+        /// </summary>
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            HandleException(e.ExceptionObject as Exception, "Unhandled Exception", e.IsTerminating);
+        }
+
+        /// <summary>
+        /// Common exception handling logic
+        /// </summary>
+        private static void HandleException(Exception? ex, string title, bool isTerminating)
+        {
+            try
+            {
+                if (ex == null)
+                {
+                    ex = new Exception("Unknown exception occurred");
+                }
+
+                // Log the exception details
+                var errorMessage = $"{title}: {ex.Message}";
+                var fullDetails = $"Exception Type: {ex.GetType().FullName}\n" +
+                                 $"Message: {ex.Message}\n" +
+                                 $"Stack Trace:\n{ex.StackTrace}";
+
+                // Try to log using the application's logging system if available
+                try
+                {
+                    HavenCNCServer.Services.LoggingService.LogError(errorMessage, "GlobalHandler");
+                    HavenCNCServer.Services.LoggingService.LogError($"Full details: {fullDetails}", "GlobalHandler");
+                }
+                catch
+                {
+                    // If logging fails, fall back to console/debug output
+                    Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {errorMessage}");
+                    System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {fullDetails}");
+                }
+
+                // Show user-friendly message
+                var userMessage = isTerminating 
+                    ? $"A critical error occurred and the application must close:\n\n{ex.Message}\n\nPlease restart the application."
+                    : $"An error occurred but the application can continue:\n\n{ex.Message}\n\nThe error has been logged. If this problem persists, please restart the application.";
+
+                var messageType = isTerminating ? MessageBoxIcon.Error : MessageBoxIcon.Warning;
+                var messageTitle = isTerminating ? "Critical Error" : "Application Error";
+
+                MessageBox.Show(userMessage, messageTitle, MessageBoxButtons.OK, messageType);
+
+                // If this is a terminating exception, exit gracefully
+                if (isTerminating)
+                {
+                    Environment.Exit(1);
+                }
+            }
+            catch (Exception handlerEx)
+            {
+                // Last resort: even our exception handler failed
+                try
+                {
+                    MessageBox.Show($"A critical error occurred in the error handler:\n{handlerEx.Message}\n\nOriginal error: {ex?.Message ?? "Unknown"}\n\nThe application will now close.",
+                        "Critical System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Environment.Exit(1);
                 }
             }
         }

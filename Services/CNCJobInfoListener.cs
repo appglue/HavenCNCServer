@@ -258,6 +258,10 @@ namespace HavenCNCServer.Services
         private static double[]? _lastDroPositions = null;
         private static int _droSamePositionSkipCount = 0;
 
+        // Job info duplicate detection (ignore movement, only check job data)
+        private static string _lastJobInfoHash = string.Empty;
+        private static int _jobInfoDuplicateSkipCount = 0;
+
         // Event listener management
         private static readonly List<ICNCEventListener> _eventListeners = new List<ICNCEventListener>();
         private static readonly object _listenersLock = new object();
@@ -282,7 +286,8 @@ namespace HavenCNCServer.Services
                 MessageEventType.LimitError or
                 MessageEventType.ProbeError or
                 MessageEventType.CommunicationError or
-                MessageEventType.StartupError => true,
+                MessageEventType.StartupError or
+                MessageEventType.MiscellaneousError => true,  // Includes travel exceeded (907) and other serious errors
                 
                 // All other message types are not considered errors
                 _ => false
@@ -979,6 +984,36 @@ namespace HavenCNCServer.Services
         /// </summary>
         private static void ProcessJobInfoSpecific(CNCPipe.InboundComm.CommPacket packet)
         {
+            // Check for job info duplicates first (ignoring movement/position changes)
+            var jobInfoHash = CalculateJobInfoHash(packet);
+            if (_lastJobInfoHash == jobInfoHash && !string.IsNullOrEmpty(_lastJobInfoHash))
+            {
+                _jobInfoDuplicateSkipCount++;
+                
+                // Log first few occurrences, then periodically
+                if (_jobInfoDuplicateSkipCount <= 3)
+                {
+                    LogToFile($"    Job Info unchanged - skipping duplicate #{_jobInfoDuplicateSkipCount} (movement only)");
+                }
+                else if (_jobInfoDuplicateSkipCount % 50 == 0)
+                {
+                    LogToFile($"    Job Info unchanged - skipped {_jobInfoDuplicateSkipCount} duplicates (movement only)");
+                }
+                
+                // Skip creating event and notifying listeners for job info duplicates
+                return;
+            }
+            
+            // Job info has changed, reset skip counter and process normally
+            if (_jobInfoDuplicateSkipCount > 0)
+            {
+                LogToFile($"    --- Job Info CHANGED after {_jobInfoDuplicateSkipCount} movement-only updates ---");
+                _jobInfoDuplicateSkipCount = 0;
+            }
+            
+            // Store current job info hash for next comparison
+            _lastJobInfoHash = jobInfoHash;
+            
             LogToFile($"    Job Info Update:");
             
             // According to API docs: "LineNumber - Current executing line number"
@@ -1002,7 +1037,7 @@ namespace HavenCNCServer.Services
                 LogToFile($"    Current Job: {message}");
             }
 
-            // Notify listeners of job info event
+            // Create and notify listeners of job info event only when job data actually changes
             var jobInfoEvent = new JobInfoEvent
             {
                 Timestamp = DateTime.Now,
@@ -1042,6 +1077,13 @@ namespace HavenCNCServer.Services
                 var rate = _messageCount / elapsed.TotalMinutes;
                 
                 LogInfo($"📊 Job Listener Stats: {_messageCount} total messages ({newMessages} new), {rate:F1}/min", "JobInfo");
+                
+                // Report duplicate stats
+                if (_jobInfoDuplicateSkipCount > 0)
+                {
+                    LogInfo($"🔄 Job Info duplicates skipped: {_jobInfoDuplicateSkipCount} (movement-only changes)", "JobInfo");
+                }
+                
                 _lastReportedCount = _messageCount;
             }
         }
@@ -1177,6 +1219,10 @@ namespace HavenCNCServer.Services
                     // Clear DRO position tracking
                     _lastDroPositions = null;
                     _droSamePositionSkipCount = 0;
+                    
+                    // Clear job info duplicate tracking
+                    _lastJobInfoHash = string.Empty;
+                    _jobInfoDuplicateSkipCount = 0;
                     
                     // Clear stored messages
                     lock (_storedMessagesLock)
@@ -1528,6 +1574,33 @@ namespace HavenCNCServer.Services
             catch (Exception ex)
             {
                 LogError($"Error logging packet properties: {ex.Message}", "JobInfo");
+            }
+        }
+
+        /// <summary>
+        /// Calculate a hash of only job-specific data (excludes position/movement data)
+        /// </summary>
+        private static string CalculateJobInfoHash(CNCPipe.InboundComm.CommPacket packet)
+        {
+            try
+            {
+                var hashBuilder = new System.Text.StringBuilder();
+                
+                // Only include job-specific properties, not position/movement data
+                var lineNumber = GetPacketProperty<int>(packet, "LineNumber", 0);
+                var stackLevel = GetPacketProperty<int>(packet, "StackLevel", 0);
+                var message = GetPacketProperty<string>(packet, "Message", "");
+                
+                // Build hash from job-specific data only
+                hashBuilder.Append($"LineNumber:{lineNumber}|");
+                hashBuilder.Append($"StackLevel:{stackLevel}|");
+                hashBuilder.Append($"Message:{message ?? ""}|");
+                
+                return hashBuilder.ToString();
+            }
+            catch (Exception ex)
+            {
+                return $"JOB_HASH_ERROR:{ex.Message}";
             }
         }
 

@@ -49,7 +49,7 @@ namespace HavenCNCServer
             this.lblXValue = new System.Windows.Forms.Label();
             this.lblYValue = new System.Windows.Forms.Label();
             this.lblZValue = new System.Windows.Forms.Label();
-            this.txtMessages = new System.Windows.Forms.TextBox();
+            this.txtMessages = new System.Windows.Forms.RichTextBox();
             this.lblMessages = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
@@ -88,8 +88,9 @@ namespace HavenCNCServer
             // 
             // txtLog
             // 
-            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.Location = new System.Drawing.Point(12, 170);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
@@ -110,13 +111,14 @@ namespace HavenCNCServer
             // txtMessages
             // 
             this.txtMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right))));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessages.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtMessages.Location = new System.Drawing.Point(462, 170);
             this.txtMessages.Multiline = true;
             this.txtMessages.Name = "txtMessages";
             this.txtMessages.ReadOnly = true;
-            this.txtMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtMessages.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.txtMessages.Size = new System.Drawing.Size(430, 500);
             this.txtMessages.TabIndex = 13;
             // 
@@ -358,7 +360,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Label lblXValue;
         private System.Windows.Forms.Label lblYValue;
         private System.Windows.Forms.Label lblZValue;
-        private System.Windows.Forms.TextBox txtMessages;
+        private System.Windows.Forms.RichTextBox txtMessages;
         private System.Windows.Forms.Label lblMessages;
     }
 }
