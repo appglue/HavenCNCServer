@@ -474,7 +474,7 @@ namespace HavenCNCServer.Services
             {
                 var count = _storedMessages.Count;
                 _storedMessages.Clear();
-                LogInfo($"Cleared {count} stored messages", "JobInfo");
+                LogToFile($"Cleared {count} stored messages");
             }
         }
 
@@ -1076,12 +1076,12 @@ namespace HavenCNCServer.Services
                 var elapsed = DateTime.Now - _sessionStartTime;
                 var rate = _messageCount / elapsed.TotalMinutes;
                 
-                LogInfo($"📊 Job Listener Stats: {_messageCount} total messages ({newMessages} new), {rate:F1}/min", "JobInfo");
+                LogToFile($"📊 Job Listener Stats: {_messageCount} total messages ({newMessages} new), {rate:F1}/min");
                 
                 // Report duplicate stats
                 if (_jobInfoDuplicateSkipCount > 0)
                 {
-                    LogInfo($"🔄 Job Info duplicates skipped: {_jobInfoDuplicateSkipCount} (movement-only changes)", "JobInfo");
+                    LogToFile($"🔄 Job Info duplicates skipped: {_jobInfoDuplicateSkipCount} (movement-only changes)");
                 }
                 
                 _lastReportedCount = _messageCount;
@@ -1153,7 +1153,7 @@ namespace HavenCNCServer.Services
 
                     _isListening = true;
                     LogSuccess("CNC JOB_INFO listener started successfully", "JobInfo");
-                    LogInfo("Detailed messages will be logged to file, summaries every 100 messages", "JobInfo");
+                    LogToFile("Detailed messages will be logged to file, summaries every 100 messages");
 
                     return true;
                 }
@@ -1228,7 +1228,7 @@ namespace HavenCNCServer.Services
                     lock (_storedMessagesLock)
                     {
                         _storedMessages.Clear();
-                        LogInfo("Cleared stored messages on listener stop", "JobInfo");
+                        LogToFile("Cleared stored messages on listener stop");
                     }
                 }
             }
@@ -1404,7 +1404,14 @@ namespace HavenCNCServer.Services
                 LogToFile($""); // Empty line for readability
 
                 // Fire the event for any subscribers
-                JobInfoReceived?.Invoke(jobInfo);
+                try
+                {
+                    JobInfoReceived?.Invoke(jobInfo);
+                }
+                catch (Exception eventEx)
+                {
+                    LogError($"Error in JobInfoReceived event handler: {eventEx.Message}", "JobInfo");
+                }
                 
                 return false; // Not a duplicate
             }
@@ -1449,7 +1456,14 @@ namespace HavenCNCServer.Services
                         LogInfo($"  Message: {jobInfo.Message}", "JobInfo");
 
                     // Fire the event for any subscribers
-                    JobInfoReceived?.Invoke(jobInfo);
+                    try
+                    {
+                        JobInfoReceived?.Invoke(jobInfo);
+                    }
+                    catch (Exception eventEx)
+                    {
+                        LogError($"Error in JobInfoReceived event handler: {eventEx.Message}", "JobInfo");
+                    }
                 }
                 // All other messages are only logged to file (handled by ProcessJobInfoMessageToFile)
             }

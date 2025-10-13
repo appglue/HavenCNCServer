@@ -13,193 +13,368 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCProgramController : ControllerBase
     {
+        #region Job Management
+
+        /// <summary>
+        /// List of active CNC jobs
+        /// </summary>
+        private static readonly List<CNCJob> _activeJobs = new List<CNCJob>();
+        private static readonly object _jobsLock = new object();
+
+        /// <summary>
+        /// Get all active jobs
+        /// </summary>
+        /// <returns>List of active jobs</returns>
+        [HttpGet("Jobs")]
+        public IActionResult GetJobs()
+        {
+            lock (_jobsLock)
+            {
+                var jobSummaries = _activeJobs.Select(job => new
+                {
+                    JobId = job.JobId,
+                    LineNumber = job.LineNumber,
+                    CurrentLine = job.CurrentLine,
+                    IsRunning = job.IsRunning,
+                    IsPaused = job.IsPaused,
+                    IsComplete = job.IsComplete,
+                    CreatedAt = job.CreatedAt,
+                    StartedAt = job.StartedAt,
+                    CompletedAt = job.CompletedAt,
+                    TotalLines = job.TotalLines,
+                    LastError = job.LastError
+                }).ToList();
+
+                return Ok(jobSummaries);
+            }
+        }
+
+        /// <summary>
+        /// Get specific job details
+        /// </summary>
+        /// <param name="jobId">Job ID</param>
+        /// <returns>Job details</returns>
+        [HttpGet("Jobs/{jobId}")]
+        public IActionResult GetJob(string jobId)
+        {
+            lock (_jobsLock)
+            {
+                var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                if (job == null)
+                {
+                    return NotFound($"Job {jobId} not found");
+                }
+
+                return Ok(new
+                {
+                    JobId = job.JobId,
+                    LineNumber = job.LineNumber,
+                    CurrentLine = job.CurrentLine,
+                    IsRunning = job.IsRunning,
+                    IsPaused = job.IsPaused,
+                    IsComplete = job.IsComplete,
+                    CreatedAt = job.CreatedAt,
+                    StartedAt = job.StartedAt,
+                    CompletedAt = job.CompletedAt,
+                    TotalLines = job.TotalLines,
+                    FilePath = job.FilePath,
+                    LastError = job.LastError
+                });
+            }
+        }
+
+        /// <summary>
+        /// Start a specific job
+        /// </summary>
+        /// <param name="jobId">Job ID to start</param>
+        /// <returns>Start operation result</returns>
+        [HttpPost("Jobs/{jobId}/Start")]
+        public async Task<IActionResult> StartJob(string jobId)
+        {
+            try
+            {
+                CNCJob jobToStart;
+                
+                lock (_jobsLock)
+                {
+                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    if (job == null)
+                    {
+                        return NotFound($"Job {jobId} not found");
+                    }
+
+                    if (job.IsRunning)
+                    {
+                        return BadRequest(new { Success = false, JobId = jobId, Error = "Job is already running" });
+                    }
+
+                    if (job.IsComplete)
+                    {
+                        return BadRequest(new { Success = false, JobId = jobId, Error = "Job has already completed" });
+                    }
+
+                    jobToStart = job;
+                }
+
+                // Start the job outside the lock
+                var success = await jobToStart.StartAsync();
+                return Ok(new { Success = success, JobId = jobId, Message = success ? "Job started successfully" : jobToStart.LastError });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Success = false, Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Clean up completed jobs
+        /// </summary>
+        /// <returns>Number of jobs cleaned up</returns>
+        [HttpPost("Jobs/Cleanup")]
+        public IActionResult CleanupJobs()
+        {
+            lock (_jobsLock)
+            {
+                var completedJobs = _activeJobs.Where(j => j.IsComplete).ToList();
+                foreach (var job in completedJobs)
+                {
+                    job.Dispose();
+                    _activeJobs.Remove(job);
+                }
+
+                return Ok(new { CleanupsCount = completedJobs.Count });
+            }
+        }
+
+        #endregion
+
         #region G-Code Execution Control
 
         /// <summary>
-        /// Stop G-code execution
+        /// Stop specific job execution
         /// </summary>
+        /// <param name="jobId">Job ID to stop</param>
         /// <returns>Stop operation success</returns>
+        [HttpPost("Jobs/{jobId}/Stop")]
+        public IActionResult StopJob(string jobId)
+        {
+            try
+            {
+                lock (_jobsLock)
+                {
+                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    if (job == null)
+                    {
+                        return NotFound($"Job {jobId} not found");
+                    }
+
+                    var success = job.Stop();
+                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job stopped successfully" : job.LastError });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Success = false, Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Stop all running jobs
+        /// </summary>
+        /// <returns>Stop operation results</returns>
         [HttpPost("Stop")]
-        public bool Stop()
+        public IActionResult StopAllJobs()
         {
             try
             {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
+                lock (_jobsLock)
                 {
-                    throw new InvalidOperationException("Cannot stop: No CNC connection");
-                }
+                    var runningJobs = _activeJobs.Where(j => j.IsRunning).ToList();
+                    var results = new List<object>();
 
-                // TODO: Implement proper stop functionality using CentroidAPI
-                throw new NotImplementedException("Stop functionality not yet fully implemented");
+                    foreach (var job in runningJobs)
+                    {
+                        var success = job.Stop();
+                        results.Add(new { JobId = job.JobId, Success = success, Error = success ? null : job.LastError });
+                    }
+
+                    return Ok(new { StoppedJobs = results.Count, Results = results });
+                }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to stop execution: {ex.Message}", ex);
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
         /// <summary>
-        /// Resume G-code execution
+        /// Resume specific job execution
         /// </summary>
+        /// <param name="jobId">Job ID to resume</param>
         /// <returns>Resume operation success</returns>
-        [HttpPost("Resume")]
-        public bool Resume()
+        [HttpPost("Jobs/{jobId}/Resume")]
+        public IActionResult ResumeJob(string jobId)
         {
             try
             {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
+                lock (_jobsLock)
                 {
-                    throw new InvalidOperationException("Cannot resume: No CNC connection");
-                }
+                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    if (job == null)
+                    {
+                        return NotFound($"Job {jobId} not found");
+                    }
 
-                // TODO: Implement proper resume functionality using CentroidAPI
-                throw new NotImplementedException("Resume functionality not yet fully implemented");
+                    var success = job.Resume();
+                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job resumed successfully" : job.LastError });
+                }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to resume execution: {ex.Message}", ex);
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
         /// <summary>
-        /// Resume G-code execution at specific line
+        /// Pause specific job execution
         /// </summary>
+        /// <param name="jobId">Job ID to pause</param>
+        /// <returns>Pause operation success</returns>
+        [HttpPost("Jobs/{jobId}/Pause")]
+        public IActionResult PauseJob(string jobId)
+        {
+            try
+            {
+                lock (_jobsLock)
+                {
+                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    if (job == null)
+                    {
+                        return NotFound($"Job {jobId} not found");
+                    }
+
+                    var success = job.Pause();
+                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job paused successfully" : job.LastError });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Success = false, Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Resume job execution at specific line
+        /// </summary>
+        /// <param name="jobId">Job ID to resume</param>
         /// <param name="lineNumber">Line number to resume at</param>
         /// <returns>Resume operation success</returns>
-        [HttpPost("ResumeAt/{lineNumber}")]
-        public bool ResumeAt(int lineNumber)
+        [HttpPost("Jobs/{jobId}/ResumeAt/{lineNumber}")]
+        public IActionResult ResumeJobAt(string jobId, int lineNumber)
         {
             try
             {
                 if (lineNumber <= 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be greater than 0");
+                    return BadRequest(new { Success = false, Error = "Line number must be greater than 0" });
                 }
 
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
+                lock (_jobsLock)
                 {
-                    throw new InvalidOperationException("Cannot resume: No CNC connection");
-                }
+                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    if (job == null)
+                    {
+                        return NotFound($"Job {jobId} not found");
+                    }
 
-                // TODO: Implement proper resume at line functionality using CentroidAPI
-                throw new NotImplementedException("Resume at line functionality not yet fully implemented");
+                    var success = job.ResumeAt(lineNumber);
+                    return Ok(new { Success = success, JobId = jobId, LineNumber = lineNumber, Message = success ? $"Job resumed at line {lineNumber}" : job.LastError });
+                }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to resume at line {lineNumber}: {ex.Message}", ex);
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
         /// <summary>
-        /// Run G-code from array of lines
+        /// Create a new G-code job from array of lines
         /// </summary>
         /// <param name="gCodeLines">Array of G-code lines to execute</param>
-        /// <param name="startImmediately">Whether to start execution immediately or just load the program</param>
+        /// <param name="startImmediately">Whether to start execution immediately or just create the job</param>
         /// <param name="gcodeParameterString">Optional parameter string to pass to the G-code program</param>
-        /// <returns>Run operation success</returns>
+        /// <returns>Job creation and start result</returns>
         [HttpPost("RunGCode")]
-        public async Task<bool> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
+        public async Task<IActionResult> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
         {
             try
             {
                 if (gCodeLines == null || gCodeLines.Length == 0)
                 {
-                    throw new ArgumentException("G-code lines cannot be null or empty", nameof(gCodeLines));
+                    return BadRequest(new { Success = false, Error = "G-code lines cannot be null or empty" });
                 }
 
-                // Ensure CNC connection is available
-                if (!CNCConnectionManager.IsConnected)
+                // Create a new CNC job
+                CNCJob job;
+                lock (_jobsLock)
                 {
-                    var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
-                    if (pipe == null || !pipe.IsConstructed())
-                    {
-                        throw new InvalidOperationException("Cannot proceed: CNC connection failed");
-                    }
+                    job = new CNCJob(gCodeLines, gcodeParameterString);
+                    _activeJobs.Add(job);
                 }
 
-                // Create a unique temporary file to avoid conflicts
-                var guid = Guid.NewGuid();
-                string tempFileName = $"gcode_program_{DateTime.Now:yyyyMMdd_HHmmss}_{guid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
-                string tempFilePath = Path.Combine(SettingsManager.Settings.Files.TempFilesDirectory, tempFileName);
-                
-                // Ensure temp directory exists
-                Directory.CreateDirectory(SettingsManager.Settings.Files.TempFilesDirectory);
-                
-                // Write G-code content to temporary file
-                await IOFile.WriteAllLinesAsync(tempFilePath, gCodeLines);
-
-                // Get CNC programs directory from settings
-                string cncProgramsPath = SettingsManager.GetCncProgramsDirectory();
-                
-                // Create a unique filename to avoid conflicts
-                var targetGuid = Guid.NewGuid();
-                string uniqueFileName = $"gcode_program_{DateTime.Now:yyyyMMdd_HHmmss}_{targetGuid.ToString("N")[..8]}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
-                string targetPath = Path.Combine(cncProgramsPath, uniqueFileName);
-                
-                // Ensure target directory exists
-                Directory.CreateDirectory(cncProgramsPath);
-                
-                // Copy G-code to CNC programs directory
-                await IOFile.WriteAllLinesAsync(targetPath, gCodeLines);
-                
-                // Clean up the temporary file
-                try
+                var result = new
                 {
-                    IOFile.Delete(tempFilePath);
-                }
-                catch
-                {
-                    // Not critical - continue execution
-                }
+                    JobId = job.JobId,
+                    TotalLines = job.TotalLines,
+                    FilePath = job.FilePath,
+                    CreatedAt = job.CreatedAt,
+                    StartImmediately = startImmediately
+                };
 
                 if (startImmediately)
                 {
-                    // Execute the G-code program using G65 command
-                    var cncPipe = CNCConnectionManager.GetCNCPipe();
-                    if (cncPipe == null)
+                    var startSuccess = await job.StartAsync();
+                    if (!startSuccess)
                     {
-                        throw new InvalidOperationException("Cannot execute: No CNC connection");
+                        return BadRequest(new 
+                        { 
+                            Success = false, 
+                            JobId = job.JobId,
+                            Error = job.LastError ?? "Failed to start job",
+                            Job = result
+                        });
                     }
 
-                    // Use G65 command to run the G-code file directly
-                    // If gcodeParameterString is provided, append it to the command
-                    string g65Command = string.IsNullOrEmpty(gcodeParameterString) 
-                        ? $"G65 \"{targetPath}\""
-                        : $"G65 \"{targetPath}\" {gcodeParameterString}";
-                    
-                    // Log the command we're about to execute
-                    System.Diagnostics.Debug.WriteLine($"[G-Code] Executing command: {g65Command}");
-                    System.Diagnostics.Debug.WriteLine($"[G-Code] Target file exists: {IOFile.Exists(targetPath)}");
-                    System.Diagnostics.Debug.WriteLine($"[G-Code] File size: {(IOFile.Exists(targetPath) ? new FileInfo(targetPath).Length : 0)} bytes");
-                    
-                    // Execute the G65 command using a new Job instance
-                    var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
-                    var executeResult = cmd.RunCommand(g65Command, true);
-                    
-                    // Log the return code for debugging
-                    System.Diagnostics.Debug.WriteLine($"[G-Code] RunCommand returned: {executeResult}");
-                    System.Diagnostics.Debug.WriteLine($"[G-Code] Return code numeric value: {(int)executeResult}");
-                    
-                    if (executeResult != CNCPipe.ReturnCode.SUCCESS)
-                    {
-                        var errorMsg = $"G65 command failed with return code: {executeResult} (numeric: {(int)executeResult})";
-                        System.Diagnostics.Debug.WriteLine($"[G-Code] ERROR: {errorMsg}");
-                        throw new InvalidOperationException(errorMsg);
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[G-Code] SUCCESS: G65 command executed successfully");
-                    }
+                    return Ok(new 
+                    { 
+                        Success = true, 
+                        JobId = job.JobId,
+                        Message = "Job created and started successfully",
+                        Job = new
+                        {
+                            JobId = job.JobId,
+                            TotalLines = job.TotalLines,
+                            FilePath = job.FilePath,
+                            CreatedAt = job.CreatedAt,
+                            StartedAt = job.StartedAt,
+                            IsRunning = job.IsRunning
+                        }
+                    });
                 }
-
-                return true;
+                else
+                {
+                    return Ok(new 
+                    { 
+                        Success = true, 
+                        JobId = job.JobId,
+                        Message = "Job created successfully (not started)",
+                        Job = result
+                    });
+                }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to run G-code: {ex.Message}", ex);
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 
@@ -207,22 +382,22 @@ namespace HavenCNCServer.Controllers
         /// Run single G-code command
         /// </summary>
         /// <param name="gcode">G-code command to run</param>
-        /// <returns>Command execution success</returns>
+        /// <returns>Command execution result</returns>
         [HttpPost("RunGCodeCommand")]
-        public async Task<bool> RunGCodeCommand([FromBody] string gcode)
+        public async Task<IActionResult> RunGCodeCommand([FromBody] string gcode)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(gcode))
                 {
-                    throw new ArgumentException("G-code command cannot be empty", nameof(gcode));
+                    return BadRequest(new { Success = false, Error = "G-code command cannot be empty" });
                 }
 
                 // Clean the command (remove extra whitespace and comments)
                 var cleanCommand = gcode.Trim();
                 if (cleanCommand.StartsWith(";") || cleanCommand.StartsWith("("))
                 {
-                    return true; // Comments are "successfully" ignored
+                    return Ok(new { Success = true, Message = "Comment ignored successfully", Command = gcode });
                 }
 
                 // Log the command we're about to execute
@@ -236,7 +411,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to execute G-code command: {ex.Message}", ex);
+                return BadRequest(new { Success = false, Error = ex.Message });
             }
         }
 

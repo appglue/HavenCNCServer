@@ -31,7 +31,7 @@ namespace HavenCNCServer
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblApiUrl = new System.Windows.Forms.Label();
             this.btnOpenSwagger = new System.Windows.Forms.Button();
-            this.txtLog = new System.Windows.Forms.TextBox();
+            this.txtLog = new System.Windows.Forms.RichTextBox();
             this.lblLog = new System.Windows.Forms.Label();
             this.btnStopServer = new System.Windows.Forms.Button();
             this.btnStartServer = new System.Windows.Forms.Button();
@@ -95,7 +95,7 @@ namespace HavenCNCServer
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
-            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.txtLog.Size = new System.Drawing.Size(440, 500);
             this.txtLog.TabIndex = 3;
             // 
@@ -342,7 +342,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label lblApiUrl;
         private System.Windows.Forms.Button btnOpenSwagger;
-        private System.Windows.Forms.TextBox txtLog;
+        private System.Windows.Forms.RichTextBox txtLog;
         private System.Windows.Forms.Label lblLog;
         private System.Windows.Forms.Button btnStopServer;
         private System.Windows.Forms.Button btnStartServer;

@@ -197,6 +197,99 @@ namespace HavenCNCServer.Services
                 }
             }
         }
+
+        /// <summary>
+        /// RichTextBox log target implementation with color support
+        /// </summary>
+        public class RichTextBoxLogTarget : ILogTarget
+        {
+            private readonly RichTextBox _richTextBox;
+            private readonly Form _parentForm;
+            
+            /// <summary>
+            /// Gets a value indicating whether this log target has been disposed
+            /// </summary>
+            public bool IsDisposed => _richTextBox.IsDisposed || _parentForm.IsDisposed;
+            
+            /// <summary>
+            /// Initializes a new instance of the RichTextBoxLogTarget class
+            /// </summary>
+            /// <param name="richTextBox">The RichTextBox control to display logs in</param>
+            /// <param name="parentForm">The parent form containing the RichTextBox</param>
+            public RichTextBoxLogTarget(RichTextBox richTextBox, Form parentForm)
+            {
+                _richTextBox = richTextBox ?? throw new ArgumentNullException(nameof(richTextBox));
+                _parentForm = parentForm ?? throw new ArgumentNullException(nameof(parentForm));
+            }
+            
+            /// <summary>
+            /// Updates the RichTextBox with the provided log entries with color coding
+            /// </summary>
+            /// <param name="entries">The log entries to display</param>
+            public void UpdateLog(IEnumerable<LogEntry> entries)
+            {
+                if (IsDisposed) return;
+                
+                try
+                {
+                    if (_parentForm.InvokeRequired)
+                    {
+                        _parentForm.Invoke(() => UpdateLog(entries));
+                        return;
+                    }
+                    
+                    // Clear and rebuild the rich text with colors
+                    _richTextBox.Clear();
+                    
+                    foreach (var entry in entries)
+                    {
+                        // Set color based on log level
+                        var color = GetColorForLogLevel(entry.Level);
+                        
+                        // Add the text with color
+                        var text = entry.FormatForDisplay() + Environment.NewLine;
+                        AppendColoredText(text, color);
+                    }
+                    
+                    // Scroll to bottom
+                    _richTextBox.SelectionStart = _richTextBox.Text.Length;
+                    _richTextBox.ScrollToCaret();
+                }
+                catch (Exception ex)
+                {
+                    // Avoid infinite recursion if logging fails
+                    System.Diagnostics.Debug.WriteLine($"Error updating rich text log target: {ex.Message}");
+                }
+            }
+            
+            /// <summary>
+            /// Appends colored text to the RichTextBox
+            /// </summary>
+            private void AppendColoredText(string text, Color color)
+            {
+                _richTextBox.SelectionStart = _richTextBox.TextLength;
+                _richTextBox.SelectionLength = 0;
+                _richTextBox.SelectionColor = color;
+                _richTextBox.AppendText(text);
+                _richTextBox.SelectionColor = _richTextBox.ForeColor; // Reset to default
+            }
+            
+            /// <summary>
+            /// Gets the color for a specific log level
+            /// </summary>
+            private static Color GetColorForLogLevel(LogLevel level)
+            {
+                return level switch
+                {
+                    LogLevel.Success => Color.Green,
+                    LogLevel.Error => Color.Red,
+                    LogLevel.Warning => Color.Orange,
+                    LogLevel.Info => Color.Black,
+                    LogLevel.Debug => Color.Gray,
+                    _ => Color.Black
+                };
+            }
+        }
         
         /// <summary>
         /// Add a log target to receive log updates

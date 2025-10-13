@@ -30,26 +30,12 @@ namespace HavenCNCServer
         {
             this.txtGCode = new System.Windows.Forms.TextBox();
             this.lblGCode = new System.Windows.Forms.Label();
-            this.btnSaveFile = new System.Windows.Forms.Button();
-            this.btnLoadFile = new System.Windows.Forms.Button();
             this.btnRunGCode = new System.Windows.Forms.Button();
-            this.btnTestConnection = new System.Windows.Forms.Button();
-            this.btnJobInfoListener = new System.Windows.Forms.Button();
             this.btnRunSingleCommand = new System.Windows.Forms.Button();
-            this.txtStatus = new System.Windows.Forms.TextBox();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.txtFileName = new System.Windows.Forms.TextBox();
-            this.lblFileName = new System.Windows.Forms.Label();
             this.grpGCodeEditor = new System.Windows.Forms.GroupBox();
             this.grpControls = new System.Windows.Forms.GroupBox();
-            this.grpFileOperations = new System.Windows.Forms.GroupBox();
-            this.btnOpenFile = new System.Windows.Forms.Button();
-            this.btnNewFile = new System.Windows.Forms.Button();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.grpGCodeEditor.SuspendLayout();
             this.grpControls.SuspendLayout();
-            this.grpFileOperations.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtGCode
@@ -64,7 +50,7 @@ namespace HavenCNCServer
             this.txtGCode.Multiline = true;
             this.txtGCode.Name = "txtGCode";
             this.txtGCode.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtGCode.Size = new System.Drawing.Size(750, 300);
+            this.txtGCode.Size = new System.Drawing.Size(750, 365);
             this.txtGCode.TabIndex = 0;
             this.txtGCode.Text = "G00 X0 \r\nG01 Z-0.1 F100\r\nG01 X1 Y1 F500\r\nG01 X0 Y0\r\nG01 X1 Y1\r\nG00 Z-1\r\nM30";
             this.txtGCode.WordWrap = false;
@@ -77,26 +63,7 @@ namespace HavenCNCServer
             this.lblGCode.Size = new System.Drawing.Size(157, 15);
             this.lblGCode.TabIndex = 1;
             this.lblGCode.Text = "G-Code Editor (Line by Line):";
-            // 
-            // btnSaveFile
-            // 
-            this.btnSaveFile.Location = new System.Drawing.Point(110, 25);
-            this.btnSaveFile.Name = "btnSaveFile";
-            this.btnSaveFile.Size = new System.Drawing.Size(80, 30);
-            this.btnSaveFile.TabIndex = 2;
-            this.btnSaveFile.Text = "Save File";
-            this.btnSaveFile.UseVisualStyleBackColor = true;
-            this.btnSaveFile.Click += new System.EventHandler(this.btnSaveFile_Click);
-            // 
-            // btnLoadFile
-            // 
-            this.btnLoadFile.Location = new System.Drawing.Point(200, 25);
-            this.btnLoadFile.Name = "btnLoadFile";
-            this.btnLoadFile.Size = new System.Drawing.Size(80, 30);
-            this.btnLoadFile.TabIndex = 3;
-            this.btnLoadFile.Text = "Open File";
-            this.btnLoadFile.UseVisualStyleBackColor = true;
-            this.btnLoadFile.Click += new System.EventHandler(this.btnLoadFile_Click);
+
             // 
             // btnRunGCode
             // 
@@ -110,30 +77,6 @@ namespace HavenCNCServer
             this.btnRunGCode.UseVisualStyleBackColor = false;
             this.btnRunGCode.Click += new System.EventHandler(this.btnRunGCode_Click);
             // 
-            // btnTestConnection
-            // 
-            this.btnTestConnection.BackColor = System.Drawing.Color.LightGray;
-            this.btnTestConnection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnTestConnection.Location = new System.Drawing.Point(125, 25);
-            this.btnTestConnection.Name = "btnTestConnection";
-            this.btnTestConnection.Size = new System.Drawing.Size(120, 40);
-            this.btnTestConnection.TabIndex = 8;
-            this.btnTestConnection.Text = "Test Connection";
-            this.btnTestConnection.UseVisualStyleBackColor = false;
-            this.btnTestConnection.Click += new System.EventHandler(this.btnTestConnection_Click);
-            // 
-            // btnJobInfoListener
-            // 
-            this.btnJobInfoListener.BackColor = System.Drawing.Color.LightBlue;
-            this.btnJobInfoListener.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnJobInfoListener.Location = new System.Drawing.Point(255, 25);
-            this.btnJobInfoListener.Name = "btnJobInfoListener";
-            this.btnJobInfoListener.Size = new System.Drawing.Size(140, 40);
-            this.btnJobInfoListener.TabIndex = 9;
-            this.btnJobInfoListener.Text = "Stop Listener (Debug)";
-            this.btnJobInfoListener.UseVisualStyleBackColor = false;
-            this.btnJobInfoListener.Click += new System.EventHandler(this.btnJobInfoListener_Click);
-            // 
             // btnRunSingleCommand
             // 
             this.btnRunSingleCommand.BackColor = System.Drawing.Color.LightGreen;
@@ -145,46 +88,8 @@ namespace HavenCNCServer
             this.btnRunSingleCommand.Text = "Run Single Command";
             this.btnRunSingleCommand.UseVisualStyleBackColor = false;
             this.btnRunSingleCommand.Click += new System.EventHandler(this.btnRunSingleCommand_Click);
-            // 
-            // txtStatus
-            // 
-            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtStatus.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtStatus.Location = new System.Drawing.Point(15, 520);
-            this.txtStatus.Multiline = true;
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtStatus.Size = new System.Drawing.Size(750, 100);
-            this.txtStatus.TabIndex = 8;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(15, 500);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(65, 15);
-            this.lblStatus.TabIndex = 9;
-            this.lblStatus.Text = "Status Log:";
-            // 
-            // txtFileName
-            // 
-            this.txtFileName.Location = new System.Drawing.Point(290, 30);
-            this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(200, 23);
-            this.txtFileName.TabIndex = 10;
-            this.txtFileName.Text = "test_gcode.txt";
-            // 
-            // lblFileName
-            // 
-            this.lblFileName.AutoSize = true;
-            this.lblFileName.Location = new System.Drawing.Point(290, 10);
-            this.lblFileName.Name = "lblFileName";
-            this.lblFileName.Size = new System.Drawing.Size(62, 15);
-            this.lblFileName.TabIndex = 11;
-            this.lblFileName.Text = "File Name:";
+
+
             // 
             // grpGCodeEditor
             // 
@@ -193,9 +98,9 @@ namespace HavenCNCServer
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpGCodeEditor.Controls.Add(this.txtGCode);
             this.grpGCodeEditor.Controls.Add(this.lblGCode);
-            this.grpGCodeEditor.Location = new System.Drawing.Point(15, 80);
+            this.grpGCodeEditor.Location = new System.Drawing.Point(15, 15);
             this.grpGCodeEditor.Name = "grpGCodeEditor";
-            this.grpGCodeEditor.Size = new System.Drawing.Size(780, 360);
+            this.grpGCodeEditor.Size = new System.Drawing.Size(780, 425);
             this.grpGCodeEditor.TabIndex = 12;
             this.grpGCodeEditor.TabStop = false;
             this.grpGCodeEditor.Text = "G-Code Editor";
@@ -205,8 +110,6 @@ namespace HavenCNCServer
             this.grpControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpControls.Controls.Add(this.btnRunGCode);
-            this.grpControls.Controls.Add(this.btnTestConnection);
-            this.grpControls.Controls.Add(this.btnJobInfoListener);
             this.grpControls.Controls.Add(this.btnRunSingleCommand);
             this.grpControls.Location = new System.Drawing.Point(15, 450);
             this.grpControls.Name = "grpControls";
@@ -214,72 +117,21 @@ namespace HavenCNCServer
             this.grpControls.TabIndex = 13;
             this.grpControls.TabStop = false;
             this.grpControls.Text = "G-Code Execution Controls";
-            // 
-            // grpFileOperations
-            // 
-            this.grpFileOperations.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpFileOperations.Controls.Add(this.btnOpenFile);
-            this.grpFileOperations.Controls.Add(this.btnNewFile);
-            this.grpFileOperations.Controls.Add(this.btnSaveFile);
-            this.grpFileOperations.Controls.Add(this.btnLoadFile);
-            this.grpFileOperations.Controls.Add(this.txtFileName);
-            this.grpFileOperations.Controls.Add(this.lblFileName);
-            this.grpFileOperations.Location = new System.Drawing.Point(15, 15);
-            this.grpFileOperations.Name = "grpFileOperations";
-            this.grpFileOperations.Size = new System.Drawing.Size(780, 65);
-            this.grpFileOperations.TabIndex = 14;
-            this.grpFileOperations.TabStop = false;
-            this.grpFileOperations.Text = "File Operations";
-            // 
-            // btnOpenFile
-            // 
-            this.btnOpenFile.Location = new System.Drawing.Point(200, 25);
-            this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(80, 30);
-            this.btnOpenFile.TabIndex = 13;
-            this.btnOpenFile.Text = "Open File";
-            this.btnOpenFile.UseVisualStyleBackColor = true;
-            this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
-            // 
-            // btnNewFile
-            // 
-            this.btnNewFile.Location = new System.Drawing.Point(20, 25);
-            this.btnNewFile.Name = "btnNewFile";
-            this.btnNewFile.Size = new System.Drawing.Size(80, 30);
-            this.btnNewFile.TabIndex = 12;
-            this.btnNewFile.Text = "New File";
-            this.btnNewFile.UseVisualStyleBackColor = true;
-            this.btnNewFile.Click += new System.EventHandler(this.btnNewFile_Click);
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.Filter = "G-Code Files (*.nc,*.gcode,*.txt)|*.nc;*.gcode;*.txt|All Files (*.*)|*.*";
-            this.openFileDialog.Title = "Open G-Code File";
-            // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.Filter = "G-Code Files (*.nc,*.gcode,*.txt)|*.nc;*.gcode;*.txt|All Files (*.*)|*.*";
-            this.saveFileDialog.Title = "Save G-Code File";
+
             // 
             // GCodeTestDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(810, 635);
-            this.Controls.Add(this.grpFileOperations);
+            this.ClientSize = new System.Drawing.Size(810, 540);
             this.Controls.Add(this.grpControls);
             this.Controls.Add(this.grpGCodeEditor);
-            this.Controls.Add(this.lblStatus);
-            this.Controls.Add(this.txtStatus);
             this.Name = "GCodeTestDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "G-Code Test Dialog - Centroid API Integration";
             this.grpGCodeEditor.ResumeLayout(false);
             this.grpGCodeEditor.PerformLayout();
             this.grpControls.ResumeLayout(false);
-            this.grpFileOperations.ResumeLayout(false);
-            this.grpFileOperations.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -288,22 +140,9 @@ namespace HavenCNCServer
 
         private System.Windows.Forms.TextBox txtGCode;
         private System.Windows.Forms.Label lblGCode;
-        private System.Windows.Forms.Button btnSaveFile;
-        private System.Windows.Forms.Button btnLoadFile;
         private System.Windows.Forms.Button btnRunGCode;
-        private System.Windows.Forms.Button btnTestConnection;
-        private System.Windows.Forms.Button btnJobInfoListener;
         private System.Windows.Forms.Button btnRunSingleCommand;
-        private System.Windows.Forms.TextBox txtStatus;
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.TextBox txtFileName;
-        private System.Windows.Forms.Label lblFileName;
         private System.Windows.Forms.GroupBox grpGCodeEditor;
         private System.Windows.Forms.GroupBox grpControls;
-        private System.Windows.Forms.GroupBox grpFileOperations;
-        private System.Windows.Forms.Button btnOpenFile;
-        private System.Windows.Forms.Button btnNewFile;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
     }
 }

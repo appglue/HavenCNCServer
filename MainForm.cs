@@ -115,7 +115,7 @@ namespace HavenCNCServer
         private void SetupLogging()
         {
             // Create and register a log target for the main form's text box
-            var logTarget = new TextBoxLogTarget(txtLog, this);
+            var logTarget = new RichTextBoxLogTarget(txtLog, this);
             LoggingService.AddTarget(logTarget);
             
             // Set maximum log entries from settings or default
