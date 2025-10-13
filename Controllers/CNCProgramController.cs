@@ -209,7 +209,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="gcode">G-code command to run</param>
         /// <returns>Command execution success</returns>
         [HttpPost("RunGCodeCommand")]
-        public bool RunGCodeCommand([FromBody] string gcode)
+        public async Task<bool> RunGCodeCommand([FromBody] string gcode)
         {
             try
             {
@@ -225,46 +225,14 @@ namespace HavenCNCServer.Controllers
                     return true; // Comments are "successfully" ignored
                 }
 
-                // Ensure CNC connection is available
-                if (!CNCConnectionManager.IsConnected)
-                {
-                    var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
-                    if (pipe == null || !pipe.IsConstructed())
-                    {
-                        throw new InvalidOperationException("Cannot proceed: CNC connection failed");
-                    }
-                }
-
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
-                {
-                    throw new InvalidOperationException("Cannot execute: No CNC connection");
-                }
-
                 // Log the command we're about to execute
                 System.Diagnostics.Debug.WriteLine($"[G-Code Command] Executing single command: {cleanCommand}");
                 System.Diagnostics.Debug.WriteLine($"[G-Code Command] Original command: {gcode}");
 
-                // Execute the single command using a new Job instance
-                var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
-                var executeResult = cmd.RunCommand(cleanCommand, true);
-                
-                // Log the return code for debugging
-                System.Diagnostics.Debug.WriteLine($"[G-Code Command] RunCommand returned: {executeResult}");
-                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Return code numeric value: {(int)executeResult}");
-                
-                if (executeResult != CNCPipe.ReturnCode.SUCCESS)
-                {
-                    var errorMsg = $"G-code command failed with return code: {executeResult} (numeric: {(int)executeResult})";
-                    System.Diagnostics.Debug.WriteLine($"[G-Code Command] ERROR: {errorMsg}");
-                    throw new InvalidOperationException(errorMsg);
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"[G-Code Command] SUCCESS: Command executed successfully");
-                }
-
-                return true;
+                // Convert single command to array and call the main RunGCode method
+                // This ensures we have only one code path for G-code execution
+                string[] gCodeLines = { cleanCommand };
+                return await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null);
             }
             catch (Exception ex)
             {
