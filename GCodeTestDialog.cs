@@ -16,7 +16,6 @@ namespace HavenCNCServer
     public partial class GCodeTestDialog : Form
     {
         private readonly MainForm? _mainForm;
-        private readonly ICNCProgramService _programService;
 
         /// <summary>
         /// Initializes a new instance of the GCodeTestDialog
@@ -25,7 +24,6 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             _mainForm = mainForm;
-            _programService = new CNCProgramService();
             
             // Subscribe to G-code text changes to enable/disable single command button
             txtGCode.TextChanged += OnGCodeTextChanged;
