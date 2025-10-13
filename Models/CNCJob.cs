@@ -16,6 +16,11 @@ namespace HavenCNCServer.Models
         private CentroidAPI.CNCPipe.Job? _cncJob;
         private bool _isListening = false;
 
+        /// <summary>
+        /// Callback to invoke when the job completes
+        /// </summary>
+        public Action<CNCJob>? OnJobCompleted { get; set; }
+
         #region Properties
 
         /// <summary>
@@ -231,6 +236,10 @@ namespace HavenCNCServer.Models
                 CompletedAt = DateTime.Now;
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped");
+                
+                // Notify completion callback
+                OnJobCompleted?.Invoke(this);
+                
                 return true;
             }
             catch (Exception ex)
@@ -392,6 +401,9 @@ namespace HavenCNCServer.Models
                             
                             // Log job completion to main UI in GREEN
                             LoggingService.LogSuccess($"✓ Job {_jobId} completed - {messageEvent.Message}", "CNCJob");
+                            
+                            // Notify completion callback
+                            OnJobCompleted?.Invoke(this);
                         }
                     }
 
@@ -418,6 +430,9 @@ namespace HavenCNCServer.Models
                             
                             // Log critical error job stop to main UI
                             LoggingService.LogError($"Job {_jobId} stopped due to critical error: {LastError}", "CNCJob");
+                            
+                            // Notify completion callback
+                            OnJobCompleted?.Invoke(this);
                         }
                     }
                 }

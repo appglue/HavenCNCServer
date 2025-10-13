@@ -16,9 +16,10 @@ namespace HavenCNCServer.Controllers
         #region Job Management
 
         /// <summary>
-        /// List of active CNC jobs
+        /// List of all CNC jobs (first job is currently running, rest are queued)
         /// </summary>
-        private static readonly List<CNCJob> _activeJobs = new List<CNCJob>();
+        private static readonly List<CNCJob> _jobs = new List<CNCJob>();
+        
         private static readonly object _jobsLock = new object();
 
         /// <summary>
@@ -30,7 +31,7 @@ namespace HavenCNCServer.Controllers
         {
             lock (_jobsLock)
             {
-                var jobSummaries = _activeJobs.Select(job => new
+                var jobSummaries = _jobs.Select(job => new
                 {
                     JobId = job.JobId,
                     LineNumber = job.LineNumber,
@@ -59,7 +60,7 @@ namespace HavenCNCServer.Controllers
         {
             lock (_jobsLock)
             {
-                var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                 if (job == null)
                 {
                     return NotFound($"Job {jobId} not found");
@@ -97,7 +98,7 @@ namespace HavenCNCServer.Controllers
                 
                 lock (_jobsLock)
                 {
-                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
                         return NotFound($"Job {jobId} not found");
@@ -135,14 +136,140 @@ namespace HavenCNCServer.Controllers
         {
             lock (_jobsLock)
             {
-                var completedJobs = _activeJobs.Where(j => j.IsComplete).ToList();
+                var completedJobs = _jobs.Where(j => j.IsComplete).ToList();
                 foreach (var job in completedJobs)
                 {
                     job.Dispose();
-                    _activeJobs.Remove(job);
+                    _jobs.Remove(job);
                 }
 
                 return Ok(new { CleanupsCount = completedJobs.Count });
+            }
+        }
+
+        /// <summary>
+        /// Check if there is a current job (first job in the list)
+        /// </summary>
+        /// <returns>True if there is a current job</returns>
+        private static bool HasCurrentJob()
+        {
+            lock (_jobsLock)
+            {
+                return _jobs.Count > 0;
+            }
+        }
+
+        /// <summary>
+        /// Get the current job (first job in the list)
+        /// </summary>
+        /// <returns>Current job or null if no jobs</returns>
+        private static CNCJob? GetCurrentJob()
+        {
+            lock (_jobsLock)
+            {
+                return _jobs.FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Handle job completion - remove completed job and start next job in queue
+        /// </summary>
+        /// <param name="completedJob">The job that completed</param>
+        private static async void OnJobCompleted(CNCJob completedJob)
+        {
+            try
+            {
+                lock (_jobsLock)
+                {
+                    // Remove the completed job
+                    _jobs.Remove(completedJob);
+                    LoggingService.LogInfo($"Job {completedJob.JobId} completed and removed from queue", "CNCJob");
+                }
+
+                // Dispose the completed job
+                completedJob.Dispose();
+
+                // Try to start the next job in the queue
+                await ProcessJobQueue();
+            }
+            catch (Exception ex)
+            {
+                LoggingService.LogError($"Error handling job completion: {ex.Message}", "CNCJob");
+            }
+        }
+
+        /// <summary>
+        /// Process the job queue - start the first job in the list if it hasn't started yet
+        /// </summary>
+        /// <returns>True if a job was started from the queue</returns>
+        private static async Task<bool> ProcessJobQueue()
+        {
+            CNCJob? jobToStart = null;
+            
+            lock (_jobsLock)
+            {
+                // If no jobs to process, nothing to do
+                if (_jobs.Count == 0)
+                {
+                    return false;
+                }
+                
+                // Get the first job in the list - this is the current job
+                var firstJob = _jobs.First();
+                
+                // Only start it if it hasn't been started yet
+                if (!firstJob.IsRunning && !firstJob.IsComplete)
+                {
+                    jobToStart = firstJob;
+                }
+            }
+            
+            if (jobToStart != null)
+            {
+                LoggingService.LogInfo($"Starting next job in queue: {jobToStart.JobId}", "CNCJob");
+                var success = await jobToStart.StartAsync();
+                
+                if (!success)
+                {
+                    LoggingService.LogError($"Failed to start queued job {jobToStart.JobId}: {jobToStart.LastError}", "CNCJob");
+                }
+                
+                return success;
+            }
+            
+            return false;
+        }
+
+        /// <summary>
+        /// Get queue status
+        /// </summary>
+        /// <returns>Queue status information</returns>
+        [HttpGet("Queue")]
+        public IActionResult GetQueueStatus()
+        {
+            lock (_jobsLock)
+            {
+                var currentJob = GetCurrentJob();
+                var queuedJobs = _jobs.Skip(1).Where(j => !j.IsComplete).Select(job => new
+                {
+                    JobId = job.JobId,
+                    TotalLines = job.TotalLines,
+                    CreatedAt = job.CreatedAt
+                }).ToList();
+                
+                return Ok(new
+                {
+                    CurrentJob = currentJob != null ? new
+                    {
+                        JobId = currentJob.JobId,
+                        LineNumber = currentJob.LineNumber,
+                        TotalLines = currentJob.TotalLines,
+                        IsRunning = currentJob.IsRunning,
+                        StartedAt = currentJob.StartedAt
+                    } : null,
+                    QueuedJobs = queuedJobs,
+                    QueueLength = _jobs.Skip(1).Count(j => !j.IsComplete)
+                });
             }
         }
 
@@ -162,7 +289,7 @@ namespace HavenCNCServer.Controllers
             {
                 lock (_jobsLock)
                 {
-                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
                         return NotFound($"Job {jobId} not found");
@@ -189,7 +316,7 @@ namespace HavenCNCServer.Controllers
             {
                 lock (_jobsLock)
                 {
-                    var runningJobs = _activeJobs.Where(j => j.IsRunning).ToList();
+                    var runningJobs = _jobs.Where(j => j.IsRunning).ToList();
                     var results = new List<object>();
 
                     foreach (var job in runningJobs)
@@ -219,7 +346,7 @@ namespace HavenCNCServer.Controllers
             {
                 lock (_jobsLock)
                 {
-                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
                         return NotFound($"Job {jobId} not found");
@@ -247,7 +374,7 @@ namespace HavenCNCServer.Controllers
             {
                 lock (_jobsLock)
                 {
-                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
                         return NotFound($"Job {jobId} not found");
@@ -281,7 +408,7 @@ namespace HavenCNCServer.Controllers
 
                 lock (_jobsLock)
                 {
-                    var job = _activeJobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
                         return NotFound($"Job {jobId} not found");
@@ -316,10 +443,19 @@ namespace HavenCNCServer.Controllers
 
                 // Create a new CNC job
                 CNCJob job;
+                bool shouldStartNow = false;
+                
                 lock (_jobsLock)
                 {
                     job = new CNCJob(gCodeLines, gcodeParameterString);
-                    _activeJobs.Add(job);
+                    
+                    // Set up completion callback to handle job completion
+                    job.OnJobCompleted = OnJobCompleted;
+                    
+                    _jobs.Add(job);
+                    
+                    // Start immediately if this is the first (and only) job in the list and startImmediately is true
+                    shouldStartNow = startImmediately && _jobs.Count == 1;
                 }
 
                 var result = new
@@ -328,10 +464,10 @@ namespace HavenCNCServer.Controllers
                     TotalLines = job.TotalLines,
                     FilePath = job.FilePath,
                     CreatedAt = job.CreatedAt,
-                    StartImmediately = startImmediately
+                    StartImmediately = shouldStartNow
                 };
 
-                if (startImmediately)
+                if (shouldStartNow)
                 {
                     var startSuccess = await job.StartAsync();
                     if (!startSuccess)
@@ -363,11 +499,15 @@ namespace HavenCNCServer.Controllers
                 }
                 else
                 {
+                    string message = startImmediately ? 
+                        "Job created and queued (jobs ahead in queue)" : 
+                        "Job created successfully (not started)";
+                        
                     return Ok(new 
                     { 
                         Success = true, 
                         JobId = job.JobId,
-                        Message = "Job created successfully (not started)",
+                        Message = message,
                         Job = result
                     });
                 }
