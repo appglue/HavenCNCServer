@@ -24,6 +24,8 @@ namespace HavenCNCServer
         private IHost? _webHost;
         private CancellationTokenSource? _cancellationTokenSource;
         private ICNCServerManager? _cncServerManager;
+        private CoordinateDisplayListener? _coordinateListener;
+        private CNCMessageDisplayListener? _messageListener;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -60,6 +62,12 @@ namespace HavenCNCServer
             // Register this form with the UI control service
             Services.UIControlService.RegisterMainForm(this);
             
+            // Set up coordinate display listener
+            SetupCoordinateDisplay();
+            
+            // Set up CNC message display listener
+            SetupMessageDisplay();
+            
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
         }
@@ -77,6 +85,198 @@ namespace HavenCNCServer
             LoggingService.MaxLogEntries = 2000;
             
             LogInfo("Logging system initialized", "System");
+        }
+
+        /// <summary>
+        /// Set up coordinate display listener for machine position updates
+        /// </summary>
+        private void SetupCoordinateDisplay()
+        {
+            try
+            {
+                // Create coordinate display listener
+                _coordinateListener = new CoordinateDisplayListener(this);
+                
+                // Register listener with CNC job info listener
+                CNCJobInfoListener.AddListener(_coordinateListener);
+                
+                LogInfo("Coordinate display listener registered", "CoordinateDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to setup coordinate display: {ex.Message}", "CoordinateDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Set up CNC message display listener for showing classified messages
+        /// </summary>
+        private void SetupMessageDisplay()
+        {
+            try
+            {
+                // Create message display listener
+                _messageListener = new CNCMessageDisplayListener(this);
+                
+                // Register listener with CNC job info listener
+                CNCJobInfoListener.AddListener(_messageListener);
+                
+                // Initialize the message display
+                txtMessages.Text = "=== CNC Message Monitor ===\r\nWaiting for CNC messages...\r\n\r\n";
+                
+                LogInfo("CNC message display listener registered", "MessageDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to setup message display: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Test coordinate display with simulated DRO events
+        /// </summary>
+        private void TestCoordinateDisplay()
+        {
+            try
+            {
+                LogMessage("Testing coordinate display with simulated data...");
+                
+                // Create test DRO events to simulate position updates
+                var testPositions = new[]
+                {
+                    new { X = 1.2345, Y = 2.3456, Z = 3.4567 },
+                    new { X = 10.1234, Y = 20.2345, Z = 30.3456 },
+                    new { X = -5.6789, Y = -15.7890, Z = -25.8901 }
+                };
+
+                foreach (var pos in testPositions)
+                {
+                    var droEvent = new DROEvent
+                    {
+                        Timestamp = DateTime.Now,
+                        Axis1 = pos.X, // X axis
+                        Axis2 = pos.Y, // Y axis  
+                        Axis3 = pos.Z, // Z axis
+                        Axis4 = 0.0,   // A axis (not displayed)
+                        Axis5 = 0.0,   // B axis (not displayed)
+                        Axis6 = 0.0,   // C axis (not displayed)
+                        Axis7 = 0.0,   // U axis (not displayed)
+                        Axis8 = 0.0,   // V axis (not displayed)
+                        Message = $"Test position: X={pos.X:F4}, Y={pos.Y:F4}, Z={pos.Z:F4}"
+                    };
+
+                    // Simulate the coordinate listener receiving the event
+                    _coordinateListener?.EventReceived(droEvent);
+                    
+                    // Small delay to show the updates
+                    System.Threading.Thread.Sleep(500);
+                }
+
+                LogMessage("Coordinate display test completed!");
+
+                // Test message display with various message types
+                TestMessageDisplay();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error testing coordinate display: {ex.Message}", "CoordinateDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Test message display with simulated CNC messages of different types
+        /// </summary>
+        private void TestMessageDisplay()
+        {
+            try
+            {
+                LogMessage("Testing CNC message display with various message types...");
+
+                // Create test message events of different types
+                var testMessages = new[]
+                {
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 306, Message = "Job Finished Successfully", EventType = MessageEventType.JobCompleted },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 301, Message = "Machine Stopped", EventType = MessageEventType.StatusMessage },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 405, Message = "Lubricant level low", EventType = MessageEventType.SystemFault },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 407, Message = "X-axis limit switch tripped", EventType = MessageEventType.LimitError },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 0, Message = "Job started: TEST_PROGRAM.nc", EventType = MessageEventType.JobStarted },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 501, Message = "Invalid G-code syntax", EventType = MessageEventType.SyntaxError },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 307, Message = "Operator abort: job canceled", EventType = MessageEventType.JobCancelled },
+                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 199, Message = "CNC started", EventType = MessageEventType.StatusMessage }
+                };
+
+                foreach (var message in testMessages)
+                {
+                    // Simulate a small delay between messages
+                    System.Threading.Thread.Sleep(300);
+                    
+                    // Update timestamp to current time
+                    message.Timestamp = DateTime.Now;
+                    
+                    // Send to message listener
+                    _messageListener?.EventReceived(message);
+                }
+
+                LogMessage("CNC message display test completed!");
+                
+                // Test message storage functionality
+                TestMessageStorage();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error testing message display: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Test message storage and retrieval functionality
+        /// </summary>
+        private void TestMessageStorage()
+        {
+            try
+            {
+                LogMessage("Testing CNC message storage functionality...");
+
+                // Wait a moment for messages to be stored
+                System.Threading.Thread.Sleep(1000);
+
+                // Test getting all stored messages
+                var allMessages = CNCJobInfoListener.GetStoredMessages();
+                LogMessage($"Total stored messages: {allMessages.Count}");
+
+                // Test getting recent messages (last 10 seconds)
+                var recentMessages = CNCJobInfoListener.GetRecentMessages(10000);
+                LogMessage($"Recent messages (last 10 seconds): {recentMessages.Count}");
+
+                // Test getting messages by type (MessageEvent)
+                var messageEvents = CNCJobInfoListener.GetRecentMessagesByType<MessageEvent>(10000);
+                LogMessage($"Recent MessageEvents: {messageEvents.Count}");
+
+                // Test getting messages by type (DROEvent)
+                var droEvents = CNCJobInfoListener.GetRecentMessagesByType<DROEvent>(10000);
+                LogMessage($"Recent DROEvents: {droEvents.Count}");
+
+                // Test getting messages by communication type
+                var messageWindowMessages = CNCJobInfoListener.GetRecentMessagesByCommunicationType(10000, "MESSAGE_WINDOW_MESSAGE");
+                LogMessage($"Recent MESSAGE_WINDOW_MESSAGE: {messageWindowMessages.Count}");
+
+                // Display some recent messages for verification
+                if (recentMessages.Count > 0)
+                {
+                    LogMessage("Sample of recent messages:");
+                    foreach (var msg in recentMessages.Take(3))
+                    {
+                        var eventTypeName = msg.Event.GetType().Name;
+                        LogMessage($"  [{msg.Timestamp:HH:mm:ss.fff}] {msg.CommunicationType} - {eventTypeName}: {msg.Event.Message}");
+                    }
+                }
+
+                LogMessage("Message storage test completed successfully!");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error testing message storage: {ex.Message}", "MessageStorage");
+            }
         }
 
         private async void MainForm_Load(object? sender, EventArgs e)
@@ -549,6 +749,9 @@ namespace HavenCNCServer
             {
                 LogMessage("Test button clicked!");
 
+                // Test coordinate display with simulated data
+                TestCoordinateDisplay();
+
                 // Test CNCConnectionManager instead of creating CNCPipe directly
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 
@@ -763,6 +966,20 @@ namespace HavenCNCServer
         {
             try
             {
+                // Clean up coordinate listener
+                if (_coordinateListener != null)
+                {
+                    CNCJobInfoListener.RemoveListener(_coordinateListener);
+                    LogInfo("Coordinate display listener removed", "CoordinateDisplay");
+                }
+
+                // Clean up message listener
+                if (_messageListener != null)
+                {
+                    CNCJobInfoListener.RemoveListener(_messageListener);
+                    LogInfo("CNC message display listener removed", "MessageDisplay");
+                }
+
                 // Set a timeout for shutdown to prevent hanging
                 using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
                 {
@@ -780,6 +997,204 @@ namespace HavenCNCServer
             
             // Force exit if needed - this will terminate any remaining background threads
             Environment.Exit(0);
+        }
+
+        /// <summary>
+        /// Helper method to determine message severity based on MessageEventType
+        /// </summary>
+        /// <param name="messageType">The message event type to classify</param>
+        /// <returns>MessageSeverity indicating the severity level</returns>
+        public static MessageSeverity GetMessageSeverity(MessageEventType messageType)
+        {
+            // Use the centralized error check from CNCJobInfoListener
+            if (CNCJobInfoListener.IsErrorMessage(messageType))
+            {
+                return MessageSeverity.Error;
+            }
+
+            switch (messageType)
+            {
+
+                // Warnings and less critical issues
+                case MessageEventType.SyntaxError:
+                case MessageEventType.GCodeError:
+                case MessageEventType.ParameterError:
+                case MessageEventType.CutterCompensationError:
+                case MessageEventType.ParameterSettingError:
+                case MessageEventType.CannedCycleError:
+                case MessageEventType.MiscellaneousError:
+                case MessageEventType.ScalingError:
+                    return MessageSeverity.Warning;
+
+                // Job lifecycle events
+                case MessageEventType.JobStarted:
+                    return MessageSeverity.Success;
+                case MessageEventType.JobCompleted:
+                    return MessageSeverity.Success;
+                case MessageEventType.JobCancelled:
+                    return MessageSeverity.Warning;
+
+                // System events
+                case MessageEventType.ExitMessage:
+                case MessageEventType.ConfigurationChange:
+                    return MessageSeverity.Info;
+
+                // Default status messages
+                case MessageEventType.StatusMessage:
+                case MessageEventType.Unknown:
+                default:
+                    return MessageSeverity.Normal;
+            }
+        }
+
+        /// <summary>
+        /// Message severity levels for color coding
+        /// </summary>
+        public enum MessageSeverity
+        {
+            /// <summary>Default message with normal formatting (black text)</summary>
+            Normal,    // Default color (black)
+            /// <summary>Informational message (blue text)</summary>
+            Info,      // Blue
+            /// <summary>Success or positive status message (green text)</summary>
+            Success,   // Green  
+            /// <summary>Warning message that needs attention (orange text)</summary>
+            Warning,   // Orange
+            /// <summary>Error message requiring immediate attention (red text)</summary>
+            Error      // Red
+        }
+
+        /// <summary>
+        /// CNC message display listener that shows messages with color coding
+        /// </summary>
+        private class CNCMessageDisplayListener : ICNCEventListener
+        {
+            private readonly MainForm _mainForm;
+            private int _maxMessages = 1000;
+            private int _currentMessageCount = 0;
+
+            public CNCMessageDisplayListener(MainForm mainForm)
+            {
+                _mainForm = mainForm;
+            }
+
+            public void EventReceived(ICentroidEvent centroidEvent)
+            {
+                // Only process MessageEvent types for the message display
+                if (centroidEvent is MessageEvent messageEvent)
+                {
+                    // Update UI on the main thread using Invoke
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => AddMessage(messageEvent)));
+                    }
+                    else
+                    {
+                        AddMessage(messageEvent);
+                    }
+                }
+            }
+
+            private void AddMessage(MessageEvent messageEvent)
+            {
+                try
+                {
+                    var severity = GetMessageSeverity(messageEvent.EventType);
+                    var timestamp = messageEvent.Timestamp.ToString("HH:mm:ss.fff");
+                    var eventCode = messageEvent.EventCode > 0 ? $"[{messageEvent.EventCode}]" : "";
+                    var messageText = $"[{timestamp}] {eventCode} ({messageEvent.EventType}) {messageEvent.Message}";
+
+                    // Add message to the text box
+                    _mainForm.txtMessages.AppendText(messageText + Environment.NewLine);
+                    
+                    // Scroll to bottom to show latest messages
+                    _mainForm.txtMessages.SelectionStart = _mainForm.txtMessages.Text.Length;
+                    _mainForm.txtMessages.ScrollToCaret();
+
+                    _currentMessageCount++;
+
+                    // Trim old messages if we exceed the limit
+                    if (_currentMessageCount > _maxMessages)
+                    {
+                        TrimOldMessages();
+                    }
+
+                    // TODO: Implement color coding - this would require RichTextBox or custom control
+                    // For now, we're using a simple TextBox which doesn't support color coding
+                    // We could upgrade to RichTextBox in a future iteration
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding CNC message to display: {ex.Message}", "MessageDisplay");
+                }
+            }
+
+            private void TrimOldMessages()
+            {
+                try
+                {
+                    var lines = _mainForm.txtMessages.Lines;
+                    if (lines.Length > _maxMessages)
+                    {
+                        // Keep only the most recent messages
+                        var keepLines = lines.Skip(lines.Length - (_maxMessages * 3 / 4)).ToArray();
+                        _mainForm.txtMessages.Lines = keepLines;
+                        _currentMessageCount = keepLines.Length;
+                        
+                        // Add separator to show where trimming occurred
+                        _mainForm.txtMessages.AppendText("--- [Previous messages trimmed] ---" + Environment.NewLine);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error trimming old messages: {ex.Message}", "MessageDisplay");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Coordinate display listener that updates the UI with machine position data
+        /// </summary>
+        private class CoordinateDisplayListener : ICNCEventListener
+        {
+            private readonly MainForm _mainForm;
+
+            public CoordinateDisplayListener(MainForm mainForm)
+            {
+                _mainForm = mainForm;
+            }
+
+            public void EventReceived(ICentroidEvent centroidEvent)
+            {
+                // Only process DRO events for coordinate updates
+                if (centroidEvent is DROEvent droEvent)
+                {
+                    // Update UI on the main thread using Invoke
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => UpdateCoordinateDisplay(droEvent)));
+                    }
+                    else
+                    {
+                        UpdateCoordinateDisplay(droEvent);
+                    }
+                }
+            }
+
+            private void UpdateCoordinateDisplay(DROEvent droEvent)
+            {
+                try
+                {
+                    // Update X, Y, Z coordinate displays with 4 decimal places
+                    _mainForm.lblXValue.Text = droEvent.Axis1.ToString("F4");
+                    _mainForm.lblYValue.Text = droEvent.Axis2.ToString("F4");
+                    _mainForm.lblZValue.Text = droEvent.Axis3.ToString("F4");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error updating coordinate display: {ex.Message}", "CoordinateDisplay");
+                }
+            }
         }
     }
 }

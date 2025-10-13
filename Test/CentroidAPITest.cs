@@ -8,6 +8,9 @@ namespace HavenCNCServer.Test
     /// </summary>
     public static class CentroidAPITest
     {
+        /// <summary>
+        /// Tests the CentroidAPI structure and available methods for development purposes
+        /// </summary>
         public static void TestAPIStructure()
         {
             // This is just for development - checking what's available

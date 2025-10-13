@@ -233,6 +233,9 @@ namespace HavenCNCServer.Services
                 var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
                 var executeResult = cmd.RunCommand(cleanCommand, false);
                 
+                // Ensure this method actually runs asynchronously
+                await Task.CompletedTask;
+                
                 if (executeResult == CNCPipe.ReturnCode.SUCCESS)
                 {
                     LogSuccess($"✓ Command executed successfully: {cleanCommand}", "CNCProgram");

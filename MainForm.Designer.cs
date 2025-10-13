@@ -42,8 +42,18 @@ namespace HavenCNCServer
             this.btnCNCServer = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
+            this.grpCoordinates = new System.Windows.Forms.GroupBox();
+            this.lblXPos = new System.Windows.Forms.Label();
+            this.lblYPos = new System.Windows.Forms.Label();
+            this.lblZPos = new System.Windows.Forms.Label();
+            this.lblXValue = new System.Windows.Forms.Label();
+            this.lblYValue = new System.Windows.Forms.Label();
+            this.lblZValue = new System.Windows.Forms.Label();
+            this.txtMessages = new System.Windows.Forms.TextBox();
+            this.lblMessages = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
+            this.grpCoordinates.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
@@ -78,15 +88,14 @@ namespace HavenCNCServer
             // 
             // txtLog
             // 
-            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.txtLog.Location = new System.Drawing.Point(12, 170);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(880, 500);
+            this.txtLog.Size = new System.Drawing.Size(440, 500);
             this.txtLog.TabIndex = 3;
             // 
             // lblLog
@@ -97,6 +106,28 @@ namespace HavenCNCServer
             this.lblLog.Size = new System.Drawing.Size(69, 15);
             this.lblLog.TabIndex = 4;
             this.lblLog.Text = "Server Logs:";
+            // 
+            // txtMessages
+            // 
+            this.txtMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right))));
+            this.txtMessages.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtMessages.Location = new System.Drawing.Point(462, 170);
+            this.txtMessages.Multiline = true;
+            this.txtMessages.Name = "txtMessages";
+            this.txtMessages.ReadOnly = true;
+            this.txtMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtMessages.Size = new System.Drawing.Size(430, 500);
+            this.txtMessages.TabIndex = 13;
+            // 
+            // lblMessages
+            // 
+            this.lblMessages.AutoSize = true;
+            this.lblMessages.Location = new System.Drawing.Point(462, 152);
+            this.lblMessages.Name = "lblMessages";
+            this.lblMessages.Size = new System.Drawing.Size(84, 15);
+            this.lblMessages.TabIndex = 14;
+            this.lblMessages.Text = "CNC Messages:";
             // 
             // btnStopServer
             // 
@@ -197,17 +228,98 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnGCodeTest);
             this.pnlControls.Controls.Add(this.btnTest);
             this.pnlControls.Controls.Add(this.btnCNCServer);
+            this.pnlControls.Controls.Add(this.grpCoordinates);
             this.pnlControls.Controls.Add(this.lblLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(904, 160);
             this.pnlControls.TabIndex = 10;
             // 
+            // grpCoordinates
+            // 
+            this.grpCoordinates.Controls.Add(this.lblXPos);
+            this.grpCoordinates.Controls.Add(this.lblYPos);
+            this.grpCoordinates.Controls.Add(this.lblZPos);
+            this.grpCoordinates.Controls.Add(this.lblXValue);
+            this.grpCoordinates.Controls.Add(this.lblYValue);
+            this.grpCoordinates.Controls.Add(this.lblZValue);
+            this.grpCoordinates.Location = new System.Drawing.Point(150, 110);
+            this.grpCoordinates.Name = "grpCoordinates";
+            this.grpCoordinates.Size = new System.Drawing.Size(300, 45);
+            this.grpCoordinates.TabIndex = 12;
+            this.grpCoordinates.TabStop = false;
+            this.grpCoordinates.Text = "Machine Coordinates";
+            // 
+            // lblXPos
+            // 
+            this.lblXPos.AutoSize = true;
+            this.lblXPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblXPos.Location = new System.Drawing.Point(6, 20);
+            this.lblXPos.Name = "lblXPos";
+            this.lblXPos.Size = new System.Drawing.Size(17, 15);
+            this.lblXPos.TabIndex = 0;
+            this.lblXPos.Text = "X:";
+            // 
+            // lblYPos
+            // 
+            this.lblYPos.AutoSize = true;
+            this.lblYPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblYPos.Location = new System.Drawing.Point(100, 20);
+            this.lblYPos.Name = "lblYPos";
+            this.lblYPos.Size = new System.Drawing.Size(17, 15);
+            this.lblYPos.TabIndex = 1;
+            this.lblYPos.Text = "Y:";
+            // 
+            // lblZPos
+            // 
+            this.lblZPos.AutoSize = true;
+            this.lblZPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblZPos.Location = new System.Drawing.Point(200, 20);
+            this.lblZPos.Name = "lblZPos";
+            this.lblZPos.Size = new System.Drawing.Size(17, 15);
+            this.lblZPos.TabIndex = 2;
+            this.lblZPos.Text = "Z:";
+            // 
+            // lblXValue
+            // 
+            this.lblXValue.AutoSize = true;
+            this.lblXValue.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblXValue.ForeColor = System.Drawing.Color.Blue;
+            this.lblXValue.Location = new System.Drawing.Point(25, 20);
+            this.lblXValue.Name = "lblXValue";
+            this.lblXValue.Size = new System.Drawing.Size(56, 15);
+            this.lblXValue.TabIndex = 3;
+            this.lblXValue.Text = "0.0000";
+            // 
+            // lblYValue
+            // 
+            this.lblYValue.AutoSize = true;
+            this.lblYValue.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblYValue.ForeColor = System.Drawing.Color.Blue;
+            this.lblYValue.Location = new System.Drawing.Point(119, 20);
+            this.lblYValue.Name = "lblYValue";
+            this.lblYValue.Size = new System.Drawing.Size(56, 15);
+            this.lblYValue.TabIndex = 4;
+            this.lblYValue.Text = "0.0000";
+            // 
+            // lblZValue
+            // 
+            this.lblZValue.AutoSize = true;
+            this.lblZValue.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblZValue.ForeColor = System.Drawing.Color.Blue;
+            this.lblZValue.Location = new System.Drawing.Point(219, 20);
+            this.lblZValue.Name = "lblZValue";
+            this.lblZValue.Size = new System.Drawing.Size(56, 15);
+            this.lblZValue.TabIndex = 5;
+            this.lblZValue.Text = "0.0000";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 692);
+            this.Controls.Add(this.lblMessages);
+            this.Controls.Add(this.txtMessages);
             this.Controls.Add(this.pnlControls);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.webView);
@@ -216,6 +328,8 @@ namespace HavenCNCServer
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
+            this.grpCoordinates.ResumeLayout(false);
+            this.grpCoordinates.PerformLayout();
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
             this.ResumeLayout(false);
@@ -237,5 +351,14 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnCNCServer;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
+        private System.Windows.Forms.GroupBox grpCoordinates;
+        private System.Windows.Forms.Label lblXPos;
+        private System.Windows.Forms.Label lblYPos;
+        private System.Windows.Forms.Label lblZPos;
+        private System.Windows.Forms.Label lblXValue;
+        private System.Windows.Forms.Label lblYValue;
+        private System.Windows.Forms.Label lblZValue;
+        private System.Windows.Forms.TextBox txtMessages;
+        private System.Windows.Forms.Label lblMessages;
     }
 }

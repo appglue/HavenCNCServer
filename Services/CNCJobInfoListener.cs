@@ -8,14 +8,241 @@ using static HavenCNCServer.Services.LoggingService;
 namespace HavenCNCServer.Services
 {
     /// <summary>
+    /// Base interface for all Centroid CNC events
+    /// </summary>
+    public interface ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the event occurred
+        /// </summary>
+        DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Message associated with the event
+        /// </summary>
+        string Message { get; set;}
+    }
+
+    /// <summary>
+    /// Event containing job execution information
+    /// </summary>
+    public class JobInfoEvent : ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the job info event occurred
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Current executing line number in the G-code program
+        /// </summary>
+        public int LineNumber { get; set; }
+        /// <summary>
+        /// Current stack level for nested programs or subroutines
+        /// </summary>
+        public int StackLevel { get; set; }
+        /// <summary>
+        /// Message associated with the job info event
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+        /// <summary>
+        /// Name of the currently running job
+        /// </summary>
+        public string JobName { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Event containing Digital Readout (DRO) position information for all axes
+    /// </summary>
+    public class DROEvent : ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the DRO update occurred
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Position value for Axis 1 (typically X axis)
+        /// </summary>
+        public double Axis1 { get; set; }
+        /// <summary>
+        /// Position value for Axis 2 (typically Y axis)
+        /// </summary>
+        public double Axis2 { get; set; }
+        /// <summary>
+        /// Position value for Axis 3 (typically Z axis)
+        /// </summary>
+        public double Axis3 { get; set; }
+        /// <summary>
+        /// Position value for Axis 4 (typically A axis)
+        /// </summary>
+        public double Axis4 { get; set; }
+        /// <summary>
+        /// Position value for Axis 5 (typically B axis)
+        /// </summary>
+        public double Axis5 { get; set; }
+        /// <summary>
+        /// Position value for Axis 6 (typically C axis)
+        /// </summary>
+        public double Axis6 { get; set; }
+        /// <summary>
+        /// Position value for Axis 7
+        /// </summary>
+        public double Axis7 { get; set; }
+        /// <summary>
+        /// Position value for Axis 8
+        /// </summary>
+        public double Axis8 { get; set; }
+        /// <summary>
+        /// Message associated with the DRO update
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Types of CNC message events based on Centroid error code ranges
+    /// </summary>
+    public enum MessageEventType
+    {
+        // System startup/shutdown (100-299)
+        /// <summary>System startup error</summary>
+        StartupError,
+        /// <summary>System exit or shutdown message</summary>
+        ExitMessage,
+        
+        // Status messages (300-399)
+        /// <summary>General status message</summary>
+        StatusMessage,
+        /// <summary>Job started notification</summary>
+        JobStarted,
+        /// <summary>Job completed successfully</summary>
+        JobCompleted,
+        /// <summary>Job was cancelled or aborted</summary>
+        JobCancelled,
+        
+        // Faults and abnormal stops (400-499)
+        /// <summary>General system fault</summary>
+        SystemFault,
+        /// <summary>Axis-specific fault or error</summary>
+        AxisFault,
+        /// <summary>Limit switch error</summary>
+        LimitError,
+        /// <summary>Probe-related error</summary>
+        ProbeError,
+        /// <summary>Communication error with CNC system</summary>
+        CommunicationError,
+        
+        // Syntax errors (500-599)
+        /// <summary>G-code syntax error</summary>
+        SyntaxError,
+        /// <summary>G-code programming error</summary>
+        GCodeError,
+        /// <summary>Parameter value error</summary>
+        ParameterError,
+        
+        // Cutter compensation errors (600-699)
+        /// <summary>Cutter compensation calculation error</summary>
+        CutterCompensationError,
+        
+        // Parameter setting errors (700-799)
+        /// <summary>Parameter setting or configuration error</summary>
+        ParameterSettingError,
+        
+        // Canned cycle errors (800-899)
+        /// <summary>Canned cycle (drill, tap, etc.) error</summary>
+        CannedCycleError,
+        
+        // Miscellaneous errors (900-999)
+        /// <summary>Miscellaneous system error</summary>
+        MiscellaneousError,
+        
+        // Scaling/mirroring errors (1000-1099)
+        /// <summary>Scaling or mirroring operation error</summary>
+        ScalingError,
+        
+        // Configuration messages (111, 444, 555, etc.)
+        /// <summary>Configuration change notification</summary>
+        ConfigurationChange,
+        
+        // Default/unknown
+        /// <summary>Unknown or unclassified message type</summary>
+        Unknown
+    }
+
+    /// <summary>
+    /// Event containing a CNC message with error code and classification
+    /// </summary>
+    public class MessageEvent : ICentroidEvent {
+        /// <summary>
+        /// Timestamp when the message event occurred
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// Numeric error or message code from the CNC system
+        /// </summary>
+        public int EventCode { get; set; }
+        /// <summary>
+        /// Message text content
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+        /// <summary>
+        /// Classified type of the message event
+        /// </summary>
+        public MessageEventType EventType { get; set; }
+    }
+
+    /// <summary>
+    /// Interface for listening to CNC events
+    /// </summary>
+    public interface ICNCEventListener
+    {
+        /// <summary>
+        /// Called when a CNC event is received
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event that was received</param>
+        void EventReceived(ICentroidEvent centroidEvent);
+    }
+
+    /// <summary>
+    /// Stored message with timestamp for message history
+    /// </summary>
+    public class StoredMessage
+    {
+        /// <summary>
+        /// Timestamp when the message was stored
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        /// <summary>
+        /// The CNC event that was stored
+        /// </summary>
+        public ICentroidEvent Event { get; set; } = null!;
+        /// <summary>
+        /// Type of communication that generated this message
+        /// </summary>
+        public string CommunicationType { get; set; } = string.Empty;
+        /// <summary>
+        /// Timestamp in milliseconds since Unix epoch for time-based filtering
+        /// </summary>
+        public long TimestampMs => ((DateTimeOffset)Timestamp).ToUnixTimeMilliseconds();
+
+        /// <summary>
+        /// Creates a new stored message with the current timestamp
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event to store</param>
+        /// <param name="commType">The communication type</param>
+        public StoredMessage(ICentroidEvent centroidEvent, string commType)
+        {
+            Timestamp = DateTime.Now;
+            Event = centroidEvent;
+            CommunicationType = commType;
+        }
+    }
+
+    /// <summary>
     /// Service for listening to CNC JOB_INFO messages and outputting them to debug logging
     /// </summary>
     public static class CNCJobInfoListener
     {
         private static bool _isListening = false;
-        private static CancellationTokenSource? _cancellationTokenSource;
-        private static Task? _listenerTask;
         private static readonly object _lock = new object();
+        private static CNCPipe? _currentCNCPipe = null;
         
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
@@ -30,6 +257,37 @@ namespace HavenCNCServer.Services
         // DRO position tracking
         private static double[]? _lastDroPositions = null;
         private static int _droSamePositionSkipCount = 0;
+
+        // Event listener management
+        private static readonly List<ICNCEventListener> _eventListeners = new List<ICNCEventListener>();
+        private static readonly object _listenersLock = new object();
+
+        // Message storage for recent messages (most recent first)
+        private static readonly List<StoredMessage> _storedMessages = new List<StoredMessage>();
+        private static readonly object _storedMessagesLock = new object();
+        private static readonly int MaxStoredMessages = 1000;
+
+        /// <summary>
+        /// Helper method to determine if a message type represents an error condition
+        /// </summary>
+        /// <param name="messageType">The message event type to check</param>
+        /// <returns>True if the message type represents an error, false otherwise</returns>
+        public static bool IsErrorMessage(MessageEventType messageType)
+        {
+            return messageType switch
+            {
+                // Critical errors that stop operation
+                MessageEventType.SystemFault or
+                MessageEventType.AxisFault or
+                MessageEventType.LimitError or
+                MessageEventType.ProbeError or
+                MessageEventType.CommunicationError or
+                MessageEventType.StartupError => true,
+                
+                // All other message types are not considered errors
+                _ => false
+            };
+        }
 
         /// <summary>
         /// Event fired when JOB_INFO message is received
@@ -47,6 +305,171 @@ namespace HavenCNCServer.Services
                 {
                     return _isListening;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Add an event listener for CNC events
+        /// </summary>
+        /// <param name="listener">The event listener to add</param>
+        public static void AddListener(ICNCEventListener listener)
+        {
+            if (listener == null)
+                throw new ArgumentNullException(nameof(listener));
+
+            lock (_listenersLock)
+            {
+                if (!_eventListeners.Contains(listener))
+                {
+                    _eventListeners.Add(listener);
+                    LogInfo($"Added CNC event listener: {listener.GetType().Name}", "JobInfo");
+                }
+                else
+                {
+                    LogWarning($"Event listener already exists: {listener.GetType().Name}", "JobInfo");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove an event listener for CNC events
+        /// </summary>
+        /// <param name="listener">The event listener to remove</param>
+        /// <returns>True if the listener was removed, false if it wasn't found</returns>
+        public static bool RemoveListener(ICNCEventListener listener)
+        {
+            if (listener == null)
+                return false;
+
+            lock (_listenersLock)
+            {
+                bool removed = _eventListeners.Remove(listener);
+                if (removed)
+                {
+                    LogInfo($"Removed CNC event listener: {listener.GetType().Name}", "JobInfo");
+                }
+                else
+                {
+                    LogWarning($"Event listener not found for removal: {listener.GetType().Name}", "JobInfo");
+                }
+                return removed;
+            }
+        }
+
+        /// <summary>
+        /// Remove all event listeners
+        /// </summary>
+        public static void ClearAllListeners()
+        {
+            lock (_listenersLock)
+            {
+                int count = _eventListeners.Count;
+                _eventListeners.Clear();
+                LogInfo($"Cleared all CNC event listeners ({count} listeners removed)", "JobInfo");
+            }
+        }
+
+        /// <summary>
+        /// Get the number of registered event listeners
+        /// </summary>
+        /// <returns>Number of active listeners</returns>
+        public static int GetListenerCount()
+        {
+            lock (_listenersLock)
+            {
+                return _eventListeners.Count;
+            }
+        }
+
+        /// <summary>
+        /// Get all stored messages (most recent first)
+        /// </summary>
+        /// <returns>List of stored messages with most recent at index 0</returns>
+        public static List<StoredMessage> GetStoredMessages()
+        {
+            lock (_storedMessagesLock)
+            {
+                // Return a copy to prevent external modification
+                return new List<StoredMessage>(_storedMessages);
+            }
+        }
+
+        /// <summary>
+        /// Get stored messages within the specified time cutoff
+        /// </summary>
+        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now (e.g., 5000 for last 5 seconds)</param>
+        /// <returns>List of stored messages within the time cutoff (most recent first)</returns>
+        public static List<StoredMessage> GetRecentMessages(long timeCutoffMs)
+        {
+            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
+            
+            lock (_storedMessagesLock)
+            {
+                return _storedMessages
+                    .Where(msg => msg.TimestampMs >= cutoffTime)
+                    .ToList(); // Already ordered most recent first
+            }
+        }
+
+        /// <summary>
+        /// Get stored messages of a specific type within the time cutoff
+        /// </summary>
+        /// <typeparam name="T">Type of event to filter by</typeparam>
+        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now</param>
+        /// <returns>List of matching stored messages (most recent first)</returns>
+        public static List<StoredMessage> GetRecentMessagesByType<T>(long timeCutoffMs) where T : ICentroidEvent
+        {
+            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
+            
+            lock (_storedMessagesLock)
+            {
+                return _storedMessages
+                    .Where(msg => msg.TimestampMs >= cutoffTime && msg.Event is T)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Get stored messages by communication type within the time cutoff
+        /// </summary>
+        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now</param>
+        /// <param name="communicationType">Communication type to filter by (e.g., "DRO_UPDATE", "MESSAGE_WINDOW_MESSAGE")</param>
+        /// <returns>List of matching stored messages (most recent first)</returns>
+        public static List<StoredMessage> GetRecentMessagesByCommunicationType(long timeCutoffMs, string communicationType)
+        {
+            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
+            
+            lock (_storedMessagesLock)
+            {
+                return _storedMessages
+                    .Where(msg => msg.TimestampMs >= cutoffTime && 
+                                  string.Equals(msg.CommunicationType, communicationType, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Get the count of stored messages
+        /// </summary>
+        /// <returns>Number of messages currently stored</returns>
+        public static int GetStoredMessageCount()
+        {
+            lock (_storedMessagesLock)
+            {
+                return _storedMessages.Count;
+            }
+        }
+
+        /// <summary>
+        /// Clear all stored messages
+        /// </summary>
+        public static void ClearStoredMessages()
+        {
+            lock (_storedMessagesLock)
+            {
+                var count = _storedMessages.Count;
+                _storedMessages.Clear();
+                LogInfo($"Cleared {count} stored messages", "JobInfo");
             }
         }
 
@@ -103,9 +526,299 @@ namespace HavenCNCServer.Services
             }
         }
 
+        /// <summary>
+        /// Notify all registered event listeners of a CNC event
+        /// </summary>
+        /// <param name="centroidEvent">The event to notify listeners about</param>
+        private static void NotifyListeners(ICentroidEvent centroidEvent)
+        {
+            lock (_listenersLock)
+            {
+                foreach (var listener in _eventListeners.ToList()) // ToList() to avoid collection modified exceptions
+                {
+                    try
+                    {
+                        listener.EventReceived(centroidEvent);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error notifying event listener {listener.GetType().Name}: {ex.Message}", "JobInfo");
+                    }
+                }
+            }
+        }
 
+        /// <summary>
+        /// Store a CNC event in the message history
+        /// </summary>
+        /// <param name="centroidEvent">The event to store</param>
+        /// <param name="communicationType">The communication type</param>
+        private static void StoreMessage(ICentroidEvent centroidEvent, string communicationType)
+        {
+            lock (_storedMessagesLock)
+            {
+                // Create stored message
+                var storedMessage = new StoredMessage(centroidEvent, communicationType);
+                
+                // Add at the beginning (most recent first)
+                _storedMessages.Insert(0, storedMessage);
+                
+                // Trim to maximum size if needed
+                if (_storedMessages.Count > MaxStoredMessages)
+                {
+                    var removed = _storedMessages.Count - MaxStoredMessages;
+                    _storedMessages.RemoveRange(MaxStoredMessages, removed);
+                    
+                    // Log trimming occasionally to avoid spam
+                    if (removed > 0 && (_messageCount % 500) == 0)
+                    {
+                        LogDebug($"Trimmed {removed} old messages from storage (keeping last {MaxStoredMessages})", "JobInfo");
+                    }
+                }
+            }
+        }
 
+        /// <summary>
+        /// Classify a CNC message based on error codes and content according to Centroid documentation
+        /// </summary>
+        /// <param name="message">The message to classify</param>
+        /// <returns>Tuple of (EventCode, EventType)</returns>
+        private static (int eventCode, MessageEventType eventType) ClassifyMessage(string message)
+        {
+            var eventCode = ExtractErrorCode(message);
+            var eventType = ClassifyByErrorCode(eventCode, message);
+            return (eventCode, eventType);
+        }
 
+        /// <summary>
+        /// Extract numeric error code from message text
+        /// </summary>
+        /// <param name="message">Message text</param>
+        /// <returns>Error code or 0 if not found</returns>
+        private static int ExtractErrorCode(string message)
+        {
+            // Look for patterns like "Error 123" or "123:" or message starting with digits
+            var patterns = new[]
+            {
+                @"(?:Error|Code|Fault)\s*(\d+)", // "Error 123", "Code 123", "Fault 123"
+                @"^(\d{3,4})\s*:", // "123:" at start of message
+                @"^(\d{3,4})\s+", // "123 " at start of message
+                @"\b(\d{3,4})\b" // Any 3-4 digit number
+            };
+
+            foreach (var pattern in patterns)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(message, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int code))
+                {
+                    return code;
+                }
+            }
+
+            return 0; // No code found
+        }
+
+        /// <summary>
+        /// Classify message type based on error code ranges from Centroid documentation
+        /// </summary>
+        /// <param name="errorCode">Numeric error code</param>
+        /// <param name="message">Original message for fallback classification</param>
+        /// <returns>Message event type</returns>
+        private static MessageEventType ClassifyByErrorCode(int errorCode, string message)
+        {
+            // Classify based on Centroid error code ranges
+            if (errorCode == 0)
+            {
+                return ClassifyByContent(message);
+            }
+            
+            // Configuration messages (special codes)
+            if (errorCode == 111 || errorCode == 444 || errorCode == 555 || errorCode == 556 || 
+                errorCode == 777 || errorCode == 888 || errorCode == 999)
+            {
+                return MessageEventType.ConfigurationChange;
+            }
+            
+            // Startup errors and messages (100-199)
+            if (errorCode >= 102 && errorCode <= 106)
+            {
+                return MessageEventType.StartupError;
+            }
+            if (errorCode == 199)
+            {
+                return MessageEventType.StatusMessage; // "CNC started"
+            }
+            
+            // Exit messages (200-299)
+            if (errorCode >= 201 && errorCode <= 204 || errorCode == 222)
+            {
+                return errorCode == 222 ? MessageEventType.StatusMessage : MessageEventType.ExitMessage;
+            }
+            
+            // Status messages (300-399)
+            if (errorCode >= 301 && errorCode <= 347)
+            {
+                return ClassifyStatusMessage(errorCode);
+            }
+            
+            // Faults and abnormal stops (400-499)
+            if (errorCode >= 401 && errorCode <= 490)
+            {
+                return ClassifyFaultMessage(errorCode);
+            }
+            
+            // Syntax errors (500-599)
+            if (errorCode >= 501 && errorCode <= 552)
+            {
+                return MessageEventType.SyntaxError;
+            }
+            
+            // Cutter compensation errors (600-699)
+            if (errorCode >= 601 && errorCode <= 608)
+            {
+                return MessageEventType.CutterCompensationError;
+            }
+            
+            // Parameter setting errors (700-799)
+            if (errorCode >= 701 && errorCode <= 705)
+            {
+                return MessageEventType.ParameterSettingError;
+            }
+            
+            // Canned cycle errors (800-899)
+            if (errorCode >= 801 && errorCode <= 807)
+            {
+                return MessageEventType.CannedCycleError;
+            }
+            
+            // Miscellaneous errors (900-999)
+            if (errorCode >= 901 && errorCode <= 949)
+            {
+                return MessageEventType.MiscellaneousError;
+            }
+            
+            // Scaling/mirroring errors (1000-1199)
+            if (errorCode >= 1001 && errorCode <= 1199)
+            {
+                return MessageEventType.ScalingError;
+            }
+            
+            // Unknown error code
+            return MessageEventType.Unknown;
+        }
+
+        /// <summary>
+        /// Classify status messages (300-399 range) into more specific types
+        /// </summary>
+        private static MessageEventType ClassifyStatusMessage(int errorCode)
+        {
+            switch (errorCode)
+            {
+                case 301:
+                    return MessageEventType.StatusMessage;    // "Stopped"
+                case 302:
+                    return MessageEventType.StatusMessage;    // "Moving..."
+                case 303:
+                    return MessageEventType.StatusMessage;    // "Paused..."
+                case 304:
+                    return MessageEventType.StatusMessage;    // "MDI..."
+                case 305:
+                    return MessageEventType.StatusMessage;    // "Processing..."
+                case 306:
+                    return MessageEventType.JobCompleted;     // "Job Finished"
+                case 307:
+                    return MessageEventType.JobCancelled;     // "Operator abort: job canceled"
+                case 338:
+                    return MessageEventType.JobCancelled;     // "Job Cancelled"
+                default:
+                    // Various probing errors (318-337)
+                    if (errorCode >= 318 && errorCode <= 337)
+                    {
+                        return MessageEventType.ProbeError;
+                    }
+                    // Various cancellation reasons (320-330) - note overlap with probe range
+                    if (errorCode >= 320 && errorCode <= 330)
+                    {
+                        return MessageEventType.SystemFault;
+                    }
+                    return MessageEventType.StatusMessage;
+            }
+        }
+
+        /// <summary>
+        /// Classify fault messages (400-499 range) into more specific types  
+        /// </summary>
+        private static MessageEventType ClassifyFaultMessage(int errorCode)
+        {
+            switch (errorCode)
+            {
+                case 401:
+                    return MessageEventType.SystemFault;      // "PLC failure detected"
+                case 404:
+                    return MessageEventType.SystemFault;      // "Spindle drive fault detected" 
+                case 405:
+                    return MessageEventType.SystemFault;      // "Lubricant level low"
+                case 406:
+                    return MessageEventType.SystemFault;      // "Emergency Stop detected"
+                case 407:
+                    return MessageEventType.LimitError;       // "limit (#) tripped"
+                default:
+                    // Various axis faults (409-447)
+                    if (errorCode >= 409 && errorCode <= 447)
+                    {
+                        return MessageEventType.AxisFault;
+                    }
+                    // Communication errors (452-453)
+                    if (errorCode >= 452 && errorCode <= 453)
+                    {
+                        return MessageEventType.CommunicationError;
+                    }
+                    // Various system faults (449-460)
+                    if (errorCode >= 449 && errorCode <= 460)
+                    {
+                        return MessageEventType.SystemFault;
+                    }
+                    return MessageEventType.SystemFault;
+            }
+        }
+
+        /// <summary>
+        /// Fallback classification based on message content when no error code is found
+        /// </summary>
+        private static MessageEventType ClassifyByContent(string message)
+        {
+            var lower = message.ToLower();
+            
+            // Job-related keywords
+            if (lower.Contains("job") && (lower.Contains("start") || lower.Contains("begin")))
+                return MessageEventType.JobStarted;
+            if (lower.Contains("job") && (lower.Contains("finish") || lower.Contains("complete") || lower.Contains("done")))
+                return MessageEventType.JobCompleted;  
+            if (lower.Contains("job") && (lower.Contains("cancel") || lower.Contains("abort")))
+                return MessageEventType.JobCancelled;
+                
+            // Error keywords
+            if (lower.Contains("limit"))
+                return MessageEventType.LimitError;
+            if (lower.Contains("probe"))
+                return MessageEventType.ProbeError;
+            if (lower.Contains("axis") && lower.Contains("fault"))
+                return MessageEventType.AxisFault;
+            if (lower.Contains("syntax") || lower.Contains("invalid"))
+                return MessageEventType.SyntaxError;
+            if (lower.Contains("parameter") && lower.Contains("error"))
+                return MessageEventType.ParameterError;
+            if (lower.Contains("compensation"))
+                return MessageEventType.CutterCompensationError;
+                
+            // Generic classifications
+            if (lower.Contains("error") || lower.Contains("fault"))
+                return MessageEventType.SystemFault;
+            if (lower.Contains("config") || lower.Contains("modified"))
+                return MessageEventType.ConfigurationChange;
+                
+            return MessageEventType.StatusMessage; // Default for unclassified messages
+        }
 
         /// <summary>
         /// Process DRO_UPDATE message - Contains position data
@@ -166,6 +879,27 @@ namespace HavenCNCServer.Services
             {
                 _lastDroPositions = new double[positions.Length];
                 Array.Copy(positions, _lastDroPositions, positions.Length);
+
+                // Notify listeners of DRO position change
+                var droEvent = new DROEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Axis1 = positions.Length > 0 ? positions[0] : 0.0,
+                    Axis2 = positions.Length > 1 ? positions[1] : 0.0,
+                    Axis3 = positions.Length > 2 ? positions[2] : 0.0,
+                    Axis4 = positions.Length > 3 ? positions[3] : 0.0,
+                    Axis5 = positions.Length > 4 ? positions[4] : 0.0,
+                    Axis6 = positions.Length > 5 ? positions[5] : 0.0,
+                    Axis7 = positions.Length > 6 ? positions[6] : 0.0,
+                    Axis8 = positions.Length > 7 ? positions[7] : 0.0,
+                    Message = $"DRO positions updated: {string.Join(", ", positions.Select(p => p.ToString("F4")))}"
+                };
+                
+                // Store the DRO event in message history
+                StoreMessage(droEvent, "DRO_UPDATE");
+                
+                // Notify listeners
+                NotifyListeners(droEvent);
             }
             
             // This will only be called when positions have actually changed
@@ -213,6 +947,31 @@ namespace HavenCNCServer.Services
             
             if (!string.IsNullOrWhiteSpace(text)) LogToFile($"    Text: {text}");
             if (!string.IsNullOrWhiteSpace(content)) LogToFile($"    Content: {content}");
+
+            // Notify listeners of message event
+            var finalMessage = message;
+            if (string.IsNullOrWhiteSpace(finalMessage)) finalMessage = text;
+            if (string.IsNullOrWhiteSpace(finalMessage)) finalMessage = content;
+            
+            if (!string.IsNullOrWhiteSpace(finalMessage))
+            {
+                // Extract error code and determine event type based on Centroid documentation
+                var (eventCode, eventType) = ClassifyMessage(finalMessage);
+
+                var messageEvent = new MessageEvent
+                {
+                    Timestamp = DateTime.Now,
+                    EventCode = eventCode,
+                    Message = finalMessage,
+                    EventType = eventType
+                };
+                
+                // Store the message event in history
+                StoreMessage(messageEvent, "MESSAGE_WINDOW_MESSAGE");
+                
+                // Notify listeners
+                NotifyListeners(messageEvent);
+            }
         }
 
         /// <summary>
@@ -242,6 +1001,22 @@ namespace HavenCNCServer.Services
             {
                 LogToFile($"    Current Job: {message}");
             }
+
+            // Notify listeners of job info event
+            var jobInfoEvent = new JobInfoEvent
+            {
+                Timestamp = DateTime.Now,
+                LineNumber = lineNumber,
+                StackLevel = stackLevel,
+                Message = message ?? string.Empty,
+                JobName = message ?? string.Empty // Use the message as job name for now
+            };
+            
+            // Store the job info event in history
+            StoreMessage(jobInfoEvent, "JOB_INFO");
+            
+            // Notify listeners
+            NotifyListeners(jobInfoEvent);
         }
 
         /// <summary>
@@ -316,12 +1091,15 @@ namespace HavenCNCServer.Services
                         // Continue anyway - default settings should work
                     }
 
+                    // Store reference to current CNC pipe
+                    _currentCNCPipe = cncPipe;
+
+                    // Subscribe to MessageReceived event
+                    cncPipe.MessageReceived += OnMessageReceived;
+                    
                     // Start listening for messages from CNC12
                     cncPipe.StartListening();
-                    LogSuccess("Started CNC12 message listening", "JobInfo");
-
-                    // Create cancellation token for the listener task
-                    _cancellationTokenSource = new CancellationTokenSource();
+                    LogSuccess("Started CNC12 event-driven message listening", "JobInfo");
 
                     // Initialize file logging for detailed messages
                     InitializeFileLogging();
@@ -330,9 +1108,6 @@ namespace HavenCNCServer.Services
                     _messageCount = 0;
                     _lastReportedCount = 0;
                     _sessionStartTime = DateTime.Now;
-
-                    // Start the background listener task - don't wait for it to avoid blocking UI
-                    _listenerTask = Task.Run(async () => await ListenerLoop(_cancellationTokenSource.Token));
 
                     _isListening = true;
                     LogSuccess("CNC JOB_INFO listener started successfully", "JobInfo");
@@ -363,28 +1138,13 @@ namespace HavenCNCServer.Services
 
                 try
                 {
-                    // Cancel the listener task
-                    _cancellationTokenSource?.Cancel();
-
-                    // Stop CNC listening
-                    var cncPipe = CNCConnectionManager.GetCNCPipe();
-                    if (cncPipe != null)
+                    // Unsubscribe from MessageReceived event
+                    if (_currentCNCPipe != null)
                     {
-                        cncPipe.StopListening();
-                        LogSuccess("Stopped CNC12 message listening", "JobInfo");
-                    }
-
-                    // Wait for the listener task to complete (with timeout)
-                    if (_listenerTask != null)
-                    {
-                        try
-                        {
-                            _listenerTask.Wait(TimeSpan.FromSeconds(5));
-                        }
-                        catch (AggregateException ex) when (ex.InnerException is OperationCanceledException)
-                        {
-                            // Expected when cancelling
-                        }
+                        _currentCNCPipe.MessageReceived -= OnMessageReceived;
+                        _currentCNCPipe.StopListening();
+                        LogSuccess("Stopped CNC12 event-driven message listening", "JobInfo");
+                        _currentCNCPipe = null;
                     }
 
                     _isListening = false;
@@ -398,9 +1158,7 @@ namespace HavenCNCServer.Services
                 finally
                 {
                     // Clean up resources
-                    _cancellationTokenSource?.Dispose();
-                    _cancellationTokenSource = null;
-                    _listenerTask = null;
+                    _currentCNCPipe = null;
                     
                     // Close file logging
                     if (_logWriter != null)
@@ -419,112 +1177,58 @@ namespace HavenCNCServer.Services
                     // Clear DRO position tracking
                     _lastDroPositions = null;
                     _droSamePositionSkipCount = 0;
+                    
+                    // Clear stored messages
+                    lock (_storedMessagesLock)
+                    {
+                        _storedMessages.Clear();
+                        LogInfo("Cleared stored messages on listener stop", "JobInfo");
+                    }
                 }
             }
         }
 
         static string _lastPacketHash = "";
         static int _sameObjectSkipCount = 0;
-        static int _lastReportedSkipCount = 0;
         
         /// <summary>
-        /// Main listener loop that polls for CNC messages
+        /// Event handler for CNC MessageReceived events
         /// </summary>
-        private static async Task ListenerLoop(CancellationToken cancellationToken)
+        private static void OnMessageReceived(object? sender, CentroidAPI.MessageReceivedEventArgs e)
         {
-            LogInfo("🚀 JOB_INFO listener loop started", "JobInfo");
-            int heartbeatCounter = 0;
-
             try
             {
-                while (!cancellationToken.IsCancellationRequested)
+                // Access the communication packet from event args
+                var packet = e.Data;
+                
+                // Check if this packet is identical to the last one (since CommPacket is a struct)
+                var packetHash = CalculatePacketHash(packet);
+                if (_lastPacketHash == packetHash && !string.IsNullOrEmpty(_lastPacketHash))
                 {
-                    try
-                    {
-                        // Periodic heartbeat logging every 60 seconds (1200 cycles * 50ms)
-                        heartbeatCounter++;
-                        if (heartbeatCounter % 1200 == 0)
-                        {
-                            LogInfo($"💓 Job Listener active - {_messageCount} messages processed", "JobInfo");
-                            
-                            // Report same object detection stats
-                            if (_sameObjectSkipCount > _lastReportedSkipCount)
-                            {
-                                var newSkips = _sameObjectSkipCount - _lastReportedSkipCount;
-                                LogInfo($"🔄 Same object skipped {newSkips} times (total: {_sameObjectSkipCount})", "JobInfo");
-                                _lastReportedSkipCount = _sameObjectSkipCount;
-                            }
-                        }
+                    _sameObjectSkipCount++;
+                    return; // Skip identical packets
+                }
 
-                        // Get current CNC connection
-                        var cncPipe = CNCConnectionManager.GetCNCPipe();
-                        if (cncPipe == null)
-                        {
-                            LogWarning("🔌 CNC connection lost, waiting for reconnection...", "JobInfo");
-                            // Wait a bit and check again instead of stopping immediately
-                            await Task.Delay(2000, cancellationToken);
-                            continue;
-                        }
+                _lastPacketHash = packetHash;
+                _messageCount++;
 
-                        // Try to get unhandled messages
-                        while (cncPipe.TryPopUnhandledMessage(out CNCPipe.InboundComm.CommPacket packet))
-                        {
-                            // Check if this packet is identical to the last one (since CommPacket is a struct)
-                            var packetHash = CalculatePacketHash(packet);
-                            if (_lastPacketHash == packetHash && !string.IsNullOrEmpty(_lastPacketHash))
-                            {
-                                _sameObjectSkipCount++;
-                                
-                                // Silently skip identical packets without logging
-                                // if (_sameObjectSkipCount <= 5)
-                                // {
-                                //     LogToFile($"⚠️ IDENTICAL PACKET detected - skipping #{_sameObjectSkipCount} (Type: {packet.CommunicationType})");
-                                // }
-                                // else if (_sameObjectSkipCount % 100 == 0)
-                                // {
-                                //     // Log every 100th identical packet to track frequency
-                                //     LogToFile($"⚠️ IDENTICAL PACKET #{_sameObjectSkipCount} (Type: {packet.CommunicationType})");
-                                // }
-                                continue;
-                            }
+                try
+                {
+                    // Process message with duplicate detection first
+                    var commType = packet.CommunicationType.ToString();
+                    bool isDuplicate = ProcessMessageWithDuplicateDetection(commType, packet);
 
-                            _lastPacketHash = packetHash;
-
-                            _messageCount++;
-                            try
-                            {
-                                // Process message with duplicate detection first
-                                var commType = packet.CommunicationType.ToString();
-                                bool isDuplicate = ProcessMessageWithDuplicateDetection(commType, packet);
-
-                                // Report count summary to main log every 100 messages
-                                ReportMessageCount();
-                            }
-                            catch (Exception msgEx)
-                            {
-                                LogToFile($"ERROR processing message #{_messageCount}: {msgEx.Message}");
-                            }
-                        }
-
-                        // Small delay to prevent excessive CPU usage
-                        await Task.Delay(50, cancellationToken); // Poll every 50ms
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Expected when cancelling
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error in JOB_INFO listener loop: {ex.Message}", "JobInfo");
-                        // Continue the loop - don't let a single error stop the listener
-                        await Task.Delay(1000, cancellationToken); // Wait a bit longer on error
-                    }
+                    // Report count summary to main log every 100 messages
+                    ReportMessageCount();
+                }
+                catch (Exception msgEx)
+                {
+                    LogToFile($"ERROR processing message #{_messageCount}: {msgEx.Message}");
                 }
             }
-            finally
+            catch (Exception ex)
             {
-                LogInfo("JOB_INFO listener loop ended", "JobInfo");
+                LogError($"Error in CNC MessageReceived handler: {ex.Message}", "JobInfo");
             }
         }
 
