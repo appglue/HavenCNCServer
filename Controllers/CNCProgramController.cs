@@ -170,13 +170,28 @@ namespace HavenCNCServer.Controllers
                         ? $"G65 \"{targetPath}\""
                         : $"G65 \"{targetPath}\" {gcodeParameterString}";
                     
+                    // Log the command we're about to execute
+                    System.Diagnostics.Debug.WriteLine($"[G-Code] Executing command: {g65Command}");
+                    System.Diagnostics.Debug.WriteLine($"[G-Code] Target file exists: {IOFile.Exists(targetPath)}");
+                    System.Diagnostics.Debug.WriteLine($"[G-Code] File size: {(IOFile.Exists(targetPath) ? new FileInfo(targetPath).Length : 0)} bytes");
+                    
                     // Execute the G65 command using a new Job instance
                     var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
-                    var executeResult = cmd.RunCommand(g65Command, false);
+                    var executeResult = cmd.RunCommand(g65Command, true);
+                    
+                    // Log the return code for debugging
+                    System.Diagnostics.Debug.WriteLine($"[G-Code] RunCommand returned: {executeResult}");
+                    System.Diagnostics.Debug.WriteLine($"[G-Code] Return code numeric value: {(int)executeResult}");
                     
                     if (executeResult != CNCPipe.ReturnCode.SUCCESS)
                     {
-                        throw new InvalidOperationException($"Failed to execute G65 command: {executeResult}");
+                        var errorMsg = $"G65 command failed with return code: {executeResult} (numeric: {(int)executeResult})";
+                        System.Diagnostics.Debug.WriteLine($"[G-Code] ERROR: {errorMsg}");
+                        throw new InvalidOperationException(errorMsg);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[G-Code] SUCCESS: G65 command executed successfully");
                     }
                 }
 
@@ -226,13 +241,27 @@ namespace HavenCNCServer.Controllers
                     throw new InvalidOperationException("Cannot execute: No CNC connection");
                 }
 
+                // Log the command we're about to execute
+                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Executing single command: {cleanCommand}");
+                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Original command: {gcode}");
+
                 // Execute the single command using a new Job instance
                 var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
-                var executeResult = cmd.RunCommand(cleanCommand, false);
+                var executeResult = cmd.RunCommand(cleanCommand, true);
+                
+                // Log the return code for debugging
+                System.Diagnostics.Debug.WriteLine($"[G-Code Command] RunCommand returned: {executeResult}");
+                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Return code numeric value: {(int)executeResult}");
                 
                 if (executeResult != CNCPipe.ReturnCode.SUCCESS)
                 {
-                    throw new InvalidOperationException($"Failed to execute command: {executeResult}");
+                    var errorMsg = $"G-code command failed with return code: {executeResult} (numeric: {(int)executeResult})";
+                    System.Diagnostics.Debug.WriteLine($"[G-Code Command] ERROR: {errorMsg}");
+                    throw new InvalidOperationException(errorMsg);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[G-Code Command] SUCCESS: Command executed successfully");
                 }
 
                 return true;

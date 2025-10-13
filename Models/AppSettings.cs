@@ -49,6 +49,12 @@ namespace HavenCNCServer.Models
         /// Maximum number of temporary files to keep
         /// </summary>
         public int MaxTempFiles { get; set; } = 50;
+
+        /// <summary>
+        /// Directory for detailed job listener log files
+        /// Default: C:/havenlogs
+        /// </summary>
+        public string JobListenerLogsDirectory { get; set; } = @"C:\havenlogs";
     }
 
     /// <summary>

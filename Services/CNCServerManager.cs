@@ -197,7 +197,6 @@ namespace HavenCNCServer.Services
                 }
 
                 LogInfo($"Starting CNC server: {_settings.ExecutablePath}", "CNCServer");
-                LogInfo($"Full executable path: {Path.GetFullPath(_settings.ExecutablePath)}", "CNCServer");
                 
                 // Automatically determine working directory from executable path
                 var executableDir = Path.GetDirectoryName(_settings.ExecutablePath);
@@ -207,34 +206,6 @@ namespace HavenCNCServer.Services
                     return false;
                 }
                 
-                LogInfo($"Auto-detected working directory from executable: {executableDir}", "CNCServer");
-                LogInfo($"Full working directory: {Path.GetFullPath(executableDir)}", "CNCServer");
-                
-                // List files in working directory for debugging
-                try
-                {
-                    var files = Directory.GetFiles(executableDir);
-                    LogInfo($"Files in working directory ({files.Length} found):", "CNCServer");
-                    foreach (var file in files.Take(10)) // Limit to first 10 files
-                    {
-                        LogInfo($"  - {Path.GetFileName(file)}", "CNCServer");
-                    }
-                    if (files.Length > 10)
-                    {
-                        LogInfo($"  ... and {files.Length - 10} more files", "CNCServer");
-                    }
-                }
-                catch (Exception dirEx)
-                {
-                    LogError($"Could not list files in working directory: {dirEx.Message}", "CNCServer");
-                }
-
-                LogInfo("Creating process start info...", "CNCServer");
-                
-                // Use the executable's directory as the working directory
-                var workingDirToSet = Path.GetDirectoryName(_settings.ExecutablePath);
-                LogInfo($"WorkingDirectory to set: '{workingDirToSet ?? "<null>"}'", "CNCServer");
-                
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = _settings.ExecutablePath,
@@ -242,11 +213,8 @@ namespace HavenCNCServer.Services
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    WorkingDirectory = workingDirToSet
+                    WorkingDirectory = executableDir
                 };
-                
-                // Verify what was actually set
-                LogInfo($"ProcessStartInfo.WorkingDirectory after creation: '{startInfo.WorkingDirectory ?? "<null>"}'", "CNCServer");
 
                 // Add arguments if specified
                 if (_settings.Arguments.Length > 0)
@@ -259,38 +227,18 @@ namespace HavenCNCServer.Services
                     LogInfo("No arguments specified for CNC server", "CNCServer");
                 }
 
-                // Verify working directory was set correctly and check for required files
-                if (!string.IsNullOrEmpty(startInfo.WorkingDirectory))
+                // Verify working directory and critical files
+                if (string.IsNullOrEmpty(startInfo.WorkingDirectory))
                 {
-                    LogInfo($"✓ Process working directory set to: {startInfo.WorkingDirectory}", "CNCServer");
-                    
-                    // Check for critical files in working directory
-                    var languageFile = Path.Combine(startInfo.WorkingDirectory, "language.msg");
-                    LogInfo($"Checking for language.msg at: {languageFile}", "CNCServer");
-                    
-                    if (File.Exists(languageFile))
-                    {
-                        LogSuccess("✓ Found language.msg file in working directory", "CNCServer");
-                    }
-                    else
-                    {
-                        LogError("✗ language.msg file NOT found in working directory - this WILL cause startup errors", "CNCServer");
-                    }
-                }
-                else
-                {
-                    LogError("Failed to set working directory - this will likely cause startup errors", "CNCServer");
+                    LogError("Failed to set working directory", "CNCServer");
                     return false;
                 }
-
-                // Log the final command that will be executed
-                var fullCommand = _settings.ExecutablePath;
-                if (!string.IsNullOrEmpty(startInfo.Arguments))
+                
+                var languageFile = Path.Combine(startInfo.WorkingDirectory, "language.msg");
+                if (!File.Exists(languageFile))
                 {
-                    fullCommand += " " + startInfo.Arguments;
+                    LogError("language.msg file not found - this will cause startup errors", "CNCServer");
                 }
-                LogInfo($"Executing command: {fullCommand}", "CNCServer");
-                LogInfo($"From directory: {startInfo.WorkingDirectory ?? "default"}", "CNCServer");
 
                 _serverProcess = Process.Start(startInfo);
                 

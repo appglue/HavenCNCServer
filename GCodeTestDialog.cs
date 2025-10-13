@@ -235,28 +235,20 @@ namespace HavenCNCServer
         {
             try
             {
-                LogInfo("Requesting Centroid API connection...", "API");
-                
                 // Use the connection manager to get or create a connection
                 var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
                 
                 if (pipe != null)
                 {
-                    LogSuccess("CNC connection successful", "API");
-                    
-                    // Get and display system info
+                    // Get and display system info (only on first successful connection)
                     var systemInfo = CNCConnectionManager.GetSystemInfo();
                     if (systemInfo != null)
                     {
-                        LogSuccess($"System Type: {systemInfo.SystemType}", "API");
-                        if (systemInfo.Parameter1Value.HasValue)
-                        {
-                            LogSuccess($"Parameter test successful (P1: {systemInfo.Parameter1Value.Value})", "API");
-                        }
-                        if (systemInfo.Parameter34Value.HasValue)
-                        {
-                            LogSuccess($"Spindle encoder counts (P34): {systemInfo.Parameter34Value.Value}", "API");
-                        }
+                        LogSuccess($"CNC connected: {systemInfo.SystemType}", "API");
+                    }
+                    else
+                    {
+                        LogSuccess("CNC connection successful", "API");
                     }
                     
                     return true;
@@ -323,7 +315,7 @@ namespace HavenCNCServer
         private void btnNewFile_Click(object sender, EventArgs e)
         {
             txtGCode.Clear();
-            txtGCode.Text = "G00 X0 Y0 Z1\r\nG01 Z-0.1 F100\r\nG01 X10 Y10 F500\r\nG01 X0 Y10\r\nG01 X0 Y0\r\nG00 Z1\r\nM30";
+            txtGCode.Text = "G00 X1 Y1 Z-1\r\nG00 X0 Y0 Z-2\r\nM30";
             _currentFilePath = string.Empty;
             txtFileName.Text = "test_gcode.txt";
             LogSuccess("New G-code file created with sample content.", "File");
@@ -484,13 +476,7 @@ namespace HavenCNCServer
                 // Execute the G-code program using G65 command
                 LogInfo("Executing G-code program using G65 command...", "G-Code");
                 
-                // Stop the listener during command execution to avoid interference
-                wasListening = CNCJobInfoListener.IsListening;
-                if (wasListening)
-                {
-                    CNCJobInfoListener.StopListening();
-                    LogInfo("Stopped JOB_INFO listener during command execution", "JobInfo");
-                }
+                // Note: Listener continues running during G-code execution for job monitoring
                 
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
@@ -635,34 +621,62 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Stop JOB_INFO listener for debugging purposes
+        /// Toggle JOB_INFO listener for debugging and monitoring
         /// </summary>
-        private void btnJobInfoListener_Click(object sender, EventArgs e)
+        private async void btnJobInfoListener_Click(object sender, EventArgs e)
         {
             try
             {
-                // First test the API structure for debugging
-                #if DEBUG
-                Test.CentroidAPITest.TestAPIStructure();
-                #endif
+                // Disable button during operation
+                btnJobInfoListener.Enabled = false;
                 
-                // Force stop the listener for debugging
+                // Toggle listener state
                 if (CNCJobInfoListener.IsListening)
                 {
-                    CNCJobInfoListener.StopListening();
-                    LogSuccess("JOB_INFO listener stopped for debugging", "JobInfo");
+                    // Stop listener in background to avoid UI blocking
+                    await Task.Run(() => 
+                    {
+                        CNCJobInfoListener.StopListening();
+                        LogInfo("JOB_INFO listener stopped", "JobInfo");
+                    });
+                    
+                    // Update button state
+                    btnJobInfoListener.Text = "Start Listener";
+                    btnJobInfoListener.BackColor = Color.LightYellow;
                 }
                 else
                 {
-                    LogInfo("JOB_INFO listener is already stopped", "JobInfo");
+                    // Start listener in background to avoid UI blocking
+                    bool started = await Task.Run(() => 
+                    {
+                        if (CNCConnectionManager.IsConnected)
+                        {
+                            var result = CNCJobInfoListener.StartListening();
+                            if (result)
+                            {
+                                LogSuccess("JOB_INFO listener started", "JobInfo");
+                            }
+                            return result;
+                        }
+                        else
+                        {
+                            LogWarning("Cannot start listener: CNC not connected", "JobInfo");
+                            return false;
+                        }
+                    });
+                    
+                    // Update button state based on result
+                    if (started)
+                    {
+                        btnJobInfoListener.Text = "Stop Listener";
+                        btnJobInfoListener.BackColor = Color.LightGreen;
+                    }
+                    else
+                    {
+                        btnJobInfoListener.Text = "Start Listener";
+                        btnJobInfoListener.BackColor = Color.LightCoral;
+                    }
                 }
-                
-                // Update button state
-                btnJobInfoListener.Text = "Listener Stopped (Debug)";
-                btnJobInfoListener.BackColor = Color.LightCoral;
-                
-                LogWarning("Listener auto-start is disabled for debugging run methods", "JobInfo");
-                LogInfo("To re-enable listener, uncomment auto-start code in GCodeTestDialog.cs", "JobInfo");
             }
             catch (Exception ex)
             {
@@ -719,20 +733,15 @@ namespace HavenCNCServer
                 // Initialize API if not already connected
                 if (!CNCConnectionManager.IsConnected)
                 {
-                    LogInfo("Initializing Centroid API connection...", "Single Command");
-                    
                     var connected = InitializeCentroidAPI();
-                    
                     if (!connected)
                     {
-                        LogError("Cannot proceed: Centroid API connection failed", "Single Command");
+                        LogError("CNC connection failed", "Single Command");
                         MessageBox.Show("Centroid API connection failed. Please ensure CNC12 is running and try again.", 
                             "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                 }
-
-                LogInfo($"Executing single G-code command: {command}", "Single Command");
                 
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
@@ -745,36 +754,63 @@ namespace HavenCNCServer
                 btnRunSingleCommand.Enabled = false;
                 btnRunSingleCommand.Text = "Executing...";
 
-                // Execute the single command using a new Job instance
-                var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
-                var executeResult = cmd.RunCommand(command,  false);
-                
-                if (executeResult == CNCPipe.ReturnCode.SUCCESS)
+                // Execute the single command in background to avoid UI blocking
+                _ = Task.Run(() =>
                 {
-                    LogSuccess($"✓ Command executed successfully: {command}", "Single Command");
-                    LogInfo("Command sent to CNC12 for immediate execution", "Single Command");
-                }
-                else
-                {
-                    LogError($"✗ Failed to execute command: {executeResult}", "Single Command");
-                    LogError($"Command: {command}", "Single Command");
-                    
-                    // Provide user-friendly error message
-                    string errorMessage = $"Failed to execute G-code command:\n\n{command}\n\nError: {executeResult}";
-                    MessageBox.Show(errorMessage, "Command Execution Failed", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                    try
+                    {
+                        // Execute the single command using a new Job instance
+                        var cmd = new CentroidAPI.CNCPipe.Job(cncPipe);
+                        var executeResult = cmd.RunCommand(command, false);
+                        
+                        // Update UI on main thread
+                        if (!IsDisposed && !Disposing)
+                        {
+                            Invoke(() =>
+                            {
+                                if (executeResult == CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    LogSuccess($"Command executed: {command}", "Single Command");
+                                }
+                                else
+                                {
+                                    LogError($"Command failed: {command} ({executeResult})", "Single Command");
+                                    MessageBox.Show($"Failed to execute G-code command:\n\n{command}\n\nError: {executeResult}", 
+                                        "Command Execution Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                
+                                // Re-enable the button
+                                btnRunSingleCommand.Enabled = true;
+                                btnRunSingleCommand.Text = "Run Single Command";
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (!IsDisposed && !Disposing)
+                        {
+                            Invoke(() =>
+                            {
+                                LogError($"Error executing command: {ex.Message}", "Single Command");
+                                MessageBox.Show($"Error executing command: {ex.Message}", "Execution Error", 
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                
+                                // Re-enable the button
+                                btnRunSingleCommand.Enabled = true;
+                                btnRunSingleCommand.Text = "Run Single Command";
+                            });
+                        }
+                    }
+                });
 
             }
             catch (Exception ex)
             {
-                LogError($"Error executing single command: {ex.Message}", "Single Command");
-                MessageBox.Show($"Error executing single command: {ex.Message}", "Execution Error", 
+                LogError($"Error setting up single command execution: {ex.Message}", "Single Command");
+                MessageBox.Show($"Error setting up command execution: {ex.Message}", "Setup Error", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // Re-enable the button
+                
+                // Re-enable the button on setup error
                 btnRunSingleCommand.Enabled = true;
                 btnRunSingleCommand.Text = "Run Single Command";
             }
@@ -881,16 +917,19 @@ namespace HavenCNCServer
                 {
                     btnJobInfoListener.Text = "CNC Not Connected";
                     btnJobInfoListener.BackColor = Color.LightGray;
+                    btnJobInfoListener.Enabled = false;
                 }
                 else if (isListening)
                 {
-                    btnJobInfoListener.Text = "Listener Running";
+                    btnJobInfoListener.Text = "Stop Listener";
                     btnJobInfoListener.BackColor = Color.LightGreen;
+                    btnJobInfoListener.Enabled = true;
                 }
                 else
                 {
-                    btnJobInfoListener.Text = "Listener Stopped";
+                    btnJobInfoListener.Text = "Start Listener";
                     btnJobInfoListener.BackColor = Color.LightYellow;
+                    btnJobInfoListener.Enabled = true;
                 }
             }
             catch (Exception ex)
