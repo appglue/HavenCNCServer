@@ -296,7 +296,6 @@ namespace HavenCNCServer
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
             this.grpCoordinates.ResumeLayout(false);
             this.grpCoordinates.PerformLayout();

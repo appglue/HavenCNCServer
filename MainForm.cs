@@ -311,7 +311,7 @@ namespace HavenCNCServer
                 }
 
                 // Auto-generate OpenAPI specification if it doesn't exist
-                await AutoGenerateOpenApiIfNeeded();
+                await OpenApiManager.AutoGenerateIfNeededAsync(ApiUrl);
             }
             catch (Exception ex)
             {
@@ -505,16 +505,6 @@ namespace HavenCNCServer
             base.OnFormClosing(e);
         }
 
-        /// <summary>
-        /// Logs a message to the application log display with timestamp
-        /// </summary>
-        /// <param name="message">The message to log</param>
-        public void LogMessage(string message)
-        {
-            // Delegate to the centralized logging service
-            LogInfo(message, "MainForm");
-        }
-
         private void btnOpenSwagger_Click(object sender, EventArgs e)
         {
             try
@@ -524,73 +514,12 @@ namespace HavenCNCServer
                     FileName = SwaggerUrl,
                     UseShellExecute = true
                 });
-                LogMessage("Opened Swagger UI in browser");
+                LogInfo("Opened Swagger UI in browser", "UI");
             }
             catch (Exception ex)
             {
-                LogMessage($"Failed to open Swagger UI: {ex.Message}");
+                LogError($"Failed to open Swagger UI: {ex.Message}", "UI");
                 MessageBox.Show($"Failed to open Swagger UI: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async Task AutoGenerateOpenApiIfNeeded()
-        {
-            try
-            {
-                var projectRoot = Directory.GetCurrentDirectory();
-                var openApiPath = Path.Combine(projectRoot, "openapi.json");
-                
-                // Check if openapi.json already exists
-                if (File.Exists(openApiPath))
-                {
-                    LogMessage("OpenAPI specification file already exists, skipping auto-generation");
-                    return;
-                }
-
-                LogMessage("OpenAPI specification file not found, generating automatically...");
-                await GenerateOpenApiSpec();
-            }
-            catch (Exception ex)
-            {
-                LogMessage($"Auto-generation of OpenAPI specification failed: {ex.Message}");
-                // Don't show a message box for auto-generation failures, just log it
-            }
-        }
-
-        private async Task GenerateOpenApiSpec()
-        {
-            using var httpClient = new HttpClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(10);
-            
-            // Download the OpenAPI specification
-            var openApiUrl = $"{ApiUrl}/swagger/v1/swagger.json";
-            var response = await httpClient.GetAsync(openApiUrl);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var openApiJson = await response.Content.ReadAsStringAsync();
-                
-                // Save to project root
-                var projectRoot = Directory.GetCurrentDirectory();
-                var openApiPath = Path.Combine(projectRoot, "openapi.json");
-                await File.WriteAllTextAsync(openApiPath, openApiJson);
-                
-                // Also save to bin directory for easy access
-                var binPath = Path.Combine(projectRoot, "bin", "Debug", "net8.0-windows", "openapi.json");
-                var binDir = Path.GetDirectoryName(binPath);
-                if (!Directory.Exists(binDir))
-                {
-                    Directory.CreateDirectory(binDir!);
-                }
-                await File.WriteAllTextAsync(binPath, openApiJson);
-                
-                LogMessage($"OpenAPI specification generated successfully!");
-                LogMessage($"Saved to: {openApiPath}");
-                LogMessage($"Also saved to: {binPath}");
-            }
-            else
-            {
-                throw new HttpRequestException($"Failed to download OpenAPI specification. Status: {response.StatusCode}");
             }
         }
 
@@ -598,67 +527,21 @@ namespace HavenCNCServer
         {
             try
             {
-                LogMessage("Opening G-Code Test Dialog...");
+                LogInfo("Opening G-Code Test Dialog...", "UI");
                 
                 using (var gCodeDialog = new GCodeTestDialog(this))
                 {
                     gCodeDialog.ShowDialog(this);
                 }
                 
-                LogMessage("G-Code Test Dialog closed.");
+                LogInfo("G-Code Test Dialog closed.", "UI");
             }
             catch (Exception ex)
             {
                 var errorMessage = $"Error opening G-Code Test Dialog: {ex.Message}";
-                LogMessage(errorMessage);
+                LogError(errorMessage, "UI");
                 MessageBox.Show(errorMessage, "Dialog Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        // Uncomment and modify this method when you're ready to test Centroid API
-        /*
-        private void TestCentroidAPI()
-        {
-            try
-            {
-                LogMessage("Testing Centroid API connection...");
-                
-                // Example Centroid API test code:
-                // var centroidAPI = new CentroidAPI(); // Replace with actual class name
-                // bool isConnected = centroidAPI.Connect();
-                // LogMessage($"Centroid API connection: {(isConnected ? "Success" : "Failed")}");
-                
-                LogMessage("Centroid API test completed.");
-            }
-            catch (Exception ex)
-            {
-                LogMessage($"Centroid API test failed: {ex.Message}");
-                throw;
-            }
-        }
-        */
-
-        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            try
-            {
-                // Set a timeout for shutdown to prevent hanging
-                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
-                {
-                    // Stop the API server with timeout
-                    if (_webHost != null)
-                    {
-                        await StopApiServerAsync();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error during application shutdown: {ex.Message}", "Shutdown");
-            }
-            
-            // Force exit if needed - this will terminate any remaining background threads
-            Environment.Exit(0);
         }
 
     }

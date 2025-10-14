@@ -93,7 +93,8 @@ namespace HavenCNCServer
                 logEntry += $" | Exception: {exception.Message}";
             }
 
-            _mainForm.LogMessage(logEntry);
+            // Use the centralized logging service instead of MainForm method
+            HavenCNCServer.Services.LoggingService.LogInfo(logEntry, "API");
         }
     }
 }
