@@ -96,6 +96,6 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Move Z-axis first, then XY axes
         /// </summary>
-        ZFirst
+        ZSeparate
     }
 }

@@ -249,153 +249,6 @@ namespace HavenCNCServer
             }
         }
 
-        /// <summary>
-        /// Test coordinate display with simulated DRO events
-        /// </summary>
-        private void TestCoordinateDisplay()
-        {
-            try
-            {
-                LogMessage("Testing coordinate display with simulated data...");
-                
-                // Create test DRO events to simulate position updates
-                var testPositions = new[]
-                {
-                    new { X = 1.2345, Y = 2.3456, Z = 3.4567 },
-                    new { X = 10.1234, Y = 20.2345, Z = 30.3456 },
-                    new { X = -5.6789, Y = -15.7890, Z = -25.8901 }
-                };
-
-                foreach (var pos in testPositions)
-                {
-                    var droEvent = new DROEvent
-                    {
-                        Timestamp = DateTime.Now,
-                        Axis1 = pos.X, // X axis
-                        Axis2 = pos.Y, // Y axis  
-                        Axis3 = pos.Z, // Z axis
-                        Axis4 = 0.0,   // A axis (not displayed)
-                        Axis5 = 0.0,   // B axis (not displayed)
-                        Axis6 = 0.0,   // C axis (not displayed)
-                        Axis7 = 0.0,   // U axis (not displayed)
-                        Axis8 = 0.0,   // V axis (not displayed)
-                        Message = $"Test position: X={pos.X:F4}, Y={pos.Y:F4}, Z={pos.Z:F4}"
-                    };
-
-                    // Simulate the coordinate listener receiving the event
-                    _coordinateListener?.EventReceived(droEvent);
-                    
-                    // Small delay to show the updates
-                    System.Threading.Thread.Sleep(500);
-                }
-
-                LogMessage("Coordinate display test completed!");
-
-                // Test message display with various message types
-                TestMessageDisplay();
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error testing coordinate display: {ex.Message}", "CoordinateDisplay");
-            }
-        }
-
-        /// <summary>
-        /// Test message display with simulated CNC messages of different types
-        /// </summary>
-        private void TestMessageDisplay()
-        {
-            try
-            {
-                LogMessage("Testing CNC message display with various message types...");
-
-                // Create test message events of different types
-                var testMessages = new[]
-                {
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 306, Message = "Job Finished Successfully", EventType = MessageEventType.JobCompleted },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 301, Message = "Machine Stopped", EventType = MessageEventType.StatusMessage },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 405, Message = "Lubricant level low", EventType = MessageEventType.SystemFault },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 407, Message = "X-axis limit switch tripped", EventType = MessageEventType.LimitError },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 0, Message = "Job started: TEST_PROGRAM.nc", EventType = MessageEventType.JobStarted },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 501, Message = "Invalid G-code syntax", EventType = MessageEventType.SyntaxError },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 307, Message = "Operator abort: job canceled", EventType = MessageEventType.JobCancelled },
-                    new MessageEvent { Timestamp = DateTime.Now, EventCode = 199, Message = "CNC started", EventType = MessageEventType.StatusMessage }
-                };
-
-                foreach (var message in testMessages)
-                {
-                    // Simulate a small delay between messages
-                    System.Threading.Thread.Sleep(300);
-                    
-                    // Update timestamp to current time
-                    message.Timestamp = DateTime.Now;
-                    
-                    // Send to message listener
-                    _messageListener?.EventReceived(message);
-                }
-
-                LogMessage("CNC message display test completed!");
-                
-                // Test message storage functionality
-                TestMessageStorage();
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error testing message display: {ex.Message}", "MessageDisplay");
-            }
-        }
-
-        /// <summary>
-        /// Test message storage and retrieval functionality
-        /// </summary>
-        private void TestMessageStorage()
-        {
-            try
-            {
-                LogMessage("Testing CNC message storage functionality...");
-
-                // Wait a moment for messages to be stored
-                System.Threading.Thread.Sleep(1000);
-
-                // Test getting all stored messages
-                var allMessages = CNCJobInfoListener.GetStoredMessages();
-                LogMessage($"Total stored messages: {allMessages.Count}");
-
-                // Test getting recent messages (last 10 seconds)
-                var recentMessages = CNCJobInfoListener.GetRecentMessages(10000);
-                LogMessage($"Recent messages (last 10 seconds): {recentMessages.Count}");
-
-                // Test getting messages by type (MessageEvent)
-                var messageEvents = CNCJobInfoListener.GetRecentMessagesByType<MessageEvent>(10000);
-                LogMessage($"Recent MessageEvents: {messageEvents.Count}");
-
-                // Test getting messages by type (DROEvent)
-                var droEvents = CNCJobInfoListener.GetRecentMessagesByType<DROEvent>(10000);
-                LogMessage($"Recent DROEvents: {droEvents.Count}");
-
-                // Test getting messages by communication type
-                var messageWindowMessages = CNCJobInfoListener.GetRecentMessagesByCommunicationType(10000, "MESSAGE_WINDOW_MESSAGE");
-                LogMessage($"Recent MESSAGE_WINDOW_MESSAGE: {messageWindowMessages.Count}");
-
-                // Display some recent messages for verification
-                if (recentMessages.Count > 0)
-                {
-                    LogMessage("Sample of recent messages:");
-                    foreach (var msg in recentMessages.Take(3))
-                    {
-                        var eventTypeName = msg.Event.GetType().Name;
-                        LogMessage($"  [{msg.Timestamp:HH:mm:ss.fff}] {msg.CommunicationType} - {eventTypeName}: {msg.Event.Message}");
-                    }
-                }
-
-                LogMessage("Message storage test completed successfully!");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error testing message storage: {ex.Message}", "MessageStorage");
-            }
-        }
-
         private async void MainForm_Load(object? sender, EventArgs e)
         {
             await StartApiServerAsync();
@@ -550,9 +403,6 @@ namespace HavenCNCServer
                 UpdateStatus("API Server Running", Color.Green);
                 LogSuccess($"API server started successfully at {ApiUrl}", "API");
                 LogInfo($"Swagger UI available at {SwaggerUrl}", "API");
-                
-                btnStartServer.Enabled = false;
-                btnStopServer.Enabled = true;
 
                 // Get the CNC Server Manager from DI and start management (auto-start is enabled)
                 _cncServerManager = _webHost.Services.GetService<ICNCServerManager>();
@@ -560,9 +410,6 @@ namespace HavenCNCServer
                 {
                     await _cncServerManager.StartManagementAsync();
                     LogInfo("CNC Server Manager started with auto-start enabled", "CNCServer");
-                    
-                    // Update CNC server button state
-                    UpdateCNCServerButtonState();
                 }
                 else
                 {
@@ -576,8 +423,6 @@ namespace HavenCNCServer
             {
                 UpdateStatus("Failed to Start", Color.Red);
                 LogError($"Failed to start API server: {ex.Message}", "API");
-                btnStartServer.Enabled = true;
-                btnStopServer.Enabled = false;
             }
         }
 
@@ -610,9 +455,6 @@ namespace HavenCNCServer
 
                 UpdateStatus("API Server Stopped", Color.Gray);
                 LogSuccess("API server stopped successfully", "API");
-                
-                btnStartServer.Enabled = true;
-                btnStopServer.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -662,17 +504,17 @@ namespace HavenCNCServer
             try
             {
                 LogInfo("Application shutdown initiated", "System");
-                
+
                 // Cancel all background tasks first
                 _cancellationTokenSource?.Cancel();
-                
+
                 // Stop CNC Job Info Listener
                 LogInfo("Stopping CNC Job Info Listener...", "System");
                 CNCJobInfoListener.StopListening();
-                
+
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();
-                
+
                 // Stop web host first
                 if (_webHost != null)
                 {
@@ -684,7 +526,7 @@ namespace HavenCNCServer
                             await _webHost.StopAsync(TimeSpan.FromSeconds(3));
                             _webHost.Dispose();
                         });
-                        
+
                         if (!stopWebTask.Wait(5000))
                         {
                             LogWarning("Web host stop operation timed out after 5 seconds", "System");
@@ -703,7 +545,7 @@ namespace HavenCNCServer
                         _webHost = null;
                     }
                 }
-                
+
                 // Stop CNC Server Manager if it's still running
                 if (_cncServerManager != null)
                 {
@@ -729,21 +571,21 @@ namespace HavenCNCServer
                         _cncServerManager = null;
                     }
                 }
-                
+
                 // Unsubscribe from CNC events
                 CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
-                
+
                 // Cleanup the CNC connection manager
                 LogInfo("Disconnecting CNC connection...", "System");
                 CNCConnectionManager.Disconnect();
-                
+
                 // Wait a moment for any final cleanup
                 Thread.Sleep(500);
-                
+
                 // Force garbage collection to clean up any remaining resources
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                
+
                 LogInfo("Application shutdown completed", "System");
             }
             catch (Exception ex)
@@ -762,7 +604,9 @@ namespace HavenCNCServer
                 {
                     LogError($"Error disposing cancellation token: {ex.Message}", "System");
                 }
+                Environment.Exit(0);
             }
+
 
             base.OnFormClosing(e);
         }
@@ -792,61 +636,6 @@ namespace HavenCNCServer
             {
                 LogMessage($"Failed to open Swagger UI: {ex.Message}");
                 MessageBox.Show($"Failed to open Swagger UI: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async void btnStartServer_Click(object sender, EventArgs e)
-        {
-            await StartApiServerAsync();
-        }
-
-        private async void btnStopServer_Click(object sender, EventArgs e)
-        {
-            await StopApiServerAsync();
-        }
-
-        private async void btnOpenReactApp_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!Services.UIControlService.IsFullScreen)
-                {
-                    // Open the browser in full screen mode
-                    bool success = await Services.UIControlService.EnterFullScreenAsync();
-                    
-                    if (success)
-                    {
-                        // Update button text
-                        btnOpenReactApp.Text = "Hide React App";
-                        LogMessage($"Browser opened in full screen mode at {ReactAppUrl}");
-                    }
-                    else
-                    {
-                        LogMessage("Failed to open browser in full screen mode");
-                        MessageBox.Show("Failed to open browser", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                else
-                {
-                    // Close/hide the browser
-                    bool success = await Services.UIControlService.ExitFullScreenAsync();
-                    
-                    if (success)
-                    {
-                        // Update button text
-                        btnOpenReactApp.Text = "Open React App";
-                        LogMessage("Browser closed");
-                    }
-                    else
-                    {
-                        LogMessage("Failed to close browser");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogMessage($"Failed to control browser: {ex.Message}");
-                MessageBox.Show($"Failed to control browser: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -911,85 +700,6 @@ namespace HavenCNCServer
             }
         }
 
-        private async void btnGenerateOpenApi_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_webHost == null)
-                {
-                    MessageBox.Show("API server is not running. Please start the server first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                LogMessage("Manually generating OpenAPI specification...");
-                await GenerateOpenApiSpec();
-                
-                MessageBox.Show($"OpenAPI specification generated successfully!\n\nFiles saved to:\n• openapi.json (project root)\n• bin/Debug/net8.0-windows/openapi.json", 
-                              "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (HttpRequestException ex)
-            {
-                var errorMessage = $"Network error while generating OpenAPI: {ex.Message}";
-                LogMessage(errorMessage);
-                MessageBox.Show($"Failed to connect to API server.\nMake sure the API server is running.\n\nError: {ex.Message}", 
-                              "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = $"Error generating OpenAPI specification: {ex.Message}";
-                LogMessage(errorMessage);
-                MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnTest_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                LogMessage("Test button clicked!");
-
-                // Test coordinate display with simulated data
-                TestCoordinateDisplay();
-
-                // Test CNCConnectionManager instead of creating CNCPipe directly
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                
-                if (cncPipe != null && cncPipe.IsConstructed())
-                {
-                    LogMessage("CNCPipe is available via CNCConnectionManager!");
-                    MessageBox.Show("Test button working! CNCPipe is ready for use via CNCConnectionManager.",
-                        "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    LogMessage("CNCPipe not available - attempting connection...");
-                    // Try to establish connection
-                    cncPipe = CNCConnectionManager.GetOrCreateCNCPipe();
-                    
-                    if (cncPipe != null && cncPipe.IsConstructed())
-                    {
-                        LogMessage("CNCPipe connected successfully via CNCConnectionManager!");
-                        MessageBox.Show("CNC connected successfully!",
-                            "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        LogMessage("Failed to connect to CNC via CNCConnectionManager");
-                        MessageBox.Show("Failed to connect to CNC. Make sure CNC12 is running.",
-                            "Test Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-
-                LogMessage("Test completed successfully.");
-                }
-                catch (Exception ex)
-                {
-                    var errorMessage = $"Test error: {ex.Message}";
-                    LogMessage(errorMessage);
-                    MessageBox.Show(errorMessage, "Test Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-        }
-
         private void btnGCodeTest_Click(object sender, EventArgs e)
         {
             try
@@ -1033,133 +743,6 @@ namespace HavenCNCServer
             }
         }
         */
-
-        /// <summary>
-        /// Update the CNC Server button state based on current server status
-        /// </summary>
-        private void UpdateCNCServerButtonState()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(() => UpdateCNCServerButtonState());
-                return;
-            }
-
-            try
-            {
-                if (_cncServerManager == null)
-                {
-                    btnCNCServer.Text = "CNC Manager N/A";
-                    btnCNCServer.Enabled = false;
-                    btnCNCServer.BackColor = SystemColors.Control;
-                    return;
-                }
-
-                var isRunning = _cncServerManager.IsServerRunning;
-                var weStarted = _cncServerManager.WeStartedServer;
-
-                if (isRunning && weStarted)
-                {
-                    btnCNCServer.Text = "Stop CNC Server";
-                    btnCNCServer.Enabled = true;
-                    btnCNCServer.BackColor = Color.LightGreen;
-                }
-                else if (isRunning && !weStarted)
-                {
-                    btnCNCServer.Text = "CNC Running (Ext)";
-                    btnCNCServer.Enabled = false;
-                    btnCNCServer.BackColor = Color.LightBlue;
-                }
-                else
-                {
-                    btnCNCServer.Text = "Start CNC Server";
-                    btnCNCServer.Enabled = true;
-                    btnCNCServer.BackColor = SystemColors.Control;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error updating CNC server button state: {ex.Message}", "UI");
-                btnCNCServer.Text = "CNC Server Error";
-                btnCNCServer.Enabled = false;
-            }
-        }
-
-        private async void btnCNCServer_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_cncServerManager == null)
-                {
-                    LogWarning("CNC Server Manager not available - API server must be running first", "CNCServer");
-                    MessageBox.Show("Please start the API server first before managing the CNC server.", "CNC Server", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var isRunning = _cncServerManager.IsServerRunning;
-                var weStarted = _cncServerManager.WeStartedServer;
-                
-                if (isRunning && weStarted)
-                {
-                    // Stop the server
-                    LogInfo("Stopping CNC server manually...", "CNCServer");
-                    btnCNCServer.Enabled = false;
-                    btnCNCServer.Text = "Stopping...";
-                    
-                    var result = await _cncServerManager.StopServerAsync();
-                    
-                    if (result)
-                    {
-                        LogSuccess("CNC server stopped successfully", "CNCServer");
-                    }
-                    else
-                    {
-                        LogError("Failed to stop CNC server", "CNCServer");
-                    }
-                    
-                    UpdateCNCServerButtonState();
-                }
-                else if (!isRunning)
-                {
-                    // Start the server
-                    LogInfo("Starting CNC server manually...", "CNCServer");
-                    btnCNCServer.Enabled = false;
-                    btnCNCServer.Text = "Starting...";
-                    
-                    var result = await _cncServerManager.StartServerAsync();
-                    
-                    if (result)
-                    {
-                        LogSuccess("CNC server started successfully", "CNCServer");
-                    }
-                    else
-                    {
-                        LogError("Failed to start CNC server", "CNCServer");
-                    }
-                    
-                    UpdateCNCServerButtonState();
-                }
-                else
-                {
-                    // Server is running but we didn't start it
-                    LogInfo("CNC server is running (started externally)", "CNCServer");
-                    MessageBox.Show("CNC server is already running but was started externally.\nCannot control external processes.", 
-                        "CNC Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error controlling CNC server: {ex.Message}", "CNCServer");
-                MessageBox.Show($"Error controlling CNC server: {ex.Message}", "CNC Server Error", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnCNCServer.Text = "Start CNC Server";
-            }
-            finally
-            {
-                UpdateCNCServerButtonState();
-            }
-        }
 
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {

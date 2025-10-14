@@ -33,13 +33,7 @@ namespace HavenCNCServer
             this.btnOpenSwagger = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.RichTextBox();
             this.lblLog = new System.Windows.Forms.Label();
-            this.btnStopServer = new System.Windows.Forms.Button();
-            this.btnStartServer = new System.Windows.Forms.Button();
-            this.btnOpenReactApp = new System.Windows.Forms.Button();
-            this.btnGenerateOpenApi = new System.Windows.Forms.Button();
-            this.btnTest = new System.Windows.Forms.Button();
             this.btnGCodeTest = new System.Windows.Forms.Button();
-            this.btnCNCServer = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             this.grpCoordinates = new System.Windows.Forms.GroupBox();
@@ -168,75 +162,15 @@ namespace HavenCNCServer
             this.lblCurrentJob.TabIndex = 17;
             this.lblCurrentJob.Text = "No Job";
             // 
-            // btnStopServer
-            // 
-            this.btnStopServer.Location = new System.Drawing.Point(270, 70);
-            this.btnStopServer.Name = "btnStopServer";
-            this.btnStopServer.Size = new System.Drawing.Size(100, 30);
-            this.btnStopServer.TabIndex = 5;
-            this.btnStopServer.Text = "Stop Server";
-            this.btnStopServer.UseVisualStyleBackColor = true;
-            this.btnStopServer.Click += new System.EventHandler(this.btnStopServer_Click);
-            // 
-            // btnStartServer
-            // 
-            this.btnStartServer.Location = new System.Drawing.Point(150, 70);
-            this.btnStartServer.Name = "btnStartServer";
-            this.btnStartServer.Size = new System.Drawing.Size(100, 30);
-            this.btnStartServer.TabIndex = 6;
-            this.btnStartServer.Text = "Start Server";
-            this.btnStartServer.UseVisualStyleBackColor = true;
-            this.btnStartServer.Click += new System.EventHandler(this.btnStartServer_Click);
-            // 
-            // btnOpenReactApp
-            // 
-            this.btnOpenReactApp.Location = new System.Drawing.Point(390, 70);
-            this.btnOpenReactApp.Name = "btnOpenReactApp";
-            this.btnOpenReactApp.Size = new System.Drawing.Size(120, 30);
-            this.btnOpenReactApp.TabIndex = 7;
-            this.btnOpenReactApp.Text = "Open React App";
-            this.btnOpenReactApp.UseVisualStyleBackColor = true;
-            this.btnOpenReactApp.Click += new System.EventHandler(this.btnOpenReactApp_Click);
-            // 
-            // btnGenerateOpenApi
-            // 
-            this.btnGenerateOpenApi.Location = new System.Drawing.Point(530, 70);
-            this.btnGenerateOpenApi.Name = "btnGenerateOpenApi";
-            this.btnGenerateOpenApi.Size = new System.Drawing.Size(120, 30);
-            this.btnGenerateOpenApi.TabIndex = 8;
-            this.btnGenerateOpenApi.Text = "Generate OpenAPI";
-            this.btnGenerateOpenApi.UseVisualStyleBackColor = true;
-            this.btnGenerateOpenApi.Click += new System.EventHandler(this.btnGenerateOpenApi_Click);
-            // 
             // btnGCodeTest
             // 
-            this.btnGCodeTest.Location = new System.Drawing.Point(670, 70);
+            this.btnGCodeTest.Location = new System.Drawing.Point(150, 70);
             this.btnGCodeTest.Name = "btnGCodeTest";
             this.btnGCodeTest.Size = new System.Drawing.Size(100, 30);
             this.btnGCodeTest.TabIndex = 9;
             this.btnGCodeTest.Text = "G-Code Test";
             this.btnGCodeTest.UseVisualStyleBackColor = true;
             this.btnGCodeTest.Click += new System.EventHandler(this.btnGCodeTest_Click);
-            // 
-            // btnTest
-            // 
-            this.btnTest.Location = new System.Drawing.Point(790, 70);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(100, 30);
-            this.btnTest.TabIndex = 10;
-            this.btnTest.Text = "Test";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
-            // 
-            // btnCNCServer
-            // 
-            this.btnCNCServer.Location = new System.Drawing.Point(12, 110);
-            this.btnCNCServer.Name = "btnCNCServer";
-            this.btnCNCServer.Size = new System.Drawing.Size(120, 30);
-            this.btnCNCServer.TabIndex = 11;
-            this.btnCNCServer.Text = "Start CNC Server";
-            this.btnCNCServer.UseVisualStyleBackColor = true;
-            this.btnCNCServer.Click += new System.EventHandler(this.btnCNCServer_Click);
             // 
             // webView
             // 
@@ -260,13 +194,7 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.lblStatus);
             this.pnlControls.Controls.Add(this.lblApiUrl);
             this.pnlControls.Controls.Add(this.btnOpenSwagger);
-            this.pnlControls.Controls.Add(this.btnStartServer);
-            this.pnlControls.Controls.Add(this.btnStopServer);
-            this.pnlControls.Controls.Add(this.btnOpenReactApp);
-            this.pnlControls.Controls.Add(this.btnGenerateOpenApi);
             this.pnlControls.Controls.Add(this.btnGCodeTest);
-            this.pnlControls.Controls.Add(this.btnTest);
-            this.pnlControls.Controls.Add(this.btnCNCServer);
             this.pnlControls.Controls.Add(this.grpCoordinates);
             this.pnlControls.Controls.Add(this.lblLog);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
@@ -282,7 +210,7 @@ namespace HavenCNCServer
             this.grpCoordinates.Controls.Add(this.lblXValue);
             this.grpCoordinates.Controls.Add(this.lblYValue);
             this.grpCoordinates.Controls.Add(this.lblZValue);
-            this.grpCoordinates.Location = new System.Drawing.Point(150, 110);
+            this.grpCoordinates.Location = new System.Drawing.Point(500, 12);
             this.grpCoordinates.Name = "grpCoordinates";
             this.grpCoordinates.Size = new System.Drawing.Size(300, 45);
             this.grpCoordinates.TabIndex = 12;
@@ -384,13 +312,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnOpenSwagger;
         private System.Windows.Forms.RichTextBox txtLog;
         private System.Windows.Forms.Label lblLog;
-        private System.Windows.Forms.Button btnStopServer;
-        private System.Windows.Forms.Button btnStartServer;
-        private System.Windows.Forms.Button btnOpenReactApp;
-        private System.Windows.Forms.Button btnGenerateOpenApi;
-        private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.Button btnGCodeTest;
-        private System.Windows.Forms.Button btnCNCServer;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.GroupBox grpCoordinates;

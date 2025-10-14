@@ -2511,118 +2511,37 @@
         }
       }
     },
-    "/api/CNCProgram/Jobs": {
-      "get": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Get all active jobs",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/Jobs/{jobId}": {
-      "get": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Get specific job details",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/Jobs/{jobId}/Start": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Start a specific job",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID to start",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/Jobs/Cleanup": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Clean up completed jobs",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/Queue": {
-      "get": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Get queue status",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/Jobs/{jobId}/Stop": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Stop specific job execution",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID to stop",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCProgram/Stop": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Stop current job execution",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/StopAll": {
       "post": {
         "tags": [
           "CNCProgram"
@@ -2630,75 +2549,95 @@
         "summary": "Stop all running jobs",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopAllJobsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopAllJobsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StopAllJobsResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/CNCProgram/Jobs/{jobId}/Resume": {
+    "/api/CNCProgram/Resume": {
       "post": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Resume specific job execution",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID to resume",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Resume current job execution",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/CNCProgram/Jobs/{jobId}/Pause": {
+    "/api/CNCProgram/Pause": {
       "post": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Pause specific job execution",
-        "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID to pause",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Pause current job execution",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobOperationResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/CNCProgram/Jobs/{jobId}/ResumeAt/{lineNumber}": {
+    "/api/CNCProgram/ResumeAt/{lineNumber}": {
       "post": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Resume job execution at specific line",
+        "summary": "Resume current job execution at specific line",
         "parameters": [
-          {
-            "name": "jobId",
-            "in": "path",
-            "description": "Job ID to resume",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "lineNumber",
             "in": "path",
@@ -2712,7 +2651,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeJobAtResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeJobAtResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeJobAtResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2773,7 +2729,24 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2806,7 +2779,24 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeCommandResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeCommandResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeCommandResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2883,29 +2873,98 @@
         }
       }
     },
-    "/api/CNCProgram/StartStepRun": {
-      "post": {
+    "/api/CNCProgram/GetCurrentJobStatus": {
+      "get": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Start step run mode",
+        "summary": "Get current job status including step run information",
         "responses": {
           "200": {
             "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobDetails"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobDetails"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/StartStepRun": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Start step run mode with G-code",
+        "parameters": [
+          {
+            "name": "gcodeParameterString",
+            "in": "query",
+            "description": "Optional parameter string",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Array of G-code lines to execute in step mode",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunGCodeResponse"
                 }
               }
             }
@@ -2925,17 +2984,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               }
             }
@@ -2955,17 +3014,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               }
             }
@@ -2985,17 +3044,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/JobOperationResponse"
                 }
               }
             }
@@ -4531,6 +4590,107 @@
         "additionalProperties": false,
         "description": "Represents an I/O function assignment"
       },
+      "JobDetails": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "description": "Job identifier",
+            "nullable": true
+          },
+          "lineNumber": {
+            "type": "integer",
+            "description": "Current line number",
+            "format": "int32"
+          },
+          "currentLine": {
+            "type": "string",
+            "description": "Current G-code line",
+            "nullable": true
+          },
+          "isRunning": {
+            "type": "boolean",
+            "description": "Whether job is currently running"
+          },
+          "isPaused": {
+            "type": "boolean",
+            "description": "Whether job is paused"
+          },
+          "isComplete": {
+            "type": "boolean",
+            "description": "Whether job is complete"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Job creation timestamp",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": "string",
+            "description": "Job start timestamp",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "string",
+            "description": "Job completion timestamp",
+            "format": "date-time",
+            "nullable": true
+          },
+          "totalLines": {
+            "type": "integer",
+            "description": "Total number of lines in the job",
+            "format": "int32"
+          },
+          "lastError": {
+            "type": "string",
+            "description": "Last error message",
+            "nullable": true
+          },
+          "filePath": {
+            "type": "string",
+            "description": "File path of the job",
+            "nullable": true
+          },
+          "isStepRunMode": {
+            "type": "boolean",
+            "description": "Whether the job is in step run mode"
+          },
+          "stepLineNumber": {
+            "type": "integer",
+            "description": "Current step line number in step run mode",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for detailed job information"
+      },
+      "JobOperationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Job ID",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Operation message",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error details if operation failed",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for job operations"
+      },
       "MachinePoint": {
         "type": "object",
         "properties": {
@@ -4976,6 +5136,95 @@
         "description": "Probe type enumeration",
         "format": "int32"
       },
+      "ResumeJobAtResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Job ID",
+            "nullable": true
+          },
+          "lineNumber": {
+            "type": "integer",
+            "description": "Line number to resume at",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "description": "Operation message",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error details if operation failed",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for resume job at specific line operation"
+      },
+      "RunGCodeCommandResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Operation message",
+            "nullable": true
+          },
+          "command": {
+            "type": "string",
+            "description": "The command that was executed",
+            "nullable": true
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobDetails"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error details if operation failed",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for single G-code command execution"
+      },
+      "RunGCodeResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "jobId": {
+            "type": "string",
+            "description": "Job ID",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Operation message",
+            "nullable": true
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobDetails"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error details if operation failed",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for G-code execution operations"
+      },
       "SecondSpindleConfiguration": {
         "type": "object",
         "properties": {
@@ -5239,6 +5488,26 @@
         },
         "additionalProperties": false,
         "description": "Request model for setting step frequency"
+      },
+      "StopAllJobsResponse": {
+        "type": "object",
+        "properties": {
+          "stoppedJobs": {
+            "type": "integer",
+            "description": "Number of jobs stopped",
+            "format": "int32"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobOperationResponse"
+            },
+            "description": "Results for each job stop operation",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for stop all jobs operation"
       },
       "SystemHardwareInfo": {
         "type": "object",
