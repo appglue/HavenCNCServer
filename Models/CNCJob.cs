@@ -54,6 +54,16 @@ namespace HavenCNCServer.Models
         public bool IsComplete { get; private set; } = false;
 
         /// <summary>
+        /// Whether the job is in step run mode
+        /// </summary>
+        public bool IsStepRunMode { get; private set; } = false;
+
+        /// <summary>
+        /// Current step line number in step run mode
+        /// </summary>
+        public int StepLineNumber { get; private set; } = 0;
+
+        /// <summary>
         /// Job creation timestamp
         /// </summary>
         public DateTime CreatedAt { get; private set; }
@@ -110,6 +120,31 @@ namespace HavenCNCServer.Models
 
             // Initialize current line to first non-comment line
             UpdateCurrentLine();
+        }
+
+        /// <summary>
+        /// Create a new CNC job directly in step run mode
+        /// </summary>
+        /// <param name="gCodeLines">G-code lines to execute</param>
+        /// <param name="gcodeParameterString">Optional parameter string</param>
+        /// <returns>New job in step run mode</returns>
+        public static CNCJob CreateStepRunJob(string[] gCodeLines, string? gcodeParameterString = null)
+        {
+            var job = new CNCJob(gCodeLines, gcodeParameterString);
+            
+            // Initialize step run mode
+            job.IsStepRunMode = true;
+            job.StepLineNumber = 1;
+            job.LineNumber = 0; // Reset to beginning
+            job.UpdateCurrentLine();
+
+            // Start listening for events but don't start the actual job
+            job.StartListening();
+
+            System.Diagnostics.Debug.WriteLine($"[CNCJob {job._jobId}] Created in step run mode with {gCodeLines.Length} lines");
+            LoggingService.LogInfo($"Job {job._jobId} - Created in step run mode with {gCodeLines.Length} lines", "CNCJob");
+            
+            return job;
         }
 
         #endregion
@@ -337,6 +372,212 @@ namespace HavenCNCServer.Models
 
         #endregion
 
+        #region Step Run Methods
+
+        /// <summary>
+        /// End step run mode
+        /// </summary>
+        /// <returns>True if step run mode ended successfully</returns>
+        public bool EndStepRun()
+        {
+            try
+            {
+                IsStepRunMode = false;
+                StepLineNumber = 0;
+
+                if (IsRunning)
+                {
+                    // Stop the current execution
+                    IsRunning = false;
+                    IsPaused = false;
+                }
+
+                StopListening();
+
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Step run mode ended");
+                LoggingService.LogInfo($"Job {_jobId} - Step run mode ended", "CNCJob");
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] End step run failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Execute the next step in step run mode
+        /// </summary>
+        /// <returns>True if next step executed successfully</returns>
+        public bool ExecuteNextStep()
+        {
+            try
+            {
+                if (!IsStepRunMode)
+                {
+                    throw new InvalidOperationException("Job is not in step run mode");
+                }
+
+                if (StepLineNumber > TotalLines)
+                {
+                    // All steps completed
+                    IsStepRunMode = false;
+                    IsComplete = true;
+                    CompletedAt = DateTime.Now;
+                    StopListening();
+                    
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] All steps completed");
+                    LoggingService.LogSuccess($"✓ Job {_jobId} step run completed - all {TotalLines} lines executed", "CNCJob");
+                    
+                    // Notify completion callback
+                    OnJobCompleted?.Invoke(this);
+                    return true;
+                }
+
+                // Get the current line to execute
+                var lineToExecute = _gCodeLines[StepLineNumber - 1];
+                
+                // Skip empty lines and comments
+                if (string.IsNullOrWhiteSpace(lineToExecute) || 
+                    lineToExecute.Trim().StartsWith(";") || 
+                    lineToExecute.Trim().StartsWith("("))
+                {
+                    StepLineNumber++;
+                    LineNumber = StepLineNumber;
+                    UpdateCurrentLine();
+                    
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Skipped comment/empty line {StepLineNumber - 1}: {lineToExecute}");
+                    
+                    // Recursively try next line
+                    return ExecuteNextStep();
+                }
+
+                // Get CNC pipe
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot execute step: No CNC connection");
+                }
+
+                // Execute the single line using RunCommand
+                _cncJob = new CentroidAPI.CNCPipe.Job(cncPipe);
+                var executeResult = _cncJob.RunCommand(lineToExecute.Trim(), false);
+
+                if (executeResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LastError = $"Failed to execute step at line {StepLineNumber}: {executeResult}";
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Step execution failed: {LastError}");
+                    LoggingService.LogError($"Job {_jobId} step execution failed: {LastError}", "CNCJob");
+                    return false;
+                }
+
+                // Update tracking
+                LineNumber = StepLineNumber;
+                UpdateCurrentLine();
+                
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Executed step {StepLineNumber}: {lineToExecute}");
+                LoggingService.LogInfo($"Job {_jobId}: Step {StepLineNumber}/{TotalLines} - {lineToExecute}", "CNCJob");
+
+                // Move to next step
+                StepLineNumber++;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Execute next step failed: {ex.Message}");
+                LoggingService.LogError($"Job {_jobId} execute next step failed: {ex.Message}", "CNCJob");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Run from current step to completion
+        /// </summary>
+        /// <returns>True if run from current step started successfully</returns>
+        public bool RunFromCurrentStep()
+        {
+            try
+            {
+                if (!IsStepRunMode)
+                {
+                    throw new InvalidOperationException("Job is not in step run mode");
+                }
+
+                if (StepLineNumber > TotalLines)
+                {
+                    throw new InvalidOperationException("All steps have been completed");
+                }
+
+                // Exit step run mode and run normally from current line
+                IsStepRunMode = false;
+                
+                // Create a subset of G-code lines from current step to end
+                var remainingLines = _gCodeLines.Skip(StepLineNumber - 1).ToArray();
+                
+                if (remainingLines.Length == 0)
+                {
+                    IsComplete = true;
+                    CompletedAt = DateTime.Now;
+                    StopListening();
+                    
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] No remaining lines to execute");
+                    LoggingService.LogSuccess($"✓ Job {_jobId} completed - no remaining lines", "CNCJob");
+                    
+                    OnJobCompleted?.Invoke(this);
+                    return true;
+                }
+
+                // Write remaining lines to a temporary file
+                var tempFileName = $"job_{_jobId}_from_step_{StepLineNumber}_{DateTime.Now:yyyyMMdd_HHmmss}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
+                var tempFilePath = Path.Combine(SettingsManager.GetCncProgramsDirectory(), tempFileName);
+                
+                IOFile.WriteAllLines(tempFilePath, remainingLines);
+
+                // Get CNC pipe
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    throw new InvalidOperationException("Cannot run from current step: No CNC connection");
+                }
+
+                // Create the G65 command for remaining lines
+                string g65Command = string.IsNullOrEmpty(_gcodeParameterString)
+                    ? $"G65 \"{tempFilePath}\""
+                    : $"G65 \"{tempFilePath}\" {_gcodeParameterString}";
+
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Running from step {StepLineNumber} with command: {g65Command}");
+                LoggingService.LogInfo($"Job {_jobId} running from step {StepLineNumber} with {remainingLines.Length} remaining lines", "CNCJob");
+
+                // Execute the remaining job
+                _cncJob = new CentroidAPI.CNCPipe.Job(cncPipe);
+                var executeResult = _cncJob.RunCommand(g65Command, false);
+
+                if (executeResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LastError = $"Failed to run from current step with return code: {executeResult}";
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Run from step failed: {LastError}");
+                    LoggingService.LogError($"Job {_jobId} run from step failed: {LastError}", "CNCJob");
+                    return false;
+                }
+
+                // Job is now running normally (completion will be handled by normal event processing)
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Run from current step failed: {ex.Message}");
+                LoggingService.LogError($"Job {_jobId} run from current step failed: {ex.Message}", "CNCJob");
+                return false;
+            }
+        }
+
+        #endregion
+
         #region Private Methods
 
         /// <summary>
@@ -389,7 +630,8 @@ namespace HavenCNCServer.Models
                 if (centroidEvent is MessageEvent messageEvent)
                 {
                     // Check for completion messages - code 306 indicates job finished
-                    if (IsRunning && !IsComplete)
+                    // In step run mode, ignore completion messages since we control execution manually
+                    if (IsRunning && !IsComplete && !IsStepRunMode)
                     {
                         if (messageEvent.EventCode == 306)
                         {
@@ -499,6 +741,20 @@ namespace HavenCNCServer.Models
                     {
                         LineNumber = jobInfo.LineNumber;
                         UpdateCurrentLine();
+                        
+                        // Send StepExecutionEvent for G-code viewer (for both regular and step run jobs)
+                        var stepExecutionEvent = new StepExecutionEvent
+                        {
+                            Timestamp = DateTime.Now,
+                            Message = $"Executing line {LineNumber}: {CurrentLine}",
+                            JobId = _jobId,
+                            LineNumber = LineNumber,
+                            CurrentLine = CurrentLine,
+                            TotalLines = TotalLines,
+                            IsLastStep = (LineNumber >= TotalLines),
+                            Status = StepExecutionStatus.Executing
+                        };
+                        CNCJobInfoListener.PushCustomEvent(stepExecutionEvent);
                         
                         // Log progress to main UI only for significant lines (every 50 lines or major milestones)
                         if (LineNumber == 1 || LineNumber == TotalLines || LineNumber % 50 == 0)

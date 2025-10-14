@@ -23,15 +23,14 @@ namespace HavenCNCServer.Controllers
         private static readonly object _jobsLock = new object();
 
         /// <summary>
-        /// Get all active jobs
+        /// Get all active jobs (internal method)
         /// </summary>
         /// <returns>List of active jobs</returns>
-        [HttpGet("Jobs")]
-        public IActionResult GetJobs()
+        private List<JobSummary> GetJobs()
         {
             lock (_jobsLock)
             {
-                var jobSummaries = _jobs.Select(job => new
+                return _jobs.Select(job => new JobSummary
                 {
                     JobId = job.JobId,
                     LineNumber = job.LineNumber,
@@ -45,28 +44,25 @@ namespace HavenCNCServer.Controllers
                     TotalLines = job.TotalLines,
                     LastError = job.LastError
                 }).ToList();
-
-                return Ok(jobSummaries);
             }
         }
 
         /// <summary>
-        /// Get specific job details
+        /// Get specific job details (internal method)
         /// </summary>
         /// <param name="jobId">Job ID</param>
         /// <returns>Job details</returns>
-        [HttpGet("Jobs/{jobId}")]
-        public IActionResult GetJob(string jobId)
+        private JobDetails GetJob(string jobId)
         {
             lock (_jobsLock)
             {
                 var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                 if (job == null)
                 {
-                    return NotFound($"Job {jobId} not found");
+                    throw new KeyNotFoundException($"Job {jobId} not found");
                 }
 
-                return Ok(new
+                return new JobDetails
                 {
                     JobId = job.JobId,
                     LineNumber = job.LineNumber,
@@ -79,18 +75,19 @@ namespace HavenCNCServer.Controllers
                     CompletedAt = job.CompletedAt,
                     TotalLines = job.TotalLines,
                     FilePath = job.FilePath,
-                    LastError = job.LastError
-                });
+                    LastError = job.LastError,
+                    IsStepRunMode = job.IsStepRunMode,
+                    StepLineNumber = job.StepLineNumber
+                };
             }
         }
 
         /// <summary>
-        /// Start a specific job
+        /// Start a specific job (internal method)
         /// </summary>
         /// <param name="jobId">Job ID to start</param>
         /// <returns>Start operation result</returns>
-        [HttpPost("Jobs/{jobId}/Start")]
-        public async Task<IActionResult> StartJob(string jobId)
+        private async Task<JobOperationResponse> StartJob(string jobId)
         {
             try
             {
@@ -101,17 +98,17 @@ namespace HavenCNCServer.Controllers
                     var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
                     if (job == null)
                     {
-                        return NotFound($"Job {jobId} not found");
+                        throw new KeyNotFoundException($"Job {jobId} not found");
                     }
 
                     if (job.IsRunning)
                     {
-                        return BadRequest(new { Success = false, JobId = jobId, Error = "Job is already running" });
+                        throw new InvalidOperationException("Job is already running");
                     }
 
                     if (job.IsComplete)
                     {
-                        return BadRequest(new { Success = false, JobId = jobId, Error = "Job has already completed" });
+                        throw new InvalidOperationException("Job has already completed");
                     }
 
                     jobToStart = job;
@@ -119,20 +116,31 @@ namespace HavenCNCServer.Controllers
 
                 // Start the job outside the lock
                 var success = await jobToStart.StartAsync();
-                return Ok(new { Success = success, JobId = jobId, Message = success ? "Job started successfully" : jobToStart.LastError });
+                return new JobOperationResponse 
+                { 
+                    Success = success, 
+                    JobId = jobId, 
+                    Message = success ? "Job started successfully" : jobToStart.LastError ?? "Unknown error",
+                    Error = success ? null : jobToStart.LastError
+                };
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new JobOperationResponse 
+                { 
+                    Success = false, 
+                    JobId = jobId,
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
         /// <summary>
-        /// Clean up completed jobs
+        /// Clean up completed jobs (internal method)
         /// </summary>
         /// <returns>Number of jobs cleaned up</returns>
-        [HttpPost("Jobs/Cleanup")]
-        public IActionResult CleanupJobs()
+        private CleanupResponse CleanupJobs()
         {
             lock (_jobsLock)
             {
@@ -143,7 +151,7 @@ namespace HavenCNCServer.Controllers
                     _jobs.Remove(job);
                 }
 
-                return Ok(new { CleanupsCount = completedJobs.Count });
+                return new CleanupResponse { CleanupsCount = completedJobs.Count };
             }
         }
 
@@ -179,6 +187,24 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
+                // Calculate job duration
+                var duration = completedJob.CompletedAt.HasValue && completedJob.StartedAt.HasValue
+                    ? completedJob.CompletedAt.Value - completedJob.StartedAt.Value
+                    : TimeSpan.Zero;
+
+                // Push job completed event
+                var jobCompletedEvent = new JobCompletedEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = $"Job {completedJob.JobId} completed",
+                    JobId = completedJob.JobId,
+                    Success = completedJob.IsComplete && string.IsNullOrEmpty(completedJob.LastError),
+                    ErrorMessage = completedJob.LastError,
+                    Duration = duration,
+                    LinesExecuted = completedJob.LineNumber
+                };
+                CNCJobInfoListener.PushCustomEvent(jobCompletedEvent);
+
                 lock (_jobsLock)
                 {
                     // Remove the completed job
@@ -241,35 +267,48 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get queue status
+        /// Get queue status (internal method)
         /// </summary>
         /// <returns>Queue status information</returns>
-        [HttpGet("Queue")]
-        public IActionResult GetQueueStatus()
+        private QueueStatus GetQueueStatus()
         {
             lock (_jobsLock)
             {
                 var currentJob = GetCurrentJob();
-                var queuedJobs = _jobs.Skip(1).Where(j => !j.IsComplete).Select(job => new
+                var queuedJobs = _jobs.Skip(1).Where(j => !j.IsComplete).Select(job => new JobSummary
                 {
                     JobId = job.JobId,
+                    LineNumber = job.LineNumber,
+                    CurrentLine = job.CurrentLine,
+                    IsRunning = job.IsRunning,
+                    IsPaused = job.IsPaused,
+                    IsComplete = job.IsComplete,
+                    CreatedAt = job.CreatedAt,
+                    StartedAt = job.StartedAt,
+                    CompletedAt = job.CompletedAt,
                     TotalLines = job.TotalLines,
-                    CreatedAt = job.CreatedAt
+                    LastError = job.LastError
                 }).ToList();
                 
-                return Ok(new
+                return new QueueStatus
                 {
-                    CurrentJob = currentJob != null ? new
+                    CurrentJob = currentJob != null ? new JobSummary
                     {
                         JobId = currentJob.JobId,
                         LineNumber = currentJob.LineNumber,
-                        TotalLines = currentJob.TotalLines,
+                        CurrentLine = currentJob.CurrentLine,
                         IsRunning = currentJob.IsRunning,
-                        StartedAt = currentJob.StartedAt
+                        IsPaused = currentJob.IsPaused,
+                        IsComplete = currentJob.IsComplete,
+                        CreatedAt = currentJob.CreatedAt,
+                        StartedAt = currentJob.StartedAt,
+                        CompletedAt = currentJob.CompletedAt,
+                        TotalLines = currentJob.TotalLines,
+                        LastError = currentJob.LastError
                     } : null,
                     QueuedJobs = queuedJobs,
                     QueueLength = _jobs.Skip(1).Count(j => !j.IsComplete)
-                });
+                };
             }
         }
 
@@ -278,30 +317,41 @@ namespace HavenCNCServer.Controllers
         #region G-Code Execution Control
 
         /// <summary>
-        /// Stop specific job execution
+        /// Stop current job execution
         /// </summary>
-        /// <param name="jobId">Job ID to stop</param>
         /// <returns>Stop operation success</returns>
-        [HttpPost("Jobs/{jobId}/Stop")]
-        public IActionResult StopJob(string jobId)
+        [HttpPost("Stop")]
+        public JobOperationResponse StopCurrentJob()
         {
             try
             {
                 lock (_jobsLock)
                 {
-                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = GetCurrentJob();
                     if (job == null)
                     {
-                        return NotFound($"Job {jobId} not found");
+                        throw new InvalidOperationException("No job is currently running");
                     }
 
                     var success = job.Stop();
-                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job stopped successfully" : job.LastError });
+                    return new JobOperationResponse 
+                    { 
+                        Success = success, 
+                        JobId = job.JobId, 
+                        Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error",
+                        Error = success ? null : job.LastError
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new JobOperationResponse 
+                { 
+                    Success = false, 
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
@@ -309,118 +359,172 @@ namespace HavenCNCServer.Controllers
         /// Stop all running jobs
         /// </summary>
         /// <returns>Stop operation results</returns>
-        [HttpPost("Stop")]
-        public IActionResult StopAllJobs()
+        [HttpPost("StopAll")]
+        public StopAllJobsResponse StopAllJobs()
         {
             try
             {
                 lock (_jobsLock)
                 {
                     var runningJobs = _jobs.Where(j => j.IsRunning).ToList();
-                    var results = new List<object>();
+                    var results = new List<JobOperationResponse>();
 
                     foreach (var job in runningJobs)
                     {
                         var success = job.Stop();
-                        results.Add(new { JobId = job.JobId, Success = success, Error = success ? null : job.LastError });
+                        results.Add(new JobOperationResponse 
+                        { 
+                            JobId = job.JobId, 
+                            Success = success, 
+                            Error = success ? null : job.LastError,
+                            Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error"
+                        });
                     }
 
-                    return Ok(new { StoppedJobs = results.Count, Results = results });
+                    return new StopAllJobsResponse { StoppedJobs = results.Count, Results = results };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new StopAllJobsResponse 
+                { 
+                    StoppedJobs = 0, 
+                    Results = new List<JobOperationResponse> 
+                    { 
+                        new JobOperationResponse 
+                        { 
+                            Success = false, 
+                            Error = ex.Message,
+                            Message = ex.Message,
+                            JobId = "N/A"
+                        } 
+                    } 
+                };
             }
         }
 
         /// <summary>
-        /// Resume specific job execution
+        /// Resume current job execution
         /// </summary>
-        /// <param name="jobId">Job ID to resume</param>
         /// <returns>Resume operation success</returns>
-        [HttpPost("Jobs/{jobId}/Resume")]
-        public IActionResult ResumeJob(string jobId)
+        [HttpPost("Resume")]
+        public JobOperationResponse ResumeCurrentJob()
         {
             try
             {
                 lock (_jobsLock)
                 {
-                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = GetCurrentJob();
                     if (job == null)
                     {
-                        return NotFound($"Job {jobId} not found");
+                        throw new InvalidOperationException("No job is currently available to resume");
                     }
 
                     var success = job.Resume();
-                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job resumed successfully" : job.LastError });
+                    return new JobOperationResponse 
+                    { 
+                        Success = success, 
+                        JobId = job.JobId, 
+                        Message = success ? "Job resumed successfully" : job.LastError ?? "Unknown error",
+                        Error = success ? null : job.LastError
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new JobOperationResponse 
+                { 
+                    Success = false, 
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
         /// <summary>
-        /// Pause specific job execution
+        /// Pause current job execution
         /// </summary>
-        /// <param name="jobId">Job ID to pause</param>
         /// <returns>Pause operation success</returns>
-        [HttpPost("Jobs/{jobId}/Pause")]
-        public IActionResult PauseJob(string jobId)
+        [HttpPost("Pause")]
+        public JobOperationResponse PauseCurrentJob()
         {
             try
             {
                 lock (_jobsLock)
                 {
-                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = GetCurrentJob();
                     if (job == null)
                     {
-                        return NotFound($"Job {jobId} not found");
+                        throw new InvalidOperationException("No job is currently running to pause");
                     }
 
                     var success = job.Pause();
-                    return Ok(new { Success = success, JobId = jobId, Message = success ? "Job paused successfully" : job.LastError });
+                    return new JobOperationResponse 
+                    { 
+                        Success = success, 
+                        JobId = job.JobId, 
+                        Message = success ? "Job paused successfully" : job.LastError ?? "Unknown error",
+                        Error = success ? null : job.LastError
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new JobOperationResponse 
+                { 
+                    Success = false, 
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
         /// <summary>
-        /// Resume job execution at specific line
+        /// Resume current job execution at specific line
         /// </summary>
-        /// <param name="jobId">Job ID to resume</param>
         /// <param name="lineNumber">Line number to resume at</param>
         /// <returns>Resume operation success</returns>
-        [HttpPost("Jobs/{jobId}/ResumeAt/{lineNumber}")]
-        public IActionResult ResumeJobAt(string jobId, int lineNumber)
+        [HttpPost("ResumeAt/{lineNumber}")]
+        public ResumeJobAtResponse ResumeCurrentJobAt(int lineNumber)
         {
             try
             {
                 if (lineNumber <= 0)
                 {
-                    return BadRequest(new { Success = false, Error = "Line number must be greater than 0" });
+                    throw new ArgumentException("Line number must be greater than 0");
                 }
 
                 lock (_jobsLock)
                 {
-                    var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
+                    var job = GetCurrentJob();
                     if (job == null)
                     {
-                        return NotFound($"Job {jobId} not found");
+                        throw new InvalidOperationException("No job is currently available to resume");
                     }
 
                     var success = job.ResumeAt(lineNumber);
-                    return Ok(new { Success = success, JobId = jobId, LineNumber = lineNumber, Message = success ? $"Job resumed at line {lineNumber}" : job.LastError });
+                    return new ResumeJobAtResponse 
+                    { 
+                        Success = success, 
+                        JobId = job.JobId, 
+                        LineNumber = lineNumber, 
+                        Message = success ? $"Job resumed at line {lineNumber}" : job.LastError ?? "Unknown error",
+                        Error = success ? null : job.LastError
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new ResumeJobAtResponse 
+                { 
+                    Success = false, 
+                    JobId = "",
+                    LineNumber = lineNumber,
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
@@ -432,13 +536,13 @@ namespace HavenCNCServer.Controllers
         /// <param name="gcodeParameterString">Optional parameter string to pass to the G-code program</param>
         /// <returns>Job creation and start result</returns>
         [HttpPost("RunGCode")]
-        public async Task<IActionResult> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
+        public async Task<RunGCodeResponse> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
         {
             try
             {
                 if (gCodeLines == null || gCodeLines.Length == 0)
                 {
-                    return BadRequest(new { Success = false, Error = "G-code lines cannot be null or empty" });
+                    throw new ArgumentException("G-code lines cannot be null or empty");
                 }
 
                 // Create a new CNC job
@@ -458,13 +562,35 @@ namespace HavenCNCServer.Controllers
                     shouldStartNow = startImmediately && _jobs.Count == 1;
                 }
 
-                var result = new
+                // Push job started event
+                var jobStartedEvent = new JobStartedEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = $"G-code job created with {gCodeLines.Length} lines",
+                    JobId = job.JobId,
+                    GCodeLines = gCodeLines,
+                    TotalLines = gCodeLines.Length,
+                    IsStepRunMode = false,
+                    FilePath = null // Jobs from array don't have a file path
+                };
+                CNCJobInfoListener.PushCustomEvent(jobStartedEvent);
+
+                var jobDetails = new JobDetails
                 {
                     JobId = job.JobId,
+                    LineNumber = job.LineNumber,
+                    CurrentLine = job.CurrentLine,
+                    IsRunning = job.IsRunning,
+                    IsPaused = job.IsPaused,
+                    IsComplete = job.IsComplete,
+                    CreatedAt = job.CreatedAt,
+                    StartedAt = job.StartedAt,
+                    CompletedAt = job.CompletedAt,
                     TotalLines = job.TotalLines,
                     FilePath = job.FilePath,
-                    CreatedAt = job.CreatedAt,
-                    StartImmediately = shouldStartNow
+                    LastError = job.LastError,
+                    IsStepRunMode = job.IsStepRunMode,
+                    StepLineNumber = job.StepLineNumber
                 };
 
                 if (shouldStartNow)
@@ -472,30 +598,27 @@ namespace HavenCNCServer.Controllers
                     var startSuccess = await job.StartAsync();
                     if (!startSuccess)
                     {
-                        return BadRequest(new 
+                        return new RunGCodeResponse
                         { 
                             Success = false, 
                             JobId = job.JobId,
                             Error = job.LastError ?? "Failed to start job",
-                            Job = result
-                        });
+                            Message = job.LastError ?? "Failed to start job",
+                            Job = jobDetails
+                        };
                     }
 
-                    return Ok(new 
+                    // Update job details after starting
+                    jobDetails.StartedAt = job.StartedAt;
+                    jobDetails.IsRunning = job.IsRunning;
+
+                    return new RunGCodeResponse
                     { 
                         Success = true, 
                         JobId = job.JobId,
                         Message = "Job created and started successfully",
-                        Job = new
-                        {
-                            JobId = job.JobId,
-                            TotalLines = job.TotalLines,
-                            FilePath = job.FilePath,
-                            CreatedAt = job.CreatedAt,
-                            StartedAt = job.StartedAt,
-                            IsRunning = job.IsRunning
-                        }
-                    });
+                        Job = jobDetails
+                    };
                 }
                 else
                 {
@@ -503,18 +626,25 @@ namespace HavenCNCServer.Controllers
                         "Job created and queued (jobs ahead in queue)" : 
                         "Job created successfully (not started)";
                         
-                    return Ok(new 
+                    return new RunGCodeResponse
                     { 
                         Success = true, 
                         JobId = job.JobId,
                         Message = message,
-                        Job = result
-                    });
+                        Job = jobDetails
+                    };
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new RunGCodeResponse 
+                { 
+                    Success = false, 
+                    Error = ex.Message,
+                    Message = ex.Message,
+                    JobId = "",
+                    Job = new JobDetails()
+                };
             }
         }
 
@@ -524,20 +654,25 @@ namespace HavenCNCServer.Controllers
         /// <param name="gcode">G-code command to run</param>
         /// <returns>Command execution result</returns>
         [HttpPost("RunGCodeCommand")]
-        public async Task<IActionResult> RunGCodeCommand([FromBody] string gcode)
+        public async Task<RunGCodeCommandResponse> RunGCodeCommand([FromBody] string gcode)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(gcode))
                 {
-                    return BadRequest(new { Success = false, Error = "G-code command cannot be empty" });
+                    throw new ArgumentException("G-code command cannot be empty");
                 }
 
                 // Clean the command (remove extra whitespace and comments)
                 var cleanCommand = gcode.Trim();
                 if (cleanCommand.StartsWith(";") || cleanCommand.StartsWith("("))
                 {
-                    return Ok(new { Success = true, Message = "Comment ignored successfully", Command = gcode });
+                    return new RunGCodeCommandResponse 
+                    { 
+                        Success = true, 
+                        Message = "Comment ignored successfully", 
+                        Command = gcode 
+                    };
                 }
 
                 // Log the command we're about to execute
@@ -547,11 +682,26 @@ namespace HavenCNCServer.Controllers
                 // Convert single command to array and call the main RunGCode method
                 // This ensures we have only one code path for G-code execution
                 string[] gCodeLines = { cleanCommand };
-                return await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null);
+                var result = await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null);
+                
+                return new RunGCodeCommandResponse
+                {
+                    Success = result.Success,
+                    Message = result.Message,
+                    Command = gcode,
+                    Job = result.Success ? result.Job : null,
+                    Error = result.Error
+                };
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Success = false, Error = ex.Message });
+                return new RunGCodeCommandResponse 
+                { 
+                    Success = false, 
+                    Error = ex.Message,
+                    Message = ex.Message,
+                    Command = gcode ?? ""
+                };
             }
         }
 
@@ -607,26 +757,139 @@ namespace HavenCNCServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Get current job status including step run information
+        /// </summary>
+        /// <returns>Current job details</returns>
+        [HttpGet("GetCurrentJobStatus")]
+        public JobDetails? GetCurrentJobStatus()
+        {
+            try
+            {
+                lock (_jobsLock)
+                {
+                    var currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        return null;
+                    }
+
+                    return new JobDetails
+                    {
+                        JobId = currentJob.JobId,
+                        LineNumber = currentJob.LineNumber,
+                        CurrentLine = currentJob.CurrentLine,
+                        IsRunning = currentJob.IsRunning,
+                        IsPaused = currentJob.IsPaused,
+                        IsComplete = currentJob.IsComplete,
+                        CreatedAt = currentJob.CreatedAt,
+                        StartedAt = currentJob.StartedAt,
+                        CompletedAt = currentJob.CompletedAt,
+                        TotalLines = currentJob.TotalLines,
+                        FilePath = currentJob.FilePath,
+                        LastError = currentJob.LastError,
+                        IsStepRunMode = currentJob.IsStepRunMode,
+                        StepLineNumber = currentJob.StepLineNumber
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get current job status: {ex.Message}", ex);
+            }
+        }
+
         #endregion
 
         #region Step Run Control
 
         /// <summary>
-        /// Start step run mode
+        /// Start step run mode with G-code
         /// </summary>
-        /// <returns>Step run start success</returns>
+        /// <param name="gCodeLines">Array of G-code lines to execute in step mode</param>
+        /// <param name="gcodeParameterString">Optional parameter string</param>
+        /// <returns>Job creation result</returns>
         [HttpPost("StartStepRun")]
-        public bool StartStepRun()
+        public RunGCodeResponse StartStepRun([FromBody] string[] gCodeLines, [FromQuery] string? gcodeParameterString = null)
         {
             try
             {
-                // TODO: Implement start step run functionality using CentroidAPI
-                // return CNCUtils.StartStepRunMode();
-                throw new NotImplementedException("Start step run functionality not yet implemented");
+                if (gCodeLines == null || gCodeLines.Length == 0)
+                {
+                    throw new ArgumentException("G-code lines cannot be null or empty");
+                }
+
+                // Check if there's already a job running
+                lock (_jobsLock)
+                {
+                    var currentJob = GetCurrentJob();
+                    if (currentJob != null && currentJob.IsRunning)
+                    {
+                        throw new InvalidOperationException("Cannot start step run mode while another job is running");
+                    }
+                }
+
+                // Create a new job in step run mode
+                CNCJob job;
+                lock (_jobsLock)
+                {
+                    job = CNCJob.CreateStepRunJob(gCodeLines, gcodeParameterString);
+                    
+                    // Set up completion callback to handle job completion
+                    job.OnJobCompleted = OnJobCompleted;
+                    
+                    _jobs.Add(job);
+                }
+
+                // Push job started event
+                var jobStartedEvent = new JobStartedEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = $"Step run job started with {gCodeLines.Length} lines",
+                    JobId = job.JobId,
+                    GCodeLines = gCodeLines,
+                    TotalLines = gCodeLines.Length,
+                    IsStepRunMode = true,
+                    FilePath = null // Step run jobs are created from array, not file
+                };
+                CNCJobInfoListener.PushCustomEvent(jobStartedEvent);
+
+                var jobDetails = new JobDetails
+                {
+                    JobId = job.JobId,
+                    LineNumber = job.LineNumber,
+                    CurrentLine = job.CurrentLine,
+                    IsRunning = job.IsRunning,
+                    IsPaused = job.IsPaused,
+                    IsComplete = job.IsComplete,
+                    CreatedAt = job.CreatedAt,
+                    StartedAt = job.StartedAt,
+                    CompletedAt = job.CompletedAt,
+                    TotalLines = job.TotalLines,
+                    FilePath = job.FilePath,
+                    LastError = job.LastError,
+                    IsStepRunMode = job.IsStepRunMode,
+                    StepLineNumber = job.StepLineNumber
+                };
+
+                return new RunGCodeResponse
+                { 
+                    Success = true, 
+                    JobId = job.JobId,
+                    Message = $"Step run job created successfully with {gCodeLines.Length} lines",
+                    Job = jobDetails
+                };
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to start step run mode: {ex.Message}", ex);
+                return new RunGCodeResponse 
+                { 
+                    Success = false, 
+                    Error = ex.Message,
+                    Message = ex.Message,
+                    JobId = "",
+                    Job = new JobDetails()
+                };
             }
         }
 
@@ -635,17 +898,50 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Step run end success</returns>
         [HttpPost("EndStepRun")]
-        public bool EndStepRun()
+        public JobOperationResponse EndStepRun()
         {
             try
             {
-                // TODO: Implement end step run functionality using CentroidAPI
-                // return CNCUtils.EndStepRunMode();
-                throw new NotImplementedException("End step run functionality not yet implemented");
+                lock (_jobsLock)
+                {
+                    var currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        throw new InvalidOperationException("No job available to end step run mode");
+                    }
+
+                    if (!currentJob.IsStepRunMode)
+                    {
+                        throw new InvalidOperationException("Current job is not in step run mode");
+                    }
+
+                    var success = currentJob.EndStepRun();
+                    
+                    // Remove the job from the list since step run is ending
+                    if (success)
+                    {
+                        currentJob.Dispose();
+                        _jobs.Remove(currentJob);
+                    }
+
+                    return new JobOperationResponse
+                    {
+                        Success = success,
+                        JobId = currentJob.JobId,
+                        Message = success ? "Step run mode ended successfully" : currentJob.LastError ?? "Unknown error",
+                        Error = success ? null : currentJob.LastError
+                    };
+                }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to end step run mode: {ex.Message}", ex);
+                return new JobOperationResponse
+                {
+                    Success = false,
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
@@ -654,17 +950,79 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Next step execution success</returns>
         [HttpPost("StepRunNext")]
-        public bool StepRunNext()
+        public JobOperationResponse StepRunNext()
         {
             try
             {
-                // TODO: Implement step run next functionality using CentroidAPI
-                // return CNCUtils.ExecuteNextStep();
-                throw new NotImplementedException("Step run next functionality not yet implemented");
+                CNCJob currentJob;
+                lock (_jobsLock)
+                {
+                    currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        throw new InvalidOperationException("No job available for step execution");
+                    }
+
+                    if (!currentJob.IsStepRunMode)
+                    {
+                        throw new InvalidOperationException("Current job is not in step run mode");
+                    }
+                }
+
+                // Send "about to execute" step event
+                var aboutToExecuteEvent = new StepExecutionEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = $"About to execute step {currentJob.StepLineNumber}",
+                    JobId = currentJob.JobId,
+                    LineNumber = currentJob.StepLineNumber,
+                    CurrentLine = currentJob.CurrentLine,
+                    TotalLines = currentJob.TotalLines,
+                    IsLastStep = currentJob.StepLineNumber >= currentJob.TotalLines,
+                    Status = StepExecutionStatus.AboutToExecute
+                };
+                CNCJobInfoListener.PushCustomEvent(aboutToExecuteEvent);
+
+                // Execute outside the lock to avoid blocking
+                var success = currentJob.ExecuteNextStep();
+                
+                // Send step execution event
+                var stepEvent = new StepExecutionEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = success ? "Step executed successfully" : "Step execution failed",
+                    JobId = currentJob.JobId,
+                    LineNumber = currentJob.StepLineNumber,
+                    CurrentLine = currentJob.CurrentLine,
+                    TotalLines = currentJob.TotalLines,
+                    IsLastStep = currentJob.IsComplete,
+                    Status = success ? 
+                        (currentJob.IsComplete ? StepExecutionStatus.Completed : StepExecutionStatus.Completed) : 
+                        StepExecutionStatus.Failed
+                };
+                CNCJobInfoListener.PushCustomEvent(stepEvent);
+                
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = currentJob.JobId,
+                    Message = success 
+                        ? (currentJob.IsComplete 
+                            ? "Step run completed - all steps executed" 
+                            : $"Step {currentJob.StepLineNumber - 1}/{currentJob.TotalLines} executed: {currentJob.CurrentLine}")
+                        : currentJob.LastError ?? "Unknown error",
+                    Error = success ? null : currentJob.LastError
+                };
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to execute next step: {ex.Message}", ex);
+                return new JobOperationResponse
+                {
+                    Success = false,
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 
@@ -673,17 +1031,75 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <returns>Run from step success</returns>
         [HttpPost("RunFromCurrentStep")]
-        public bool RunFromCurrentStep()
+        public JobOperationResponse RunFromCurrentStep()
         {
             try
             {
-                // TODO: Implement run from current step functionality using CentroidAPI
-                // return CNCUtils.RunFromCurrentStep();
-                throw new NotImplementedException("Run from current step functionality not yet implemented");
+                CNCJob currentJob;
+                lock (_jobsLock)
+                {
+                    currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        throw new InvalidOperationException("No job available to run from current step");
+                    }
+
+                    if (!currentJob.IsStepRunMode)
+                    {
+                        throw new InvalidOperationException("Current job is not in step run mode");
+                    }
+                }
+
+                // Send "about to execute" step event for run from current step
+                var aboutToExecuteEvent = new StepExecutionEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = $"About to run from step {currentJob.StepLineNumber} to completion",
+                    JobId = currentJob.JobId,
+                    LineNumber = currentJob.StepLineNumber,
+                    CurrentLine = currentJob.CurrentLine,
+                    TotalLines = currentJob.TotalLines,
+                    IsLastStep = currentJob.StepLineNumber >= currentJob.TotalLines,
+                    Status = StepExecutionStatus.AboutToExecute
+                };
+                CNCJobInfoListener.PushCustomEvent(aboutToExecuteEvent);
+
+                // Execute outside the lock to avoid blocking
+                var success = currentJob.RunFromCurrentStep();
+                
+                // Send step execution event for run from current step
+                var stepEvent = new StepExecutionEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Message = success ? "Running from current step to completion" : "Run from current step failed",
+                    JobId = currentJob.JobId,
+                    LineNumber = currentJob.StepLineNumber,
+                    CurrentLine = currentJob.CurrentLine,
+                    TotalLines = currentJob.TotalLines,
+                    IsLastStep = currentJob.IsComplete,
+                    Status = success ? StepExecutionStatus.Executing : StepExecutionStatus.Failed
+                };
+                CNCJobInfoListener.PushCustomEvent(stepEvent);
+                
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = currentJob.JobId,
+                    Message = success 
+                        ? $"Running from step {currentJob.StepLineNumber} to completion"
+                        : currentJob.LastError ?? "Unknown error",
+                    Error = success ? null : currentJob.LastError
+                };
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to run from current step: {ex.Message}", ex);
+                return new JobOperationResponse
+                {
+                    Success = false,
+                    JobId = "",
+                    Error = ex.Message,
+                    Message = ex.Message
+                };
             }
         }
 

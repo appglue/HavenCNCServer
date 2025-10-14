@@ -2511,73 +2511,194 @@
         }
       }
     },
+    "/api/CNCProgram/Jobs": {
+      "get": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Get all active jobs",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/{jobId}": {
+      "get": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Get specific job details",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/{jobId}/Start": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Start a specific job",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID to start",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/Cleanup": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Clean up completed jobs",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Queue": {
+      "get": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Get queue status",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/{jobId}/Stop": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Stop specific job execution",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID to stop",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/CNCProgram/Stop": {
       "post": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Stop G-code execution",
+        "summary": "Stop all running jobs",
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/CNCProgram/Resume": {
+    "/api/CNCProgram/Jobs/{jobId}/Resume": {
       "post": {
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Resume G-code execution",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCProgram/ResumeAt/{lineNumber}": {
-      "post": {
-        "tags": [
-          "CNCProgram"
-        ],
-        "summary": "Resume G-code execution at specific line",
+        "summary": "Resume specific job execution",
         "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID to resume",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/{jobId}/Pause": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Pause specific job execution",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID to pause",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/Jobs/{jobId}/ResumeAt/{lineNumber}": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Resume job execution at specific line",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID to resume",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "lineNumber",
             "in": "path",
@@ -2591,24 +2712,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -2618,12 +2722,12 @@
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Run G-code from array of lines",
+        "summary": "Create a new G-code job from array of lines",
         "parameters": [
           {
             "name": "startImmediately",
             "in": "query",
-            "description": "Whether to start execution immediately or just load the program",
+            "description": "Whether to start execution immediately or just create the job",
             "schema": {
               "type": "boolean",
               "default": true
@@ -2669,24 +2773,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -2719,24 +2806,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -4520,6 +4590,15 @@
         "additionalProperties": false,
         "description": "Request model for directional movement until an event"
       },
+      "MoveStrategy": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Movement strategies for multi-axis moves",
+        "format": "int32"
+      },
       "MoveToRequest": {
         "type": "object",
         "properties": {
@@ -4537,6 +4616,9 @@
             "description": "Z movement speed (optional)",
             "format": "double",
             "nullable": true
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/MoveStrategy"
           }
         },
         "additionalProperties": false,
@@ -4559,6 +4641,9 @@
             "description": "Z movement speed (optional)",
             "format": "double",
             "nullable": true
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/MoveStrategy"
           },
           "event": {
             "$ref": "#/components/schemas/IOEvent"

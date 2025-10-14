@@ -82,4 +82,20 @@ namespace HavenCNCServer.Models
         /// </summary>
         Absolute
     }
+
+    /// <summary>
+    /// Movement strategies for multi-axis moves
+    /// </summary>
+    public enum MoveStrategy
+    {
+        /// <summary>
+        /// Move all axes simultaneously in a straight line
+        /// </summary>
+        Direct,
+
+        /// <summary>
+        /// Move Z-axis first, then XY axes
+        /// </summary>
+        ZFirst
+    }
 }

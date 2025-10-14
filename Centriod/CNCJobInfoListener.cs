@@ -189,6 +189,165 @@ namespace HavenCNCServer.Services
     }
 
     /// <summary>
+    /// Event fired when a job is started with G-code
+    /// </summary>
+    public class JobStartedEvent : ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the job started
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        
+        /// <summary>
+        /// Message associated with the job start event
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Unique identifier for the job
+        /// </summary>
+        public string JobId { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// G-code lines for the job
+        /// </summary>
+        public string[] GCodeLines { get; set; } = Array.Empty<string>();
+        
+        /// <summary>
+        /// Total number of lines in the job
+        /// </summary>
+        public int TotalLines { get; set; }
+        
+        /// <summary>
+        /// Whether this is a step run job
+        /// </summary>
+        public bool IsStepRunMode { get; set; }
+        
+        /// <summary>
+        /// File path if job was loaded from file
+        /// </summary>
+        public string? FilePath { get; set; }
+    }
+
+    /// <summary>
+    /// Event fired when a job is completed
+    /// </summary>
+    public class JobCompletedEvent : ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the job completed
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        
+        /// <summary>
+        /// Message associated with the job completion event
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Unique identifier for the job
+        /// </summary>
+        public string JobId { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Whether the job completed successfully
+        /// </summary>
+        public bool Success { get; set; }
+        
+        /// <summary>
+        /// Error message if job failed
+        /// </summary>
+        public string? ErrorMessage { get; set; }
+        
+        /// <summary>
+        /// Duration of job execution
+        /// </summary>
+        public TimeSpan Duration { get; set; }
+        
+        /// <summary>
+        /// Total lines executed
+        /// </summary>
+        public int LinesExecuted { get; set; }
+    }
+
+    /// <summary>
+    /// Event fired during step run execution to indicate current line
+    /// </summary>
+    public class StepExecutionEvent : ICentroidEvent
+    {
+        /// <summary>
+        /// Timestamp when the step was executed
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        
+        /// <summary>
+        /// Message associated with the step execution
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Unique identifier for the job
+        /// </summary>
+        public string JobId { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Current line number being executed (1-based)
+        /// </summary>
+        public int LineNumber { get; set; }
+        
+        /// <summary>
+        /// The G-code line being executed
+        /// </summary>
+        public string CurrentLine { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Total number of lines in the job
+        /// </summary>
+        public int TotalLines { get; set; }
+        
+        /// <summary>
+        /// Whether this is the last step in the job
+        /// </summary>
+        public bool IsLastStep { get; set; }
+        
+        /// <summary>
+        /// Step execution status
+        /// </summary>
+        public StepExecutionStatus Status { get; set; }
+    }
+
+    /// <summary>
+    /// Status of step execution
+    /// </summary>
+    public enum StepExecutionStatus
+    {
+        /// <summary>
+        /// Step is about to be executed
+        /// </summary>
+        AboutToExecute,
+        
+        /// <summary>
+        /// Step is currently executing
+        /// </summary>
+        Executing,
+        
+        /// <summary>
+        /// Step completed successfully
+        /// </summary>
+        Completed,
+        
+        /// <summary>
+        /// Step failed with error
+        /// </summary>
+        Failed,
+        
+        /// <summary>
+        /// Step was skipped
+        /// </summary>
+        Skipped
+    }
+
+    /// <summary>
     /// Interface for listening to CNC events
     /// </summary>
     public interface ICNCEventListener
@@ -371,6 +530,40 @@ namespace HavenCNCServer.Services
                 int count = _eventListeners.Count;
                 _eventListeners.Clear();
                 LogInfo($"Cleared all CNC event listeners ({count} listeners removed)", "JobInfo");
+            }
+        }
+
+        /// <summary>
+        /// Push a custom event to all registered listeners
+        /// </summary>
+        /// <param name="customEvent">The custom event to push to listeners</param>
+        public static void PushCustomEvent(ICentroidEvent customEvent)
+        {
+            if (customEvent == null)
+            {
+                LogWarning("Attempted to push null custom event", "JobInfo");
+                return;
+            }
+
+            try
+            {
+                // Set timestamp if not already set
+                if (customEvent.Timestamp == default)
+                {
+                    customEvent.Timestamp = DateTime.Now;
+                }
+
+                // Notify all listeners
+                NotifyListeners(customEvent);
+                
+                // Store the event in message history
+                StoreMessage(customEvent, "CustomEvent");
+                
+                LogDebug($"Pushed custom event: {customEvent.GetType().Name} - {customEvent.Message}", "JobInfo");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error pushing custom event {customEvent.GetType().Name}: {ex.Message}", "JobInfo");
             }
         }
 

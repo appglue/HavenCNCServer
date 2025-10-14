@@ -26,6 +26,7 @@ namespace HavenCNCServer
         private ICNCServerManager? _cncServerManager;
         private CoordinateDisplayListener? _coordinateListener;
         private CNCMessageDisplayListener? _messageListener;
+        private GCodeDisplayListener? _gcodeListener;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -71,40 +72,61 @@ namespace HavenCNCServer
             // Set up CNC message display listener
             SetupMessageDisplay();
             
+            // Set up G-code display listener
+            SetupGCodeDisplay();
+            
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
             this.Resize += MainForm_Resize;
         }
 
         /// <summary>
-        /// Set up the 50/50 layout for messages and logs
+        /// Set up the three-column layout for logs, messages, and G-code
         /// </summary>
         private void SetupLayout()
         {
-            // This will be called in MainForm_Resize to dynamically adjust the layout
+            // Subscribe to resize event to maintain proper layout
+            this.Resize += MainForm_Resize;
+            
+            // Initial layout setup will be done in resize handler
+            MainForm_Resize(null, EventArgs.Empty);
         }
 
         /// <summary>
-        /// Handle form resize to maintain 50/50 split between messages and logs
+        /// Handle form resize to maintain three-column split between logs, messages, and G-code
         /// </summary>
         private void MainForm_Resize(object? sender, EventArgs e)
         {
-            if (txtLog != null && txtMessages != null && pnlControls != null)
+            if (txtLog != null && txtMessages != null && txtGCode != null && pnlControls != null)
             {
-                var availableWidth = this.ClientSize.Width - 24; // Account for margins
-                var halfWidth = availableWidth / 2 - 6; // Account for gap between controls
+                var availableWidth = this.ClientSize.Width - 36; // Account for margins
+                var columnWidth = availableWidth / 3 - 8; // Account for gaps between controls
                 
-                // Update log section (left 50%)
-                txtLog.Width = halfWidth;
+                // Update log section (left column)
+                txtLog.Width = columnWidth;
                 
-                // Update messages section (right 50%)
+                // Update messages section (center column)
                 txtMessages.Left = txtLog.Right + 12; // 12px gap
-                txtMessages.Width = halfWidth;
+                txtMessages.Width = columnWidth;
+                
+                // Update G-code section (right column)
+                txtGCode.Left = txtMessages.Right + 12; // 12px gap
+                txtGCode.Width = columnWidth;
                 
                 // Update labels accordingly
                 if (lblMessages != null)
                 {
                     lblMessages.Left = txtMessages.Left;
+                }
+                
+                if (lblGCode != null)
+                {
+                    lblGCode.Left = txtGCode.Left;
+                }
+                
+                if (lblCurrentJob != null)
+                {
+                    lblCurrentJob.Left = txtGCode.Left;
                 }
             }
         }
@@ -166,6 +188,64 @@ namespace HavenCNCServer
             catch (Exception ex)
             {
                 LogError($"Failed to setup message display: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Set up the G-code display and job monitoring
+        /// </summary>
+        private void SetupGCodeDisplay()
+        {
+            try
+            {
+                // Create G-code display listener
+                _gcodeListener = new GCodeDisplayListener(this);
+                
+                // Register listener with CNC job info listener
+                CNCJobInfoListener.AddListener(_gcodeListener);
+                
+                // Initialize the G-code display
+                txtGCode.Clear();
+                txtGCode.ReadOnly = true; // Make it read-only for display purposes
+                lblCurrentJob.Text = "No active job";
+                
+                LogInfo("G-code display listener registered", "GCodeDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to setup G-code display: {ex.Message}", "GCodeDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Load G-code into the display panel
+        /// </summary>
+        public void LoadGCodeForDisplay(string[] gcode)
+        {
+            try
+            {
+                _gcodeListener?.LoadGCode(gcode);
+                LogInfo($"Loaded {gcode?.Length ?? 0} lines of G-code for display", "GCodeDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error loading G-code for display: {ex.Message}", "GCodeDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Clear the G-code display
+        /// </summary>
+        public void ClearGCodeDisplay()
+        {
+            try
+            {
+                _gcodeListener?.ClearGCode();
+                LogInfo("G-code display cleared", "GCodeDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error clearing G-code display: {ex.Message}", "GCodeDisplay");
             }
         }
 
@@ -581,25 +661,107 @@ namespace HavenCNCServer
         {
             try
             {
+                LogInfo("Application shutdown initiated", "System");
+                
+                // Cancel all background tasks first
+                _cancellationTokenSource?.Cancel();
+                
+                // Stop CNC Job Info Listener
+                LogInfo("Stopping CNC Job Info Listener...", "System");
+                CNCJobInfoListener.StopListening();
+                
+                // Clear all event listeners to prevent callbacks during shutdown
+                CNCJobInfoListener.ClearAllListeners();
+                
+                // Stop web host first
+                if (_webHost != null)
+                {
+                    LogInfo("Stopping web host...", "System");
+                    try
+                    {
+                        var stopWebTask = Task.Run(async () => 
+                        {
+                            await _webHost.StopAsync(TimeSpan.FromSeconds(3));
+                            _webHost.Dispose();
+                        });
+                        
+                        if (!stopWebTask.Wait(5000))
+                        {
+                            LogWarning("Web host stop operation timed out after 5 seconds", "System");
+                        }
+                        else
+                        {
+                            LogInfo("Web host stopped successfully", "System");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error stopping web host: {ex.Message}", "System");
+                    }
+                    finally
+                    {
+                        _webHost = null;
+                    }
+                }
+                
                 // Stop CNC Server Manager if it's still running
                 if (_cncServerManager != null)
                 {
-                    // This is synchronous cleanup in form closing
-                    Task.Run(async () => await _cncServerManager.StopManagementAsync()).Wait(5000);
-                    LogInfo("CNC Server Manager cleanup completed", "System");
+                    LogInfo("Stopping CNC Server Manager...", "System");
+                    try
+                    {
+                        var stopTask = Task.Run(async () => await _cncServerManager.StopManagementAsync());
+                        if (!stopTask.Wait(5000))
+                        {
+                            LogWarning("CNC Server Manager stop operation timed out after 5 seconds", "System");
+                        }
+                        else
+                        {
+                            LogInfo("CNC Server Manager cleanup completed", "System");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error stopping CNC Server Manager: {ex.Message}", "System");
+                    }
+                    finally
+                    {
+                        _cncServerManager = null;
+                    }
                 }
                 
                 // Unsubscribe from CNC events
                 CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
                 
                 // Cleanup the CNC connection manager
+                LogInfo("Disconnecting CNC connection...", "System");
                 CNCConnectionManager.Disconnect();
                 
-                LogInfo("Application shutting down", "System");
+                // Wait a moment for any final cleanup
+                Thread.Sleep(500);
+                
+                // Force garbage collection to clean up any remaining resources
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                
+                LogInfo("Application shutdown completed", "System");
             }
             catch (Exception ex)
             {
                 LogError($"Error during shutdown cleanup: {ex.Message}", "System");
+            }
+            finally
+            {
+                // Ensure cancellation token is disposed
+                try
+                {
+                    _cancellationTokenSource?.Dispose();
+                    _cancellationTokenSource = null;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error disposing cancellation token: {ex.Message}", "System");
+                }
             }
 
             base.OnFormClosing(e);
@@ -1258,6 +1420,290 @@ namespace HavenCNCServer
                 catch (Exception ex)
                 {
                     LogError($"Error trimming old messages: {ex.Message}", "MessageDisplay");
+                }
+            }
+        }
+
+        /// <summary>
+        /// G-code display listener that shows current job G-code with line highlighting
+        /// </summary>
+        private class GCodeDisplayListener : ICNCEventListener
+        {
+            private readonly MainForm _mainForm;
+            private string[] _currentGCode = Array.Empty<string>();
+            private int _currentLineNumber = 0;
+
+            public GCodeDisplayListener(MainForm mainForm)
+            {
+                _mainForm = mainForm;
+            }
+
+            public void EventReceived(ICentroidEvent centroidEvent)
+            {
+                // Prioritize our custom StepExecutionEvent for accurate line tracking
+                if (centroidEvent is StepExecutionEvent stepEvent)
+                {
+                    // Handle step execution event (most accurate for G-code display)
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => HandleStepExecution(stepEvent)));
+                    }
+                    else
+                    {
+                        HandleStepExecution(stepEvent);
+                    }
+                }
+                else if (centroidEvent is JobStartedEvent jobStartedEvent)
+                {
+                    // Handle job started event
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => HandleJobStarted(jobStartedEvent)));
+                    }
+                    else
+                    {
+                        HandleJobStarted(jobStartedEvent);
+                    }
+                }
+                else if (centroidEvent is JobCompletedEvent jobCompletedEvent)
+                {
+                    // Handle job completed event
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => HandleJobCompleted(jobCompletedEvent)));
+                    }
+                    else
+                    {
+                        HandleJobCompleted(jobCompletedEvent);
+                    }
+                }
+                else if (centroidEvent is JobInfoEvent jobEvent)
+                {
+                    // Fallback to JobInfoEvent only if no StepExecutionEvent is available
+                    // This ensures compatibility with existing CNC system events
+                    if (_mainForm.InvokeRequired)
+                    {
+                        _mainForm.Invoke(new Action(() => UpdateGCodeDisplayFallback(jobEvent)));
+                    }
+                    else
+                    {
+                        UpdateGCodeDisplayFallback(jobEvent);
+                    }
+                }
+            }
+
+            private void UpdateGCodeDisplayFallback(JobInfoEvent jobEvent)
+            {
+                try
+                {
+                    // Update current line number
+                    _currentLineNumber = jobEvent.LineNumber;
+
+                    // Update current job label
+                    _mainForm.lblCurrentJob.Text = $"Current Job: Line {_currentLineNumber} - {jobEvent.JobName ?? "Unknown"}";
+
+                    // If we have G-code loaded, highlight the current line
+                    if (_currentGCode.Length > 0)
+                    {
+                        DisplayGCodeWithHighlight();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error updating G-code display (fallback): {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void HandleStepExecution(StepExecutionEvent stepEvent)
+            {
+                try
+                {
+                    // Update current line number
+                    _currentLineNumber = stepEvent.LineNumber;
+
+                    // Update job status with step information
+                    var statusText = stepEvent.Status switch
+                    {
+                        StepExecutionStatus.AboutToExecute => "About to execute",
+                        StepExecutionStatus.Executing => "Executing",
+                        StepExecutionStatus.Completed => "Completed",
+                        StepExecutionStatus.Failed => "Failed",
+                        StepExecutionStatus.Skipped => "Skipped",
+                        _ => "Unknown"
+                    };
+
+                    _mainForm.lblCurrentJob.Text = $"Step Run: {stepEvent.JobId} - Line {stepEvent.LineNumber}/{stepEvent.TotalLines} ({statusText})";
+
+                    // If we have G-code loaded, highlight the current line
+                    if (_currentGCode.Length > 0)
+                    {
+                        DisplayGCodeWithHighlight();
+                    }
+
+                    LogDebug($"Step execution event: Line {stepEvent.LineNumber} - {statusText} - {stepEvent.CurrentLine}", "GCodeDisplay");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error handling step execution event: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void HandleJobStarted(JobStartedEvent jobStartedEvent)
+            {
+                try
+                {
+                    // Load the G-code into the display
+                    LoadGCode(jobStartedEvent.GCodeLines);
+                    
+                    // Update job info
+                    _mainForm.lblCurrentJob.Text = $"Job Started: {jobStartedEvent.JobId} ({jobStartedEvent.TotalLines} lines)";
+                    
+                    // Reset current line to start
+                    _currentLineNumber = 1;
+                    
+                    DisplayGCodeWithHighlight();
+                    
+                    LogInfo($"Job started event handled: {jobStartedEvent.JobId}", "GCodeDisplay");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error handling job started event: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void HandleJobCompleted(JobCompletedEvent jobCompletedEvent)
+            {
+                try
+                {
+                    // Update job status
+                    var status = jobCompletedEvent.Success ? "COMPLETED" : "FAILED";
+                    var duration = jobCompletedEvent.Duration.TotalSeconds.ToString("F1");
+                    
+                    _mainForm.lblCurrentJob.Text = $"Job {status}: {jobCompletedEvent.JobId} ({duration}s, {jobCompletedEvent.LinesExecuted} lines)";
+                    
+                    if (!jobCompletedEvent.Success && !string.IsNullOrEmpty(jobCompletedEvent.ErrorMessage))
+                    {
+                        _mainForm.lblCurrentJob.Text += $" - Error: {jobCompletedEvent.ErrorMessage}";
+                    }
+                    
+                    LogInfo($"Job completed event handled: {jobCompletedEvent.JobId} - Success: {jobCompletedEvent.Success}", "GCodeDisplay");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error handling job completed event: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            public void LoadGCode(string[] gcode)
+            {
+                try
+                {
+                    _currentGCode = gcode ?? Array.Empty<string>();
+                    _currentLineNumber = 0;
+
+                    // Display the G-code
+                    DisplayGCodeWithHighlight();
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error loading G-code: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            public void ClearGCode()
+            {
+                try
+                {
+                    _currentGCode = Array.Empty<string>();
+                    _currentLineNumber = 0;
+                    _mainForm.txtGCode.Clear();
+                    _mainForm.lblCurrentJob.Text = "No active job";
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error clearing G-code: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void DisplayGCodeWithHighlight()
+            {
+                try
+                {
+                    if (_currentGCode.Length == 0)
+                    {
+                        _mainForm.txtGCode.Clear();
+                        return;
+                    }
+
+                    // Clear existing text
+                    _mainForm.txtGCode.Clear();
+
+                    // Add each line with appropriate highlighting
+                    for (int i = 0; i < _currentGCode.Length; i++)
+                    {
+                        var lineNumber = i + 1;
+                        var line = _currentGCode[i];
+                        var displayLine = $"{lineNumber:D4}: {line}";
+
+                        // Set color based on whether this is the current line
+                        Color lineColor = lineNumber == _currentLineNumber ? Color.Red : Color.Black;
+                        Color backgroundColor = lineNumber == _currentLineNumber ? Color.Yellow : Color.White;
+
+                        // Add the line with color
+                        AddColoredGCodeLine(displayLine, lineColor, backgroundColor);
+                    }
+
+                    // Scroll to the current line
+                    ScrollToCurrentLine();
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error displaying G-code with highlight: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void AddColoredGCodeLine(string line, Color textColor, Color backgroundColor)
+            {
+                try
+                {
+                    // Move to end and add text
+                    _mainForm.txtGCode.SelectionStart = _mainForm.txtGCode.Text.Length;
+                    _mainForm.txtGCode.SelectionLength = 0;
+                    _mainForm.txtGCode.SelectionColor = textColor;
+                    _mainForm.txtGCode.SelectionBackColor = backgroundColor;
+                    _mainForm.txtGCode.AppendText(line + Environment.NewLine);
+
+                    // Reset colors to default
+                    _mainForm.txtGCode.SelectionColor = Color.Black;
+                    _mainForm.txtGCode.SelectionBackColor = Color.White;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error adding colored G-code line: {ex.Message}", "GCodeDisplay");
+                }
+            }
+
+            private void ScrollToCurrentLine()
+            {
+                try
+                {
+                    if (_currentLineNumber > 0 && _currentGCode.Length > 0)
+                    {
+                        // Calculate the character position of the current line
+                        int charPosition = 0;
+                        for (int i = 0; i < Math.Min(_currentLineNumber - 1, _currentGCode.Length); i++)
+                        {
+                            charPosition += $"{i + 1:D4}: {_currentGCode[i]}".Length + Environment.NewLine.Length;
+                        }
+
+                        // Set selection to the current line
+                        _mainForm.txtGCode.SelectionStart = charPosition;
+                        _mainForm.txtGCode.ScrollToCaret();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error scrolling to current line: {ex.Message}", "GCodeDisplay");
                 }
             }
         }

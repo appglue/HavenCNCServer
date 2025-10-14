@@ -51,6 +51,9 @@ namespace HavenCNCServer
             this.lblZValue = new System.Windows.Forms.Label();
             this.txtMessages = new System.Windows.Forms.RichTextBox();
             this.lblMessages = new System.Windows.Forms.Label();
+            this.txtGCode = new System.Windows.Forms.RichTextBox();
+            this.lblGCode = new System.Windows.Forms.Label();
+            this.lblCurrentJob = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
             this.grpCoordinates.SuspendLayout();
@@ -130,6 +133,40 @@ namespace HavenCNCServer
             this.lblMessages.Size = new System.Drawing.Size(84, 15);
             this.lblMessages.TabIndex = 14;
             this.lblMessages.Text = "CNC Messages:";
+            // 
+            // txtGCode
+            // 
+            this.txtGCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtGCode.Font = new System.Drawing.Font("Courier New", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.txtGCode.Location = new System.Drawing.Point(902, 190);
+            this.txtGCode.Multiline = true;
+            this.txtGCode.Name = "txtGCode";
+            this.txtGCode.ReadOnly = true;
+            this.txtGCode.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.txtGCode.Size = new System.Drawing.Size(430, 480);
+            this.txtGCode.TabIndex = 15;
+            // 
+            // lblGCode
+            // 
+            this.lblGCode.AutoSize = true;
+            this.lblGCode.Location = new System.Drawing.Point(902, 172);
+            this.lblGCode.Name = "lblGCode";
+            this.lblGCode.Size = new System.Drawing.Size(92, 15);
+            this.lblGCode.TabIndex = 16;
+            this.lblGCode.Text = "Current G-Code:";
+            // 
+            // lblCurrentJob
+            // 
+            this.lblCurrentJob.AutoSize = true;
+            this.lblCurrentJob.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblCurrentJob.ForeColor = System.Drawing.Color.DarkBlue;
+            this.lblCurrentJob.Location = new System.Drawing.Point(902, 152);
+            this.lblCurrentJob.Name = "lblCurrentJob";
+            this.lblCurrentJob.Size = new System.Drawing.Size(55, 13);
+            this.lblCurrentJob.TabIndex = 17;
+            this.lblCurrentJob.Text = "No Job";
             // 
             // btnStopServer
             // 
@@ -319,7 +356,10 @@ namespace HavenCNCServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(904, 692);
+            this.ClientSize = new System.Drawing.Size(1344, 692);
+            this.Controls.Add(this.lblCurrentJob);
+            this.Controls.Add(this.lblGCode);
+            this.Controls.Add(this.txtGCode);
             this.Controls.Add(this.lblMessages);
             this.Controls.Add(this.txtMessages);
             this.Controls.Add(this.pnlControls);
@@ -362,5 +402,8 @@ namespace HavenCNCServer
         private System.Windows.Forms.Label lblZValue;
         private System.Windows.Forms.RichTextBox txtMessages;
         private System.Windows.Forms.Label lblMessages;
+        private System.Windows.Forms.RichTextBox txtGCode;
+        private System.Windows.Forms.Label lblGCode;
+        private System.Windows.Forms.Label lblCurrentJob;
     }
 }
