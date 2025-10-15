@@ -23,6 +23,9 @@ namespace HavenCNCServer
     public partial class MainForm : Form
     {
         private CancellationTokenSource? _cancellationTokenSource;
+        private bool _startupComplete = false;
+        private readonly object _startupLock = new object();
+        
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -160,8 +163,13 @@ namespace HavenCNCServer
             
             // Start job listener with background monitoring
             CNCJobInfoListener.Start(cancellationToken);
-
             
+            // Mark startup as complete
+            lock (_startupLock)
+            {
+                _startupComplete = true;
+                LogSuccess("🚀 Application startup completed successfully", "System");
+            }
         }        /// <summary>
         /// Handle CNC connection status changes
         /// </summary>
@@ -206,6 +214,28 @@ namespace HavenCNCServer
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // Check if startup is complete before allowing shutdown
+            lock (_startupLock)
+            {
+                if (!_startupComplete)
+                {
+                    LogWarning("⏳ Startup still in progress - delaying shutdown to prevent race conditions", "System");
+                    e.Cancel = true;
+                    
+                    // Schedule a retry in 500ms
+                    var retryTimer = new System.Windows.Forms.Timer();
+                    retryTimer.Interval = 500;
+                    retryTimer.Tick += (s, args) =>
+                    {
+                        retryTimer.Stop();
+                        retryTimer.Dispose();
+                        this.Close(); // Try closing again
+                    };
+                    retryTimer.Start();
+                    return;
+                }
+            }
+            
             // Cancel the close to handle it asynchronously
             if (!e.Cancel)
             {
@@ -213,13 +243,25 @@ namespace HavenCNCServer
                 
                 LogInfo("🔄 Starting async shutdown process...", "System");
                 
-                // Run shutdown asynchronously but with better error handling
+                // Run shutdown asynchronously but with better error handling and timeout
                 _ = Task.Run(async () =>
                 {
                     try
                     {
                         LogInfo("📍 Background shutdown task started", "System");
-                        await PerformShutdownAsync();
+                        
+                        // Add a timeout to the entire shutdown process
+                        using var shutdownTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                        try
+                        {
+                            await PerformShutdownAsync().WaitAsync(shutdownTimeout.Token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            LogError("⏰ Shutdown process timed out after 10 seconds - forcing exit", "System");
+                            Environment.Exit(1);
+                            return;
+                        }
                         
                         // // Log completion on UI thread
                         // this.Invoke(() => 

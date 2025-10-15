@@ -24,6 +24,7 @@ namespace HavenCNCServer.Centriod.Events
         private static bool _isMonitoringStarted = false;
         private static Thread? _monitoringThread = null;
         private static CancellationTokenSource? _cancellationTokenSource = null;
+        private static bool _isShuttingDown = false; // Add shutdown flag
         
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
@@ -52,6 +53,13 @@ namespace HavenCNCServer.Centriod.Events
         {
             lock (_lock)
             {
+                // Check if shutdown is in progress
+                if (_isShuttingDown)
+                {
+                    LogWarning("Cannot start CNC job listener - shutdown in progress", "JobInfo");
+                    return;
+                }
+                
                 // Check if monitoring is already started
                 if (_isMonitoringStarted)
                 {
@@ -109,13 +117,20 @@ namespace HavenCNCServer.Centriod.Events
                                 }
                             }
                             
-                            // Check every 5 seconds instead of 15 for faster shutdown response
+                            // Check every 1 second with cancellation checks for faster shutdown response
                             try
                             {
-                                // Use shorter interval for more responsive cancellation
-                                if (!cancellationToken.WaitHandle.WaitOne(5000))
+                                // Use much shorter interval for more responsive cancellation (200ms chunks)
+                                for (int i = 0; i < 25; i++) // 25 x 200ms = 5 seconds total
                                 {
-                                    // Timeout occurred, continue loop
+                                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                                        break;
+                                    
+                                    if (_cancellationTokenSource.Token.WaitHandle.WaitOne(200))
+                                    {
+                                        // Cancellation requested
+                                        break;
+                                    }
                                 }
                             }
                             catch (ObjectDisposedException)
@@ -181,6 +196,13 @@ namespace HavenCNCServer.Centriod.Events
         {
             lock (_lock)
             {
+                // Check if shutdown is in progress
+                if (_isShuttingDown)
+                {
+                    LogWarning("Cannot start JOB_INFO listener - shutdown in progress", "JobInfo");
+                    return false;
+                }
+                
                 if (_isListening)
                 {
                     LogWarning("CNC JOB_INFO listener is already running", "JobInfo");
@@ -258,6 +280,17 @@ namespace HavenCNCServer.Centriod.Events
         {
             lock (_lock)
             {
+                // Set shutdown flag immediately to prevent any new operations
+                _isShuttingDown = true;
+                
+                // Early exit if nothing is running
+                if (!_isMonitoringStarted && _monitoringThread == null)
+                {
+                    LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
+                    StopListeningInternal();
+                    return;
+                }
+
                 // Stop the monitoring thread if it's running
                 if (_isMonitoringStarted && _monitoringThread != null)
                 {
@@ -271,32 +304,32 @@ namespace HavenCNCServer.Centriod.Events
                     
                     try
                     {
-                        // Give the thread a chance to exit gracefully
-                        if (_monitoringThread.IsAlive)
+                        // For immediate shutdown - don't wait at all if CNC isn't connected
+                        if (!CNCConnectionManager.IsConnected)
                         {
-                            // Reduced from 2 seconds to 500ms for much faster shutdown
-                            if (!_monitoringThread.Join(500))
+                            LogInfo("CNC not connected - abandoning monitoring thread immediately", "JobInfo");
+                            _monitoringThread = null;
+                        }
+                        else if (_monitoringThread.IsAlive)
+                        {
+                            // Even if connected, use very short timeout (25ms)
+                            if (!_monitoringThread.Join(25))
                             {
-                                LogWarning("Monitoring thread did not exit gracefully within 500ms, forcing termination", "JobInfo");
-                                // Force termination immediately - no more waiting
-                                try
-                                {
-                                    _monitoringThread.Interrupt();
-                                    // Give it only 200ms after interrupt instead of 1 second
-                                    if (!_monitoringThread.Join(200))
-                                    {
-                                        LogWarning("Monitoring thread still running after interrupt, abandoning immediately", "JobInfo");
-                                        // Don't wait any longer - just abandon it
-                                    }
-                                }
-                                catch (Exception interruptEx)
-                                {
-                                    LogError($"Error interrupting monitoring thread: {interruptEx.Message}", "JobInfo");
-                                }
+                                LogWarning("Monitoring thread did not exit within 25ms, abandoning immediately", "JobInfo");
+                                // Don't interrupt, just abandon
+                                _monitoringThread = null;
+                            }
+                            else
+                            {
+                                LogSuccess("Monitoring thread stopped gracefully", "JobInfo");
+                                _monitoringThread = null;
                             }
                         }
+                        else
+                        {
+                            _monitoringThread = null;
+                        }
                         
-                        _monitoringThread = null;
                         LogSuccess("CNC job listener monitoring thread stopped", "JobInfo");
                     }
                     catch (Exception ex)
@@ -1149,6 +1182,5 @@ namespace HavenCNCServer.Centriod.Events
                 return defaultValue;
             }
         }
-
-   }
+    }
 }
