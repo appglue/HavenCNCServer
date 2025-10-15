@@ -37,32 +37,6 @@ namespace HavenCNCServer
             // Update button states initially
             UpdateSingleCommandButtonState();
             UpdateStepRunControls();
-            
-            // Auto-start listener disabled for debugging
-            /*
-            Task.Run(() =>
-            {
-                try
-                {
-                    // Small delay to ensure UI is fully initialized
-                    Thread.Sleep(500);
-                    CNCJobInfoListener.AutoStartIfConnected();
-                    
-                    // Update UI after auto-start attempt
-                    if (!IsDisposed && !Disposing)
-                    {
-                        Invoke(() => UpdateListenerButtonState());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (!IsDisposed && !Disposing)
-                    {
-                        Invoke(() => LogError($"Error auto-starting listener on dialog load: {ex.Message}", "JobInfo"));
-                    }
-                }
-            });
-            */
         }
 
 
