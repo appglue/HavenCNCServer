@@ -294,8 +294,6 @@ namespace HavenCNCServer.Centriod.Events
                 // Stop the monitoring thread if it's running
                 if (_isMonitoringStarted && _monitoringThread != null)
                 {
-                    LogInfo("Stopping CNC job listener monitoring thread...", "JobInfo");
-                    
                     // Mark monitoring as stopped
                     _isMonitoringStarted = false;
                     
@@ -307,7 +305,6 @@ namespace HavenCNCServer.Centriod.Events
                         // For immediate shutdown - don't wait at all if CNC isn't connected
                         if (!CNCConnectionManager.IsConnected)
                         {
-                            LogInfo("CNC not connected - abandoning monitoring thread immediately", "JobInfo");
                             _monitoringThread = null;
                         }
                         else if (_monitoringThread.IsAlive)
@@ -315,13 +312,11 @@ namespace HavenCNCServer.Centriod.Events
                             // Even if connected, use very short timeout (25ms)
                             if (!_monitoringThread.Join(25))
                             {
-                                LogWarning("Monitoring thread did not exit within 25ms, abandoning immediately", "JobInfo");
                                 // Don't interrupt, just abandon
                                 _monitoringThread = null;
                             }
                             else
                             {
-                                LogSuccess("Monitoring thread stopped gracefully", "JobInfo");
                                 _monitoringThread = null;
                             }
                         }
@@ -329,8 +324,6 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             _monitoringThread = null;
                         }
-                        
-                        LogSuccess("CNC job listener monitoring thread stopped", "JobInfo");
                     }
                     catch (Exception ex)
                     {
