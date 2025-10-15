@@ -211,7 +211,7 @@ namespace HavenCNCServer
                 LogInfo("Application shutdown initiated", "System");
 
                 // Create a separate shutdown cancellation token with timeout
-                using var shutdownTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                using var shutdownTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 var shutdownToken = shutdownTokenSource.Token;
 
                 // Signal all background operations to stop gracefully
@@ -229,9 +229,9 @@ namespace HavenCNCServer
                 try
                 {
                     var stopTask = Task.Run(async () => await CNCServerManager.StopAsync(shutdownToken));
-                    if (!stopTask.Wait(5000))
+                    if (!stopTask.Wait(3000))
                     {
-                        LogWarning("CNC server manager stop operation timed out after 5 seconds", "System");
+                        LogWarning("CNC server manager stop operation timed out after 3 seconds", "System");
                     }
                     else
                     {
@@ -248,9 +248,9 @@ namespace HavenCNCServer
                 try
                 {
                     var stopTask = Task.Run(async () => await ApiManager.StopAsync(shutdownToken));
-                    if (!stopTask.Wait(5000))
+                    if (!stopTask.Wait(3000))
                     {
-                        LogWarning("API manager stop operation timed out after 5 seconds", "System");
+                        LogWarning("API manager stop operation timed out after 3 seconds", "System");
                     }
                     else
                     {
@@ -269,8 +269,8 @@ namespace HavenCNCServer
                 LogInfo("Disconnecting CNC connection...", "System");
                 CNCConnectionManager.Disconnect();
 
-                // Wait a moment for any final cleanup
-                Thread.Sleep(500);
+                // Wait a moment for any final cleanup (reduced from 500ms)
+                Thread.Sleep(200);
 
                 // Force garbage collection to clean up any remaining resources
                 GC.Collect();

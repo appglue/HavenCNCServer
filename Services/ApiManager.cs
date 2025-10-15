@@ -162,7 +162,20 @@ namespace HavenCNCServer.Services
                 
                 if (_webHost != null)
                 {
-                    await _webHost.StopAsync(cancellationToken);
+                    // Give web host limited time to stop gracefully
+                    using var timeoutToken = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                    using var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(
+                        cancellationToken, timeoutToken.Token);
+                    
+                    try
+                    {
+                        await _webHost.StopAsync(combinedToken.Token);
+                    }
+                    catch (OperationCanceledException) when (timeoutToken.Token.IsCancellationRequested)
+                    {
+                        LogWarning("Web host stop operation timed out after 3 seconds", "API");
+                    }
+                    
                     _webHost.Dispose();
                     _webHost = null;
                 }

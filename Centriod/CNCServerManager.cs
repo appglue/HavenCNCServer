@@ -123,10 +123,14 @@ namespace HavenCNCServer.Services
 
             try
             {
-                // Stop monitoring
-                _monitorTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-                _monitorTimer?.Dispose();
-                _monitorTimer = null;
+                // Stop monitoring immediately and dispose timer
+                if (_monitorTimer != null)
+                {
+                    _monitorTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                    _monitorTimer.Dispose();
+                    _monitorTimer = null;
+                    LogInfo("CNC server monitoring timer stopped", "CNCServer");
+                }
 
                 // Cancel any background operations
                 _cancellationTokenSource?.Cancel();

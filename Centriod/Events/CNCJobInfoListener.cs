@@ -112,7 +112,11 @@ namespace HavenCNCServer.Centriod.Events
                             // Check every 15 seconds (or until cancellation)
                             try
                             {
-                                _cancellationTokenSource.Token.WaitHandle.WaitOne(15000);
+                                // Use cancellation-aware waiting instead of WaitOne to ensure immediate response to cancellation
+                                if (!cancellationToken.WaitHandle.WaitOne(15000))
+                                {
+                                    // Timeout occurred, continue loop
+                                }
                             }
                             catch (ObjectDisposedException)
                             {
@@ -270,12 +274,24 @@ namespace HavenCNCServer.Centriod.Events
                         // Give the thread a chance to exit gracefully
                         if (_monitoringThread.IsAlive)
                         {
-                            // Wait up to 5 seconds for graceful shutdown
-                            if (!_monitoringThread.Join(5000))
+                            // Wait up to 2 seconds for graceful shutdown (reduced from 5)
+                            if (!_monitoringThread.Join(2000))
                             {
-                                LogWarning("Monitoring thread did not exit gracefully within 5 seconds", "JobInfo");
-                                // As a last resort, interrupt the thread
-                                _monitoringThread.Interrupt();
+                                LogWarning("Monitoring thread did not exit gracefully within 2 seconds, forcing termination", "JobInfo");
+                                // Force termination more aggressively
+                                try
+                                {
+                                    _monitoringThread.Interrupt();
+                                    // Give it one more second after interrupt
+                                    if (!_monitoringThread.Join(1000))
+                                    {
+                                        LogWarning("Monitoring thread still running after interrupt, abandoning", "JobInfo");
+                                    }
+                                }
+                                catch (Exception interruptEx)
+                                {
+                                    LogError($"Error interrupting monitoring thread: {interruptEx.Message}", "JobInfo");
+                                }
                             }
                         }
                         
