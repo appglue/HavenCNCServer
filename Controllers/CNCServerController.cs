@@ -10,13 +10,13 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCServerController : ControllerBase
     {
-        private readonly ICNCServerManager _serverManager;
+        private readonly CNCServerManager _serverManager;
 
         /// <summary>
         /// Initialize the CNC Server Controller
         /// </summary>
         /// <param name="serverManager">The CNC server manager service</param>
-        public CNCServerController(ICNCServerManager serverManager)
+        public CNCServerController(CNCServerManager serverManager)
         {
             _serverManager = serverManager;
         }

@@ -21,6 +21,8 @@ namespace HavenCNCServer.Centriod.Events
         private static bool _isListening = false;
         private static readonly object _lock = new object();
         private static CNCPipe? _currentCNCPipe = null;
+        private static bool _isMonitoringStarted = false;
+        private static Thread? _monitoringThread = null;
         
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
@@ -46,15 +48,28 @@ namespace HavenCNCServer.Centriod.Events
         /// </summary>
         public static void Start()
         {
+            lock (_lock)
+            {
+                // Check if monitoring is already started
+                if (_isMonitoringStarted)
+                {
+                    LogWarning("CNC job listener monitoring is already running", "JobInfo");
+                    return;
+                }
+
+                // Mark monitoring as started
+                _isMonitoringStarted = true;
+            }
+
             // Start monitoring thread
-            var monitoringThread = new Thread(() =>
+            _monitoringThread = new Thread(() =>
             {
                 try
                 {
                     LogInfo("Starting background job listener monitoring...", "JobInfo");
                     
                     // Continue monitoring and retry if connection is lost
-                    while (true)
+                    while (_isMonitoringStarted)
                     {
                         try
                         {
@@ -94,6 +109,11 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             break;
                         }
+                        catch (ThreadInterruptedException)
+                        {
+                            LogInfo("Monitoring thread interrupted", "JobInfo");
+                            break;
+                        }
                         catch (Exception ex)
                         {
                             LogError($"Error in job listener monitoring: {ex.Message}", "JobInfo");
@@ -107,13 +127,22 @@ namespace HavenCNCServer.Centriod.Events
                 {
                     LogError($"❌ Error in job listener monitoring thread: {ex.Message}", "JobInfo");
                 }
+                finally
+                {
+                    // Reset monitoring state when thread exits
+                    lock (_lock)
+                    {
+                        _isMonitoringStarted = false;
+                        _monitoringThread = null;
+                    }
+                }
             })
             {
                 IsBackground = true,
                 Name = "CNCJobInfoListener-Monitor"
             };
             
-            monitoringThread.Start();
+            _monitoringThread.Start();
         }
  
         /// <summary>
@@ -194,66 +223,120 @@ namespace HavenCNCServer.Centriod.Events
         }
 
         /// <summary>
+        /// Stop the CNC job listener monitoring and message listening
+        /// </summary>
+        public static void Stop()
+        {
+            lock (_lock)
+            {
+                // Stop the monitoring thread if it's running
+                if (_isMonitoringStarted && _monitoringThread != null)
+                {
+                    LogInfo("Stopping CNC job listener monitoring thread...", "JobInfo");
+                    
+                    // Mark monitoring as stopped
+                    _isMonitoringStarted = false;
+                    
+                    try
+                    {
+                        // Give the thread a chance to exit gracefully
+                        if (_monitoringThread.IsAlive)
+                        {
+                            // The thread should exit on its own when the monitoring flag is false
+                            // But we can also interrupt it if needed
+                            _monitoringThread.Interrupt();
+                            
+                            // Wait up to 5 seconds for graceful shutdown
+                            if (!_monitoringThread.Join(5000))
+                            {
+                                LogWarning("Monitoring thread did not exit gracefully within 5 seconds", "JobInfo");
+                            }
+                        }
+                        
+                        _monitoringThread = null;
+                        LogSuccess("CNC job listener monitoring thread stopped", "JobInfo");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error stopping monitoring thread: {ex.Message}", "JobInfo");
+                        _monitoringThread = null;
+                    }
+                }
+                
+                // Also stop the message listener - call the internal method to avoid double locking
+                StopListeningInternal();
+            }
+        }
+
+        /// <summary>
         /// Stop listening for JOB_INFO messages
         /// </summary>
         public static void StopListening()
         {
             lock (_lock)
             {
-                if (!_isListening)
-                {
-                    LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
-                    return;
-                }
+                StopListeningInternal();
+            }
+        }
 
-                try
-                {
-                    // Unsubscribe from MessageReceived event
-                    if (_currentCNCPipe != null)
-                    {
-                        _currentCNCPipe.MessageReceived -= OnMessageReceived;
-                        _currentCNCPipe.StopListening();
-                        LogSuccess("Stopped CNC12 event-driven message listening", "JobInfo");
-                        _currentCNCPipe = null;
-                    }
+        /// <summary>
+        /// Internal method to stop listening - assumes lock is already held
+        /// </summary>
+        private static void StopListeningInternal()
+        {
+            if (!_isListening)
+            {
+                LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
+                return;
+            }
 
-                    _isListening = false;
-                    LogSuccess("CNC JOB_INFO listener stopped", "JobInfo");
-                }
-                catch (Exception ex)
+            try
+            {
+                // Unsubscribe from MessageReceived event
+                if (_currentCNCPipe != null)
                 {
-                    LogError($"Error stopping CNC JOB_INFO listener: {ex.Message}", "JobInfo");
-                    _isListening = false; // Force stop even if there was an error
-                }
-                finally
-                {
-                    // Clean up resources
+                    _currentCNCPipe.MessageReceived -= OnMessageReceived;
+                    _currentCNCPipe.StopListening();
+                    LogSuccess("Stopped CNC12 event-driven message listening", "JobInfo");
                     _currentCNCPipe = null;
-                    
-                    // Close file logging
-                    if (_logWriter != null)
-                    {
-                        _logWriter.WriteLine($"=== Job Listener Session Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
-                        _logWriter.WriteLine($"Total messages processed: {_messageCount}");
-                        _logWriter.WriteLine("");
-                        _logWriter.Close();
-                        _logWriter = null;
-                    }
-                    
-                    // Clear duplicate tracking
-                    _lastMessageHashes.Clear();
-                    _duplicateCounters.Clear();
-                    
-                    // Reset event-specific tracking
-                    DROEvent.ResetTracking();
-                    JobInfoEvent.ResetTracking();
-                    
-                    // Clear stored messages
-                    lock (_storedMessagesLock)
-                    {
-                        _storedMessages.Clear();
-                        LogToFile("Cleared stored messages on listener stop");
-                    }
+                }
+
+                _isListening = false;
+                LogSuccess("CNC JOB_INFO listener stopped", "JobInfo");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error stopping CNC JOB_INFO listener: {ex.Message}", "JobInfo");
+                _isListening = false; // Force stop even if there was an error
+            }
+            finally
+            {
+                // Clean up resources
+                _currentCNCPipe = null;
+                
+                // Close file logging
+                if (_logWriter != null)
+                {
+                    _logWriter.WriteLine($"=== Job Listener Session Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
+                    _logWriter.WriteLine($"Total messages processed: {_messageCount}");
+                    _logWriter.WriteLine("");
+                    _logWriter.Close();
+                    _logWriter = null;
+                }
+                
+                // Clear duplicate tracking
+                _lastMessageHashes.Clear();
+                _duplicateCounters.Clear();
+                
+                // Reset event-specific tracking
+                DROEvent.ResetTracking();
+                JobInfoEvent.ResetTracking();
+                
+                // Clear stored messages
+                lock (_storedMessagesLock)
+                {
+                    _storedMessages.Clear();
+                    LogToFile("Cleared stored messages on listener stop");
                 }
             }
         }
@@ -297,6 +380,20 @@ namespace HavenCNCServer.Centriod.Events
                 lock (_lock)
                 {
                     return _isListening;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets whether the monitoring thread is currently running
+        /// </summary>
+        public static bool IsMonitoringStarted
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _isMonitoringStarted;
                 }
             }
         }

@@ -18,7 +18,6 @@ namespace HavenCNCServer.Services
     {
         private IHost? _webHost;
         private CancellationTokenSource? _cancellationTokenSource;
-        private ICNCServerManager? _cncServerManager;
         private readonly string _apiUrl;
         
         /// <summary>
@@ -108,18 +107,6 @@ namespace HavenCNCServer.Services
                 LogSuccess($"API server started successfully at {_apiUrl}", "API");
                 LogInfo($"Swagger UI available at {SwaggerUrl}", "API");
 
-                // Get the CNC Server Manager from DI and start management (auto-start is enabled)
-                _cncServerManager = _webHost.Services.GetService<ICNCServerManager>();
-                if (_cncServerManager != null)
-                {
-                    await _cncServerManager.StartManagementAsync();
-                    LogInfo("CNC Server Manager started with auto-start enabled", "CNCServer");
-                }
-                else
-                {
-                    LogWarning("CNC Server Manager not found in DI container", "CNCServer");
-                }
-
                 // Auto-generate OpenAPI specification if it doesn't exist
                 await OpenApiManager.AutoGenerateIfNeededAsync(_apiUrl);
             }
@@ -141,14 +128,6 @@ namespace HavenCNCServer.Services
             {
                 UpdateStatus("Stopping API Server...", Color.Orange);
                 LogInfo("Stopping API server...", "API");
-
-                // Stop CNC Server Manager first
-                if (_cncServerManager != null)
-                {
-                    await _cncServerManager.StopManagementAsync();
-                    LogInfo("CNC Server Manager stopped", "CNCServer");
-                    _cncServerManager = null;
-                }
 
                 _cancellationTokenSource?.Cancel();
                 

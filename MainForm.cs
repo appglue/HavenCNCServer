@@ -23,6 +23,7 @@ namespace HavenCNCServer
     public partial class MainForm : Form
     {
         private ApiManager? _apiManager;
+        private CNCServerManager? _cncServerManager;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -65,6 +66,9 @@ namespace HavenCNCServer
             // Initialize API manager
             _apiManager = new ApiManager(ApiUrl);
             _apiManager.StatusChanged += OnApiStatusChanged;
+            
+            // Initialize CNC server manager
+            _cncServerManager = new CNCServerManager();
             
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
@@ -150,11 +154,18 @@ namespace HavenCNCServer
         {
             await _apiManager?.StartAsync()!;
             
+            // Start CNC server management
+            if (_cncServerManager != null)
+            {
+                await _cncServerManager.StartManagementAsync();
+                LogInfo("CNC Server Manager started", "CNCServer");
+            }
+            
             // Start job listener with background monitoring
             CNCJobInfoListener.Start();
-        }
 
-        /// <summary>
+            
+        }        /// <summary>
         /// Handle CNC connection status changes
         /// </summary>
         private void OnCNCConnectionStatusChanged(bool connected, string message)
@@ -208,6 +219,33 @@ namespace HavenCNCServer
 
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();
+
+                // Stop CNC server manager
+                if (_cncServerManager != null)
+                {
+                    LogInfo("Stopping CNC server manager...", "System");
+                    try
+                    {
+                        var stopTask = Task.Run(async () => await _cncServerManager.StopManagementAsync());
+                        if (!stopTask.Wait(5000))
+                        {
+                            LogWarning("CNC server manager stop operation timed out after 5 seconds", "System");
+                        }
+                        else
+                        {
+                            LogInfo("CNC server manager stopped successfully", "System");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error stopping CNC server manager: {ex.Message}", "System");
+                    }
+                    finally
+                    {
+                        _cncServerManager?.Dispose();
+                        _cncServerManager = null;
+                    }
+                }
 
                 // Stop API manager
                 if (_apiManager != null)

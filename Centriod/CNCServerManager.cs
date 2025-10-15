@@ -6,50 +6,9 @@ using static HavenCNCServer.Services.LoggingService;
 namespace HavenCNCServer.Services
 {
     /// <summary>
-    /// Interface for CNC Server process management
-    /// </summary>
-    public interface ICNCServerManager
-    {
-        /// <summary>
-        /// Whether the CNC server is currently running
-        /// </summary>
-        bool IsServerRunning { get; }
-
-        /// <summary>
-        /// Whether we started the server (and should manage it)
-        /// </summary>
-        bool WeStartedServer { get; }
-
-        /// <summary>
-        /// Start monitoring and managing the CNC server
-        /// </summary>
-        Task StartManagementAsync();
-
-        /// <summary>
-        /// Stop monitoring and shut down the server if we started it
-        /// </summary>
-        Task StopManagementAsync();
-
-        /// <summary>
-        /// Manually start the CNC server
-        /// </summary>
-        Task<bool> StartServerAsync();
-
-        /// <summary>
-        /// Manually stop the CNC server (only if we started it)
-        /// </summary>
-        Task<bool> StopServerAsync();
-
-        /// <summary>
-        /// Force restart the CNC server
-        /// </summary>
-        Task<bool> RestartServerAsync();
-    }
-
-    /// <summary>
     /// Manages the CNC server process lifecycle
     /// </summary>
-    public class CNCServerManager : ICNCServerManager, IDisposable
+    public class CNCServerManager : IDisposable
     {
         private readonly CncServerSettings _settings;
         private readonly System.Threading.Timer? _monitorTimer;

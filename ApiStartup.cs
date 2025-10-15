@@ -59,7 +59,7 @@ namespace HavenCNCServer
             });
 
             // Register services
-            services.AddSingleton<ICNCServerManager, CNCServerManager>();
+            services.AddSingleton<CNCServerManager>();
 
             // Add SPA services for React app
             services.AddSpaStaticFiles(configuration =>
