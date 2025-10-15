@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centriod.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer
@@ -21,9 +22,7 @@ namespace HavenCNCServer
     /// </summary>
     public partial class MainForm : Form
     {
-        private IHost? _webHost;
-        private CancellationTokenSource? _cancellationTokenSource;
-        private ICNCServerManager? _cncServerManager;
+        private ApiManager? _apiManager;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -62,6 +61,10 @@ namespace HavenCNCServer
             
             // Register this form with the UI control service
             Services.UIControlService.RegisterMainForm(this);
+            
+            // Initialize API manager
+            _apiManager = new ApiManager(ApiUrl);
+            _apiManager.StatusChanged += OnApiStatusChanged;
             
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
@@ -145,7 +148,7 @@ namespace HavenCNCServer
 
         private async void MainForm_Load(object? sender, EventArgs e)
         {
-            await StartApiServerAsync();
+            await _apiManager?.StartAsync()!;
             
             // Start job listener auto-start task after API server is running
             _ = Task.Run(async () =>
@@ -156,7 +159,7 @@ namespace HavenCNCServer
                 var maxAttempts = 5;
                 var attempt = 0;
                 
-                while (attempt < maxAttempts && !(_cancellationTokenSource?.Token.IsCancellationRequested ?? false))
+                while (attempt < maxAttempts && !(_apiManager?.CancellationToken.IsCancellationRequested ?? false))
                 {
                     attempt++;
                     LogInfo($"Attempting to establish CNC connection for job listener (attempt {attempt}/{maxAttempts})...", "JobInfo");
@@ -185,7 +188,7 @@ namespace HavenCNCServer
                     if (attempt < maxAttempts)
                     {
                         // Wait before next attempt
-                        await Task.Delay(3000, _cancellationTokenSource?.Token ?? CancellationToken.None);
+                        await Task.Delay(3000, _apiManager?.CancellationToken ?? CancellationToken.None);
                     }
                 }
                 
@@ -195,7 +198,7 @@ namespace HavenCNCServer
                 }
                 
                 // Continue monitoring and retry if connection is lost
-                while (!_cancellationTokenSource?.Token.IsCancellationRequested ?? false)
+                while (!(_apiManager?.CancellationToken.IsCancellationRequested ?? false))
                 {
                     try
                     {
@@ -229,7 +232,7 @@ namespace HavenCNCServer
                         }
                         
                         // Check every 15 seconds
-                        await Task.Delay(15000, _cancellationTokenSource?.Token ?? CancellationToken.None);
+                        await Task.Delay(15000, _apiManager?.CancellationToken ?? CancellationToken.None);
                     }
                     catch (OperationCanceledException)
                     {
@@ -244,128 +247,6 @@ namespace HavenCNCServer
                 
                 LogInfo("Job listener monitoring stopped", "JobInfo");
             });
-        }
-
-        private async Task StartApiServerAsync()
-        {
-            try
-            {
-                LogInfo("Initializing API server...", "API");
-                UpdateStatus("Starting API Server...", Color.Orange);
-
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                var builder = Host.CreateDefaultBuilder()
-                    .ConfigureWebHostDefaults(webBuilder =>
-                    {
-                        webBuilder
-                            .UseUrls(ApiUrl)
-                            .UseStartup<ApiStartup>()
-                            .ConfigureLogging(logging =>
-                            {
-                                logging.ClearProviders();
-                                logging.AddProvider(new WinFormsLoggerProvider(this));
-                            });
-                    });
-
-                _webHost = builder.Build();
-
-                // Start the web host in a background task
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await _webHost.RunAsync(_cancellationTokenSource.Token);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // Expected when cancellation is requested
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Invoke(() =>
-                        {
-                            LogError($"Error running web host: {ex.Message}", "API");
-                            UpdateStatus("API Server Error", Color.Red);
-                        });
-                    }
-                });
-
-                // Give the server a moment to start
-                await Task.Delay(2000);
-
-                UpdateStatus("API Server Running", Color.Green);
-                LogSuccess($"API server started successfully at {ApiUrl}", "API");
-                LogInfo($"Swagger UI available at {SwaggerUrl}", "API");
-
-                // Get the CNC Server Manager from DI and start management (auto-start is enabled)
-                _cncServerManager = _webHost.Services.GetService<ICNCServerManager>();
-                if (_cncServerManager != null)
-                {
-                    await _cncServerManager.StartManagementAsync();
-                    LogInfo("CNC Server Manager started with auto-start enabled", "CNCServer");
-                }
-                else
-                {
-                    LogWarning("CNC Server Manager not found in DI container", "CNCServer");
-                }
-
-                // Auto-generate OpenAPI specification if it doesn't exist
-                await OpenApiManager.AutoGenerateIfNeededAsync(ApiUrl);
-            }
-            catch (Exception ex)
-            {
-                UpdateStatus("Failed to Start", Color.Red);
-                LogError($"Failed to start API server: {ex.Message}", "API");
-            }
-        }
-
-        private async Task StopApiServerAsync()
-        {
-            try
-            {
-                UpdateStatus("Stopping API Server...", Color.Orange);
-                LogInfo("Stopping API server...", "API");
-
-                // Stop CNC Server Manager first
-                if (_cncServerManager != null)
-                {
-                    await _cncServerManager.StopManagementAsync();
-                    LogInfo("CNC Server Manager stopped", "CNCServer");
-                    _cncServerManager = null;
-                }
-
-                _cancellationTokenSource?.Cancel();
-                
-                if (_webHost != null)
-                {
-                    await _webHost.StopAsync();
-                    _webHost.Dispose();
-                    _webHost = null;
-                }
-
-                _cancellationTokenSource?.Dispose();
-                _cancellationTokenSource = null;
-
-                UpdateStatus("API Server Stopped", Color.Gray);
-                LogSuccess("API server stopped successfully", "API");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error stopping API server: {ex.Message}", "API");
-            }
-        }
-
-        private void UpdateStatus(string status, Color color)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(() => UpdateStatus(status, color));
-                return;
-            }
-
-            lblStatus.Text = $"API Server Status: {status}";
-            lblStatus.ForeColor = color;
         }
 
         /// <summary>
@@ -391,6 +272,23 @@ namespace HavenCNCServer
         }
 
         /// <summary>
+        /// Handles API server status changes from ApiManager
+        /// </summary>
+        private void OnApiStatusChanged(string status, Color color)
+        {
+            // Use Invoke to ensure we're on the UI thread
+            if (InvokeRequired)
+            {
+                Invoke(() => OnApiStatusChanged(status, color));
+                return;
+            }
+
+            // TODO: Update status label when available
+            // For now, just log the status change
+            LogInfo($"API server status: {status}", "API");
+        }
+
+        /// <summary>
         /// Cleanup when form is closing
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -399,9 +297,6 @@ namespace HavenCNCServer
             {
                 LogInfo("Application shutdown initiated", "System");
 
-                // Cancel all background tasks first
-                _cancellationTokenSource?.Cancel();
-
                 // Stop CNC Job Info Listener
                 LogInfo("Stopping CNC Job Info Listener...", "System");
                 CNCJobInfoListener.StopListening();
@@ -409,60 +304,30 @@ namespace HavenCNCServer
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();
 
-                // Stop web host first
-                if (_webHost != null)
+                // Stop API manager
+                if (_apiManager != null)
                 {
-                    LogInfo("Stopping web host...", "System");
+                    LogInfo("Stopping API manager...", "System");
                     try
                     {
-                        var stopWebTask = Task.Run(async () => 
-                        {
-                            await _webHost.StopAsync(TimeSpan.FromSeconds(3));
-                            _webHost.Dispose();
-                        });
-
-                        if (!stopWebTask.Wait(5000))
-                        {
-                            LogWarning("Web host stop operation timed out after 5 seconds", "System");
-                        }
-                        else
-                        {
-                            LogInfo("Web host stopped successfully", "System");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error stopping web host: {ex.Message}", "System");
-                    }
-                    finally
-                    {
-                        _webHost = null;
-                    }
-                }
-
-                // Stop CNC Server Manager if it's still running
-                if (_cncServerManager != null)
-                {
-                    LogInfo("Stopping CNC Server Manager...", "System");
-                    try
-                    {
-                        var stopTask = Task.Run(async () => await _cncServerManager.StopManagementAsync());
+                        var stopTask = Task.Run(async () => await _apiManager.StopAsync());
                         if (!stopTask.Wait(5000))
                         {
-                            LogWarning("CNC Server Manager stop operation timed out after 5 seconds", "System");
+                            LogWarning("API manager stop operation timed out after 5 seconds", "System");
                         }
                         else
                         {
-                            LogInfo("CNC Server Manager cleanup completed", "System");
+                            LogInfo("API manager stopped successfully", "System");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogError($"Error stopping CNC Server Manager: {ex.Message}", "System");
+                        LogError($"Error stopping API manager: {ex.Message}", "System");
                     }
                     finally
                     {
-                        _cncServerManager = null;
+                        _apiManager?.Dispose();
+                        _apiManager = null;
                     }
                 }
 
@@ -488,19 +353,8 @@ namespace HavenCNCServer
             }
             finally
             {
-                // Ensure cancellation token is disposed
-                try
-                {
-                    _cancellationTokenSource?.Dispose();
-                    _cancellationTokenSource = null;
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Error disposing cancellation token: {ex.Message}", "System");
-                }
                 Environment.Exit(0);
             }
-
 
             base.OnFormClosing(e);
         }

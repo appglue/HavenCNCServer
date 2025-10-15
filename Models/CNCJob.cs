@@ -1,5 +1,6 @@
 using CentroidAPI;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centriod.Events;
 using IOFile = System.IO.File;
 
 namespace HavenCNCServer.Models

@@ -1,4 +1,5 @@
 using HavenCNCServer.Services;
+using HavenCNCServer.Centriod.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Examples

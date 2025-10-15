@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centriod.Events;
 using CentroidAPI;
 using IOFile = System.IO.File;
 
