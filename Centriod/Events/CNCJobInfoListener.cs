@@ -23,6 +23,7 @@ namespace HavenCNCServer.Centriod.Events
         private static CNCPipe? _currentCNCPipe = null;
         private static bool _isMonitoringStarted = false;
         private static Thread? _monitoringThread = null;
+        private static CancellationTokenSource? _cancellationTokenSource = null;
         
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
@@ -46,7 +47,8 @@ namespace HavenCNCServer.Centriod.Events
         /// <summary>
         /// Start the CNC job listener with automatic connection monitoring
         /// </summary>
-        public static void Start()
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        public static void Start(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {
@@ -59,6 +61,8 @@ namespace HavenCNCServer.Centriod.Events
 
                 // Mark monitoring as started
                 _isMonitoringStarted = true;
+                // Use the provided cancellation token or create a linked one
+                _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             }
 
             // Start monitoring thread
@@ -69,10 +73,13 @@ namespace HavenCNCServer.Centriod.Events
                     LogInfo("Starting background job listener monitoring...", "JobInfo");
                     
                     // Continue monitoring and retry if connection is lost
-                    while (_isMonitoringStarted)
+                    while (_isMonitoringStarted && !_cancellationTokenSource.Token.IsCancellationRequested)
                     {
                         try
                         {
+                            // Check for cancellation
+                            _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                            
                             // Check if we need to establish or re-establish connection
                             if (!CNCConnectionManager.IsConnected || !IsListening)
                             {
@@ -102,8 +109,21 @@ namespace HavenCNCServer.Centriod.Events
                                 }
                             }
                             
-                            // Check every 15 seconds
-                            Thread.Sleep(15000);
+                            // Check every 15 seconds (or until cancellation)
+                            try
+                            {
+                                _cancellationTokenSource.Token.WaitHandle.WaitOne(15000);
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                // Token source was disposed, exit gracefully
+                                break;
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            LogInfo("Monitoring thread was cancelled", "JobInfo");
+                            break;
                         }
                         catch (ThreadAbortException)
                         {
@@ -134,6 +154,10 @@ namespace HavenCNCServer.Centriod.Events
                     {
                         _isMonitoringStarted = false;
                         _monitoringThread = null;
+                        
+                        // Dispose cancellation token source
+                        _cancellationTokenSource?.Dispose();
+                        _cancellationTokenSource = null;
                     }
                 }
             })
@@ -225,7 +249,8 @@ namespace HavenCNCServer.Centriod.Events
         /// <summary>
         /// Stop the CNC job listener monitoring and message listening
         /// </summary>
-        public static void Stop()
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        public static void Stop(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {
@@ -237,19 +262,20 @@ namespace HavenCNCServer.Centriod.Events
                     // Mark monitoring as stopped
                     _isMonitoringStarted = false;
                     
+                    // Cancel the monitoring operations
+                    _cancellationTokenSource?.Cancel();
+                    
                     try
                     {
                         // Give the thread a chance to exit gracefully
                         if (_monitoringThread.IsAlive)
                         {
-                            // The thread should exit on its own when the monitoring flag is false
-                            // But we can also interrupt it if needed
-                            _monitoringThread.Interrupt();
-                            
                             // Wait up to 5 seconds for graceful shutdown
                             if (!_monitoringThread.Join(5000))
                             {
                                 LogWarning("Monitoring thread did not exit gracefully within 5 seconds", "JobInfo");
+                                // As a last resort, interrupt the thread
+                                _monitoringThread.Interrupt();
                             }
                         }
                         
@@ -260,6 +286,12 @@ namespace HavenCNCServer.Centriod.Events
                     {
                         LogError($"Error stopping monitoring thread: {ex.Message}", "JobInfo");
                         _monitoringThread = null;
+                    }
+                    finally
+                    {
+                        // Dispose cancellation token source
+                        _cancellationTokenSource?.Dispose();
+                        _cancellationTokenSource = null;
                     }
                 }
                 

@@ -45,7 +45,8 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Start managing the CNC server
         /// </summary>
-        public static async Task StartAsync()
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        public static async Task StartAsync(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {
@@ -56,7 +57,8 @@ namespace HavenCNCServer.Services
                 }
                     
                 _isManaging = true;
-                _cancellationTokenSource = new CancellationTokenSource();
+                // Use the provided cancellation token or create a linked one
+                _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             }
 
             LogInfo("Starting CNC server management", "CNCServer");
@@ -103,7 +105,8 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Stop managing the CNC server
         /// </summary>
-        public static async Task StopAsync()
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
+        public static async Task StopAsync(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {

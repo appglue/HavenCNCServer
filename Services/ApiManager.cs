@@ -59,8 +59,9 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Starts the API server asynchronously
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
         /// <returns>Task representing the async operation</returns>
-        public static async Task StartAsync()
+        public static async Task StartAsync(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {
@@ -77,7 +78,8 @@ namespace HavenCNCServer.Services
                 LogInfo("Initializing API server...", "API");
                 UpdateStatus("Starting API Server...", Color.Orange);
 
-                _cancellationTokenSource = new CancellationTokenSource();
+                // Use the provided cancellation token or create a linked one
+                _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
                 var builder = Host.CreateDefaultBuilder()
                     .ConfigureWebHostDefaults(webBuilder =>
@@ -137,8 +139,9 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Stops the API server asynchronously
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token for the operation</param>
         /// <returns>Task representing the async operation</returns>
-        public static async Task StopAsync()
+        public static async Task StopAsync(CancellationToken cancellationToken = default)
         {
             lock (_lock)
             {
@@ -159,7 +162,7 @@ namespace HavenCNCServer.Services
                 
                 if (_webHost != null)
                 {
-                    await _webHost.StopAsync();
+                    await _webHost.StopAsync(cancellationToken);
                     _webHost.Dispose();
                     _webHost = null;
                 }

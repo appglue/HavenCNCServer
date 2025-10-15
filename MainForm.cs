@@ -22,6 +22,7 @@ namespace HavenCNCServer
     /// </summary>
     public partial class MainForm : Form
     {
+        private CancellationTokenSource? _cancellationTokenSource;
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -32,6 +33,9 @@ namespace HavenCNCServer
         public MainForm()
         {
             InitializeComponent();
+            
+            // Initialize cancellation token source for coordinated shutdown
+            _cancellationTokenSource = new CancellationTokenSource();
             
             // Set up 50/50 layout for messages and logs
             SetupLayout();
@@ -146,14 +150,16 @@ namespace HavenCNCServer
 
         private async void MainForm_Load(object? sender, EventArgs e)
         {
-            await ApiManager.StartAsync();
+            var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
+            
+            await ApiManager.StartAsync(cancellationToken);
             
             // Start CNC server management
-            await CNCServerManager.StartAsync();
+            await CNCServerManager.StartAsync(cancellationToken);
             LogInfo("CNC Server Manager started", "CNCServer");
             
             // Start job listener with background monitoring
-            CNCJobInfoListener.Start();
+            CNCJobInfoListener.Start(cancellationToken);
 
             
         }        /// <summary>
@@ -204,9 +210,16 @@ namespace HavenCNCServer
             {
                 LogInfo("Application shutdown initiated", "System");
 
+                // Create a separate shutdown cancellation token with timeout
+                using var shutdownTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                var shutdownToken = shutdownTokenSource.Token;
+
+                // Signal all background operations to stop gracefully
+                _cancellationTokenSource?.Cancel();
+
                 // Stop CNC Job Info Listener
                 LogInfo("Stopping CNC Job Info Listener...", "System");
-                CNCJobInfoListener.Stop();
+                CNCJobInfoListener.Stop(shutdownToken);
 
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();
@@ -215,7 +228,7 @@ namespace HavenCNCServer
                 LogInfo("Stopping CNC server manager...", "System");
                 try
                 {
-                    var stopTask = Task.Run(async () => await CNCServerManager.StopAsync());
+                    var stopTask = Task.Run(async () => await CNCServerManager.StopAsync(shutdownToken));
                     if (!stopTask.Wait(5000))
                     {
                         LogWarning("CNC server manager stop operation timed out after 5 seconds", "System");
@@ -234,7 +247,7 @@ namespace HavenCNCServer
                 LogInfo("Stopping API manager...", "System");
                 try
                 {
-                    var stopTask = Task.Run(async () => await ApiManager.StopAsync());
+                    var stopTask = Task.Run(async () => await ApiManager.StopAsync(shutdownToken));
                     if (!stopTask.Wait(5000))
                     {
                         LogWarning("API manager stop operation timed out after 5 seconds", "System");
@@ -271,6 +284,10 @@ namespace HavenCNCServer
             }
             finally
             {
+                // Dispose cancellation token source
+                _cancellationTokenSource?.Dispose();
+                _cancellationTokenSource = null;
+                
                 Environment.Exit(0);
             }
 
