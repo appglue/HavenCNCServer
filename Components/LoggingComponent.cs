@@ -11,52 +11,21 @@ namespace HavenCNCServer.Components
     /// </summary>
     public class LoggingComponent : UserControl
     {
-        private RichTextBox txtLog;
-        private Label lblLog;
+        private RichTextBox txtLog = null!;
+        private Label lblLog = null!;
 
+        /// <summary>
+        /// Initializes a new instance of the LoggingComponent
+        /// </summary>
         public LoggingComponent()
         {
             InitializeComponent();
             SetupLogging();
         }
 
-        private void InitializeComponent()
-        {
-            this.lblLog = new Label();
-            this.txtLog = new RichTextBox();
-            this.SuspendLayout();
-
-            // lblLog
-            this.lblLog.AutoSize = true;
-            this.lblLog.Location = new Point(3, 0);
-            this.lblLog.Name = "lblLog";
-            this.lblLog.Size = new Size(66, 13);
-            this.lblLog.TabIndex = 0;
-            this.lblLog.Text = "Application Logs";
-
-            // txtLog
-            this.txtLog.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
-                        | AnchorStyles.Left)
-                        | AnchorStyles.Right)));
-            this.txtLog.Location = new Point(3, 16);
-            this.txtLog.Name = "txtLog";
-            this.txtLog.ReadOnly = true;
-            this.txtLog.Size = new Size(394, 381);
-            this.txtLog.TabIndex = 1;
-            this.txtLog.Text = "";
-
-            // LoggingComponent
-            this.Controls.Add(this.txtLog);
-            this.Controls.Add(this.lblLog);
-            this.Name = "LoggingComponent";
-            this.Size = new Size(400, 400);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-        }
-
         private void SetupLogging()
         {
-            // Subscribe to logging events
+            // Subscribe to log events
             LoggingService.LogEntryAdded += OnLogEntryAdded;
             
             // Add initial message
@@ -65,9 +34,10 @@ namespace HavenCNCServer.Components
 
         private void OnLogEntryAdded(LogEntry entry)
         {
-            if (txtLog.InvokeRequired)
+            // Update UI on the main thread using Invoke
+            if (InvokeRequired)
             {
-                txtLog.Invoke(new Action(() => OnLogEntryAdded(entry)));
+                Invoke(new Action(() => OnLogEntryAdded(entry)));
                 return;
             }
 
@@ -105,6 +75,44 @@ namespace HavenCNCServer.Components
             txtLog.ScrollToCaret();
         }
 
+        private void InitializeComponent()
+        {
+            this.lblLog = new Label();
+            this.txtLog = new RichTextBox();
+            this.SuspendLayout();
+
+            // lblLog
+            this.lblLog.AutoSize = true;
+            this.lblLog.Location = new Point(3, 0);
+            this.lblLog.Name = "lblLog";
+            this.lblLog.Size = new Size(66, 13);
+            this.lblLog.TabIndex = 0;
+            this.lblLog.Text = "Application Logs";
+
+            // txtLog
+            this.txtLog.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
+                        | AnchorStyles.Left)
+                        | AnchorStyles.Right)));
+            this.txtLog.Location = new Point(3, 16);
+            this.txtLog.Name = "txtLog";
+            this.txtLog.ReadOnly = true;
+            this.txtLog.Size = new Size(394, 381);
+            this.txtLog.TabIndex = 1;
+            this.txtLog.Text = "";
+
+            // LoggingComponent
+            this.Controls.Add(this.txtLog);
+            this.Controls.Add(this.lblLog);
+            this.Name = "LoggingComponent";
+            this.Size = new Size(400, 400);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        /// <summary>
+        /// Disposes of the component resources
+        /// </summary>
+        /// <param name="disposing">True if disposing managed resources</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -13,12 +13,15 @@ namespace HavenCNCServer.Components
     /// </summary>
     public class GCodeViewerComponent : UserControl, ICNCEventListener
     {
-        private RichTextBox txtGCode;
-        private Label lblGCode;
-        private Label lblCurrentJob;
+        private RichTextBox txtGCode = null!;
+        private Label lblGCode = null!;
+        private Label lblCurrentJob = null!;
         private string[] _currentGCode = Array.Empty<string>();
         private int _currentLineNumber = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the GCodeViewerComponent
+        /// </summary>
         public GCodeViewerComponent()
         {
             InitializeComponent();
@@ -80,6 +83,10 @@ namespace HavenCNCServer.Components
             CNCJobInfoListener.AddListener(this);
         }
 
+        /// <summary>
+        /// Receives and processes CNC events for G-code display updates
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event to process</param>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
             // Prioritize our custom StepExecutionEvent for accurate line tracking
@@ -236,6 +243,10 @@ namespace HavenCNCServer.Components
             }
         }
 
+        /// <summary>
+        /// Loads G-code lines for display in the viewer
+        /// </summary>
+        /// <param name="gCodeLines">Array of G-code lines to display</param>
         public void LoadGCodeForDisplay(string[] gCodeLines)
         {
             try
@@ -252,6 +263,9 @@ namespace HavenCNCServer.Components
             }
         }
 
+        /// <summary>
+        /// Clears the G-code display
+        /// </summary>
         public void ClearGCode()
         {
             try
@@ -349,6 +363,10 @@ namespace HavenCNCServer.Components
             }
         }
 
+        /// <summary>
+        /// Disposes of the component resources
+        /// </summary>
+        /// <param name="disposing">True if disposing managed resources</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

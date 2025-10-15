@@ -13,14 +13,17 @@ namespace HavenCNCServer.Components
     /// </summary>
     public class CoordinateDisplayComponent : UserControl, ICNCEventListener
     {
-        private GroupBox grpCoordinates;
-        private Label lblXPos;
-        private Label lblYPos;
-        private Label lblZPos;
-        private Label lblXValue;
-        private Label lblYValue;
-        private Label lblZValue;
+        private GroupBox grpCoordinates = null!;
+        private Label lblXPos = null!;
+        private Label lblYPos = null!;
+        private Label lblZPos = null!;
+        private Label lblXValue = null!;
+        private Label lblYValue = null!;
+        private Label lblZValue = null!;
 
+        /// <summary>
+        /// Initializes a new instance of the CoordinateDisplayComponent
+        /// </summary>
         public CoordinateDisplayComponent()
         {
             InitializeComponent();
@@ -130,6 +133,10 @@ namespace HavenCNCServer.Components
             CNCJobInfoListener.AddListener(this);
         }
 
+        /// <summary>
+        /// Receives and processes CNC events for coordinate updates
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event to process</param>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
             // Only process DRO events for coordinate updates
@@ -162,6 +169,12 @@ namespace HavenCNCServer.Components
             }
         }
 
+        /// <summary>
+        /// Updates the coordinate display with new X, Y, Z values
+        /// </summary>
+        /// <param name="x">X coordinate value</param>
+        /// <param name="y">Y coordinate value</param>
+        /// <param name="z">Z coordinate value</param>
         public void UpdateCoordinates(double x, double y, double z)
         {
             if (InvokeRequired)
@@ -175,6 +188,10 @@ namespace HavenCNCServer.Components
             lblZValue.Text = z.ToString("F4");
         }
 
+        /// <summary>
+        /// Handles cleanup when the component handle is destroyed
+        /// </summary>
+        /// <param name="e">Event arguments</param>
         protected override void OnHandleDestroyed(EventArgs e)
         {
             // Unregister from event listener when component is destroyed
@@ -182,6 +199,10 @@ namespace HavenCNCServer.Components
             base.OnHandleDestroyed(e);
         }
 
+        /// <summary>
+        /// Disposes of the component resources
+        /// </summary>
+        /// <param name="disposing">True if disposing managed resources</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

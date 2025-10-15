@@ -955,7 +955,7 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                CNCJob currentJob;
+                CNCJob? currentJob;
                 lock (_jobsLock)
                 {
                     currentJob = GetCurrentJob();
@@ -1036,7 +1036,7 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                CNCJob currentJob;
+                CNCJob? currentJob;
                 lock (_jobsLock)
                 {
                     currentJob = GetCurrentJob();

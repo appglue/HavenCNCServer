@@ -14,11 +14,14 @@ namespace HavenCNCServer.Components
     /// </summary>
     public class MessageDisplayComponent : UserControl, ICNCEventListener
     {
-        private RichTextBox txtMessages;
-        private Label lblMessages;
+        private RichTextBox txtMessages = null!;
+        private Label lblMessages = null!;
         private int _maxMessages = 1000;
         private int _currentMessageCount = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the MessageDisplayComponent
+        /// </summary>
         public MessageDisplayComponent()
         {
             InitializeComponent();
@@ -67,6 +70,10 @@ namespace HavenCNCServer.Components
             CNCJobInfoListener.AddListener(this);
         }
 
+        /// <summary>
+        /// Receives and processes CNC events for message display
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event to process</param>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
             // Process both MessageEvent and DROEvent types for comprehensive display
@@ -242,6 +249,10 @@ namespace HavenCNCServer.Components
             }
         }
 
+        /// <summary>
+        /// Disposes of the component resources
+        /// </summary>
+        /// <param name="disposing">True if disposing managed resources</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -258,10 +269,25 @@ namespace HavenCNCServer.Components
     /// </summary>
     public enum MessageSeverity
     {
+        /// <summary>
+        /// Normal message level
+        /// </summary>
         Normal,
+        /// <summary>
+        /// Informational message level
+        /// </summary>
         Info,
+        /// <summary>
+        /// Success message level
+        /// </summary>
         Success,
+        /// <summary>
+        /// Warning message level
+        /// </summary>
         Warning,
+        /// <summary>
+        /// Error message level
+        /// </summary>
         Error
     }
 }
