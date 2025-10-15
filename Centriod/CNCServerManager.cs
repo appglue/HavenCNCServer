@@ -8,57 +8,64 @@ namespace HavenCNCServer.Services
     /// <summary>
     /// Manages the CNC server process lifecycle
     /// </summary>
-    public class CNCServerManager : IDisposable
+    public static class CNCServerManager
     {
-        private readonly CncServerSettings _settings;
-        private readonly System.Threading.Timer? _monitorTimer;
-        private Process? _serverProcess;
-        private bool _weStartedServer = false;
-        private bool _isManaging = false;
-        private bool _disposed = false;
-        private readonly object _lock = new object();
+        private static CncServerSettings _settings = SettingsManager.Settings.Cnc.Server;
+        private static System.Threading.Timer? _monitorTimer;
+        private static Process? _serverProcess;
+        private static bool _weStartedServer = false;
+        private static bool _isManaging = false;
+        private static CancellationTokenSource? _cancellationTokenSource;
+        private static readonly object _lock = new object();
 
         /// <summary>
         /// Whether the CNC server is currently running
         /// </summary>
-        public bool IsServerRunning => _serverProcess?.HasExited == false;
+        public static bool IsServerRunning => _serverProcess?.HasExited == false;
         
         /// <summary>
         /// Whether we started the server (and should manage it)
         /// </summary>
-        public bool WeStartedServer => _weStartedServer;
+        public static bool WeStartedServer => _weStartedServer;
 
         /// <summary>
-        /// Initialize the CNC Server Manager
+        /// Whether management is currently active
         /// </summary>
-        public CNCServerManager()
+        public static bool IsManaging
         {
-            _settings = SettingsManager.Settings.Cnc.Server;
-            
-            // Create monitoring timer
-            if (_settings.AutoRestartServer && _settings.MonitorIntervalMs > 0)
+            get
             {
-                _monitorTimer = new System.Threading.Timer(MonitorServer, null, System.Threading.Timeout.Infinite, _settings.MonitorIntervalMs);
+                lock (_lock)
+                {
+                    return _isManaging;
+                }
             }
         }
 
         /// <summary>
         /// Start managing the CNC server
         /// </summary>
-        public async Task StartManagementAsync()
+        public static async Task StartAsync()
         {
             lock (_lock)
             {
                 if (_isManaging)
+                {
+                    LogWarning("CNC server management is already running", "CNCServer");
                     return;
+                }
                     
                 _isManaging = true;
+                _cancellationTokenSource = new CancellationTokenSource();
             }
 
             LogInfo("Starting CNC server management", "CNCServer");
 
             try
             {
+                // Refresh settings
+                _settings = SettingsManager.Settings.Cnc.Server;
+                
                 // Check if server is already running
                 if (await IsServerAlreadyRunningAsync())
                 {
@@ -72,28 +79,39 @@ namespace HavenCNCServer.Services
                 }
 
                 // Start monitoring if enabled
-                if (_settings.AutoRestartServer && _monitorTimer != null)
+                if (_settings.AutoRestartServer && _settings.MonitorIntervalMs > 0)
                 {
-                    _monitorTimer.Change(TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs), 
-                                       TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs));
+                    _monitorTimer = new System.Threading.Timer(MonitorServer, null, 
+                        TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs), 
+                        TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs));
                     LogInfo($"Started CNC server monitoring (interval: {_settings.MonitorIntervalMs}ms)", "CNCServer");
                 }
             }
             catch (Exception ex)
             {
+                lock (_lock)
+                {
+                    _isManaging = false;
+                    _cancellationTokenSource?.Dispose();
+                    _cancellationTokenSource = null;
+                }
                 LogError($"Failed to start CNC server management: {ex.Message}", "CNCServer");
+                throw;
             }
         }
 
         /// <summary>
         /// Stop managing the CNC server
         /// </summary>
-        public async Task StopManagementAsync()
+        public static async Task StopAsync()
         {
             lock (_lock)
             {
                 if (!_isManaging)
+                {
+                    LogInfo("CNC server management is not running", "CNCServer");
                     return;
+                }
                     
                 _isManaging = false;
             }
@@ -104,6 +122,11 @@ namespace HavenCNCServer.Services
             {
                 // Stop monitoring
                 _monitorTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                _monitorTimer?.Dispose();
+                _monitorTimer = null;
+
+                // Cancel any background operations
+                _cancellationTokenSource?.Cancel();
 
                 // Stop server if we started it and setting is enabled
                 if (_weStartedServer && _settings.StopServerOnShutdown)
@@ -124,12 +147,18 @@ namespace HavenCNCServer.Services
             {
                 LogError($"Error during CNC server management shutdown: {ex.Message}", "CNCServer");
             }
+            finally
+            {
+                // Clean up cancellation token
+                _cancellationTokenSource?.Dispose();
+                _cancellationTokenSource = null;
+            }
         }
 
         /// <summary>
         /// Start the CNC server process
         /// </summary>
-        public async Task<bool> StartServerAsync()
+        public static async Task<bool> StartServerAsync()
         {
             try
             {
@@ -261,7 +290,7 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Stop the CNC server process
         /// </summary>
-        public async Task<bool> StopServerAsync()
+        public static async Task<bool> StopServerAsync()
         {
             try
             {
@@ -318,7 +347,7 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Restart the CNC server
         /// </summary>
-        public async Task<bool> RestartServerAsync()
+        public static async Task<bool> RestartServerAsync()
         {
             LogInfo("Restarting CNC server", "CNCServer");
             
@@ -336,7 +365,7 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Check if the CNC server is already running externally
         /// </summary>
-        private async Task<bool> IsServerAlreadyRunningAsync()
+        private static async Task<bool> IsServerAlreadyRunningAsync()
         {
             try
             {
@@ -357,7 +386,7 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Monitor the server process
         /// </summary>
-        private void MonitorServer(object? state)
+        private static void MonitorServer(object? state)
         {
             try
             {
@@ -392,7 +421,7 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Handle server process exit event
         /// </summary>
-        private void OnServerProcessExited(object? sender, EventArgs e)
+        private static void OnServerProcessExited(object? sender, EventArgs e)
         {
             if (_serverProcess != null)
             {
@@ -449,24 +478,6 @@ namespace HavenCNCServer.Services
             {
                 process.Exited -= ProcessExited;
             }
-        }
-
-        /// <summary>
-        /// Dispose resources
-        /// </summary>
-        public void Dispose()
-        {
-            if (_disposed)
-                return;
-                
-            _disposed = true;
-            
-            _monitorTimer?.Dispose();
-            
-            // Don't stop the server in Dispose - that should be done explicitly via StopManagementAsync
-            _serverProcess?.Dispose();
-            
-            GC.SuppressFinalize(this);
         }
     }
 }

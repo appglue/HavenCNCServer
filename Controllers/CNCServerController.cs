@@ -10,15 +10,11 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCServerController : ControllerBase
     {
-        private readonly CNCServerManager _serverManager;
-
         /// <summary>
         /// Initialize the CNC Server Controller
         /// </summary>
-        /// <param name="serverManager">The CNC server manager service</param>
-        public CNCServerController(CNCServerManager serverManager)
+        public CNCServerController()
         {
-            _serverManager = serverManager;
         }
 
         /// <summary>
@@ -31,11 +27,11 @@ namespace HavenCNCServer.Controllers
         {
             return Ok(new CNCServerStatus
             {
-                IsRunning = _serverManager.IsServerRunning,
-                WeStartedServer = _serverManager.WeStartedServer,
-                CanStart = !_serverManager.IsServerRunning,
-                CanStop = _serverManager.IsServerRunning && _serverManager.WeStartedServer,
-                CanRestart = _serverManager.WeStartedServer
+                IsRunning = CNCServerManager.IsServerRunning,
+                WeStartedServer = CNCServerManager.WeStartedServer,
+                CanStart = !CNCServerManager.IsServerRunning,
+                CanStop = CNCServerManager.IsServerRunning && CNCServerManager.WeStartedServer,
+                CanRestart = CNCServerManager.WeStartedServer
             });
         }
 
@@ -47,12 +43,12 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult<bool>> StartServer()
         {
-            if (_serverManager.IsServerRunning)
+            if (CNCServerManager.IsServerRunning)
             {
                 return BadRequest("CNC server is already running");
             }
 
-            var success = await _serverManager.StartServerAsync();
+            var success = await CNCServerManager.StartServerAsync();
             return Ok(success);
         }
 
@@ -64,17 +60,17 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult<bool>> StopServer()
         {
-            if (!_serverManager.IsServerRunning)
+            if (!CNCServerManager.IsServerRunning)
             {
                 return BadRequest("CNC server is not running");
             }
 
-            if (!_serverManager.WeStartedServer)
+            if (!CNCServerManager.WeStartedServer)
             {
                 return BadRequest("Cannot stop CNC server - we didn't start it");
             }
 
-            var success = await _serverManager.StopServerAsync();
+            var success = await CNCServerManager.StopServerAsync();
             return Ok(success);
         }
 
@@ -86,12 +82,12 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult<bool>> RestartServer()
         {
-            if (!_serverManager.WeStartedServer)
+            if (!CNCServerManager.WeStartedServer)
             {
                 return BadRequest("Cannot restart CNC server - we didn't start it");
             }
 
-            var success = await _serverManager.RestartServerAsync();
+            var success = await CNCServerManager.RestartServerAsync();
             return Ok(success);
         }
     }

@@ -14,52 +14,64 @@ namespace HavenCNCServer.Services
     /// <summary>
     /// Manages the ASP.NET Core Web API server lifecycle
     /// </summary>
-    public class ApiManager : IDisposable
+    public static class ApiManager
     {
-        private IHost? _webHost;
-        private CancellationTokenSource? _cancellationTokenSource;
-        private readonly string _apiUrl;
+        private static IHost? _webHost;
+        private static CancellationTokenSource? _cancellationTokenSource;
+        private static bool _isRunning = false;
+        private static readonly object _lock = new object();
+        private static readonly string _apiUrl = "http://localhost:5000";
         
         /// <summary>
         /// Event raised when the API server status changes
         /// </summary>
-        public event Action<string, Color>? StatusChanged;
+        public static event Action<string, Color>? StatusChanged;
 
         /// <summary>
         /// Gets whether the API server is currently running
         /// </summary>
-        public bool IsRunning => _webHost != null && !(_cancellationTokenSource?.Token.IsCancellationRequested ?? true);
+        public static bool IsRunning
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _isRunning;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the API server URL
         /// </summary>
-        public string ApiUrl => _apiUrl;
+        public static string ApiUrl => _apiUrl;
 
         /// <summary>
         /// Gets the Swagger UI URL
         /// </summary>
-        public string SwaggerUrl => $"{_apiUrl}/swagger";
+        public static string SwaggerUrl => $"{_apiUrl}/swagger";
 
         /// <summary>
         /// Gets the cancellation token for background operations
         /// </summary>
-        public CancellationToken CancellationToken => _cancellationTokenSource?.Token ?? CancellationToken.None;
-
-        /// <summary>
-        /// Initializes a new instance of the ApiManager class
-        /// </summary>
-        /// <param name="apiUrl">The base URL for the API server</param>
-        public ApiManager(string apiUrl)
-        {
-            _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
-        }
+        public static CancellationToken CancellationToken => _cancellationTokenSource?.Token ?? CancellationToken.None;
 
         /// <summary>
         /// Starts the API server asynchronously
         /// </summary>
         /// <returns>Task representing the async operation</returns>
-        public async Task StartAsync()
+        public static async Task StartAsync()
         {
+            lock (_lock)
+            {
+                if (_isRunning)
+                {
+                    LogWarning("API server is already running", "API");
+                    return;
+                }
+                _isRunning = true;
+            }
+
             try
             {
                 LogInfo("Initializing API server...", "API");
@@ -112,6 +124,10 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
+                lock (_lock)
+                {
+                    _isRunning = false;
+                }
                 UpdateStatus("Failed to Start", Color.Red);
                 LogError($"Failed to start API server: {ex.Message}", "API");
                 throw;
@@ -122,8 +138,18 @@ namespace HavenCNCServer.Services
         /// Stops the API server asynchronously
         /// </summary>
         /// <returns>Task representing the async operation</returns>
-        public async Task StopAsync()
+        public static async Task StopAsync()
         {
+            lock (_lock)
+            {
+                if (!_isRunning)
+                {
+                    LogInfo("API server is not running", "API");
+                    return;
+                }
+                _isRunning = false;
+            }
+
             try
             {
                 UpdateStatus("Stopping API Server...", Color.Orange);
@@ -155,7 +181,7 @@ namespace HavenCNCServer.Services
         /// Restarts the API server asynchronously
         /// </summary>
         /// <returns>Task representing the async operation</returns>
-        public async Task RestartAsync()
+        public static async Task RestartAsync()
         {
             LogInfo("Restarting API server...", "API");
             await StopAsync();
@@ -168,34 +194,9 @@ namespace HavenCNCServer.Services
         /// </summary>
         /// <param name="status">The status message</param>
         /// <param name="color">The status color</param>
-        private void UpdateStatus(string status, Color color)
+        private static void UpdateStatus(string status, Color color)
         {
             StatusChanged?.Invoke(status, color);
-        }
-
-        /// <summary>
-        /// Disposes the API manager and stops the server if running
-        /// </summary>
-        public void Dispose()
-        {
-            try
-            {
-                // Try to stop gracefully, but don't wait too long
-                var stopTask = StopAsync();
-                if (!stopTask.Wait(TimeSpan.FromSeconds(5)))
-                {
-                    LogWarning("API server stop operation timed out during disposal", "API");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error during API manager disposal: {ex.Message}", "API");
-            }
-            finally
-            {
-                _cancellationTokenSource?.Dispose();
-                _webHost?.Dispose();
-            }
         }
     }
 }
