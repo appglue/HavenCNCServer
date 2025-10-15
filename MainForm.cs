@@ -206,92 +206,182 @@ namespace HavenCNCServer
         /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // Cancel the close to handle it asynchronously
+            if (!e.Cancel)
+            {
+                e.Cancel = true;
+                
+                LogInfo("🔄 Starting async shutdown process...", "System");
+                
+                // Run shutdown asynchronously but with better error handling
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        LogInfo("📍 Background shutdown task started", "System");
+                        await PerformShutdownAsync();
+                        
+                        // // Log completion on UI thread
+                        // this.Invoke(() => 
+                        // {
+                        //     LogInfo("🛑 Shutdown complete - waiting 5 seconds before exit for log review...", "System");
+                        //     LogInfo("📋 You can now capture/review the shutdown logs", "System");
+                        //     LogInfo("⏰ Application will exit automatically in 5 seconds", "System");
+                        // });
+                        
+                        // // Wait 5 seconds (reduced from 10) before forcing exit
+                        // await Task.Delay(10000);
+                        
+                        LogInfo("🚪 Calling Environment.Exit(0)...", "System");
+                        Environment.Exit(0);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log any errors in the shutdown process
+                        try
+                        {
+                            this.Invoke(() => 
+                            {
+                                LogError($"❌ Fatal error during shutdown: {ex.Message}", "System");
+                                LogInfo("🚪 Forcing exit due to error...", "System");
+                            });
+                            await Task.Delay(2000); // Give time to see the error
+                        }
+                        catch
+                        {
+                            // If even logging fails, just exit
+                        }
+                        finally
+                        {
+                            Environment.Exit(1);
+                        }
+                    }
+                });
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        /// <summary>
+        /// Perform the actual shutdown operations asynchronously
+        /// </summary>
+        private async Task PerformShutdownAsync()
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                LogInfo("Application shutdown initiated", "System");
+                LogInfo("🔄 Application shutdown initiated", "System");
 
                 // Create a separate shutdown cancellation token with timeout
+                LogInfo("⏱️ Creating shutdown cancellation token (5 second timeout)", "System");
                 using var shutdownTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 var shutdownToken = shutdownTokenSource.Token;
 
                 // Signal all background operations to stop gracefully
+                LogInfo("🛑 Cancelling main cancellation token to signal background operations", "System");
                 _cancellationTokenSource?.Cancel();
+                LogInfo($"✅ Main cancellation token cancelled ({stopwatch.ElapsedMilliseconds}ms)", "System");
 
                 // Stop CNC Job Info Listener
-                LogInfo("Stopping CNC Job Info Listener...", "System");
+                LogInfo("🔌 Starting CNC Job Info Listener shutdown...", "System");
+                var listenerStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 CNCJobInfoListener.Stop(shutdownToken);
+                LogInfo($"✅ CNC Job Info Listener stopped ({listenerStopwatch.ElapsedMilliseconds}ms)", "System");
 
                 // Clear all event listeners to prevent callbacks during shutdown
+                LogInfo("🧹 Clearing all CNC event listeners...", "System");
                 CNCJobInfoListener.ClearAllListeners();
+                LogInfo($"✅ Event listeners cleared ({stopwatch.ElapsedMilliseconds}ms total)", "System");
 
                 // Stop CNC server manager
-                LogInfo("Stopping CNC server manager...", "System");
+                LogInfo("🖥️ Starting CNC server manager shutdown...", "System");
+                var serverStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 try
                 {
-                    var stopTask = Task.Run(async () => await CNCServerManager.StopAsync(shutdownToken));
-                    if (!stopTask.Wait(3000))
+                    LogInfo("🎯 Calling CNCServerManager.StopAsync directly (no Task.Run)...", "System");
+                    
+                    // Create a timeout-protected call without Task.Run to avoid thread pool issues
+                    using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                    using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken, timeoutSource.Token);
+                    
+                    try
                     {
-                        LogWarning("CNC server manager stop operation timed out after 3 seconds", "System");
+                        await CNCServerManager.StopAsync(combinedSource.Token);
+                        LogInfo($"✅ CNC server manager stopped successfully ({serverStopwatch.ElapsedMilliseconds}ms)", "System");
                     }
-                    else
+                    catch (OperationCanceledException) when (timeoutSource.Token.IsCancellationRequested)
                     {
-                        LogInfo("CNC server manager stopped successfully", "System");
+                        LogWarning($"⏰ CNC server manager stop timed out after 3 seconds ({serverStopwatch.ElapsedMilliseconds}ms)", "System");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogError($"Error stopping CNC server manager: {ex.Message}", "System");
+                    LogError($"❌ Error stopping CNC server manager: {ex.Message} ({serverStopwatch.ElapsedMilliseconds}ms)", "System");
                 }
 
                 // Stop API manager
-                LogInfo("Stopping API manager...", "System");
+                LogInfo("🌐 Starting API manager shutdown...", "System");
+                var apiStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 try
                 {
-                    var stopTask = Task.Run(async () => await ApiManager.StopAsync(shutdownToken));
-                    if (!stopTask.Wait(3000))
+                    LogInfo("🎯 Calling ApiManager.StopAsync directly (no Task.Run)...", "System");
+                    
+                    // Create a timeout-protected call without Task.Run to avoid thread pool issues
+                    using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                    using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken, timeoutSource.Token);
+                    
+                    try
                     {
-                        LogWarning("API manager stop operation timed out after 3 seconds", "System");
+                        await ApiManager.StopAsync(combinedSource.Token);
+                        LogInfo($"✅ API manager stopped successfully ({apiStopwatch.ElapsedMilliseconds}ms)", "System");
                     }
-                    else
+                    catch (OperationCanceledException) when (timeoutSource.Token.IsCancellationRequested)
                     {
-                        LogInfo("API manager stopped successfully", "System");
+                        LogWarning($"⏰ API manager stop timed out after 3 seconds ({apiStopwatch.ElapsedMilliseconds}ms)", "System");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogError($"Error stopping API manager: {ex.Message}", "System");
+                    LogError($"❌ Error stopping API manager: {ex.Message} ({apiStopwatch.ElapsedMilliseconds}ms)", "System");
                 }
 
                 // Unsubscribe from CNC events
+                LogInfo("📤 Unsubscribing from CNC connection events...", "System");
                 CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
+                LogInfo($"✅ Event unsubscription completed ({stopwatch.ElapsedMilliseconds}ms total)", "System");
 
                 // Cleanup the CNC connection manager
-                LogInfo("Disconnecting CNC connection...", "System");
+                LogInfo("🔌 Disconnecting CNC connection...", "System");
+                var disconnectStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 CNCConnectionManager.Disconnect();
+                LogInfo($"✅ CNC connection disconnected ({disconnectStopwatch.ElapsedMilliseconds}ms)", "System");
 
                 // Wait a moment for any final cleanup (reduced from 500ms)
-                Thread.Sleep(200);
+                LogInfo("⏳ Final cleanup wait (200ms)...", "System");
+                await Task.Delay(200);
+                LogInfo($"✅ Final cleanup wait completed ({stopwatch.ElapsedMilliseconds}ms total)", "System");
 
                 // Force garbage collection to clean up any remaining resources
+                LogInfo("🗑️ Running garbage collection...", "System");
+                var gcStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+                LogInfo($"✅ Garbage collection completed ({gcStopwatch.ElapsedMilliseconds}ms)", "System");
 
-                LogInfo("Application shutdown completed", "System");
+                LogInfo($"🏁 Application shutdown completed successfully (Total: {stopwatch.ElapsedMilliseconds}ms)", "System");
             }
             catch (Exception ex)
             {
-                LogError($"Error during shutdown cleanup: {ex.Message}", "System");
+                LogError($"❌ Error during shutdown cleanup: {ex.Message} (Total time: {stopwatch.ElapsedMilliseconds}ms)", "System");
             }
             finally
             {
+                LogInfo("🧹 Final cleanup: disposing cancellation token source...", "System");
                 // Dispose cancellation token source
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = null;
-                
-                Environment.Exit(0);
+                LogInfo($"✅ Cancellation token disposed (Total time: {stopwatch.ElapsedMilliseconds}ms)", "System");
             }
-
-            base.OnFormClosing(e);
         }
 
         private void btnOpenSwagger_Click(object sender, EventArgs e)

@@ -109,11 +109,11 @@ namespace HavenCNCServer.Centriod.Events
                                 }
                             }
                             
-                            // Check every 15 seconds (or until cancellation)
+                            // Check every 5 seconds instead of 15 for faster shutdown response
                             try
                             {
-                                // Use cancellation-aware waiting instead of WaitOne to ensure immediate response to cancellation
-                                if (!cancellationToken.WaitHandle.WaitOne(15000))
+                                // Use shorter interval for more responsive cancellation
+                                if (!cancellationToken.WaitHandle.WaitOne(5000))
                                 {
                                     // Timeout occurred, continue loop
                                 }
@@ -274,18 +274,19 @@ namespace HavenCNCServer.Centriod.Events
                         // Give the thread a chance to exit gracefully
                         if (_monitoringThread.IsAlive)
                         {
-                            // Wait up to 2 seconds for graceful shutdown (reduced from 5)
-                            if (!_monitoringThread.Join(2000))
+                            // Reduced from 2 seconds to 500ms for much faster shutdown
+                            if (!_monitoringThread.Join(500))
                             {
-                                LogWarning("Monitoring thread did not exit gracefully within 2 seconds, forcing termination", "JobInfo");
-                                // Force termination more aggressively
+                                LogWarning("Monitoring thread did not exit gracefully within 500ms, forcing termination", "JobInfo");
+                                // Force termination immediately - no more waiting
                                 try
                                 {
                                     _monitoringThread.Interrupt();
-                                    // Give it one more second after interrupt
-                                    if (!_monitoringThread.Join(1000))
+                                    // Give it only 200ms after interrupt instead of 1 second
+                                    if (!_monitoringThread.Join(200))
                                     {
-                                        LogWarning("Monitoring thread still running after interrupt, abandoning", "JobInfo");
+                                        LogWarning("Monitoring thread still running after interrupt, abandoning immediately", "JobInfo");
+                                        // Don't wait any longer - just abandon it
                                     }
                                 }
                                 catch (Exception interruptEx)
@@ -332,6 +333,8 @@ namespace HavenCNCServer.Centriod.Events
         /// </summary>
         private static void StopListeningInternal()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            
             if (!_isListening)
             {
                 LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
@@ -340,17 +343,25 @@ namespace HavenCNCServer.Centriod.Events
 
             try
             {
+                LogInfo("🔌 Stopping CNC pipe message listening...", "JobInfo");
+                
                 // Unsubscribe from MessageReceived event
                 if (_currentCNCPipe != null)
                 {
+                    var unsubStopwatch = System.Diagnostics.Stopwatch.StartNew();
                     _currentCNCPipe.MessageReceived -= OnMessageReceived;
+                    LogInfo($"📤 Event unsubscribed ({unsubStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    
+                    var stopStopwatch = System.Diagnostics.Stopwatch.StartNew();
                     _currentCNCPipe.StopListening();
-                    LogSuccess("Stopped CNC12 event-driven message listening", "JobInfo");
+                    LogInfo($"⏹️ CNCPipe.StopListening() completed ({stopStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    
+                    LogSuccess($"Stopped CNC12 event-driven message listening (total: {stopwatch.ElapsedMilliseconds}ms)", "JobInfo");
                     _currentCNCPipe = null;
                 }
 
                 _isListening = false;
-                LogSuccess("CNC JOB_INFO listener stopped", "JobInfo");
+                LogSuccess($"CNC JOB_INFO listener stopped ({stopwatch.ElapsedMilliseconds}ms)", "JobInfo");
             }
             catch (Exception ex)
             {
