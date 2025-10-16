@@ -8,7 +8,7 @@ namespace HavenCNCServer.Centriod.Events
     /// <summary>
     /// Event containing Digital Readout (DRO) position information for all axes
     /// </summary>
-    public class DROEvent : ICentroidEvent
+    public class DROEvent : ICentroidEvent, ISignalRSerializable
     {
         // Static fields for position tracking
         private static double[]? _lastDroPositions = null;
@@ -158,6 +158,15 @@ namespace HavenCNCServer.Centriod.Events
         {
             _lastDroPositions = null;
             _droSamePositionSkipCount = 0;
+        }
+
+        /// <summary>
+        /// Serialize the DRO event for SignalR transmission
+        /// </summary>
+        /// <returns>The event itself for complete data transmission</returns>
+        public object ToSignalRData()
+        {
+            return this;
         }
 
         /// <summary>

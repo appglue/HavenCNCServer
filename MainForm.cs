@@ -25,7 +25,7 @@ namespace HavenCNCServer
         private CancellationTokenSource? _cancellationTokenSource;
         private bool _startupComplete = false;
         private readonly object _startupLock = new object();
-        
+
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
         private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
@@ -36,16 +36,16 @@ namespace HavenCNCServer
         public MainForm()
         {
             InitializeComponent();
-            
+
             // Initialize cancellation token source for coordinated shutdown
             _cancellationTokenSource = new CancellationTokenSource();
-            
+
             // Set up 50/50 layout for messages and logs
             SetupLayout();
-            
+
             // Set up centralized logging
             SetupLogging();
-            
+
             // Initialize application settings
             try
             {
@@ -53,10 +53,10 @@ namespace HavenCNCServer
                 LogSuccess($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}", "Settings");
                 LogInfo($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}", "Settings");
                 LogInfo($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}", "Settings");
-                
+
                 // Subscribe to CNC connection status changes
                 CNCConnectionManager.ConnectionStatusChanged += OnCNCConnectionStatusChanged;
-                
+
                 // Try auto-connect if enabled
                 _ = Task.Run(async () => await CNCConnectionManager.TryAutoConnectAsync());
             }
@@ -64,13 +64,13 @@ namespace HavenCNCServer
             {
                 LogWarning($"Settings initialization failed: {ex.Message}", "Settings");
             }
-            
+
             // Register this form with the UI control service
             Services.UIControlService.RegisterMainForm(this);
-            
+
             // Subscribe to status change events
             ApiManager.StatusChanged += OnApiStatusChanged;
-            
+
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
             this.Resize += MainForm_Resize;
@@ -83,7 +83,7 @@ namespace HavenCNCServer
         {
             // Subscribe to resize event to maintain proper layout
             this.Resize += MainForm_Resize;
-            
+
             // Initial layout setup will be done in resize handler
             MainForm_Resize(null, EventArgs.Empty);
         }
@@ -97,29 +97,29 @@ namespace HavenCNCServer
             {
                 var availableWidth = this.ClientSize.Width - 36; // Account for margins
                 var columnWidth = availableWidth / 3 - 8; // Account for gaps between controls
-                
+
                 // Update log section (left column)
                 txtLog.Width = columnWidth;
-                
+
                 // Update messages section (center column)
                 txtMessages.Left = txtLog.Right + 12; // 12px gap
                 txtMessages.Width = columnWidth;
-                
+
                 // Update G-code section (right column)
                 txtGCode.Left = txtMessages.Right + 12; // 12px gap
                 txtGCode.Width = columnWidth;
-                
+
                 // Update labels accordingly
                 if (lblMessages != null)
                 {
                     lblMessages.Left = txtMessages.Left;
                 }
-                
+
                 if (lblGCode != null)
                 {
                     lblGCode.Left = txtGCode.Left;
                 }
-                
+
                 if (lblCurrentJob != null)
                 {
                     lblCurrentJob.Left = txtGCode.Left;
@@ -135,10 +135,10 @@ namespace HavenCNCServer
             // Create and register a log target for the main form's text box
             var logTarget = new RichTextBoxLogTarget(txtLog, this);
             LoggingService.AddTarget(logTarget);
-            
+
             // Set maximum log entries from settings or default
             LoggingService.MaxLogEntries = 2000;
-            
+
             LogInfo("Logging system initialized", "System");
         }
 
@@ -154,13 +154,13 @@ namespace HavenCNCServer
         private async void MainForm_Load(object? sender, EventArgs e)
         {
             var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
-            
+
             await ApiManager.StartAsync(cancellationToken);
-            
+
             // Start CNC server management
             await CNCServerManager.StartAsync(cancellationToken);
             LogInfo("CNC Server Manager started", "CNCServer");
-            
+
             // Start job listener with background monitoring
             CNCJobInfoListener.Start(cancellationToken);
             
@@ -170,6 +170,21 @@ namespace HavenCNCServer
                 _startupComplete = true;
                 LogSuccess("Application startup completed", "System");
             }
+            
+            // Set up SignalR event listeners asynchronously after API is fully ready
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    // Wait for API to be fully initialized
+                    await Task.Delay(3000);
+                    SignalRManager.SetupEventListeners();
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Failed to setup SignalR listeners: {ex.Message}", "SignalR");
+                }
+            });
         }        /// <summary>
         /// Handle CNC connection status changes
         /// </summary>
@@ -221,7 +236,7 @@ namespace HavenCNCServer
                 {
                     LogInfo("Startup in progress - delaying shutdown", "System");
                     e.Cancel = true;
-                    
+
                     // Schedule a retry in 500ms
                     var retryTimer = new System.Windows.Forms.Timer();
                     retryTimer.Interval = 500;
@@ -235,12 +250,12 @@ namespace HavenCNCServer
                     return;
                 }
             }
-            
+
             // Cancel the close to handle it asynchronously
             if (!e.Cancel)
             {
                 e.Cancel = true;
-                
+
                 // Run shutdown asynchronously but with better error handling and timeout
                 _ = Task.Run(async () =>
                 {
@@ -258,7 +273,7 @@ namespace HavenCNCServer
                             Environment.Exit(1);
                             return;
                         }
-                        
+
                         Environment.Exit(0);
                     }
                     catch (Exception ex)
@@ -266,7 +281,7 @@ namespace HavenCNCServer
                         // Log any errors in the shutdown process
                         try
                         {
-                            this.Invoke(() => 
+                            this.Invoke(() =>
                             {
                                 LogError($"❌ Fatal error during shutdown: {ex.Message}", "System");
                                 LogInfo("🚪 Forcing exit due to error...", "System");
@@ -316,7 +331,7 @@ namespace HavenCNCServer
                     // Create a timeout-protected call
                     using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                     using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken, timeoutSource.Token);
-                    
+
                     await CNCServerManager.StopAsync(combinedSource.Token);
                 }
                 catch (OperationCanceledException)
@@ -334,7 +349,7 @@ namespace HavenCNCServer
                     // Create a timeout-protected call
                     using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                     using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken, timeoutSource.Token);
-                    
+
                     await ApiManager.StopAsync(combinedSource.Token);
                 }
                 catch (OperationCanceledException)
@@ -396,12 +411,12 @@ namespace HavenCNCServer
             try
             {
                 LogInfo("Opening G-Code Test Dialog...", "UI");
-                
+
                 using (var gCodeDialog = new GCodeTestDialog(this))
                 {
                     gCodeDialog.ShowDialog(this);
                 }
-                
+
                 LogInfo("G-Code Test Dialog closed.", "UI");
             }
             catch (Exception ex)

@@ -5,7 +5,7 @@ namespace HavenCNCServer.Centriod.Events
     /// <summary>
     /// Event fired when a job is completed
     /// </summary>
-    public class JobCompletedEvent : ICentroidEvent
+    public class JobCompletedEvent : ICentroidEvent, ISignalRSerializable
     {
         /// <summary>
         /// Timestamp when the job completed
@@ -41,5 +41,14 @@ namespace HavenCNCServer.Centriod.Events
         /// Total lines executed
         /// </summary>
         public int LinesExecuted { get; set; }
+
+        /// <summary>
+        /// Serialize the job completed event for SignalR transmission
+        /// </summary>
+        /// <returns>The event itself for complete data transmission</returns>
+        public object ToSignalRData()
+        {
+            return this;
+        }
     }
 }

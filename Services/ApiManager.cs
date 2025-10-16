@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HavenCNCServer.Hubs;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Services
@@ -21,7 +23,7 @@ namespace HavenCNCServer.Services
         private static bool _isRunning = false;
         private static readonly object _lock = new object();
         private static readonly string _apiUrl = "http://localhost:5000";
-        
+
         /// <summary>
         /// Event raised when the API server status changes
         /// </summary>
@@ -50,6 +52,44 @@ namespace HavenCNCServer.Services
         /// Gets the Swagger UI URL
         /// </summary>
         public static string SwaggerUrl => $"{_apiUrl}/swagger";
+
+        /// <summary>
+        /// Gets the SignalR hub context if available
+        /// </summary>
+        /// <returns>Hub context or null if not available</returns>
+        public static IHubContext<CNCMessageHub>? GetHubContext()
+        {
+            LogInfo("GetHubContext() called", "API");
+
+            try
+            {
+                LogInfo($"Checking _webHost: {(_webHost != null ? "exists" : "NULL")}", "API");
+                LogInfo($"Checking _isRunning: {_isRunning}", "API");
+
+                if (_webHost?.Services != null && _isRunning)
+                {
+                    LogInfo("Web host and services available, attempting to get service", "API");
+
+                    var hubContext = _webHost.Services.GetService<IHubContext<CNCMessageHub>>();
+
+                    LogInfo($"Hub context retrieved: {(hubContext != null ? "SUCCESS" : "NULL")}", "API");
+                    return hubContext;
+                }
+                else
+                {
+                    LogWarning($"Prerequisites not met - webHost: {(_webHost != null ? "OK" : "NULL")}, Services: {(_webHost?.Services != null ? "OK" : "NULL")}, running: {_isRunning}", "API");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Hub context retrieval failed with exception: {ex.Message}", "API");
+                LogError($"Exception type: {ex.GetType().FullName}", "API");
+                LogError($"Stack trace: {ex.StackTrace}", "API");
+            }
+
+            LogInfo("GetHubContext() returning null", "API");
+            return null;
+        }
 
         /// <summary>
         /// Gets the cancellation token for background operations
@@ -159,14 +199,14 @@ namespace HavenCNCServer.Services
                 LogInfo("Stopping API server...", "API");
 
                 _cancellationTokenSource?.Cancel();
-                
+
                 if (_webHost != null)
                 {
                     // Give web host limited time to stop gracefully
                     using var timeoutToken = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                     using var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(
                         cancellationToken, timeoutToken.Token);
-                    
+
                     try
                     {
                         await _webHost.StopAsync(combinedToken.Token);
@@ -175,7 +215,7 @@ namespace HavenCNCServer.Services
                     {
                         LogWarning("Web host stop operation timed out after 3 seconds", "API");
                     }
-                    
+
                     _webHost.Dispose();
                     _webHost = null;
                 }

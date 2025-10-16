@@ -8,7 +8,7 @@ namespace HavenCNCServer.Centriod.Events
     /// <summary>
     /// Event containing a CNC message with error code and classification
     /// </summary>
-    public class MessageEvent : ICentroidEvent 
+    public class MessageEvent : ICentroidEvent, ISignalRSerializable 
     {
         /// <summary>
         /// Timestamp when the message event occurred
@@ -381,6 +381,15 @@ namespace HavenCNCServer.Centriod.Events
                 LogDebug($"Error getting packet property '{propertyName}': {ex.Message}", "MessageEvent");
                 return defaultValue;
             }
+        }
+
+        /// <summary>
+        /// Serialize the message event for SignalR transmission
+        /// </summary>
+        /// <returns>The event itself for complete data transmission</returns>
+        public object ToSignalRData()
+        {
+            return this;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace HavenCNCServer.Centriod.Events
     /// <summary>
     /// Event fired during step run execution to indicate current line
     /// </summary>
-    public class StepExecutionEvent : ICentroidEvent
+    public class StepExecutionEvent : ICentroidEvent, ISignalRSerializable
     {
         /// <summary>
         /// Timestamp when the step was executed
@@ -46,5 +46,14 @@ namespace HavenCNCServer.Centriod.Events
         /// Step execution status
         /// </summary>
         public StepExecutionStatus Status { get; set; }
+
+        /// <summary>
+        /// Serialize the step execution event for SignalR transmission
+        /// </summary>
+        /// <returns>The event itself for complete data transmission</returns>
+        public object ToSignalRData()
+        {
+            return this;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using HavenCNCServer.Services;
+using HavenCNCServer.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
@@ -52,11 +53,15 @@ namespace HavenCNCServer
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // React app ports
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials(); // Required for SignalR
                 });
             });
+
+            // Add SignalR
+            services.AddSignalR();
 
             // Register services
             // Note: CNCServerManager is now static and doesn't need DI registration
@@ -100,6 +105,7 @@ namespace HavenCNCServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<CNCMessageHub>("/cncHub");
             });
 
             // Configure SPA routing with proper API route exclusion

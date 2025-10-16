@@ -5,7 +5,7 @@ namespace HavenCNCServer.Centriod.Events
     /// <summary>
     /// Event fired when a job is started with G-code
     /// </summary>
-    public class JobStartedEvent : ICentroidEvent
+    public class JobStartedEvent : ICentroidEvent, ISignalRSerializable
     {
         /// <summary>
         /// Timestamp when the job started
@@ -41,5 +41,14 @@ namespace HavenCNCServer.Centriod.Events
         /// File path if job was loaded from file
         /// </summary>
         public string? FilePath { get; set; }
+
+        /// <summary>
+        /// Serialize the job started event for SignalR transmission
+        /// </summary>
+        /// <returns>The event itself for complete data transmission</returns>
+        public object ToSignalRData()
+        {
+            return this;
+        }
     }
 }
