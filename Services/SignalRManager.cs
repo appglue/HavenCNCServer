@@ -25,18 +25,18 @@ namespace HavenCNCServer.Services
         public static void SetupEventListeners()
         {
             LogInfo("SetupEventListeners() called", "SignalR");
-            
+
             // Run asynchronously to avoid blocking
             _ = Task.Run(() =>
             {
                 try
                 {
                     LogInfo("Background task started, acquiring lock", "SignalR");
-                    
+
                     lock (_lock)
                     {
                         LogInfo("Lock acquired", "SignalR");
-                        
+
                         if (_listenersSetup)
                         {
                             LogInfo("SignalR event listeners already set up - exiting", "SignalR");
@@ -44,25 +44,25 @@ namespace HavenCNCServer.Services
                         }
 
                         LogInfo("Setting up SignalR event listeners...", "SignalR");
-                        
+
                         LogInfo("About to call ApiManager.GetHubContext()", "SignalR");
-                        
+
                         // Get hub context from the running API server
                         _hubContext = ApiManager.GetHubContext();
-                        
+
                         LogInfo($"GetHubContext() returned: {(_hubContext != null ? "valid context" : "NULL")}", "SignalR");
-                        
+
                         if (_hubContext != null)
                         {
                             LogInfo("Creating SignalREventListener instance", "SignalR");
                             var listener = new SignalREventListener(_hubContext);
-                            
+
                             LogInfo("Adding listener to CNCJobInfoListener", "SignalR");
                             CNCJobInfoListener.AddListener(listener);
-                            
+
                             LogInfo("Marking listeners as setup", "SignalR");
                             _listenersSetup = true;
-                            
+
                             LogSuccess("SignalR event listeners registered successfully", "SignalR");
                         }
                         else
@@ -77,11 +77,11 @@ namespace HavenCNCServer.Services
                     LogError($"Stack trace: {ex.StackTrace}", "SignalR");
                 }
             });
-            
+
             LogInfo("SetupEventListeners() returning (background task started)", "SignalR");
         }        /// <summary>
-        /// Get the current setup status
-        /// </summary>
+                 /// Get the current setup status
+                 /// </summary>
         public static bool IsSetup
         {
             get

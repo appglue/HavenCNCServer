@@ -163,14 +163,14 @@ namespace HavenCNCServer
 
             // Start job listener with background monitoring
             CNCJobInfoListener.Start(cancellationToken);
-            
+
             // Mark startup as complete
             lock (_startupLock)
             {
                 _startupComplete = true;
                 LogSuccess("Application startup completed", "System");
             }
-            
+
             // Set up SignalR event listeners asynchronously after API is fully ready
             _ = Task.Run(async () =>
             {
@@ -186,8 +186,8 @@ namespace HavenCNCServer
                 }
             });
         }        /// <summary>
-        /// Handle CNC connection status changes
-        /// </summary>
+                 /// Handle CNC connection status changes
+                 /// </summary>
         private void OnCNCConnectionStatusChanged(bool connected, string message)
         {
             // Use Invoke to ensure we're on the UI thread
