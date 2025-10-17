@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Components;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer
@@ -25,6 +26,11 @@ namespace HavenCNCServer
         private CancellationTokenSource? _cancellationTokenSource;
         private bool _startupComplete = false;
         private readonly object _startupLock = new object();
+
+        // Component instances
+        private MessageDisplayComponent? _messageDisplayComponent;
+        private GCodeViewerComponent? _gCodeViewerComponent;
+        private CoordinateDisplayComponent? _coordinateDisplayComponent;
 
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
@@ -45,6 +51,9 @@ namespace HavenCNCServer
 
             // Set up centralized logging
             SetupLogging();
+
+            // Initialize UI components
+            InitializeUIComponents();
 
             // Initialize application settings
             try
@@ -93,7 +102,7 @@ namespace HavenCNCServer
         /// </summary>
         private void MainForm_Resize(object? sender, EventArgs e)
         {
-            if (txtLog != null && txtMessages != null && txtGCode != null && pnlControls != null)
+            if (txtLog != null && _messageDisplayComponent != null && _gCodeViewerComponent != null && pnlControls != null)
             {
                 var availableWidth = this.ClientSize.Width - 36; // Account for margins
                 var columnWidth = availableWidth / 3 - 8; // Account for gaps between controls
@@ -102,28 +111,18 @@ namespace HavenCNCServer
                 txtLog.Width = columnWidth;
 
                 // Update messages section (center column)
-                txtMessages.Left = txtLog.Right + 12; // 12px gap
-                txtMessages.Width = columnWidth;
+                _messageDisplayComponent.Left = txtLog.Right + 12; // 12px gap
+                _messageDisplayComponent.Width = columnWidth;
 
                 // Update G-code section (right column)
-                txtGCode.Left = txtMessages.Right + 12; // 12px gap
-                txtGCode.Width = columnWidth;
+                _gCodeViewerComponent.Left = _messageDisplayComponent.Right + 12; // 12px gap
+                _gCodeViewerComponent.Width = columnWidth;
+            }
 
-                // Update labels accordingly
-                if (lblMessages != null)
-                {
-                    lblMessages.Left = txtMessages.Left;
-                }
-
-                if (lblGCode != null)
-                {
-                    lblGCode.Left = txtGCode.Left;
-                }
-
-                if (lblCurrentJob != null)
-                {
-                    lblCurrentJob.Left = txtGCode.Left;
-                }
+            // Keep coordinate display positioned on the right side
+            if (_coordinateDisplayComponent != null)
+            {
+                _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 340, 12);
             }
         }
 
@@ -143,12 +142,115 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Load G-code into the display panel (placeholder for component integration)
+        /// Initialize the independent UI components
+        /// </summary>
+        private void InitializeUIComponents()
+        {
+            try
+            {
+                // Create the message display component and replace txtMessages
+                _messageDisplayComponent = new MessageDisplayComponent();
+                ReplaceControl(txtMessages, _messageDisplayComponent);
+
+                // Create the G-code viewer component and replace txtGCode  
+                _gCodeViewerComponent = new GCodeViewerComponent();
+                ReplaceControl(txtGCode, _gCodeViewerComponent);
+
+                // Create the coordinate display component and position it properly on the right
+                _coordinateDisplayComponent = new CoordinateDisplayComponent();
+                PositionCoordinateDisplay();
+
+                LogInfo("UI components initialized successfully", "Components");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to initialize UI components: {ex.Message}", "Components");
+            }
+        }
+
+        /// <summary>
+        /// Replace an existing control with a new component
+        /// </summary>
+        private void ReplaceControl(Control oldControl, Control newControl)
+        {
+            // Copy position and size properties
+            newControl.Location = oldControl.Location;
+            newControl.Size = oldControl.Size;
+            newControl.Anchor = oldControl.Anchor;
+            newControl.Name = oldControl.Name + "_Component";
+
+            // Replace the control
+            var parent = oldControl.Parent;
+            if (parent != null)
+            {
+                var index = parent.Controls.GetChildIndex(oldControl);
+                parent.Controls.Remove(oldControl);
+                parent.Controls.Add(newControl);
+                parent.Controls.SetChildIndex(newControl, index);
+            }
+
+            // Dispose the old control
+            oldControl.Dispose();
+        }
+
+        /// <summary>
+        /// Position the coordinate display component on the right side of the form
+        /// </summary>
+        private void PositionCoordinateDisplay()
+        {
+            if (_coordinateDisplayComponent == null) return;
+
+            // Remove the old coordinate group box
+            if (grpCoordinates != null)
+            {
+                var parent = grpCoordinates.Parent;
+                if (parent != null)
+                {
+                    parent.Controls.Remove(grpCoordinates);
+                }
+                grpCoordinates.Dispose();
+            }
+
+            // Position coordinate display on the right side, inline with buttons
+            _coordinateDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 340, 12);
+            _coordinateDisplayComponent.Name = "coordinateDisplayComponent";
+
+            // Add to the form (not the control panel)
+            this.Controls.Add(_coordinateDisplayComponent);
+            _coordinateDisplayComponent.BringToFront();
+        }
+
+        /// <summary>
+        /// Load G-code into the display panel
         /// </summary>
         public void LoadGCodeForDisplay(string[] gcode)
         {
-            // TODO: Delegate to GCodeViewerComponent when components are integrated
-            LogInfo($"LoadGCodeForDisplay called with {gcode?.Length ?? 0} lines", "GCodeDisplay");
+            try
+            {
+                _gCodeViewerComponent?.LoadGCodeForDisplay(gcode);
+                LogInfo($"Loaded {gcode?.Length ?? 0} lines of G-code for display", "GCodeDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error loading G-code for display: {ex.Message}", "GCodeDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Clear the G-code display
+        /// </summary>
+        public void ClearGCodeDisplay()
+        {
+            try
+            {
+                _gCodeViewerComponent?.ClearGCode();
+                LogInfo("G-code display cleared", "GCodeDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error clearing G-code display: {ex.Message}", "GCodeDisplay");
+            }
         }
 
         private async void MainForm_Load(object? sender, EventArgs e)
@@ -321,6 +423,11 @@ namespace HavenCNCServer
 
                 // Stop CNC Job Info Listener
                 CNCJobInfoListener.Stop(shutdownToken);
+
+                // Clean up UI components
+                _messageDisplayComponent?.Dispose();
+                _gCodeViewerComponent?.Dispose();
+                _coordinateDisplayComponent?.Dispose();
 
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();

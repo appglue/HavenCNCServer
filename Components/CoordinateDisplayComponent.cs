@@ -43,80 +43,81 @@ namespace HavenCNCServer.Components
             this.SuspendLayout();
 
             // grpCoordinates
-            this.grpCoordinates.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
-                        | AnchorStyles.Left)
-                        | AnchorStyles.Right)));
+            this.grpCoordinates.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left) | AnchorStyles.Right)));
             this.grpCoordinates.Controls.Add(this.lblZValue);
             this.grpCoordinates.Controls.Add(this.lblYValue);
             this.grpCoordinates.Controls.Add(this.lblXValue);
             this.grpCoordinates.Controls.Add(this.lblZPos);
             this.grpCoordinates.Controls.Add(this.lblYPos);
             this.grpCoordinates.Controls.Add(this.lblXPos);
-            this.grpCoordinates.Location = new Point(3, 3);
+            this.grpCoordinates.Location = new Point(0, 0);
             this.grpCoordinates.Name = "grpCoordinates";
-            this.grpCoordinates.Size = new Size(194, 150);
+            this.grpCoordinates.Size = new Size(320, 50);
             this.grpCoordinates.TabIndex = 0;
             this.grpCoordinates.TabStop = false;
             this.grpCoordinates.Text = "Machine Coordinates";
 
             // lblXPos
             this.lblXPos.AutoSize = true;
-            this.lblXPos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblXPos.Location = new Point(15, 30);
+            this.lblXPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblXPos.Location = new Point(8, 22);
             this.lblXPos.Name = "lblXPos";
-            this.lblXPos.Size = new Size(24, 20);
+            this.lblXPos.Size = new Size(19, 17);
             this.lblXPos.TabIndex = 0;
             this.lblXPos.Text = "X:";
 
             // lblYPos
             this.lblYPos.AutoSize = true;
-            this.lblYPos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblYPos.Location = new Point(15, 60);
+            this.lblYPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblYPos.Location = new Point(108, 22);
             this.lblYPos.Name = "lblYPos";
-            this.lblYPos.Size = new Size(24, 20);
+            this.lblYPos.Size = new Size(19, 17);
             this.lblYPos.TabIndex = 1;
             this.lblYPos.Text = "Y:";
 
             // lblZPos
             this.lblZPos.AutoSize = true;
-            this.lblZPos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblZPos.Location = new Point(15, 90);
+            this.lblZPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblZPos.Location = new Point(208, 22);
             this.lblZPos.Name = "lblZPos";
-            this.lblZPos.Size = new Size(23, 20);
+            this.lblZPos.Size = new Size(19, 17);
             this.lblZPos.TabIndex = 2;
             this.lblZPos.Text = "Z:";
 
             // lblXValue
-            this.lblXValue.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            this.lblXValue.Location = new Point(45, 30);
+            this.lblXValue.AutoSize = true;
+            this.lblXValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblXValue.ForeColor = Color.Blue;
+            this.lblXValue.Location = new Point(30, 22);
             this.lblXValue.Name = "lblXValue";
-            this.lblXValue.Size = new Size(140, 20);
+            this.lblXValue.Size = new Size(78, 18);
             this.lblXValue.TabIndex = 3;
             this.lblXValue.Text = "0.0000";
-            this.lblXValue.TextAlign = ContentAlignment.MiddleRight;
 
             // lblYValue
-            this.lblYValue.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            this.lblYValue.Location = new Point(45, 60);
+            this.lblYValue.AutoSize = true;
+            this.lblYValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblYValue.ForeColor = Color.Blue;
+            this.lblYValue.Location = new Point(130, 22);
             this.lblYValue.Name = "lblYValue";
-            this.lblYValue.Size = new Size(140, 20);
+            this.lblYValue.Size = new Size(78, 18);
             this.lblYValue.TabIndex = 4;
             this.lblYValue.Text = "0.0000";
-            this.lblYValue.TextAlign = ContentAlignment.MiddleRight;
 
             // lblZValue
-            this.lblZValue.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            this.lblZValue.Location = new Point(45, 90);
+            this.lblZValue.AutoSize = true;
+            this.lblZValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblZValue.ForeColor = Color.Blue;
+            this.lblZValue.Location = new Point(230, 22);
             this.lblZValue.Name = "lblZValue";
-            this.lblZValue.Size = new Size(140, 20);
+            this.lblZValue.Size = new Size(78, 18);
             this.lblZValue.TabIndex = 5;
             this.lblZValue.Text = "0.0000";
-            this.lblZValue.TextAlign = ContentAlignment.MiddleRight;
 
             // CoordinateDisplayComponent
             this.Controls.Add(this.grpCoordinates);
             this.Name = "CoordinateDisplayComponent";
-            this.Size = new Size(200, 156);
+            this.Size = new Size(320, 50);
             this.grpCoordinates.ResumeLayout(false);
             this.grpCoordinates.PerformLayout();
             this.ResumeLayout(false);

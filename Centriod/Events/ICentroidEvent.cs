@@ -16,5 +16,10 @@ namespace HavenCNCServer.Centriod.Events
         /// Message associated with the event
         /// </summary>
         string Message { get; set; }
+        
+        /// <summary>
+        /// Type of message/event
+        /// </summary>
+        string MessageType { get; set; }
     }
 }
