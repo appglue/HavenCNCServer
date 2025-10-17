@@ -16,6 +16,11 @@ namespace HavenCNCServer.Centriod.Events
         /// Message associated with the job completion event
         /// </summary>
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Type of message/event
+        /// </summary>
+        public string MessageType { get; set; } = "JobCompletedEvent";
         
         /// <summary>
         /// Unique identifier for the job

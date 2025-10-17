@@ -65,6 +65,11 @@ namespace HavenCNCServer.Centriod.Events
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
+        /// Type of message/event
+        /// </summary>
+        public string MessageType { get; set; } = "DROEvent";
+
+        /// <summary>
         /// Process DRO_UPDATE message - Contains position data
         /// Returns tuple of (shouldSkip, droEvent) where shouldSkip indicates if positions haven't changed
         /// </summary>

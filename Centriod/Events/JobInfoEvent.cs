@@ -32,6 +32,11 @@ namespace HavenCNCServer.Centriod.Events
         /// Message associated with the job info event
         /// </summary>
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Type of message/event
+        /// </summary>
+        public string MessageType { get; set; } = "JobInfoEvent";
         
         /// <summary>
         /// Name of the currently running job

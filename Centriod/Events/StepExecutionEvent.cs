@@ -16,6 +16,11 @@ namespace HavenCNCServer.Centriod.Events
         /// Message associated with the step execution
         /// </summary>
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Type of message/event
+        /// </summary>
+        public string MessageType { get; set; } = "StepExecutionEvent";
         
         /// <summary>
         /// Unique identifier for the job

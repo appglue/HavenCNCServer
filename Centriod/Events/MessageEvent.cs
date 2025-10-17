@@ -31,6 +31,11 @@ namespace HavenCNCServer.Centriod.Events
         public MessageEventType EventType { get; set; }
 
         /// <summary>
+        /// Type of message/event
+        /// </summary>
+        public string MessageType { get; set; } = "MessageEvent";
+
+        /// <summary>
         /// Process MESSAGE_WINDOW_MESSAGE - Contains message text
         /// </summary>
         public static MessageEvent? ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile, System.Action<ICentroidEvent, string> storeMessage, System.Action<ICentroidEvent> notifyListeners)
