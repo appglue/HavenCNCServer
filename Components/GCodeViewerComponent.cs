@@ -37,11 +37,13 @@ namespace HavenCNCServer.Components
 
             // lblGCode
             this.lblGCode.AutoSize = true;
+            this.lblGCode.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblGCode.ForeColor = Color.DarkBlue;
             this.lblGCode.Location = new Point(3, 0);
             this.lblGCode.Name = "lblGCode";
             this.lblGCode.Size = new Size(79, 13);
             this.lblGCode.TabIndex = 0;
-            this.lblGCode.Text = "G-Code Viewer";
+            this.lblGCode.Text = "Current G-Code";
 
             // lblCurrentJob
             this.lblCurrentJob.AutoSize = true;

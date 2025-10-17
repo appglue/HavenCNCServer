@@ -148,13 +148,19 @@ namespace HavenCNCServer
         {
             try
             {
-                // Create the message display component and replace txtMessages
+                // Create the message display component 
                 _messageDisplayComponent = new MessageDisplayComponent();
-                ReplaceControl(txtMessages, _messageDisplayComponent);
+                _messageDisplayComponent.Location = new Point(462, 170);
+                _messageDisplayComponent.Size = new Size(430, 500);
+                _messageDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                this.Controls.Add(_messageDisplayComponent);
 
-                // Create the G-code viewer component and replace txtGCode  
+                // Create the G-code viewer component  
                 _gCodeViewerComponent = new GCodeViewerComponent();
-                ReplaceControl(txtGCode, _gCodeViewerComponent);
+                _gCodeViewerComponent.Location = new Point(902, 170);
+                _gCodeViewerComponent.Size = new Size(430, 500);
+                _gCodeViewerComponent.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                this.Controls.Add(_gCodeViewerComponent);
 
                 // Create the coordinate display component and position it properly on the right
                 _coordinateDisplayComponent = new CoordinateDisplayComponent();
@@ -199,17 +205,6 @@ namespace HavenCNCServer
         private void PositionCoordinateDisplay()
         {
             if (_coordinateDisplayComponent == null) return;
-
-            // Remove the old coordinate group box
-            if (grpCoordinates != null)
-            {
-                var parent = grpCoordinates.Parent;
-                if (parent != null)
-                {
-                    parent.Controls.Remove(grpCoordinates);
-                }
-                grpCoordinates.Dispose();
-            }
 
             // Position coordinate display on the right side, inline with buttons
             _coordinateDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Right;

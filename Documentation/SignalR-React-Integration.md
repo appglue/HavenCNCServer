@@ -19,17 +19,17 @@ All SignalR messages follow this wrapper format:
 **Description:** Machine axis position changes
 
 **Properties:**
-- `Timestamp` (DateTime) - When the position update occurred
-- `MessageType` (string) - "DROEvent"
-- `Message` (string) - Human-readable position summary
-- `Axis1` (number) - X axis position
-- `Axis2` (number) - Y axis position
-- `Axis3` (number) - Z axis position
-- `Axis4` (number) - A axis position
-- `Axis5` (number) - B axis position
-- `Axis6` (number) - C axis position
-- `Axis7` (number) - Additional axis position
-- `Axis8` (number) - Additional axis position
+- `timestamp` (string) - When the position update occurred (ISO 8601)
+- `messageType` (string) - "DROEvent"
+- `message` (string) - Human-readable position summary
+- `axis1` (number) - X axis position
+- `axis2` (number) - Y axis position
+- `axis3` (number) - Z axis position
+- `axis4` (number) - A axis position
+- `axis5` (number) - B axis position
+- `axis6` (number) - C axis position
+- `axis7` (number) - Additional axis position
+- `axis8` (number) - Additional axis position
 
 ---
 
@@ -37,11 +37,11 @@ All SignalR messages follow this wrapper format:
 **Description:** Status messages, errors, warnings from CNC system
 
 **Properties:**
-- `Timestamp` (DateTime) - When the message occurred
-- `MessageType` (string) - "MessageEvent"
-- `Message` (string) - Message text content
-- `EventCode` (number) - Numeric error/message code
-- `EventType` (string) - Classified message type (e.g., "SystemFault", "StatusMessage")
+- `timestamp` (string) - When the message occurred (ISO 8601)
+- `messageType` (string) - "MessageEvent"
+- `message` (string) - Message text content
+- `eventCode` (number) - Numeric error/message code
+- `eventType` (string) - Classified message type (e.g., "SystemFault", "StatusMessage")
 
 ---
 
@@ -49,14 +49,14 @@ All SignalR messages follow this wrapper format:
 **Description:** G-code job has started execution
 
 **Properties:**
-- `Timestamp` (DateTime) - When the job started
-- `MessageType` (string) - "JobStartedEvent"
-- `Message` (string) - Job start message
-- `JobId` (string) - Unique job identifier
-- `GCodeLines` (array) - G-code lines for the job
-- `TotalLines` (number) - Total number of lines in job
-- `IsStepRunMode` (boolean) - Whether job is in step-run mode
-- `FilePath` (string) - File path if job loaded from file
+- `timestamp` (string) - When the job started (ISO 8601)
+- `messageType` (string) - "JobStartedEvent"
+- `message` (string) - Job start message
+- `jobId` (string) - Unique job identifier
+- `gCodeLines` (array) - G-code lines for the job
+- `totalLines` (number) - Total number of lines in job
+- `isStepRunMode` (boolean) - Whether job is in step-run mode
+- `filePath` (string) - File path if job loaded from file
 
 ---
 
@@ -64,14 +64,14 @@ All SignalR messages follow this wrapper format:
 **Description:** G-code job has completed execution
 
 **Properties:**
-- `Timestamp` (DateTime) - When the job completed
-- `MessageType` (string) - "JobCompletedEvent"
-- `Message` (string) - Job completion message
-- `JobId` (string) - Unique job identifier
-- `Success` (boolean) - Whether job completed successfully
-- `ErrorMessage` (string) - Error message if job failed
-- `Duration` (TimeSpan) - Job execution duration
-- `LinesExecuted` (number) - Total lines executed
+- `timestamp` (string) - When the job completed (ISO 8601)
+- `messageType` (string) - "JobCompletedEvent"
+- `message` (string) - Job completion message
+- `jobId` (string) - Unique job identifier
+- `success` (boolean) - Whether job completed successfully
+- `errorMessage` (string) - Error message if job failed
+- `duration` (string) - Job execution duration (TimeSpan format)
+- `linesExecuted` (number) - Total lines executed
 
 ---
 
@@ -79,11 +79,12 @@ All SignalR messages follow this wrapper format:
 **Description:** Current job execution status and progress
 
 **Properties:**
-- `Timestamp` (DateTime) - When the info was captured
-- `MessageType` (string) - "JobInfoEvent"
-- `Message` (string) - Job info message
-- `LineNumber` (number) - Current executing line number
-- `JobName` (string) - Name of currently running job
+- `timestamp` (string) - When the info was captured (ISO 8601)
+- `messageType` (string) - "JobInfoEvent"
+- `message` (string) - Job info message
+- `lineNumber` (number) - Current executing line number
+- `stackLevel` (number) - Stack level for nested programs/subroutines
+- `jobName` (string) - Name of currently running job
 
 ---
 
@@ -91,13 +92,15 @@ All SignalR messages follow this wrapper format:
 **Description:** Current line being executed in step-run mode
 
 **Properties:**
-- `Timestamp` (DateTime) - When the step was executed
-- `MessageType` (string) - "StepExecutionEvent"
-- `Message` (string) - Step execution message
-- `JobId` (string) - Unique job identifier
-- `LineNumber` (number) - Current line number being executed (1-based)
-- `GCodeLine` (string) - The G-code line being executed
-- `Status` (string) - Execution status of the step
+- `timestamp` (string) - When the step was executed (ISO 8601)
+- `messageType` (string) - "StepExecutionEvent"
+- `message` (string) - Step execution message
+- `jobId` (string) - Unique job identifier
+- `lineNumber` (number) - Current line number being executed (1-based)
+- `currentLine` (string) - The G-code line being executed
+- `totalLines` (number) - Total number of lines in the job
+- `isLastStep` (boolean) - Whether this is the last step in the job
+- `status` (string) - Execution status ("AboutToExecute", "Executing", "Completed", "Failed", "Skipped")
 
 ---
 
@@ -110,15 +113,19 @@ connection.on("ReceiveCNCMessage", (message) => {
     
     switch(message.eventType) {
         case "DROEvent":
-            console.log(`Position - X: ${message.data.Axis1}, Y: ${message.data.Axis2}, Z: ${message.data.Axis3}`);
+            console.log(`Position - X: ${message.data.axis1}, Y: ${message.data.axis2}, Z: ${message.data.axis3}`);
             break;
             
         case "MessageEvent":
-            console.log(`CNC Message: ${message.data.Message} (Code: ${message.data.EventCode})`);
+            console.log(`CNC Message: ${message.data.message} (Code: ${message.data.eventCode})`);
             break;
             
         case "JobStartedEvent":
-            console.log(`Job Started: ${message.data.JobId} with ${message.data.TotalLines} lines`);
+            console.log(`Job Started: ${message.data.jobId} with ${message.data.totalLines} lines`);
+            break;
+            
+        case "JobInfoEvent":
+            console.log(`Job Info: Line ${message.data.lineNumber} (Level ${message.data.stackLevel}) - ${message.data.message}`);
             break;
             
         // ... handle other event types

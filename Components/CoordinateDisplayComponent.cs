@@ -50,6 +50,8 @@ namespace HavenCNCServer.Components
             this.grpCoordinates.Controls.Add(this.lblZPos);
             this.grpCoordinates.Controls.Add(this.lblYPos);
             this.grpCoordinates.Controls.Add(this.lblXPos);
+            this.grpCoordinates.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.grpCoordinates.ForeColor = Color.DarkBlue;
             this.grpCoordinates.Location = new Point(0, 0);
             this.grpCoordinates.Name = "grpCoordinates";
             this.grpCoordinates.Size = new Size(320, 50);

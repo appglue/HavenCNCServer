@@ -106,11 +106,13 @@ namespace HavenCNCServer.Components
 
             // lblLog
             this.lblLog.AutoSize = true;
+            this.lblLog.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblLog.ForeColor = Color.DarkBlue;
             this.lblLog.Location = new Point(3, 0);
             this.lblLog.Name = "lblLog";
-            this.lblLog.Size = new Size(66, 13);
+            this.lblLog.Size = new Size(82, 13);
             this.lblLog.TabIndex = 0;
-            this.lblLog.Text = "Application Logs";
+            this.lblLog.Text = "Server Logs";
 
             // lstLog - Setup ListView for virtual mode
             this.lstLog.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)

@@ -36,11 +36,13 @@ namespace HavenCNCServer.Components
 
             // lblMessages
             this.lblMessages.AutoSize = true;
+            this.lblMessages.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            this.lblMessages.ForeColor = Color.DarkBlue;
             this.lblMessages.Location = new Point(3, 0);
             this.lblMessages.Name = "lblMessages";
             this.lblMessages.Size = new Size(102, 13);
             this.lblMessages.TabIndex = 0;
-            this.lblMessages.Text = "CNC Message Monitor";
+            this.lblMessages.Text = "CNC Messages";
 
             // txtMessages
             this.txtMessages.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
@@ -76,7 +78,7 @@ namespace HavenCNCServer.Components
         /// <param name="centroidEvent">The CNC event to process</param>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
-            // Process both MessageEvent and DROEvent types for comprehensive display
+            // Process multiple event types for comprehensive display
             if (centroidEvent is MessageEvent messageEvent)
             {
                 // Update UI on the main thread using Invoke
@@ -99,6 +101,23 @@ namespace HavenCNCServer.Components
                 else
                 {
                     AddJobInfoMessage(jobEvent);
+                }
+            }
+            else if (centroidEvent is StepExecutionEvent stepEvent)
+            {
+                // Only show step execution events for significant status changes, not every executing step
+                if (stepEvent.Status == StepExecutionStatus.Failed || 
+                    stepEvent.Status == StepExecutionStatus.Completed ||
+                    stepEvent.IsLastStep)
+                {
+                    if (InvokeRequired)
+                    {
+                        Invoke(new Action(() => AddStepExecutionMessage(stepEvent)));
+                    }
+                    else
+                    {
+                        AddStepExecutionMessage(stepEvent);
+                    }
                 }
             }
         }
@@ -134,7 +153,8 @@ namespace HavenCNCServer.Components
             try
             {
                 var timestamp = jobEvent.Timestamp.ToString("HH:mm:ss.fff");
-                var messageText = $"[{timestamp}] JOB: Line {jobEvent.LineNumber} - {jobEvent.Message}";
+                var levelInfo = $" (Level {jobEvent.StackLevel})"; // Always show level, including 0 for main program
+                var messageText = $"[{timestamp}] JOB: Line {jobEvent.LineNumber}{levelInfo} - {jobEvent.Message}";
 
                 // Job info messages are shown in blue
                 AddColoredMessage(messageText, Color.Blue);
@@ -150,6 +170,32 @@ namespace HavenCNCServer.Components
             catch (Exception ex)
             {
                 LogError($"Error adding job info message to display: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        private void AddStepExecutionMessage(StepExecutionEvent stepEvent)
+        {
+            try
+            {
+                var timestamp = stepEvent.Timestamp.ToString("HH:mm:ss.fff");
+                var progressInfo = stepEvent.TotalLines > 0 ? $" ({stepEvent.LineNumber}/{stepEvent.TotalLines})" : "";
+                var statusInfo = $" [{stepEvent.Status}]";
+                var messageText = $"[{timestamp}] STEP{progressInfo}{statusInfo}: {stepEvent.CurrentLine}";
+
+                // Step execution messages are shown in dark green
+                AddColoredMessage(messageText, Color.DarkGreen);
+
+                _currentMessageCount++;
+
+                // Trim old messages if we exceed the limit
+                if (_currentMessageCount > _maxMessages)
+                {
+                    TrimOldMessages();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error adding step execution message to display: {ex.Message}", "MessageDisplay");
             }
         }
 
