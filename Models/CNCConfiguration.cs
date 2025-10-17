@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HavenCNCServer.Centriod.Data;
 
 namespace HavenCNCServer.Models
 {
@@ -40,67 +41,6 @@ namespace HavenCNCServer.Models
     }
 
     /// <summary>
-    /// Configuration for a machine axis
-    /// </summary>
-    public class AxisConfig
-    {
-        /// <summary>
-        /// Name of the axis (e.g., "X", "Y", "Z", "A")
-        /// </summary>
-        public string AxisName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Numeric identifier for the axis
-        /// </summary>
-        public int AxisNumber { get; set; } = 0;
-
-        /// <summary>
-        /// Number of pulses per revolution for the stepper motor
-        /// </summary>
-        public int PulsesPerRevolution { get; set; } = 1000;
-
-        /// <summary>
-        /// Number of revolutions per inch of travel
-        /// </summary>
-        public double RevolutionsPerInch { get; set; } = 5.0;
-
-        /// <summary>
-        /// Maximum speed in positive direction
-        /// </summary>
-        public double MaxSpeedPositive { get; set; } = 100.0;
-
-        /// <summary>
-        /// Maximum speed in negative direction
-        /// </summary>
-        public double MaxSpeedNegative { get; set; } = 100.0;
-
-        /// <summary>
-        /// Fast speed setting
-        /// </summary>
-        public double FastSpeed { get; set; } = 50.0;
-
-        /// <summary>
-        /// Normal speed setting
-        /// </summary>
-        public double Speed { get; set; } = 25.0;
-
-        /// <summary>
-        /// Homing speed
-        /// </summary>
-        public double HomingSpeed { get; set; } = 10.0;
-
-        /// <summary>
-        /// Whether homing direction is positive (true) or negative (false)
-        /// </summary>
-        public bool HomingDirectionPositive { get; set; } = true;
-
-        /// <summary>
-        /// Axis number this axis is paired with (-1 if not paired)
-        /// </summary>
-        public int PairedWithAxis { get; set; } = -1;
-    }
-
-    /// <summary>
     /// Complete Centroid machine settings configuration
     /// </summary>
     public class CentroidSettings
@@ -136,9 +76,9 @@ namespace HavenCNCServer.Models
         public double ZMaxTravel { get; set; } = 4.0;
 
         /// <summary>
-        /// Configuration for all machine axes
+        /// Configuration for all machine axes - uses the full AxisConfiguration model
         /// </summary>
-        public List<AxisConfig> Axes { get; set; } = new List<AxisConfig>();
+        public List<AxisConfiguration> Axes { get; set; } = new List<AxisConfiguration>();
 
         /// <summary>
         /// Configuration for all machine inputs
