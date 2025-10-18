@@ -44,9 +44,9 @@ namespace HavenCNCServer.Models
         public bool ExposeAsAction { get; set; } = false;
 
         /// <summary>
-        /// Action name for exposure (if ExposeAsAction is true)
+        /// Action category name for exposure (if ExposeAsAction is true)
         /// </summary>
-        public string ActionName { get; set; } = string.Empty;
+        public string ActionCategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// Program or command data content

@@ -43,9 +43,9 @@ namespace HavenCNCServer.Controllers
         public bool ExposeAsAction { get; set; }
 
         /// <summary>
-        /// Action name if exposed as action
+        /// Action category name if exposed as action
         /// </summary>
-        public string ActionName { get; set; } = string.Empty;
+        public string ActionCategoryName { get; set; } = string.Empty;
     }
     /// <summary>
     /// CNC Program Storage - Handles storage, retrieval, and management of CNC programs and MDI commands
@@ -127,7 +127,7 @@ namespace HavenCNCServer.Controllers
                 existing.UpdatedAt = storage.UpdatedAt;
                 existing.StorageType = storage.StorageType;
                 existing.ExposeAsAction = storage.ExposeAsAction;
-                existing.ActionName = storage.ActionName;
+                existing.ActionCategoryName = storage.ActionCategoryName;
             }
             else
             {
@@ -138,7 +138,7 @@ namespace HavenCNCServer.Controllers
                     UpdatedAt = storage.UpdatedAt,
                     StorageType = storage.StorageType,
                     ExposeAsAction = storage.ExposeAsAction,
-                    ActionName = storage.ActionName
+                    ActionCategoryName = storage.ActionCategoryName
                 });
             }
 
@@ -318,7 +318,7 @@ namespace HavenCNCServer.Controllers
             var index = LoadIndex();
             var actionEntries = index
                 .Where(e => e.ExposeAsAction)
-                .OrderBy(e => e.ActionName)
+                .OrderBy(e => e.ActionCategoryName)
                 .ToList();
 
             var result = new List<ProgramStorage>();
@@ -341,7 +341,7 @@ namespace HavenCNCServer.Controllers
             var index = LoadIndex();
             return index
                 .Where(e => e.ExposeAsAction)
-                .Select(e => e.ActionName)
+                .Select(e => e.ActionCategoryName)
                 .OrderBy(n => n)
                 .ToList();
         }
