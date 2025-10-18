@@ -53,19 +53,19 @@ namespace HavenCNCServer.Services
                 {
                     // Get machine coordinates using DRO API
                     var result = cncPipe.dro.GetDro(CentroidAPI.CNCPipe.Dro.DroCoordinates.DRO_MACHINE, out var droStrings);
-                    
+
                     if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                         throw new InvalidOperationException($"Failed to get DRO position: {result}");
 
                     // Parse DRO strings into MachinePoint
                     // droStrings is an array of Tuple<string, string, string> (Axis, Position, Load Meter)
                     double x = 0, y = 0, z = 0, a = 0;
-                    
+
                     foreach (var droTuple in droStrings)
                     {
                         string axis = droTuple.Item1;
                         string posStr = droTuple.Item2;
-                        
+
                         if (double.TryParse(posStr, out double value))
                         {
                             switch (axis.ToUpper())
@@ -87,12 +87,12 @@ namespace HavenCNCServer.Services
                     }
 
                     var position = new MachinePoint(x, y, z, a);
-                    
+
                     // Cache the position for future calls
                     _cachedPosition = position;
-                    
+
                     LogDebug($"Fetched machine position from API: {position}", "MachinePositionService");
-                    
+
                     return position;
                 }
                 catch (Exception ex)
