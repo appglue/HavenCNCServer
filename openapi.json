@@ -2847,6 +2847,298 @@
         }
       }
     },
+    "/api/CNCProgramStorage/MDI/Names": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get all MDI storage names",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/Flow/Names": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get all Flow storage names",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/All/Names": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get all storage names (MDI and Flow)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/{name}": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get storage data by name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Storage name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramStorage"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramStorage"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramStorage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Delete storage by name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Storage name to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/Save": {
+      "post": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Save storage data (create or update)",
+        "requestBody": {
+          "description": "Storage data to save",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/Actions": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get all storages exposed as actions",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProgramStorage"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProgramStorage"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProgramStorage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgramStorage/Actions/Names": {
+      "get": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Get all action storage names",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCServer/status": {
       "get": {
         "tags": [
@@ -4860,6 +5152,45 @@
         "description": "Probe type enumeration",
         "format": "int32"
       },
+      "ProgramStorage": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name identifier for the storage item",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last updated timestamp",
+            "format": "date-time"
+          },
+          "exposeAsAction": {
+            "type": "boolean",
+            "description": "Whether this storage should be exposed as an action"
+          },
+          "actionName": {
+            "type": "string",
+            "description": "Action name for exposure (if ExposeAsAction is true)",
+            "nullable": true
+          },
+          "data": {
+            "type": "string",
+            "description": "Program or command data content",
+            "nullable": true
+          },
+          "storageType": {
+            "$ref": "#/components/schemas/StorageType"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a stored CNC program or MDI command"
+      },
       "ResumeJobAtResponse": {
         "type": "object",
         "properties": {
@@ -5232,6 +5563,15 @@
         },
         "additionalProperties": false,
         "description": "Response model for stop all jobs operation"
+      },
+      "StorageType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Storage type enumeration",
+        "format": "int32"
       },
       "SystemHardwareInfo": {
         "type": "object",
