@@ -2122,7 +2122,7 @@
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Move to coordinates until an IO event occurs",
+        "summary": "Move to coordinates until an IO event occurs\r\nUses G31 probe cycle for move-until-input operations",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2154,7 +2154,7 @@
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Move in a direction until an IO event occurs",
+        "summary": "Move in a direction until an IO event occurs\r\nUses G31 probe cycle with G91 (relative mode) for directional probing",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2186,8 +2186,9 @@
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Set fixture point using current machine position or specified coordinates",
+        "summary": "Set fixture point using current machine position or specified coordinates\r\nSets the part location for the ACTIVE WCS (Work Coordinate System)",
         "requestBody": {
+          "description": "Machine point with X, Y, Z, A coordinates to set as the workpiece origin",
           "content": {
             "application/json": {
               "schema": {
@@ -2213,63 +2214,31 @@
         }
       }
     },
-    "/api/CNCMovement/GetFastFeedRate": {
-      "get": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Get fast feed rate",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/SetFastFeedRate": {
+    "/api/CNCMovement/SetFeedRateOverride": {
       "post": {
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Set fast feed rate",
+        "summary": "Set feed rate override percentage",
         "requestBody": {
+          "description": "Feed rate override percentage (1-120 typically)",
           "content": {
             "application/json": {
               "schema": {
-                "type": "number",
-                "format": "double"
+                "type": "integer",
+                "format": "int32"
               }
             },
             "text/json": {
               "schema": {
-                "type": "number",
-                "format": "double"
+                "type": "integer",
+                "format": "int32"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "number",
-                "format": "double"
+                "type": "integer",
+                "format": "int32"
               }
             }
           }
@@ -2281,32 +2250,32 @@
         }
       }
     },
-    "/api/CNCMovement/GetNormalFeedRate": {
+    "/api/CNCMovement/GetFeedRateOverride": {
       "get": {
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Get normal feed rate",
+        "summary": "Get current feed rate override percentage",
         "responses": {
           "200": {
             "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "number",
-                  "format": "double"
+                  "type": "integer",
+                  "format": "int32"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "number",
-                  "format": "double"
+                  "type": "integer",
+                  "format": "int32"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "number",
-                  "format": "double"
+                  "type": "integer",
+                  "format": "int32"
                 }
               }
             }
@@ -2314,196 +2283,12 @@
         }
       }
     },
-    "/api/CNCMovement/SetNormalFeedRate": {
+    "/api/CNCMovement/ResetFeedRateOverride": {
       "post": {
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Set normal feed rate",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/AdjustNormalFeedRate": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Adjust normal feed rate by factor",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/GetCurrentNormalFeedRateFactor": {
-      "get": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Get current normal feed rate adjustment factor",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/ResetNormalFeedRateFactor": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Reset normal feed rate factor to default",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/AdjustFastFeedRate": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Adjust fast feed rate by factor",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "number",
-                "format": "double"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/GetCurrentFastFeedRateFactor": {
-      "get": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Get current fast feed rate adjustment factor",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/ResetFastFeedRateFactor": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Reset fast feed rate factor to default",
+        "summary": "Reset feed rate override to 100% (default)",
         "responses": {
           "200": {
             "description": "Success"
@@ -4029,67 +3814,6 @@
         "additionalProperties": false,
         "description": "Available parameters response DTO"
       },
-      "AxisConfig": {
-        "type": "object",
-        "properties": {
-          "axisName": {
-            "type": "string",
-            "description": "Name of the axis (e.g., \"X\", \"Y\", \"Z\", \"A\")",
-            "nullable": true
-          },
-          "axisNumber": {
-            "type": "integer",
-            "description": "Numeric identifier for the axis",
-            "format": "int32"
-          },
-          "pulsesPerRevolution": {
-            "type": "integer",
-            "description": "Number of pulses per revolution for the stepper motor",
-            "format": "int32"
-          },
-          "revolutionsPerInch": {
-            "type": "number",
-            "description": "Number of revolutions per inch of travel",
-            "format": "double"
-          },
-          "maxSpeedPositive": {
-            "type": "number",
-            "description": "Maximum speed in positive direction",
-            "format": "double"
-          },
-          "maxSpeedNegative": {
-            "type": "number",
-            "description": "Maximum speed in negative direction",
-            "format": "double"
-          },
-          "fastSpeed": {
-            "type": "number",
-            "description": "Fast speed setting",
-            "format": "double"
-          },
-          "speed": {
-            "type": "number",
-            "description": "Normal speed setting",
-            "format": "double"
-          },
-          "homingSpeed": {
-            "type": "number",
-            "description": "Homing speed",
-            "format": "double"
-          },
-          "homingDirectionPositive": {
-            "type": "boolean",
-            "description": "Whether homing direction is positive (true) or negative (false)"
-          },
-          "pairedWithAxis": {
-            "type": "integer",
-            "description": "Axis number this axis is paired with (-1 if not paired)",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Configuration for a machine axis"
-      },
       "AxisConfiguration": {
         "type": "object",
         "properties": {
@@ -4347,9 +4071,9 @@
           "axes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/AxisConfig"
+              "$ref": "#/components/schemas/AxisConfiguration"
             },
-            "description": "Configuration for all machine axes",
+            "description": "Configuration for all machine axes - uses the full AxisConfiguration model",
             "nullable": true
           },
           "input": {
