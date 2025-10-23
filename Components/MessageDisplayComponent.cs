@@ -120,6 +120,18 @@ namespace HavenCNCServer.Components
                     }
                 }
             }
+            else if (centroidEvent is DROEvent droEvent)
+            {
+                // Show DRO position updates
+                if (InvokeRequired)
+                {
+                    Invoke(new Action(() => AddDroMessage(droEvent)));
+                }
+                else
+                {
+                    AddDroMessage(droEvent);
+                }
+            }
         }
 
         private void AddMessage(MessageEvent messageEvent)
@@ -196,6 +208,30 @@ namespace HavenCNCServer.Components
             catch (Exception ex)
             {
                 LogError($"Error adding step execution message to display: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        private void AddDroMessage(DROEvent droEvent)
+        {
+            try
+            {
+                var timestamp = droEvent.Timestamp.ToString("HH:mm:ss.fff");
+                var messageText = $"[{timestamp}] DRO: X:{droEvent.Axis1:F4} Y:{droEvent.Axis2:F4} Z:{droEvent.Axis3:F4}";
+
+                // DRO messages are shown in purple/magenta
+                AddColoredMessage(messageText, Color.Purple);
+
+                _currentMessageCount++;
+
+                // Trim old messages if we exceed the limit
+                if (_currentMessageCount > _maxMessages)
+                {
+                    TrimOldMessages();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error adding DRO message to display: {ex.Message}", "MessageDisplay");
             }
         }
 
