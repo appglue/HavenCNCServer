@@ -546,6 +546,34 @@ namespace HavenCNCServer.Controllers
                     throw new ArgumentException("G-code lines cannot be null or empty");
                 }
 
+                // Check and reset Centroid state before attempting to run G-code
+                try
+                {
+                    bool isReady = Centriod.CNCUtils.CheckAndResetCentroidState();
+                    if (!isReady)
+                    {
+                        return new RunGCodeResponse
+                        {
+                            Success = false,
+                            Error = "CNC system is not ready to accept commands. SV_STOP is active or API is restricted.",
+                            Message = "CNC system not ready - check machine state",
+                            JobId = "",
+                            Job = new JobDetails()
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new RunGCodeResponse
+                    {
+                        Success = false,
+                        Error = $"Failed to verify CNC state: {ex.Message}",
+                        Message = "Failed to verify CNC state before running G-code",
+                        JobId = "",
+                        Job = new JobDetails()
+                    };
+                }
+
                 // Create a new CNC job
                 CNCJob job;
                 bool shouldStartNow = false;

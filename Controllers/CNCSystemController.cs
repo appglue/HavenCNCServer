@@ -173,42 +173,6 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Unhome the machine
-        /// </summary>
-        [HttpPost("UnhomeMachine")]
-        public void UnhomeMachine()
-        {
-            try
-            {
-                // TODO: Implement unhome machine functionality using CentroidAPI
-                // CNCUtils.UnhomeMachine();
-                throw new NotImplementedException("Unhome machine functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to unhome machine: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Home the machine
-        /// </summary>
-        [HttpPost("HomeMachine")]
-        public void HomeMachine()
-        {
-            try
-            {
-                // TODO: Implement home machine functionality using CentroidAPI
-                // CNCUtils.HomeMachine();
-                throw new NotImplementedException("Home machine functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to home machine: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
         /// Get current error state
         /// </summary>
         /// <returns>Current error messages</returns>

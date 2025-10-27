@@ -2643,6 +2643,36 @@
         }
       }
     },
+    "/api/CNCProgram/CheckTool": {
+      "post": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Check tool (pauses and raises tool, remeasures if tool changed)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCProgramStorage/MDI/Names": {
       "get": {
         "tags": [
@@ -3031,56 +3061,6 @@
           "CNCServer"
         ],
         "summary": "Restart the CNC server",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCSetup/UpdateCentroidSettings": {
-      "post": {
-        "tags": [
-          "CNCSetup"
-        ],
-        "summary": "Update Centroid settings",
-        "requestBody": {
-          "description": "Centroid settings to update",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CentroidSettings"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CentroidSettings"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CentroidSettings"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Success",
@@ -4084,105 +4064,6 @@
         },
         "additionalProperties": false,
         "description": "CNC server status information"
-      },
-      "CentroidInput": {
-        "type": "object",
-        "properties": {
-          "inputNumber": {
-            "type": "integer",
-            "description": "Input number/identifier",
-            "format": "int32"
-          },
-          "inputName": {
-            "type": "string",
-            "description": "Human-readable name for the input",
-            "nullable": true
-          },
-          "normallyOpen": {
-            "type": "boolean",
-            "description": "Whether the input is normally open (true) or normally closed (false)"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Configuration for a Centroid input"
-      },
-      "CentroidOutput": {
-        "type": "object",
-        "properties": {
-          "outputNumber": {
-            "type": "integer",
-            "description": "Output number/identifier",
-            "format": "int32"
-          },
-          "outputName": {
-            "type": "string",
-            "description": "Human-readable name for the output",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Configuration for a Centroid output"
-      },
-      "CentroidSettings": {
-        "type": "object",
-        "properties": {
-          "xMinTravel": {
-            "type": "number",
-            "description": "Minimum travel distance for X axis",
-            "format": "double"
-          },
-          "xMaxTravel": {
-            "type": "number",
-            "description": "Maximum travel distance for X axis",
-            "format": "double"
-          },
-          "yMinTravel": {
-            "type": "number",
-            "description": "Minimum travel distance for Y axis",
-            "format": "double"
-          },
-          "yMaxTravel": {
-            "type": "number",
-            "description": "Maximum travel distance for Y axis",
-            "format": "double"
-          },
-          "zMinTravel": {
-            "type": "number",
-            "description": "Minimum travel distance for Z axis",
-            "format": "double"
-          },
-          "zMaxTravel": {
-            "type": "number",
-            "description": "Maximum travel distance for Z axis",
-            "format": "double"
-          },
-          "axes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AxisConfiguration"
-            },
-            "description": "Configuration for all machine axes - uses the full AxisConfiguration model",
-            "nullable": true
-          },
-          "input": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CentroidInput"
-            },
-            "description": "Configuration for all machine inputs",
-            "nullable": true
-          },
-          "output": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CentroidOutput"
-            },
-            "description": "Configuration for all machine outputs",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Complete Centroid machine settings configuration"
       },
       "CheckpointInfo": {
         "type": "object",

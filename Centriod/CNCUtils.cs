@@ -29,12 +29,12 @@ namespace HavenCNCServer.Centriod
             {
                 // Use the parameter property of CNCPipe to access parameter methods
                 CNCPipe.ReturnCode returnCode = cncPipe.parameter.GetMachineParameterValue((int)parameter, out double value);
-                
+
                 if (returnCode != CNCPipe.ReturnCode.SUCCESS)
                 {
                     throw new InvalidOperationException($"Failed to get parameter {parameter}: Return code {returnCode}");
                 }
-                
+
                 return value;
             }
             catch (Exception ex)
@@ -278,11 +278,11 @@ namespace HavenCNCServer.Centriod
         {
             const int PulseStepFrequency = 1200000;
             double paramValue = GetParameterValue(CentroidParameters.ACORN_STEPPER_PULSE_RATE_PARM);
-            
+
             // If parameter is 0, default is 200,000 steps/second
             if (paramValue == 0)
                 return 200000;
-                
+
             return (int)(PulseStepFrequency / paramValue);
         }
 
@@ -304,14 +304,14 @@ namespace HavenCNCServer.Centriod
         public static void SetStepFrequency(int frequency)
         {
             const int PulseStepFrequency = 1200000;
-            
+
             // Validate supported frequencies
             var supportedFrequencies = new[] { 100000, 200000, 240000, 300000, 400000 };
             if (!supportedFrequencies.Contains(frequency))
             {
                 throw new ArgumentException($"Unsupported step frequency: {frequency}. Supported values: {string.Join(", ", supportedFrequencies)}");
             }
-            
+
             double paramValue = PulseStepFrequency / (double)frequency;
             SetParameterValue(CentroidParameters.ACORN_STEPPER_PULSE_RATE_PARM, paramValue);
         }
@@ -337,21 +337,21 @@ namespace HavenCNCServer.Centriod
                 throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
 
             var availableInputs = new List<int>();
-            
+
             try
             {
                 // Get system type to determine I/O layout
                 cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
-                
+
                 // Base I/O available on all systems (minimum 8 inputs)
                 int baseInputCount = 8;
                 int expansionStartIO = 17;
-                
+
                 // Determine system-specific configuration
                 bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
                 bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
                 bool isHickory = unlockVersion.ToString().Contains("HICKORY");
-                
+
                 if (isAcornSix)
                 {
                     baseInputCount = 16;
@@ -362,13 +362,13 @@ namespace HavenCNCServer.Centriod
                     baseInputCount = 32;
                     expansionStartIO = 129;
                 }
-                
+
                 // Add base inputs
                 for (int i = 1; i <= baseInputCount; i++)
                 {
                     availableInputs.Add(i);
                 }
-                
+
                 // Add expansion board inputs
                 int expansionCount = 0;
                 if (isAcorn)
@@ -384,7 +384,7 @@ namespace HavenCNCServer.Centriod
                 {
                     cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
                 }
-                
+
                 // Calculate expansion I/O numbers
                 if (expansionCount > 0)
                 {
@@ -396,7 +396,7 @@ namespace HavenCNCServer.Centriod
                         }
                     }
                 }
-                
+
                 return availableInputs.ToArray();
             }
             catch (Exception ex)
@@ -453,17 +453,17 @@ namespace HavenCNCServer.Centriod
             try
             {
                 cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
-                
+
                 string systemType = "Unknown";
                 int baseInputs = 8;
                 int baseOutputs = 8;
                 int expansionInputs = 0;
                 int expansionOutputs = 0;
-                
+
                 bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
                 bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
                 bool isHickory = unlockVersion.ToString().Contains("HICKORY");
-                
+
                 if (isAcorn)
                 {
                     systemType = "Acorn";
@@ -490,10 +490,10 @@ namespace HavenCNCServer.Centriod
                     expansionInputs = expansionCount * 16;
                     expansionOutputs = expansionCount * 16;
                 }
-                
+
                 int totalInputs = baseInputs + expansionInputs;
                 int totalOutputs = baseOutputs + expansionOutputs;
-                
+
                 return $"{systemType}: {totalInputs} inputs ({baseInputs} base + {expansionInputs} expansion), " +
                        $"{totalOutputs} outputs ({baseOutputs} base + {expansionOutputs} expansion)";
             }
@@ -575,6 +575,137 @@ namespace HavenCNCServer.Centriod
             var axisEnum = (CNCPipe.Axes)axis;
             cncPipe.axis.GetRate(axisEnum, rateType, out double value);
             return value;
+        }
+
+        /// <summary>
+        /// Check if Centroid is in a state that can accept API calls and attempt to reset if needed.
+        /// This checks both the general API restriction state and the SV_STOP system variable.
+        /// If SV_STOP is set, it will attempt to clear it by triggering the cycle start event (skin event #56 on Acorn).
+        /// </summary>
+        /// <param name="skinEventNumber">Skin event number to trigger for reset (default 56 for Acorn cycle start)</param>
+        /// <returns>True if Centroid is ready or was successfully reset, false otherwise</returns>
+        public static bool CheckAndResetCentroidState(int skinEventNumber = 56)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
+
+            try
+            {
+                // Check if API is generally restricted
+                var apiCheckResult = cncPipe.state.IsAPIRestricted(out bool apiRestricted);
+                if (apiCheckResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check API restriction state: {apiCheckResult}");
+                    return false;
+                }
+
+                // Check SV_STOP system variable via PLC
+                // SV_STOP is a predefined PLC system variable that indicates the machine is in a stopped/fault state
+                var svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out CNCPipe.Plc.IOState svStopState);
+                if (svStopResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check SV_STOP state: {svStopResult}");
+                    return false;
+                }
+
+                bool svStopActive = (svStopState == CNCPipe.Plc.IOState.IO_LOGICAL_1);
+
+                // If API is restricted for general reasons (e.g., in middle of cycle, editing, etc.)
+                // We can't do much about it, so return false
+                if (apiRestricted)
+                {
+                    System.Diagnostics.Debug.WriteLine("[CNCUtils] API is restricted - cannot accept commands");
+                    return false;
+                }
+
+                // If SV_STOP is active, attempt to reset by triggering cycle start skin event
+                if (svStopActive)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] SV_STOP is active, attempting reset with skin event {skinEventNumber}");
+
+                    var resetResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 1);
+                    if (resetResult != CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to trigger skin event {skinEventNumber}: {resetResult}");
+                        return false;
+                    }
+
+                    // Give the system a moment to process the event
+                    System.Threading.Thread.Sleep(100);
+
+                    // Check if SV_STOP was cleared
+                    svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out svStopState);
+                    svStopActive = (svStopState == CNCPipe.Plc.IOState.IO_LOGICAL_1);
+
+                    if (svStopResult == CNCPipe.ReturnCode.SUCCESS && !svStopActive)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[CNCUtils] Successfully reset SV_STOP state");
+
+                        // Verify API is not restricted after reset
+                        apiCheckResult = cncPipe.state.IsAPIRestricted(out apiRestricted);
+                        if (apiCheckResult == CNCPipe.ReturnCode.SUCCESS && !apiRestricted)
+                        {
+                            return true;
+                        }
+
+                        System.Diagnostics.Debug.WriteLine("[CNCUtils] SV_STOP cleared but API still restricted");
+                        return false;
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("[CNCUtils] SV_STOP still active after reset attempt");
+                    return false;
+                }
+
+                // API is not restricted and SV_STOP is not active - ready to accept commands
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[CNCUtils] Error checking/resetting Centroid state: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if Centroid is ready to accept API calls without attempting reset
+        /// </summary>
+        /// <returns>True if ready, false otherwise</returns>
+        public static bool IsCentroidReady()
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                return false;
+
+            try
+            {
+                // Check API restriction
+                var apiCheckResult = cncPipe.state.IsAPIRestricted(out bool apiRestricted);
+                if (apiCheckResult != CNCPipe.ReturnCode.SUCCESS || apiRestricted)
+                {
+                    return false;
+                }
+
+                // Check SV_STOP using GetPlcSystemVariableBit
+                var svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out CNCPipe.Plc.IOState svStopState);
+                if (svStopResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check SV_STOP: {svStopResult}");
+                    return false;
+                }
+
+                bool svStopActive = (svStopState == CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                if (svStopActive)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }
