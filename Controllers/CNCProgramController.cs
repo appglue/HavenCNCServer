@@ -20,7 +20,7 @@ namespace HavenCNCServer.Controllers
         /// List of all CNC jobs (first job is currently running, rest are queued)
         /// </summary>
         private static readonly List<CNCJob> _jobs = new List<CNCJob>();
-        
+
         private static readonly object _jobsLock = new object();
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace HavenCNCServer.Controllers
             try
             {
                 CNCJob jobToStart;
-                
+
                 lock (_jobsLock)
                 {
                     var job = _jobs.FirstOrDefault(j => j.JobId == jobId);
@@ -117,19 +117,19 @@ namespace HavenCNCServer.Controllers
 
                 // Start the job outside the lock
                 var success = await jobToStart.StartAsync();
-                return new JobOperationResponse 
-                { 
-                    Success = success, 
-                    JobId = jobId, 
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = jobId,
                     Message = success ? "Job started successfully" : jobToStart.LastError ?? "Unknown error",
                     Error = success ? null : jobToStart.LastError
                 };
             }
             catch (Exception ex)
             {
-                return new JobOperationResponse 
-                { 
-                    Success = false, 
+                return new JobOperationResponse
+                {
+                    Success = false,
                     JobId = jobId,
                     Error = ex.Message,
                     Message = ex.Message
@@ -232,7 +232,7 @@ namespace HavenCNCServer.Controllers
         private static async Task<bool> ProcessJobQueue()
         {
             CNCJob? jobToStart = null;
-            
+
             lock (_jobsLock)
             {
                 // If no jobs to process, nothing to do
@@ -240,30 +240,30 @@ namespace HavenCNCServer.Controllers
                 {
                     return false;
                 }
-                
+
                 // Get the first job in the list - this is the current job
                 var firstJob = _jobs.First();
-                
+
                 // Only start it if it hasn't been started yet
                 if (!firstJob.IsRunning && !firstJob.IsComplete)
                 {
                     jobToStart = firstJob;
                 }
             }
-            
+
             if (jobToStart != null)
             {
                 LoggingService.LogInfo($"Starting next job in queue: {jobToStart.JobId}", "CNCJob");
                 var success = await jobToStart.StartAsync();
-                
+
                 if (!success)
                 {
                     LoggingService.LogError($"Failed to start queued job {jobToStart.JobId}: {jobToStart.LastError}", "CNCJob");
                 }
-                
+
                 return success;
             }
-            
+
             return false;
         }
 
@@ -290,7 +290,7 @@ namespace HavenCNCServer.Controllers
                     TotalLines = job.TotalLines,
                     LastError = job.LastError
                 }).ToList();
-                
+
                 return new QueueStatus
                 {
                     CurrentJob = currentJob != null ? new JobSummary
@@ -335,10 +335,10 @@ namespace HavenCNCServer.Controllers
                     }
 
                     var success = job.Stop();
-                    return new JobOperationResponse 
-                    { 
-                        Success = success, 
-                        JobId = job.JobId, 
+                    return new JobOperationResponse
+                    {
+                        Success = success,
+                        JobId = job.JobId,
                         Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error",
                         Error = success ? null : job.LastError
                     };
@@ -346,9 +346,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new JobOperationResponse 
-                { 
-                    Success = false, 
+                return new JobOperationResponse
+                {
+                    Success = false,
                     JobId = "",
                     Error = ex.Message,
                     Message = ex.Message
@@ -373,10 +373,10 @@ namespace HavenCNCServer.Controllers
                     foreach (var job in runningJobs)
                     {
                         var success = job.Stop();
-                        results.Add(new JobOperationResponse 
-                        { 
-                            JobId = job.JobId, 
-                            Success = success, 
+                        results.Add(new JobOperationResponse
+                        {
+                            JobId = job.JobId,
+                            Success = success,
                             Error = success ? null : job.LastError,
                             Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error"
                         });
@@ -387,19 +387,19 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new StopAllJobsResponse 
-                { 
-                    StoppedJobs = 0, 
-                    Results = new List<JobOperationResponse> 
-                    { 
-                        new JobOperationResponse 
-                        { 
-                            Success = false, 
+                return new StopAllJobsResponse
+                {
+                    StoppedJobs = 0,
+                    Results = new List<JobOperationResponse>
+                    {
+                        new JobOperationResponse
+                        {
+                            Success = false,
                             Error = ex.Message,
                             Message = ex.Message,
                             JobId = "N/A"
-                        } 
-                    } 
+                        }
+                    }
                 };
             }
         }
@@ -422,10 +422,10 @@ namespace HavenCNCServer.Controllers
                     }
 
                     var success = job.Resume();
-                    return new JobOperationResponse 
-                    { 
-                        Success = success, 
-                        JobId = job.JobId, 
+                    return new JobOperationResponse
+                    {
+                        Success = success,
+                        JobId = job.JobId,
                         Message = success ? "Job resumed successfully" : job.LastError ?? "Unknown error",
                         Error = success ? null : job.LastError
                     };
@@ -433,9 +433,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new JobOperationResponse 
-                { 
-                    Success = false, 
+                return new JobOperationResponse
+                {
+                    Success = false,
                     JobId = "",
                     Error = ex.Message,
                     Message = ex.Message
@@ -461,10 +461,10 @@ namespace HavenCNCServer.Controllers
                     }
 
                     var success = job.Pause();
-                    return new JobOperationResponse 
-                    { 
-                        Success = success, 
-                        JobId = job.JobId, 
+                    return new JobOperationResponse
+                    {
+                        Success = success,
+                        JobId = job.JobId,
                         Message = success ? "Job paused successfully" : job.LastError ?? "Unknown error",
                         Error = success ? null : job.LastError
                     };
@@ -472,9 +472,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new JobOperationResponse 
-                { 
-                    Success = false, 
+                return new JobOperationResponse
+                {
+                    Success = false,
                     JobId = "",
                     Error = ex.Message,
                     Message = ex.Message
@@ -506,11 +506,11 @@ namespace HavenCNCServer.Controllers
                     }
 
                     var success = job.ResumeAt(lineNumber);
-                    return new ResumeJobAtResponse 
-                    { 
-                        Success = success, 
-                        JobId = job.JobId, 
-                        LineNumber = lineNumber, 
+                    return new ResumeJobAtResponse
+                    {
+                        Success = success,
+                        JobId = job.JobId,
+                        LineNumber = lineNumber,
                         Message = success ? $"Job resumed at line {lineNumber}" : job.LastError ?? "Unknown error",
                         Error = success ? null : job.LastError
                     };
@@ -518,9 +518,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new ResumeJobAtResponse 
-                { 
-                    Success = false, 
+                return new ResumeJobAtResponse
+                {
+                    Success = false,
                     JobId = "",
                     LineNumber = lineNumber,
                     Error = ex.Message,
@@ -549,16 +549,16 @@ namespace HavenCNCServer.Controllers
                 // Create a new CNC job
                 CNCJob job;
                 bool shouldStartNow = false;
-                
+
                 lock (_jobsLock)
                 {
                     job = new CNCJob(gCodeLines, gcodeParameterString);
-                    
+
                     // Set up completion callback to handle job completion
                     job.OnJobCompleted = OnJobCompleted;
-                    
+
                     _jobs.Add(job);
-                    
+
                     // Start immediately if this is the first (and only) job in the list and startImmediately is true
                     shouldStartNow = startImmediately && _jobs.Count == 1;
                 }
@@ -600,8 +600,8 @@ namespace HavenCNCServer.Controllers
                     if (!startSuccess)
                     {
                         return new RunGCodeResponse
-                        { 
-                            Success = false, 
+                        {
+                            Success = false,
                             JobId = job.JobId,
                             Error = job.LastError ?? "Failed to start job",
                             Message = job.LastError ?? "Failed to start job",
@@ -614,8 +614,8 @@ namespace HavenCNCServer.Controllers
                     jobDetails.IsRunning = job.IsRunning;
 
                     return new RunGCodeResponse
-                    { 
-                        Success = true, 
+                    {
+                        Success = true,
                         JobId = job.JobId,
                         Message = "Job created and started successfully",
                         Job = jobDetails
@@ -623,13 +623,13 @@ namespace HavenCNCServer.Controllers
                 }
                 else
                 {
-                    string message = startImmediately ? 
-                        "Job created and queued (jobs ahead in queue)" : 
+                    string message = startImmediately ?
+                        "Job created and queued (jobs ahead in queue)" :
                         "Job created successfully (not started)";
-                        
+
                     return new RunGCodeResponse
-                    { 
-                        Success = true, 
+                    {
+                        Success = true,
                         JobId = job.JobId,
                         Message = message,
                         Job = jobDetails
@@ -638,9 +638,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new RunGCodeResponse 
-                { 
-                    Success = false, 
+                return new RunGCodeResponse
+                {
+                    Success = false,
                     Error = ex.Message,
                     Message = ex.Message,
                     JobId = "",
@@ -668,11 +668,11 @@ namespace HavenCNCServer.Controllers
                 var cleanCommand = gcode.Trim();
                 if (cleanCommand.StartsWith(";") || cleanCommand.StartsWith("("))
                 {
-                    return new RunGCodeCommandResponse 
-                    { 
-                        Success = true, 
-                        Message = "Comment ignored successfully", 
-                        Command = gcode 
+                    return new RunGCodeCommandResponse
+                    {
+                        Success = true,
+                        Message = "Comment ignored successfully",
+                        Command = gcode
                     };
                 }
 
@@ -684,7 +684,7 @@ namespace HavenCNCServer.Controllers
                 // This ensures we have only one code path for G-code execution
                 string[] gCodeLines = { cleanCommand };
                 var result = await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null);
-                
+
                 return new RunGCodeCommandResponse
                 {
                     Success = result.Success,
@@ -696,9 +696,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new RunGCodeCommandResponse 
-                { 
-                    Success = false, 
+                return new RunGCodeCommandResponse
+                {
+                    Success = false,
                     Error = ex.Message,
                     Message = ex.Message,
                     Command = gcode ?? ""
@@ -835,10 +835,10 @@ namespace HavenCNCServer.Controllers
                 lock (_jobsLock)
                 {
                     job = CNCJob.CreateStepRunJob(gCodeLines, gcodeParameterString);
-                    
+
                     // Set up completion callback to handle job completion
                     job.OnJobCompleted = OnJobCompleted;
-                    
+
                     _jobs.Add(job);
                 }
 
@@ -874,8 +874,8 @@ namespace HavenCNCServer.Controllers
                 };
 
                 return new RunGCodeResponse
-                { 
-                    Success = true, 
+                {
+                    Success = true,
                     JobId = job.JobId,
                     Message = $"Step run job created successfully with {gCodeLines.Length} lines",
                     Job = jobDetails
@@ -883,9 +883,9 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                return new RunGCodeResponse 
-                { 
-                    Success = false, 
+                return new RunGCodeResponse
+                {
+                    Success = false,
                     Error = ex.Message,
                     Message = ex.Message,
                     JobId = "",
@@ -917,7 +917,7 @@ namespace HavenCNCServer.Controllers
                     }
 
                     var success = currentJob.EndStepRun();
-                    
+
                     // Remove the job from the list since step run is ending
                     if (success)
                     {
@@ -986,7 +986,7 @@ namespace HavenCNCServer.Controllers
 
                 // Execute outside the lock to avoid blocking
                 var success = currentJob.ExecuteNextStep();
-                
+
                 // Send step execution event
                 var stepEvent = new StepExecutionEvent
                 {
@@ -997,19 +997,19 @@ namespace HavenCNCServer.Controllers
                     CurrentLine = currentJob.CurrentLine,
                     TotalLines = currentJob.TotalLines,
                     IsLastStep = currentJob.IsComplete,
-                    Status = success ? 
-                        (currentJob.IsComplete ? StepExecutionStatus.Completed : StepExecutionStatus.Completed) : 
+                    Status = success ?
+                        (currentJob.IsComplete ? StepExecutionStatus.Completed : StepExecutionStatus.Completed) :
                         StepExecutionStatus.Failed
                 };
                 CNCJobInfoListener.PushCustomEvent(stepEvent);
-                
+
                 return new JobOperationResponse
                 {
                     Success = success,
                     JobId = currentJob.JobId,
-                    Message = success 
-                        ? (currentJob.IsComplete 
-                            ? "Step run completed - all steps executed" 
+                    Message = success
+                        ? (currentJob.IsComplete
+                            ? "Step run completed - all steps executed"
                             : $"Step {currentJob.StepLineNumber - 1}/{currentJob.TotalLines} executed: {currentJob.CurrentLine}")
                         : currentJob.LastError ?? "Unknown error",
                     Error = success ? null : currentJob.LastError
@@ -1067,7 +1067,7 @@ namespace HavenCNCServer.Controllers
 
                 // Execute outside the lock to avoid blocking
                 var success = currentJob.RunFromCurrentStep();
-                
+
                 // Send step execution event for run from current step
                 var stepEvent = new StepExecutionEvent
                 {
@@ -1081,12 +1081,12 @@ namespace HavenCNCServer.Controllers
                     Status = success ? StepExecutionStatus.Executing : StepExecutionStatus.Failed
                 };
                 CNCJobInfoListener.PushCustomEvent(stepEvent);
-                
+
                 return new JobOperationResponse
                 {
                     Success = success,
                     JobId = currentJob.JobId,
-                    Message = success 
+                    Message = success
                         ? $"Running from step {currentJob.StepLineNumber} to completion"
                         : currentJob.LastError ?? "Unknown error",
                     Error = success ? null : currentJob.LastError
@@ -1101,6 +1101,25 @@ namespace HavenCNCServer.Controllers
                     Error = ex.Message,
                     Message = ex.Message
                 };
+            }
+        }
+
+        /// <summary>
+        /// Check tool (pauses and raises tool, remeasures if tool changed)
+        /// </summary>
+        /// <returns>Tool check success</returns>
+        [HttpPost("CheckTool")]
+        public bool CheckTool()
+        {
+            try
+            {
+                // TODO: Implement check tool functionality using CentroidAPI
+                // return CNCUtils.CheckTool();
+                throw new NotImplementedException("Check tool functionality not yet implemented");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to check tool: {ex.Message}", ex);
             }
         }
 
