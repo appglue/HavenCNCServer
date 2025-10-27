@@ -935,6 +935,9 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             LogToFile($"    DRO Position Update:");
                             LogToFile($"    Positions: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}");
+                            
+                            // Also log to main UI with coordinates
+                            LogInfo($"📍 DRO: X:{droEvent.Axis1:F4} Y:{droEvent.Axis2:F4} Z:{droEvent.Axis3:F4}", "JobInfo");
                         }
                         break;
                         

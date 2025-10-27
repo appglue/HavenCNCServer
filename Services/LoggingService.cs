@@ -23,6 +23,11 @@ namespace HavenCNCServer.Services
         public static int MaxLogEntries { get; set; } = 2000;
         
         /// <summary>
+        /// Maximum number of log entries to display in UI (to prevent flickering)
+        /// </summary>
+        public static int MaxDisplayEntries { get; set; } = 50;
+        
+        /// <summary>
         /// Event fired when a new log entry is added
         /// </summary>
         public static event Action<LogEntry>? LogEntryAdded;
@@ -176,9 +181,12 @@ namespace HavenCNCServer.Services
                         return;
                     }
                     
+                    // Only display the last MaxDisplayEntries entries to prevent flickering
+                    var displayEntries = entries.TakeLast(MaxDisplayEntries);
+                    
                     // Build the complete log text
                     var logText = new StringBuilder();
-                    foreach (var entry in entries)
+                    foreach (var entry in displayEntries)
                     {
                         logText.AppendLine(entry.FormatForDisplay());
                     }
@@ -238,10 +246,13 @@ namespace HavenCNCServer.Services
                         return;
                     }
                     
+                    // Only display the last MaxDisplayEntries entries to prevent flickering
+                    var displayEntries = entries.TakeLast(MaxDisplayEntries).ToList();
+                    
                     // Clear and rebuild the rich text with colors
                     _richTextBox.Clear();
                     
-                    foreach (var entry in entries)
+                    foreach (var entry in displayEntries)
                     {
                         // Set color based on log level
                         var color = GetColorForLogLevel(entry.Level);
