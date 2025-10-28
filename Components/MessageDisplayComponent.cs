@@ -16,6 +16,7 @@ namespace HavenCNCServer.Components
     {
         private RichTextBox txtMessages = null!;
         private Label lblMessages = null!;
+        private Button btnClear = null!;
         private int _maxMessages = 1000;
         private int _currentMessageCount = 0;
 
@@ -32,6 +33,7 @@ namespace HavenCNCServer.Components
         {
             this.lblMessages = new Label();
             this.txtMessages = new RichTextBox();
+            this.btnClear = new Button();
             this.SuspendLayout();
 
             // lblMessages
@@ -44,18 +46,29 @@ namespace HavenCNCServer.Components
             this.lblMessages.TabIndex = 0;
             this.lblMessages.Text = "CNC Messages";
 
+            // btnClear
+            this.btnClear.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+            this.btnClear.Location = new Point(322, -2);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new Size(75, 23);
+            this.btnClear.TabIndex = 2;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new EventHandler(this.BtnClear_Click);
+
             // txtMessages
             this.txtMessages.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
                         | AnchorStyles.Left)
                         | AnchorStyles.Right)));
-            this.txtMessages.Location = new Point(3, 16);
+            this.txtMessages.Location = new Point(3, 24);
             this.txtMessages.Name = "txtMessages";
             this.txtMessages.ReadOnly = true;
-            this.txtMessages.Size = new Size(394, 381);
+            this.txtMessages.Size = new Size(394, 373);
             this.txtMessages.TabIndex = 1;
             this.txtMessages.Text = "";
 
             // MessageDisplayComponent
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtMessages);
             this.Controls.Add(this.lblMessages);
             this.Name = "MessageDisplayComponent";
@@ -328,6 +341,37 @@ namespace HavenCNCServer.Components
             catch (Exception ex)
             {
                 LogError($"Error trimming old messages: {ex.Message}", "MessageDisplay");
+            }
+        }
+
+        /// <summary>
+        /// Handle clear button click - clears all messages from display
+        /// </summary>
+        private void BtnClear_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (txtMessages.InvokeRequired)
+                {
+                    txtMessages.Invoke(new Action(() =>
+                    {
+                        txtMessages.Clear();
+                        txtMessages.Text = "=== CNC Message Monitor ===\r\n[Messages cleared]\r\n\r\n";
+                        _currentMessageCount = 0;
+                    }));
+                }
+                else
+                {
+                    txtMessages.Clear();
+                    txtMessages.Text = "=== CNC Message Monitor ===\r\n[Messages cleared]\r\n\r\n";
+                    _currentMessageCount = 0;
+                }
+                
+                LogInfo("🗑️ Message display cleared", "MessageDisplay");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to clear messages: {ex.Message}", "MessageDisplay");
             }
         }
 

@@ -3,9 +3,10 @@
     {
       "name": "G28",
       "fixtureNumber": "G28",
-      "showAsSelectable": false,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -16,9 +17,10 @@
     {
       "name": "Default",
       "fixtureNumber": "G54",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 5,
         "y": 5,
@@ -29,9 +31,10 @@
     {
       "name": "G55",
       "fixtureNumber": "G55",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 6,
         "y": 6,
@@ -42,9 +45,10 @@
     {
       "name": "G56",
       "fixtureNumber": "G56",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 7,
         "y": 7,
@@ -55,9 +59,10 @@
     {
       "name": "G57",
       "fixtureNumber": "G57",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 8,
         "y": 8,
@@ -68,9 +73,10 @@
     {
       "name": "G58",
       "fixtureNumber": "G58",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 9,
         "y": 9,
@@ -81,9 +87,10 @@
     {
       "name": "Turning Center",
       "fixtureNumber": "G59",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 15,
         "y": 6,
@@ -94,9 +101,10 @@
     {
       "name": "G54.1 P001",
       "fixtureNumber": "G54.1 P001",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -107,9 +115,10 @@
     {
       "name": "G54.1 P002",
       "fixtureNumber": "G54.1 P002",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -120,9 +129,10 @@
     {
       "name": "G54.1 P003",
       "fixtureNumber": "G54.1 P003",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -133,9 +143,10 @@
     {
       "name": "G54.1 P004",
       "fixtureNumber": "G54.1 P004",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -146,9 +157,10 @@
     {
       "name": "G54.1 P005",
       "fixtureNumber": "G54.1 P005",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -159,9 +171,10 @@
     {
       "name": "G54.1 P006",
       "fixtureNumber": "G54.1 P006",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -172,9 +185,10 @@
     {
       "name": "G54.1 P007",
       "fixtureNumber": "G54.1 P007",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -185,9 +199,10 @@
     {
       "name": "G54.1 P008",
       "fixtureNumber": "G54.1 P008",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -198,9 +213,10 @@
     {
       "name": "G54.1 P009",
       "fixtureNumber": "G54.1 P009",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -211,9 +227,10 @@
     {
       "name": "G54.1 P010",
       "fixtureNumber": "G54.1 P010",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -224,9 +241,10 @@
     {
       "name": "G54.1 P011",
       "fixtureNumber": "G54.1 P011",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
       "_offset": {
         "x": 0,
         "y": 0,
@@ -237,9 +255,80 @@
     {
       "name": "G54.1 P012",
       "fixtureNumber": "G54.1 P012",
-      "showAsSelectable": true,
       "used": false,
       "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "_offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Machine Zero",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "_offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Machine Home",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "_offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Current Fixture Home",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "_offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Spoilboard Corner (Top, Front, Left)",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "_offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Bed Corner (Top, Front, Left)",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
       "_offset": {
         "x": 0,
         "y": 0,

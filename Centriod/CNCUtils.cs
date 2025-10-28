@@ -2,6 +2,7 @@ using System;
 using CentroidAPI;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centriod.Data;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Centriod
 {
@@ -12,6 +13,11 @@ namespace HavenCNCServer.Centriod
     /// </summary>
     public static class CNCUtils
     {
+        /// <summary>
+        /// Default skin event number for reset button operations
+        /// Acorn uses event 51 for Reset button (toggle type)
+        /// </summary>
+        public const int DEFAULT_CYCLE_START_EVENT = 51;
 
 
         /// <summary>
@@ -580,11 +586,12 @@ namespace HavenCNCServer.Centriod
         /// <summary>
         /// Check if Centroid is in a state that can accept API calls and attempt to reset if needed.
         /// This checks both the general API restriction state and the SV_STOP system variable.
-        /// If SV_STOP is set, it will attempt to clear it by triggering the cycle start event (skin event #56 on Acorn).
+        /// If SV_STOP is set, it will attempt to clear it by toggling the reset button skin event twice.
+        /// The reset button is a toggle - must press once to trip reset, then again to clear.
         /// </summary>
-        /// <param name="skinEventNumber">Skin event number to trigger for reset (default 56 for Acorn cycle start)</param>
+        /// <param name="skinEventNumber">Skin event number to trigger for reset (default from DEFAULT_CYCLE_START_EVENT constant)</param>
         /// <returns>True if Centroid is ready or was successfully reset, false otherwise</returns>
-        public static bool CheckAndResetCentroidState(int skinEventNumber = 56)
+        public static bool CheckAndResetCentroidState(int skinEventNumber = DEFAULT_CYCLE_START_EVENT)
         {
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null)
@@ -596,7 +603,7 @@ namespace HavenCNCServer.Centriod
                 var apiCheckResult = cncPipe.state.IsAPIRestricted(out bool apiRestricted);
                 if (apiCheckResult != CNCPipe.ReturnCode.SUCCESS)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check API restriction state: {apiCheckResult}");
+                    LogWarning($"Failed to check API restriction state: {apiCheckResult}", "CNCUtils");
                     return false;
                 }
 
@@ -605,7 +612,7 @@ namespace HavenCNCServer.Centriod
                 var svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out CNCPipe.Plc.IOState svStopState);
                 if (svStopResult != CNCPipe.ReturnCode.SUCCESS)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check SV_STOP state: {svStopResult}");
+                    LogWarning($"Failed to check SV_STOP state: {svStopResult}", "CNCUtils");
                     return false;
                 }
 
@@ -615,54 +622,103 @@ namespace HavenCNCServer.Centriod
                 // We can't do much about it, so return false
                 if (apiRestricted)
                 {
-                    System.Diagnostics.Debug.WriteLine("[CNCUtils] API is restricted - cannot accept commands");
+                    LogWarning("API is restricted - cannot accept commands", "CNCUtils");
                     return false;
                 }
 
-                // If SV_STOP is active, attempt to reset by triggering cycle start skin event
+                // If SV_STOP is active, attempt to reset by triggering reset button skin event
+                // The reset button is a TOGGLE, not momentary - must press twice:
+                //   First press: trips the reset (clears fault)
+                //   Second press: clears the reset state
                 if (svStopActive)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] SV_STOP is active, attempting reset with skin event {skinEventNumber}");
+                    LogInfo($"🔄 SV_STOP is active, attempting reset with skin event {skinEventNumber}", "CNCUtils");
 
-                    var resetResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 1);
-                    if (resetResult != CNCPipe.ReturnCode.SUCCESS)
+                    // Try up to 2 attempts to clear SV_STOP
+                    for (int attempt = 1; attempt <= 2; attempt++)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to trigger skin event {skinEventNumber}: {resetResult}");
-                        return false;
+                        // FIRST TOGGLE: Press reset button (set to 1, then back to 0)
+                        // This trips the reset and clears the fault
+                        LogInfo($"   Attempt {attempt}: Pressing reset button (toggle 1/2)...", "CNCUtils");
+                        var resetPressResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 1);
+                        if (resetPressResult != CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            LogError($"   Attempt {attempt}: Failed to press reset button (set to 1): {resetPressResult}", "CNCUtils");
+                            return false;
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+
+                        var resetReleaseResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 0);
+                        if (resetReleaseResult != CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            LogWarning($"   Attempt {attempt}: Failed to release reset button (set to 0): {resetReleaseResult}", "CNCUtils");
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+
+                        // SECOND TOGGLE: Press reset button again (set to 1, then back to 0)
+                        // This clears the reset state and returns to normal operation
+                        LogInfo($"   Attempt {attempt}: Pressing reset button again (toggle 2/2)...", "CNCUtils");
+                        var resetClearPressResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 1);
+                        if (resetClearPressResult != CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            LogWarning($"   Attempt {attempt}: Failed to press reset button second time (set to 1): {resetClearPressResult}", "CNCUtils");
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+
+                        var resetClearReleaseResult = cncPipe.plc.SetSkinEventState(skinEventNumber, 0);
+                        if (resetClearReleaseResult != CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            LogWarning($"   Attempt {attempt}: Failed to release reset button second time (set to 0): {resetClearReleaseResult}", "CNCUtils");
+                        }
+
+                        System.Threading.Thread.Sleep(100);
+
+                        // Check if SV_STOP was cleared
+                        svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out svStopState);
+                        svStopActive = (svStopState == CNCPipe.Plc.IOState.IO_LOGICAL_1);
+
+                        if (!svStopActive)
+                        {
+                            LogInfo($"✅ Successfully cleared SV_STOP on attempt {attempt}", "CNCUtils");
+                            break;
+                        }
+
+                        if (attempt < 2)
+                        {
+                            LogWarning($"   SV_STOP still active after attempt {attempt}, retrying...", "CNCUtils");
+                        }
                     }
-
-                    // Give the system a moment to process the event
-                    System.Threading.Thread.Sleep(100);
-
-                    // Check if SV_STOP was cleared
-                    svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out svStopState);
-                    svStopActive = (svStopState == CNCPipe.Plc.IOState.IO_LOGICAL_1);
 
                     if (svStopResult == CNCPipe.ReturnCode.SUCCESS && !svStopActive)
                     {
-                        System.Diagnostics.Debug.WriteLine("[CNCUtils] Successfully reset SV_STOP state");
+                        LogInfo("✅ Successfully reset SV_STOP state", "CNCUtils");
 
                         // Verify API is not restricted after reset
                         apiCheckResult = cncPipe.state.IsAPIRestricted(out apiRestricted);
                         if (apiCheckResult == CNCPipe.ReturnCode.SUCCESS && !apiRestricted)
                         {
+                            LogInfo("✅ API is ready after reset", "CNCUtils");
                             return true;
                         }
 
-                        System.Diagnostics.Debug.WriteLine("[CNCUtils] SV_STOP cleared but API still restricted");
+                        LogWarning("SV_STOP cleared but API still restricted", "CNCUtils");
                         return false;
                     }
 
-                    System.Diagnostics.Debug.WriteLine("[CNCUtils] SV_STOP still active after reset attempt");
+                    LogError("❌ SV_STOP still active after all reset attempts", "CNCUtils");
                     return false;
                 }
 
                 // API is not restricted and SV_STOP is not active - ready to accept commands
+                LogInfo("✅ CNC is ready - API not restricted, SV_STOP not active", "CNCUtils");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[CNCUtils] Error checking/resetting Centroid state: {ex.Message}");
+                LogError($"Error checking/resetting Centroid state: {ex.Message}", "CNCUtils");
                 return false;
             }
         }
@@ -690,7 +746,7 @@ namespace HavenCNCServer.Centriod
                 var svStopResult = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out CNCPipe.Plc.IOState svStopState);
                 if (svStopResult != CNCPipe.ReturnCode.SUCCESS)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[CNCUtils] Failed to check SV_STOP: {svStopResult}");
+                    LogWarning($"IsCentroidReady: Failed to check SV_STOP: {svStopResult}", "CNCUtils");
                     return false;
                 }
 

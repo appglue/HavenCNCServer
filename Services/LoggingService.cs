@@ -177,7 +177,8 @@ namespace HavenCNCServer.Services
                 {
                     if (_parentForm.InvokeRequired)
                     {
-                        _parentForm.Invoke(() => UpdateLog(entries));
+                        // Use BeginInvoke for non-blocking async UI update
+                        _parentForm.BeginInvoke(() => UpdateLog(entries));
                         return;
                     }
                     
@@ -242,7 +243,8 @@ namespace HavenCNCServer.Services
                 {
                     if (_parentForm.InvokeRequired)
                     {
-                        _parentForm.Invoke(() => UpdateLog(entries));
+                        // Use BeginInvoke for non-blocking async UI update
+                        _parentForm.BeginInvoke(() => UpdateLog(entries));
                         return;
                     }
                     

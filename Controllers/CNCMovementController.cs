@@ -4,6 +4,7 @@ using HavenCNCServer.Models;
 using HavenCNCServer.Centriod;
 using HavenCNCServer.Services;
 using CentroidAPI;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
 {
@@ -85,9 +86,14 @@ namespace HavenCNCServer.Controllers
         [HttpPost("MoveTo")]
         public void MoveTo([FromBody] MoveToRequest request)
         {
+            LoggingService.LogInfo($"🎯 MoveTo request: Strategy={request.Strategy}, Point=({request.Point.X:F4}, {request.Point.Y:F4}, {request.Point.Z:F4}, {request.Point.A:F4}), XYSpeed={request.XYSpeed}, ZSpeed={request.ZSpeed}", "Movement");
+            
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null)
+            {
+                LoggingService.LogError("❌ MoveTo failed: CNC connection not available", "Movement");
                 throw new InvalidOperationException("CNC connection not available");
+            }
 
             var programController = new CNCProgramController();
             var commands = new List<string>();
@@ -97,49 +103,64 @@ namespace HavenCNCServer.Controllers
                 // Direct move - all axes move simultaneously
                 var gcode = BuildMoveCommand(request.Point, request.XYSpeed);
                 commands.Add(gcode);
+                LoggingService.LogInfo($"📝 Direct move G-code: {gcode}", "Movement");
             }
             else // MoveStrategy.ZSeparate
             {
                 // Get current position to determine Z direction
                 var currentPos = MachinePositionService.GetCurrentPosition();
                 double zDelta = request.Point.Z - currentPos.Z;
+                
+                LoggingService.LogInfo($"📍 Current position: ({currentPos.X:F4}, {currentPos.Y:F4}, {currentPos.Z:F4}), Z delta: {zDelta:F4}", "Movement");
 
                 if (zDelta > 0)
                 {
                     // Moving Z up (positive direction) - move Z first for safety
-                    commands.Add(BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed));
-                    commands.Add(BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed));
+                    var zMove = BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed);
+                    var xyMove = BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed);
+                    commands.Add(zMove);
+                    commands.Add(xyMove);
+                    LoggingService.LogInfo($"📝 Z-up strategy: 1) {zMove}  2) {xyMove}", "Movement");
                 }
                 else
                 {
                     // Moving Z down (negative direction) - move XY first, then Z last for safety
-                    commands.Add(BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed));
-                    commands.Add(BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed));
+                    var xyMove = BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed);
+                    var zMove = BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed);
+                    commands.Add(xyMove);
+                    commands.Add(zMove);
+                    LoggingService.LogInfo($"📝 Z-down strategy: 1) {xyMove}  2) {zMove}", "Movement");
                 }
             }
 
             // Execute the commands via the program controller
+            LoggingService.LogInfo($"▶️ Executing {commands.Count} G-code command(s)...", "Movement");
             var result = programController.RunGCode(commands.ToArray()).Result;
+            
             if (!result.Success)
             {
+                LoggingService.LogError($"❌ MoveTo failed: {result.Error ?? "Unknown error"}", "Movement");
                 throw new InvalidOperationException($"Failed to execute move commands: {result.Error ?? "Unknown error"}");
             }
+            
+            LoggingService.LogInfo($"✅ MoveTo completed successfully. JobId: {result.JobId}", "Movement");
         }
 
         /// <summary>
         /// Build a G-code move command from a MachinePoint
+        /// Uses G0 (rapid traverse) for fast positioning moves
         /// </summary>
         private string BuildMoveCommand(MachinePoint point, double? feedRate = null)
         {
-            var parts = new List<string> { "G1" };
+            var parts = new List<string> { "G0" };
 
             if (point.X != 0) parts.Add($"X{point.X:F4}");
             if (point.Y != 0) parts.Add($"Y{point.Y:F4}");
             if (point.Z != 0) parts.Add($"Z{point.Z:F4}");
             if (point.A != 0) parts.Add($"A{point.A:F4}");
 
-            if (feedRate.HasValue && feedRate.Value > 0)
-                parts.Add($"F{feedRate.Value:F2}");
+            // Note: G0 ignores feed rate - moves at maximum rapid speed
+            // Feed rate parameter kept for API compatibility but not used in G0
 
             return string.Join(" ", parts);
         }

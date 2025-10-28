@@ -4,6 +4,7 @@ using HavenCNCServer.Services;
 using HavenCNCServer.Centriod.Events;
 using CentroidAPI;
 using IOFile = System.IO.File;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
 {
@@ -541,17 +542,24 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
+                LogInfo($"🚀 RunGCode called with {gCodeLines?.Length ?? 0} lines, startImmediately={startImmediately}", "Program");
+                
                 if (gCodeLines == null || gCodeLines.Length == 0)
                 {
+                    LogWarning("RunGCode: G-code lines are null or empty", "Program");
                     throw new ArgumentException("G-code lines cannot be null or empty");
                 }
+
+                LogInfo($"G-code lines to execute: {string.Join(" | ", gCodeLines)}", "Program");
 
                 // Check and reset Centroid state before attempting to run G-code
                 try
                 {
+                    LogInfo("Checking Centroid state before running G-code...", "Program");
                     bool isReady = Centriod.CNCUtils.CheckAndResetCentroidState();
                     if (!isReady)
                     {
+                        LogWarning("Centroid state check failed - system not ready", "Program");
                         return new RunGCodeResponse
                         {
                             Success = false,
@@ -564,6 +572,7 @@ namespace HavenCNCServer.Controllers
                 }
                 catch (Exception ex)
                 {
+                    LogError($"Failed to verify CNC state: {ex.Message}", "Program");
                     return new RunGCodeResponse
                     {
                         Success = false,
@@ -574,21 +583,56 @@ namespace HavenCNCServer.Controllers
                     };
                 }
 
+                LogInfo("✓ Centroid state verified - ready to create job", "Program");
+
                 // Create a new CNC job
                 CNCJob job;
                 bool shouldStartNow = false;
 
                 lock (_jobsLock)
                 {
+                    LogInfo($"Creating new CNC job with {gCodeLines.Length} lines", "Program");
                     job = new CNCJob(gCodeLines, gcodeParameterString);
 
                     // Set up completion callback to handle job completion
                     job.OnJobCompleted = OnJobCompleted;
 
                     _jobs.Add(job);
+                    LogInfo($"Job {job.JobId} added to queue. Total jobs in queue: {_jobs.Count}", "Program");
 
-                    // Start immediately if this is the first (and only) job in the list and startImmediately is true
-                    shouldStartNow = startImmediately && _jobs.Count == 1;
+                    // Check if we should start a job now:
+                    // - startImmediately must be true
+                    // - If this is the only job, start it
+                    // - If there are jobs ahead, check if the first job is not started - if so, start it
+                    if (startImmediately)
+                    {
+                        var firstJob = _jobs.First();
+                        bool firstJobNotStarted = !firstJob.IsRunning && !firstJob.IsComplete;
+                        
+                        if (_jobs.Count == 1)
+                        {
+                            // This is the only job - start it
+                            shouldStartNow = true;
+                            LogInfo($"Job {job.JobId} is the only job in queue - will start immediately", "Program");
+                        }
+                        else if (firstJobNotStarted)
+                        {
+                            // There are jobs ahead, but the first job hasn't started - start it
+                            shouldStartNow = true;
+                            LogInfo($"Found {_jobs.Count} jobs in queue. First job {firstJob.JobId} not started (Running={firstJob.IsRunning}, Complete={firstJob.IsComplete}) - will start it now", "Program");
+                            // Change job reference to start the first job instead of the newly added one
+                            job = firstJob;
+                        }
+                        else
+                        {
+                            // Jobs ahead and first job is running/complete
+                            LogInfo($"Jobs ahead in queue. First job {firstJob.JobId} status: Running={firstJob.IsRunning}, Complete={firstJob.IsComplete} - new job will wait", "Program");
+                        }
+                    }
+                    else
+                    {
+                        LogInfo($"startImmediately=false - job will not be started automatically", "Program");
+                    }
                 }
 
                 // Push job started event
@@ -624,9 +668,11 @@ namespace HavenCNCServer.Controllers
 
                 if (shouldStartNow)
                 {
+                    LogInfo($"🎬 Starting job {job.JobId} immediately...", "Program");
                     var startSuccess = await job.StartAsync();
                     if (!startSuccess)
                     {
+                        LogError($"Failed to start job {job.JobId}: {job.LastError}", "Program");
                         return new RunGCodeResponse
                         {
                             Success = false,
@@ -637,6 +683,7 @@ namespace HavenCNCServer.Controllers
                         };
                     }
 
+                    LogInfo($"✅ Job {job.JobId} started successfully", "Program");
                     // Update job details after starting
                     jobDetails.StartedAt = job.StartedAt;
                     jobDetails.IsRunning = job.IsRunning;
@@ -655,6 +702,8 @@ namespace HavenCNCServer.Controllers
                         "Job created and queued (jobs ahead in queue)" :
                         "Job created successfully (not started)";
 
+                    LogInfo($"Job {job.JobId} created but not started: {message}", "Program");
+
                     return new RunGCodeResponse
                     {
                         Success = true,
@@ -666,6 +715,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
+                LogError($"RunGCode exception: {ex.Message}\n{ex.StackTrace}", "Program");
                 return new RunGCodeResponse
                 {
                     Success = false,

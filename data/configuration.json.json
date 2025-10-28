@@ -2,7 +2,7 @@
   "directoriesToMonitor": [],
   "fileTypesToMonitor": [],
   "jobsToRemember": 20,
-  "systemConfigurationUnlocked": true,
+  "systemConfigurationUnlocked": false,
   "bedTransparency": 0.15,
   "gantryTransparency": 0.15,
   "spoilboardTransparency": 0.15,
@@ -95,7 +95,7 @@
   "logErrorEnabled": true,
   "logMaxEntries": 1500,
   "logEnabledCategories": [],
-  "safeXYDistance": 0.8,
+  "safeXYDistance": 1,
   "safeZDistance": 0.5,
   "defaultView": {
     "workHome": true,

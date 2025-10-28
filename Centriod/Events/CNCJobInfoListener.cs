@@ -240,6 +240,24 @@ namespace HavenCNCServer.Centriod.Events
                         // Continue anyway - default settings should work
                     }
 
+                    // Configure DRO to send MACHINE coordinates (not work coordinates)
+                    try
+                    {
+                        var droResult = cncPipe.inbound_communications.ChangeDroType(CentroidAPI.CNCPipe.Dro.DroCoordinates.DRO_MACHINE);
+                        if (droResult == CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            LogInfo("✓ DRO events configured to send MACHINE coordinates", "JobInfo");
+                        }
+                        else
+                        {
+                            LogWarning($"Failed to configure DRO coordinate type: {droResult}", "JobInfo");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWarning($"Could not configure DRO coordinate type: {ex.Message}", "JobInfo");
+                    }
+
                     // Store reference to current CNC pipe
                     _currentCNCPipe = cncPipe;
 
