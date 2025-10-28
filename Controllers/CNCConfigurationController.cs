@@ -38,23 +38,29 @@ namespace HavenCNCServer.Controllers
         /// Get data by name
         /// </summary>
         /// <param name="name">Name of the data to retrieve</param>
-        /// <returns>Data content</returns>
+        /// <returns>Data content or null if not found</returns>
         [HttpGet("GetData/{name}")]
-        public string GetData(string name)
+        public string? GetData(string name)
         {
             try
             {
+                Services.LoggingService.LogInfo($"📖 GetData request: '{name}'", "Config");
+                
                 var filePath = Path.Combine(_dataDirectory, $"{name}.json");
 
                 if (!System.IO.File.Exists(filePath))
                 {
-                    throw new FileNotFoundException($"Data '{name}' not found");
+                    Services.LoggingService.LogWarning($"❌ Data '{name}' not found at: {filePath}", "Config");
+                    return null; // Return null instead of throwing error
                 }
 
-                return System.IO.File.ReadAllText(filePath);
+                var content = System.IO.File.ReadAllText(filePath);
+                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} characters", "Config");
+                return content;
             }
             catch (Exception ex)
             {
+                Services.LoggingService.LogError($"Failed to read data '{name}': {ex.Message}", "Config");
                 throw new InvalidOperationException($"Failed to read data '{name}': {ex.Message}", ex);
             }
         }
@@ -71,14 +77,20 @@ namespace HavenCNCServer.Controllers
             {
                 if (string.IsNullOrWhiteSpace(request.Name))
                 {
+                    Services.LoggingService.LogError("SetData request with empty name", "Config");
                     throw new ArgumentException("Data name cannot be empty");
                 }
 
+                Services.LoggingService.LogInfo($"💾 SetData request: '{request.Name}' ({(request.Content?.Length ?? 0)} chars)", "Config");
+
                 var filePath = Path.Combine(_dataDirectory, $"{request.Name}.json");
                 System.IO.File.WriteAllText(filePath, request.Content ?? string.Empty);
+                
+                Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved to: {filePath}", "Config");
             }
             catch (Exception ex)
             {
+                Services.LoggingService.LogError($"Failed to save data '{request.Name}': {ex.Message}", "Config");
                 throw new InvalidOperationException($"Failed to save data '{request.Name}': {ex.Message}", ex);
             }
         }

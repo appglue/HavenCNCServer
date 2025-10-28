@@ -244,6 +244,9 @@ namespace HavenCNCServer.Centriod
                 if (config.IsReversed.HasValue)
                     cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
 
+                // Configure axis properties (rotary, signal inversions, etc.) via parameters
+                ConfigureAxisProperties(config);
+
                 System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} ({config.Label ?? "unknown"}): {config.StepsPerRevolution?.ToString() ?? "not set"} steps/rev");
                 
                 return true;
