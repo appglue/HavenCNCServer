@@ -529,24 +529,5 @@ namespace HavenCNCServer
             }
         }
 
-        private void btnTestMove_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                LogInfo("Opening Test Move Form...", "UI");
-
-                var testMoveForm = new TestMoveForm();
-                testMoveForm.Show(); // Non-modal so it doesn't block the main form
-
-                LogInfo("Test Move Form opened.", "UI");
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = $"Error opening Test Move Form: {ex.Message}";
-                LogError(errorMessage, "UI");
-                MessageBox.Show(errorMessage, "Dialog Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
     }
 }

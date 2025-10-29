@@ -538,7 +538,14 @@ namespace HavenCNCServer.Controllers
         /// <param name="gcodeParameterString">Optional parameter string to pass to the G-code program</param>
         /// <returns>Job creation and start result</returns>
         [HttpPost("RunGCode")]
-        public async Task<RunGCodeResponse> RunGCode([FromBody] string[] gCodeLines, [FromQuery] bool startImmediately = true, [FromQuery] string? gcodeParameterString = null)
+        public async Task<RunGCodeResponse> RunGCode(
+            [FromBody] string[] gCodeLines, 
+            [FromQuery] bool startImmediately = true, 
+            [FromQuery] string? gcodeParameterString = null,
+            [FromQuery] double? fixturePointX = null,
+            [FromQuery] double? fixturePointY = null,
+            [FromQuery] double? fixturePointZ = null,
+            [FromQuery] double? fixturePointA = null)
         {
             try
             {
@@ -551,6 +558,25 @@ namespace HavenCNCServer.Controllers
                 }
 
                 LogInfo($"G-code lines to execute: {string.Join(" | ", gCodeLines)}", "Program");
+
+                // If fixture point is provided, set it before running G-code
+                if (fixturePointX.HasValue || fixturePointY.HasValue || fixturePointZ.HasValue || fixturePointA.HasValue)
+                {
+                    var fixturePoint = new MachinePoint
+                    {
+                        X = fixturePointX ?? 0,
+                        Y = fixturePointY ?? 0,
+                        Z = fixturePointZ ?? 0,
+                        A = fixturePointA ?? 0
+                    };
+                    
+                    LogInfo($"📍 Setting fixture point before G-code execution: X={fixturePoint.X:F4}, Y={fixturePoint.Y:F4}, Z={fixturePoint.Z:F4}, A={fixturePoint.A:F4}", "Program");
+                    
+                    var movementController = new CNCMovementController();
+                    await movementController.SetFixturePoint(fixturePoint);
+                    
+                    LogInfo("✓ Fixture point set successfully", "Program");
+                }
 
                 // Check and reset Centroid state before attempting to run G-code
                 try
@@ -731,9 +757,18 @@ namespace HavenCNCServer.Controllers
         /// Run single G-code command
         /// </summary>
         /// <param name="gcode">G-code command to run</param>
+        /// <param name="fixturePointX">Optional X coordinate for fixture point</param>
+        /// <param name="fixturePointY">Optional Y coordinate for fixture point</param>
+        /// <param name="fixturePointZ">Optional Z coordinate for fixture point</param>
+        /// <param name="fixturePointA">Optional A coordinate for fixture point</param>
         /// <returns>Command execution result</returns>
         [HttpPost("RunGCodeCommand")]
-        public async Task<RunGCodeCommandResponse> RunGCodeCommand([FromBody] string gcode)
+        public async Task<RunGCodeCommandResponse> RunGCodeCommand(
+            [FromBody] string gcode,
+            [FromQuery] double? fixturePointX = null,
+            [FromQuery] double? fixturePointY = null,
+            [FromQuery] double? fixturePointZ = null,
+            [FromQuery] double? fixturePointA = null)
         {
             try
             {
@@ -761,7 +796,9 @@ namespace HavenCNCServer.Controllers
                 // Convert single command to array and call the main RunGCode method
                 // This ensures we have only one code path for G-code execution
                 string[] gCodeLines = { cleanCommand };
-                var result = await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null);
+                var result = await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null, 
+                    fixturePointX: fixturePointX, fixturePointY: fixturePointY, 
+                    fixturePointZ: fixturePointZ, fixturePointA: fixturePointA);
 
                 return new RunGCodeCommandResponse
                 {

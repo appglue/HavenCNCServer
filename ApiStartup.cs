@@ -60,8 +60,23 @@ namespace HavenCNCServer
                 });
             });
 
-            // Add SignalR
-            services.AddSignalR();
+            // Add SignalR with aggressive keep-alive settings for real-time DRO updates
+            services.AddSignalR(options =>
+            {
+                // Keep-alive interval - server sends keep-alive messages to client
+                // Set to 2 seconds to match client configuration (client expects message every 2s)
+                options.KeepAliveInterval = TimeSpan.FromSeconds(2);
+                
+                // Client timeout - how long server waits before considering client disconnected
+                // Set to 10 seconds (must be at least 2x KeepAliveInterval)
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(10);
+                
+                // Maximum message buffer size
+                options.MaximumReceiveMessageSize = 1024 * 1024; // 1MB
+                
+                // Enable detailed errors in development
+                options.EnableDetailedErrors = true;
+            });
 
             // Register services
             // Note: CNCServerManager is now static and doesn't need DI registration

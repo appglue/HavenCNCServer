@@ -1,6 +1,8 @@
 using CentroidAPI;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centriod.Events;
+using System.Threading;
+using System.Threading.Tasks;
 using IOFile = System.IO.File;
 
 namespace HavenCNCServer.Models
@@ -16,6 +18,7 @@ namespace HavenCNCServer.Models
         private readonly string _filePath;
         private CentroidAPI.CNCPipe.Job? _cncJob;
         private bool _isListening = false;
+        private CancellationTokenSource? _monitorCancellation;
 
         /// <summary>
         /// Callback to invoke when the job completes
@@ -233,6 +236,10 @@ namespace HavenCNCServer.Models
 
                 // Log that the job command was sent successfully
                 LoggingService.LogInfo($"Job {_jobId} command sent successfully - waiting for execution to begin", "CNCJob");
+
+                // Start background polling to monitor job completion via API
+                _monitorCancellation = new CancellationTokenSource();
+                _ = Task.Run(() => MonitorJobCompletion(_monitorCancellation.Token), _monitorCancellation.Token);
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job started successfully");
                 return true;
@@ -640,6 +647,10 @@ namespace HavenCNCServer.Models
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
+                            
+                            // Cancel the monitoring task since we detected completion via event
+                            _monitorCancellation?.Cancel();
+                            
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - received code 306: {messageEvent.Message}");
                             
                             // Log job completion to main UI in GREEN
@@ -669,6 +680,10 @@ namespace HavenCNCServer.Models
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
+                            
+                            // Cancel the monitoring task since we detected completion via error
+                            _monitorCancellation?.Cancel();
+                            
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped due to critical error: {LastError}");
                             
                             // Log critical error job stop to main UI
@@ -683,6 +698,78 @@ namespace HavenCNCServer.Models
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error processing CNC event: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Monitor job completion by polling the Centroid API IsJobRunning method
+        /// This provides reliable completion detection for fast jobs that may not send completion events
+        /// </summary>
+        private async Task MonitorJobCompletion(CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Wait a bit for the job to actually start running
+                await Task.Delay(100, cancellationToken);
+                
+                bool wasRunning = false;
+                
+                while (!IsComplete && !cancellationToken.IsCancellationRequested)
+                {
+                    // Get CNC pipe
+                    var cncPipe = CNCConnectionManager.GetCNCPipe();
+                    if (cncPipe == null)
+                    {
+                        // Connection lost
+                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: CNC connection lost");
+                        break;
+                    }
+                    
+                    // Check if any job is currently running
+                    var result = cncPipe.state.IsJobRunning(out bool jobRunning);
+                    
+                    if (result == CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        if (jobRunning && !wasRunning)
+                        {
+                            // Job just started running
+                            wasRunning = true;
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job started running (detected by API)");
+                        }
+                        else if (!jobRunning && wasRunning && !IsComplete)
+                        {
+                            // Job WAS running but now stopped - mark as complete
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job stopped running (detected by API) - marking complete");
+                            
+                            IsRunning = false;
+                            IsComplete = true;
+                            CompletedAt = DateTime.Now;
+                            StopListening();
+                            
+                            // Log job completion to main UI
+                            LoggingService.LogSuccess($"✓ Job {_jobId} completed (detected by API monitor)", "CNCJob");
+                            
+                            // Notify completion callback
+                            OnJobCompleted?.Invoke(this);
+                            break;
+                        }
+                    }
+                    
+                    // Poll every 100ms for responsive completion detection
+                    await Task.Delay(100, cancellationToken);
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Exiting monitoring loop (Cancelled={cancellationToken.IsCancellationRequested})");
+            }
+            catch (OperationCanceledException)
+            {
+                // Monitor was cancelled (likely due to 306 message event) - this is normal
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Cancelled by event-based completion");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor exception: {ex.Message}");
+                LoggingService.LogError($"Job {_jobId} monitoring error: {ex.Message}", "CNCJob");
             }
         }
 
@@ -764,6 +851,27 @@ namespace HavenCNCServer.Models
                         }
                         
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Line {LineNumber}: {CurrentLine}");
+                        
+                        // Check if we've reached the last line - mark job as complete
+                        // This ensures fast jobs (like G0 rapid moves) complete even if we don't receive code 306
+                        if (LineNumber >= TotalLines)
+                        {
+                            IsRunning = false;
+                            IsComplete = true;
+                            CompletedAt = DateTime.Now;
+                            StopListening();
+                            
+                            // Cancel the monitoring task since we detected completion via line count
+                            _monitorCancellation?.Cancel();
+                            
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - reached last line {LineNumber}/{TotalLines}");
+                            
+                            // Log job completion to main UI in GREEN
+                            LoggingService.LogSuccess($"✓ Job {_jobId} completed - executed all {TotalLines} lines", "CNCJob");
+                            
+                            // Notify completion callback
+                            OnJobCompleted?.Invoke(this);
+                        }
                     }
                     else if (jobInfo.LineNumber > TotalLines)
                     {
@@ -817,6 +925,14 @@ namespace HavenCNCServer.Models
         {
             // Stop listening first to unregister event handlers
             StopListening();
+            
+            // Cancel and dispose the monitoring task
+            if (_monitorCancellation != null)
+            {
+                _monitorCancellation.Cancel();
+                _monitorCancellation.Dispose();
+                _monitorCancellation = null;
+            }
             
             // Clean up the G-code file
             try

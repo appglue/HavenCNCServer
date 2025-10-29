@@ -1789,44 +1789,12 @@
         }
       }
     },
-    "/api/CNCMovement/SetMoveType": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Set the movement type (relative or absolute)",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveType"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveType"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveType"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCMovement/GetMoveType": {
       "get": {
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Get the current movement type",
+        "summary": "Get the current movement type (absolute or relative positioning mode)",
         "responses": {
           "200": {
             "description": "Success",
@@ -1881,98 +1849,32 @@
         }
       }
     },
-    "/api/CNCMovement/MoveTo": {
-      "post": {
+    "/api/CNCMovement/GetLastFixturePoint": {
+      "get": {
         "tags": [
           "CNCMovement"
         ],
-        "summary": "Move to specified coordinates",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToRequest"
-              }
-            }
-          }
-        },
+        "summary": "Get the last fixture point that was set (persisted in memory)",
         "responses": {
           "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/MoveToUtil": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Move to coordinates until an IO event occurs\r\nUses G31 probe cycle for move-until-input operations",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToUntilRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToUntilRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveToUntilRequest"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachinePoint"
+                }
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCMovement/MoveDirectionUntil": {
-      "post": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Move in a direction until an IO event occurs\r\nUses G31 probe cycle with G91 (relative mode) for directional probing",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveDirectionUntilRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveDirectionUntilRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MoveDirectionUntilRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
           }
         }
       }
@@ -2277,6 +2179,38 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "fixturePointX",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointY",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointZ",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointA",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
           }
         ],
         "requestBody": {
@@ -2338,6 +2272,44 @@
           "CNCProgram"
         ],
         "summary": "Run single G-code command",
+        "parameters": [
+          {
+            "name": "fixturePointX",
+            "in": "query",
+            "description": "Optional X coordinate for fixture point",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointY",
+            "in": "query",
+            "description": "Optional Y coordinate for fixture point",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointZ",
+            "in": "query",
+            "description": "Optional Z coordinate for fixture point",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "fixturePointA",
+            "in": "query",
+            "description": "Optional A coordinate for fixture point",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
         "requestBody": {
           "description": "G-code command to run",
           "content": {
@@ -3717,15 +3689,6 @@
   },
   "components": {
     "schemas": {
-      "APICoordinateType": {
-        "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "description": "Coordinate system types for movement commands",
-        "format": "int32"
-      },
       "ATCConfiguration": {
         "type": "object",
         "properties": {
@@ -4231,18 +4194,6 @@
         "additionalProperties": false,
         "description": "I/O configuration DTO for API"
       },
-      "IOEvent": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ],
-        "type": "integer",
-        "description": "IO events that can be monitored or triggered",
-        "format": "int32"
-      },
       "IOFunction": {
         "type": "object",
         "properties": {
@@ -4393,106 +4344,6 @@
         },
         "additionalProperties": false,
         "description": "Represents a point in machine coordinates with X, Y, Z, and A axis values"
-      },
-      "MoveDirection": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5
-        ],
-        "type": "integer",
-        "description": "Directions for machine movement",
-        "format": "int32"
-      },
-      "MoveDirectionUntilRequest": {
-        "type": "object",
-        "properties": {
-          "direction": {
-            "$ref": "#/components/schemas/MoveDirection"
-          },
-          "event": {
-            "$ref": "#/components/schemas/IOEvent"
-          },
-          "speed": {
-            "type": "number",
-            "description": "Movement speed (optional)",
-            "format": "double",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for directional movement until an event"
-      },
-      "MoveStrategy": {
-        "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "description": "Movement strategies for multi-axis moves",
-        "format": "int32"
-      },
-      "MoveToRequest": {
-        "type": "object",
-        "properties": {
-          "point": {
-            "$ref": "#/components/schemas/MachinePoint"
-          },
-          "xySpeed": {
-            "type": "number",
-            "description": "XY movement speed (optional)",
-            "format": "double",
-            "nullable": true
-          },
-          "zSpeed": {
-            "type": "number",
-            "description": "Z movement speed (optional)",
-            "format": "double",
-            "nullable": true
-          },
-          "strategy": {
-            "$ref": "#/components/schemas/MoveStrategy"
-          },
-          "coordinateType": {
-            "$ref": "#/components/schemas/APICoordinateType"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for moving to a specific point"
-      },
-      "MoveToUntilRequest": {
-        "type": "object",
-        "properties": {
-          "point": {
-            "$ref": "#/components/schemas/MachinePoint"
-          },
-          "xySpeed": {
-            "type": "number",
-            "description": "XY movement speed (optional)",
-            "format": "double",
-            "nullable": true
-          },
-          "zSpeed": {
-            "type": "number",
-            "description": "Z movement speed (optional)",
-            "format": "double",
-            "nullable": true
-          },
-          "strategy": {
-            "$ref": "#/components/schemas/MoveStrategy"
-          },
-          "coordinateType": {
-            "$ref": "#/components/schemas/APICoordinateType"
-          },
-          "event": {
-            "$ref": "#/components/schemas/IOEvent"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for moving until an IO event occurs"
       },
       "MoveType": {
         "enum": [

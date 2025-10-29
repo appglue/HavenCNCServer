@@ -17,7 +17,7 @@ namespace HavenCNCServer.Centriod
         /// Default skin event number for reset button operations
         /// Acorn uses event 51 for Reset button (toggle type)
         /// </summary>
-        public const int DEFAULT_CYCLE_START_EVENT = 51;
+        public const int DEFAULT_CYCLE_START_EVENT = 56;
 
 
         /// <summary>
