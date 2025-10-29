@@ -26,6 +26,11 @@ namespace HavenCNCServer.Models
         /// Movement strategy (direct or Z-first)
         /// </summary>
         public MoveStrategy Strategy { get; set; } = MoveStrategy.Direct;
+
+        /// <summary>
+        /// Coordinate system type (Machine or WorkZero)
+        /// </summary>
+        public APICoordinateType CoordinateType { get; set; }
     }
 
     /// <summary>

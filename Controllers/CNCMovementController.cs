@@ -86,8 +86,8 @@ namespace HavenCNCServer.Controllers
         [HttpPost("MoveTo")]
         public void MoveTo([FromBody] MoveToRequest request)
         {
-            LoggingService.LogInfo($"🎯 MoveTo request: Strategy={request.Strategy}, Point=({request.Point.X:F4}, {request.Point.Y:F4}, {request.Point.Z:F4}, {request.Point.A:F4}), XYSpeed={request.XYSpeed}, ZSpeed={request.ZSpeed}", "Movement");
-            
+            LoggingService.LogInfo($"🎯 MoveTo request: CoordinateType={request.CoordinateType}, Strategy={request.Strategy}, Point=({request.Point.X:F4}, {request.Point.Y:F4}, {request.Point.Z:F4}, {request.Point.A:F4}), XYSpeed={request.XYSpeed}, ZSpeed={request.ZSpeed}", "Movement");
+
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null)
             {
@@ -97,6 +97,13 @@ namespace HavenCNCServer.Controllers
 
             var programController = new CNCProgramController();
             var commands = new List<string>();
+
+            // Set coordinate system based on request
+            // G53 = Machine coordinates (absolute machine position, ignores work offsets)
+            // G54 = Work coordinate system 1 (default work zero with offsets)
+            string coordSystemCommand = request.CoordinateType == APICoordinateType.Machine ? "G53" : "G54";
+            commands.Add(coordSystemCommand);
+            LoggingService.LogInfo($"📍 Coordinate system: {coordSystemCommand}", "Movement");
 
             if (request.Strategy == MoveStrategy.Direct)
             {
@@ -110,7 +117,7 @@ namespace HavenCNCServer.Controllers
                 // Get current position to determine Z direction
                 var currentPos = MachinePositionService.GetCurrentPosition();
                 double zDelta = request.Point.Z - currentPos.Z;
-                
+
                 LoggingService.LogInfo($"📍 Current position: ({currentPos.X:F4}, {currentPos.Y:F4}, {currentPos.Z:F4}), Z delta: {zDelta:F4}", "Movement");
 
                 if (zDelta > 0)
@@ -136,13 +143,13 @@ namespace HavenCNCServer.Controllers
             // Execute the commands via the program controller
             LoggingService.LogInfo($"▶️ Executing {commands.Count} G-code command(s)...", "Movement");
             var result = programController.RunGCode(commands.ToArray()).Result;
-            
+
             if (!result.Success)
             {
                 LoggingService.LogError($"❌ MoveTo failed: {result.Error ?? "Unknown error"}", "Movement");
                 throw new InvalidOperationException($"Failed to execute move commands: {result.Error ?? "Unknown error"}");
             }
-            
+
             LoggingService.LogInfo($"✅ MoveTo completed successfully. JobId: {result.JobId}", "Movement");
         }
 
@@ -197,6 +204,12 @@ namespace HavenCNCServer.Controllers
 
             var programController = new CNCProgramController();
             var commands = new List<string>();
+
+            // Set coordinate system based on request
+            // G53 = Machine coordinates (absolute machine position, ignores work offsets)
+            // G54 = Work coordinate system 1 (default work zero with offsets)
+            string coordSystemCommand = request.CoordinateType == APICoordinateType.Machine ? "G53" : "G54";
+            commands.Add(coordSystemCommand);
 
             // G31 is the probe/digitize cycle - moves until input is triggered
             // Format: G31 X__ Y__ Z__ A__ F__ (feed rate)

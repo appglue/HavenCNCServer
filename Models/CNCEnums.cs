@@ -98,4 +98,20 @@ namespace HavenCNCServer.Models
         /// </summary>
         ZSeparate
     }
+
+    /// <summary>
+    /// Coordinate system types for movement commands
+    /// </summary>
+    public enum APICoordinateType
+    {
+        /// <summary>
+        /// Machine coordinates (G53) - absolute machine position, ignores work offsets
+        /// </summary>
+        Machine,
+
+        /// <summary>
+        /// Work zero coordinates (G54-G59) - uses active work coordinate system with offsets
+        /// </summary>
+        WorkZero
+    }
 }

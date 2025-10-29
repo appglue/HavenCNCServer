@@ -3619,32 +3619,6 @@
         }
       }
     },
-    "/api/CNCSystem/UnhomeMachine": {
-      "post": {
-        "tags": [
-          "CNCSystem"
-        ],
-        "summary": "Unhome the machine",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCSystem/HomeMachine": {
-      "post": {
-        "tags": [
-          "CNCSystem"
-        ],
-        "summary": "Home the machine",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCSystem/GetCurrentErrorState": {
       "get": {
         "tags": [
@@ -3743,6 +3717,15 @@
   },
   "components": {
     "schemas": {
+      "APICoordinateType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "description": "Coordinate system types for movement commands",
+        "format": "int32"
+      },
       "ATCConfiguration": {
         "type": "object",
         "properties": {
@@ -4472,6 +4455,9 @@
           },
           "strategy": {
             "$ref": "#/components/schemas/MoveStrategy"
+          },
+          "coordinateType": {
+            "$ref": "#/components/schemas/APICoordinateType"
           }
         },
         "additionalProperties": false,
@@ -4497,6 +4483,9 @@
           },
           "strategy": {
             "$ref": "#/components/schemas/MoveStrategy"
+          },
+          "coordinateType": {
+            "$ref": "#/components/schemas/APICoordinateType"
           },
           "event": {
             "$ref": "#/components/schemas/IOEvent"
