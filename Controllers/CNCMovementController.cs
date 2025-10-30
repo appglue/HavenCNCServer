@@ -177,7 +177,11 @@ namespace HavenCNCServer.Controllers
 
             // Use M99 P__ to set feed rate override percentage
             var programController = new CNCProgramController();
-            var result = programController.RunGCodeCommand($"M99 P{percentage}").Result;
+            var request = new Models.RunGCodeCommandRequest
+            {
+                GCode = $"M99 P{percentage}"
+            };
+            var result = programController.RunGCodeCommand(request).Result;
 
             if (!result.Success)
             {

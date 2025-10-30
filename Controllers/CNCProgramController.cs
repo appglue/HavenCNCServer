@@ -533,49 +533,55 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Create a new G-code job from array of lines
         /// </summary>
-        /// <param name="gCodeLines">Array of G-code lines to execute</param>
-        /// <param name="startImmediately">Whether to start execution immediately or just create the job</param>
-        /// <param name="gcodeParameterString">Optional parameter string to pass to the G-code program</param>
+        /// <param name="request">G-code execution request containing lines, fixture point, and execution parameters</param>
         /// <returns>Job creation and start result</returns>
         [HttpPost("RunGCode")]
-        public async Task<RunGCodeResponse> RunGCode(
-            [FromBody] string[] gCodeLines, 
-            [FromQuery] bool startImmediately = true, 
-            [FromQuery] string? gcodeParameterString = null,
-            [FromQuery] double? fixturePointX = null,
-            [FromQuery] double? fixturePointY = null,
-            [FromQuery] double? fixturePointZ = null,
-            [FromQuery] double? fixturePointA = null)
+        public async Task<RunGCodeResponse> RunGCode([FromBody] RunGCodeRequest request)
         {
             try
             {
-                LogInfo($"🚀 RunGCode called with {gCodeLines?.Length ?? 0} lines, startImmediately={startImmediately}", "Program");
+                LogInfo($"🚀 RunGCode called with {request?.GCodeLines?.Length ?? 0} lines, startImmediately={request?.StartImmediately ?? true}", "Program");
                 
-                if (gCodeLines == null || gCodeLines.Length == 0)
+                if (request == null || request.GCodeLines == null || request.GCodeLines.Length == 0)
                 {
                     LogWarning("RunGCode: G-code lines are null or empty", "Program");
                     throw new ArgumentException("G-code lines cannot be null or empty");
                 }
 
-                LogInfo($"G-code lines to execute: {string.Join(" | ", gCodeLines)}", "Program");
+                LogInfo($"G-code lines to execute: {string.Join(" | ", request.GCodeLines)}", "Program");
 
-                // If fixture point is provided, set it before running G-code
-                if (fixturePointX.HasValue || fixturePointY.HasValue || fixturePointZ.HasValue || fixturePointA.HasValue)
+                // If fixture point is provided, check if it's different from the last one and set it if needed
+                if (request.FixturePoint != null)
                 {
-                    var fixturePoint = new MachinePoint
+                    try
                     {
-                        X = fixturePointX ?? 0,
-                        Y = fixturePointY ?? 0,
-                        Z = fixturePointZ ?? 0,
-                        A = fixturePointA ?? 0
-                    };
-                    
-                    LogInfo($"📍 Setting fixture point before G-code execution: X={fixturePoint.X:F4}, Y={fixturePoint.Y:F4}, Z={fixturePoint.Z:F4}, A={fixturePoint.A:F4}", "Program");
-                    
-                    var movementController = new CNCMovementController();
-                    await movementController.SetFixturePoint(fixturePoint);
-                    
-                    LogInfo("✓ Fixture point set successfully", "Program");
+                        var lastFixturePoint = CNCMovementController.LastFixturePoint;
+                        bool needsUpdate = lastFixturePoint == null ||
+                                         Math.Abs(lastFixturePoint.X - request.FixturePoint.X) > 0.0001 ||
+                                         Math.Abs(lastFixturePoint.Y - request.FixturePoint.Y) > 0.0001 ||
+                                         Math.Abs(lastFixturePoint.Z - request.FixturePoint.Z) > 0.0001 ||
+                                         Math.Abs(lastFixturePoint.A - request.FixturePoint.A) > 0.0001;
+
+                        if (needsUpdate)
+                        {
+                            LogInfo($"📍 Setting fixture point before G-code execution: X={request.FixturePoint.X:F4}, Y={request.FixturePoint.Y:F4}, Z={request.FixturePoint.Z:F4}, A={request.FixturePoint.A:F4}", "Program");
+                            
+                            var movementController = new CNCMovementController();
+                            await movementController.SetFixturePoint(request.FixturePoint);
+                            
+                            LogInfo("✓ Fixture point set successfully", "Program");
+                        }
+                        else
+                        {
+                            LogInfo($"📍 Fixture point unchanged (X={request.FixturePoint.X:F4}, Y={request.FixturePoint.Y:F4}, Z={request.FixturePoint.Z:F4}, A={request.FixturePoint.A:F4}) - skipping update", "Program");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Failed to set fixture point: {ex.Message}", "Program");
+                        // Don't fail the entire job if fixture point fails - log and continue
+                        LogWarning("Continuing with G-code execution despite fixture point error", "Program");
+                    }
                 }
 
                 // Check and reset Centroid state before attempting to run G-code
@@ -617,8 +623,8 @@ namespace HavenCNCServer.Controllers
 
                 lock (_jobsLock)
                 {
-                    LogInfo($"Creating new CNC job with {gCodeLines.Length} lines", "Program");
-                    job = new CNCJob(gCodeLines, gcodeParameterString);
+                    LogInfo($"Creating new CNC job with {request.GCodeLines.Length} lines", "Program");
+                    job = new CNCJob(request.GCodeLines, request.GcodeParameterString);
 
                     // Set up completion callback to handle job completion
                     job.OnJobCompleted = OnJobCompleted;
@@ -630,7 +636,7 @@ namespace HavenCNCServer.Controllers
                     // - startImmediately must be true
                     // - If this is the only job, start it
                     // - If there are jobs ahead, check if the first job is not started - if so, start it
-                    if (startImmediately)
+                    if (request.StartImmediately)
                     {
                         var firstJob = _jobs.First();
                         bool firstJobNotStarted = !firstJob.IsRunning && !firstJob.IsComplete;
@@ -665,10 +671,10 @@ namespace HavenCNCServer.Controllers
                 var jobStartedEvent = new JobStartedEvent
                 {
                     Timestamp = DateTime.Now,
-                    Message = $"G-code job created with {gCodeLines.Length} lines",
+                    Message = $"G-code job created with {request.GCodeLines.Length} lines",
                     JobId = job.JobId,
-                    GCodeLines = gCodeLines,
-                    TotalLines = gCodeLines.Length,
+                    GCodeLines = request.GCodeLines,
+                    TotalLines = request.GCodeLines.Length,
                     IsStepRunMode = false,
                     FilePath = null // Jobs from array don't have a file path
                 };
@@ -724,7 +730,7 @@ namespace HavenCNCServer.Controllers
                 }
                 else
                 {
-                    string message = startImmediately ?
+                    string message = request.StartImmediately ?
                         "Job created and queued (jobs ahead in queue)" :
                         "Job created successfully (not started)";
 
@@ -756,55 +762,50 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Run single G-code command
         /// </summary>
-        /// <param name="gcode">G-code command to run</param>
-        /// <param name="fixturePointX">Optional X coordinate for fixture point</param>
-        /// <param name="fixturePointY">Optional Y coordinate for fixture point</param>
-        /// <param name="fixturePointZ">Optional Z coordinate for fixture point</param>
-        /// <param name="fixturePointA">Optional A coordinate for fixture point</param>
+        /// <param name="request">G-code command request containing the command and optional fixture point</param>
         /// <returns>Command execution result</returns>
         [HttpPost("RunGCodeCommand")]
-        public async Task<RunGCodeCommandResponse> RunGCodeCommand(
-            [FromBody] string gcode,
-            [FromQuery] double? fixturePointX = null,
-            [FromQuery] double? fixturePointY = null,
-            [FromQuery] double? fixturePointZ = null,
-            [FromQuery] double? fixturePointA = null)
+        public async Task<RunGCodeCommandResponse> RunGCodeCommand([FromBody] RunGCodeCommandRequest request)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(gcode))
+                if (request == null || string.IsNullOrWhiteSpace(request.GCode))
                 {
                     throw new ArgumentException("G-code command cannot be empty");
                 }
 
                 // Clean the command (remove extra whitespace and comments)
-                var cleanCommand = gcode.Trim();
+                var cleanCommand = request.GCode.Trim();
                 if (cleanCommand.StartsWith(";") || cleanCommand.StartsWith("("))
                 {
                     return new RunGCodeCommandResponse
                     {
                         Success = true,
                         Message = "Comment ignored successfully",
-                        Command = gcode
+                        Command = request.GCode
                     };
                 }
 
                 // Log the command we're about to execute
                 System.Diagnostics.Debug.WriteLine($"[G-Code Command] Executing single command: {cleanCommand}");
-                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Original command: {gcode}");
+                System.Diagnostics.Debug.WriteLine($"[G-Code Command] Original command: {request.GCode}");
 
                 // Convert single command to array and call the main RunGCode method
                 // This ensures we have only one code path for G-code execution
-                string[] gCodeLines = { cleanCommand };
-                var result = await RunGCode(gCodeLines, startImmediately: true, gcodeParameterString: null, 
-                    fixturePointX: fixturePointX, fixturePointY: fixturePointY, 
-                    fixturePointZ: fixturePointZ, fixturePointA: fixturePointA);
+                var runGCodeRequest = new RunGCodeRequest
+                {
+                    GCodeLines = new[] { cleanCommand },
+                    StartImmediately = true,
+                    GcodeParameterString = null,
+                    FixturePoint = request.FixturePoint
+                };
+                var result = await RunGCode(runGCodeRequest);
 
                 return new RunGCodeCommandResponse
                 {
                     Success = result.Success,
                     Message = result.Message,
-                    Command = gcode,
+                    Command = request.GCode,
                     Job = result.Success ? result.Job : null,
                     Error = result.Error
                 };
@@ -816,7 +817,7 @@ namespace HavenCNCServer.Controllers
                     Success = false,
                     Error = ex.Message,
                     Message = ex.Message,
-                    Command = gcode ?? ""
+                    Command = request?.GCode ?? ""
                 };
             }
         }

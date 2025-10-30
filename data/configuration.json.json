@@ -88,7 +88,7 @@
   "safeModeTimeout": 60000,
   "autoSaveEnabled": true,
   "showNumberInputTooltips": true,
-  "numberInputTooltipCount": 3,
+  "numberInputTooltipCount": 0,
   "logOutputToConsole": false,
   "logDebugEnabled": false,
   "logInfoEnabled": true,

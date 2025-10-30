@@ -34,9 +34,9 @@
       "z": 0
     },
     "Perspective": {
-      "x": 54.71999999999999,
-      "y": -46.19999999999996,
-      "z": 36.95999999999995
+      "x": 52.002895699984236,
+      "y": -10.32897232037007,
+      "z": 136.08291109988608
     }
   },
   "cameraTargets": {
@@ -71,9 +71,9 @@
   "isOverridingInputs": false,
   "isOverridingOutputs": false,
   "_currentMachinePoint": {
-    "x": -29,
-    "y": -0.39325,
-    "z": -0.686625,
+    "x": -30,
+    "y": -38,
+    "z": -3.508,
     "coordinateType": "MachineHome"
   },
   "_proposedSpindlePosition": null,

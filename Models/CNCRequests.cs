@@ -414,6 +414,48 @@ namespace HavenCNCServer.Models
     }
 
     /// <summary>
+    /// Request model for running G-code
+    /// </summary>
+    public class RunGCodeRequest
+    {
+        /// <summary>
+        /// Array of G-code lines to execute
+        /// </summary>
+        public string[] GCodeLines { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Optional parameter string to pass to the G-code program
+        /// </summary>
+        public string? GcodeParameterString { get; set; }
+
+        /// <summary>
+        /// Optional fixture point (work coordinate origin) to set before running G-code
+        /// </summary>
+        public MachinePoint? FixturePoint { get; set; }
+
+        /// <summary>
+        /// Whether to start execution immediately or just create the job
+        /// </summary>
+        public bool StartImmediately { get; set; } = true;
+    }
+
+    /// <summary>
+    /// Request model for running a single G-code command
+    /// </summary>
+    public class RunGCodeCommandRequest
+    {
+        /// <summary>
+        /// Single G-code command to execute
+        /// </summary>
+        public string GCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Optional fixture point (work coordinate origin) to set before running G-code
+        /// </summary>
+        public MachinePoint? FixturePoint { get; set; }
+    }
+
+    /// <summary>
     /// Response model for single G-code command execution
     /// </summary>
     public class RunGCodeCommandResponse

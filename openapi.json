@@ -2162,82 +2162,22 @@
           "CNCProgram"
         ],
         "summary": "Create a new G-code job from array of lines",
-        "parameters": [
-          {
-            "name": "startImmediately",
-            "in": "query",
-            "description": "Whether to start execution immediately or just create the job",
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          },
-          {
-            "name": "gcodeParameterString",
-            "in": "query",
-            "description": "Optional parameter string to pass to the G-code program",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "fixturePointX",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointY",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointZ",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointA",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          }
-        ],
         "requestBody": {
-          "description": "Array of G-code lines to execute",
+          "description": "G-code execution request containing lines, fixture point, and execution parameters",
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "$ref": "#/components/schemas/RunGCodeRequest"
               }
             },
             "text/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "$ref": "#/components/schemas/RunGCodeRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "$ref": "#/components/schemas/RunGCodeRequest"
               }
             }
           }
@@ -2272,60 +2212,22 @@
           "CNCProgram"
         ],
         "summary": "Run single G-code command",
-        "parameters": [
-          {
-            "name": "fixturePointX",
-            "in": "query",
-            "description": "Optional X coordinate for fixture point",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointY",
-            "in": "query",
-            "description": "Optional Y coordinate for fixture point",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointZ",
-            "in": "query",
-            "description": "Optional Z coordinate for fixture point",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "fixturePointA",
-            "in": "query",
-            "description": "Optional A coordinate for fixture point",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          }
-        ],
         "requestBody": {
-          "description": "G-code command to run",
+          "description": "G-code command request containing the command and optional fixture point",
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/RunGCodeCommandRequest"
               }
             },
             "text/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/RunGCodeCommandRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/RunGCodeCommandRequest"
               }
             }
           }
@@ -4739,6 +4641,21 @@
         "additionalProperties": false,
         "description": "Response model for resume job at specific line operation"
       },
+      "RunGCodeCommandRequest": {
+        "type": "object",
+        "properties": {
+          "gCode": {
+            "type": "string",
+            "description": "Single G-code command to execute",
+            "nullable": true
+          },
+          "fixturePoint": {
+            "$ref": "#/components/schemas/MachinePoint"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for running a single G-code command"
+      },
       "RunGCodeCommandResponse": {
         "type": "object",
         "properties": {
@@ -4767,6 +4684,33 @@
         },
         "additionalProperties": false,
         "description": "Response model for single G-code command execution"
+      },
+      "RunGCodeRequest": {
+        "type": "object",
+        "properties": {
+          "gCodeLines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of G-code lines to execute",
+            "nullable": true
+          },
+          "gcodeParameterString": {
+            "type": "string",
+            "description": "Optional parameter string to pass to the G-code program",
+            "nullable": true
+          },
+          "fixturePoint": {
+            "$ref": "#/components/schemas/MachinePoint"
+          },
+          "startImmediately": {
+            "type": "boolean",
+            "description": "Whether to start execution immediately or just create the job"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for running G-code"
       },
       "RunGCodeResponse": {
         "type": "object",
