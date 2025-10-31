@@ -36,8 +36,14 @@ namespace HavenCNCServer
             this.btnTestMove = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabLogs = new System.Windows.Forms.TabPage();
+            this.tabMessages = new System.Windows.Forms.TabPage();
+            this.tabGCode = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.tabLogs.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
@@ -72,15 +78,13 @@ namespace HavenCNCServer
             // 
             // txtLog
             // 
-            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLog.Location = new System.Drawing.Point(12, 170);
+            this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtLog.Location = new System.Drawing.Point(3, 3);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(440, 500);
+            this.txtLog.Size = new System.Drawing.Size(1340, 486);
             this.txtLog.TabIndex = 3;
 
 
@@ -111,8 +115,8 @@ namespace HavenCNCServer
             // webView
             // 
             this.webView.AllowExternalDrop = true;
-            this.webView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.webView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.webView.CreationProperties = null;
             this.webView.DefaultBackgroundColor = System.Drawing.Color.White;
@@ -125,7 +129,7 @@ namespace HavenCNCServer
             // 
             // pnlControls
             // 
-            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlControls.Controls.Add(this.lblStatus);
             this.pnlControls.Controls.Add(this.lblApiUrl);
@@ -134,24 +138,74 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnTestMove);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(904, 160);
+            this.pnlControls.Size = new System.Drawing.Size(1380, 120);
             this.pnlControls.TabIndex = 10;
-
+            // 
+            // tabControl
+            // 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl.Controls.Add(this.tabLogs);
+            this.tabControl.Controls.Add(this.tabMessages);
+            this.tabControl.Controls.Add(this.tabGCode);
+            this.tabControl.Location = new System.Drawing.Point(12, 130);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(1356, 550);
+            this.tabControl.TabIndex = 11;
+            // 
+            // tabLogs
+            // 
+            this.tabLogs.Controls.Add(this.txtLog);
+            this.tabLogs.Location = new System.Drawing.Point(4, 24);
+            this.tabLogs.Name = "tabLogs";
+            this.tabLogs.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLogs.Size = new System.Drawing.Size(1348, 522);
+            this.tabLogs.TabIndex = 0;
+            this.tabLogs.Text = "Logs";
+            this.tabLogs.UseVisualStyleBackColor = true;
+            // 
+            // tabMessages
+            // 
+            this.tabMessages.Location = new System.Drawing.Point(4, 24);
+            this.tabMessages.Name = "tabMessages";
+            this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
+            this.tabMessages.Size = new System.Drawing.Size(1348, 522);
+            this.tabMessages.TabIndex = 1;
+            this.tabMessages.Text = "Messages";
+            this.tabMessages.UseVisualStyleBackColor = true;
+            // 
+            // tabGCode
+            // 
+            this.tabGCode.Location = new System.Drawing.Point(4, 24);
+            this.tabGCode.Name = "tabGCode";
+            this.tabGCode.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGCode.Size = new System.Drawing.Size(1348, 522);
+            this.tabGCode.TabIndex = 2;
+            this.tabGCode.Text = "G-Code";
+            this.tabGCode.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1344, 692);
+            this.ClientSize = new System.Drawing.Size(1380, 1080);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.pnlControls);
-            this.Controls.Add(this.txtLog);
             this.Controls.Add(this.webView);
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.TopMost = true;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Location = new System.Drawing.Point(0, 0);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.tabLogs.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
@@ -165,5 +219,9 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnTestMove;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabLogs;
+        private System.Windows.Forms.TabPage tabMessages;
+        private System.Windows.Forms.TabPage tabGCode;
     }
 }

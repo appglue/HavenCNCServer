@@ -11,9 +11,7 @@ namespace HavenCNCServer.Services
     public static class CNCServerManager
     {
         private static CncServerSettings _settings = SettingsManager.Settings.Cnc.Server;
-        private static System.Threading.Timer? _monitorTimer;
         private static Process? _serverProcess;
-        private static bool _weStartedServer = false;
         private static bool _isManaging = false;
         private static CancellationTokenSource? _cancellationTokenSource;
         private static readonly object _lock = new object();
@@ -22,11 +20,6 @@ namespace HavenCNCServer.Services
         /// Whether the CNC server is currently running
         /// </summary>
         public static bool IsServerRunning => _serverProcess?.HasExited == false;
-        
-        /// <summary>
-        /// Whether we started the server (and should manage it)
-        /// </summary>
-        public static bool WeStartedServer => _weStartedServer;
 
         /// <summary>
         /// Whether management is currently active
@@ -55,7 +48,7 @@ namespace HavenCNCServer.Services
                     LogWarning("CNC server management is already running", "CNCServer");
                     return;
                 }
-                    
+
                 _isManaging = true;
                 // Use the provided cancellation token or create a linked one
                 _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -67,26 +60,16 @@ namespace HavenCNCServer.Services
             {
                 // Refresh settings
                 _settings = SettingsManager.Settings.Cnc.Server;
-                
+
                 // Check if server is already running
                 if (await IsServerAlreadyRunningAsync())
                 {
                     LogInfo("CNC server is already running (started externally)", "CNCServer");
-                    _weStartedServer = false;
                 }
                 else if (_settings.AutoStartServer)
                 {
                     LogInfo("Starting CNC server automatically", "CNCServer");
                     await StartServerAsync();
-                }
-
-                // Start monitoring if enabled
-                if (_settings.AutoRestartServer && _settings.MonitorIntervalMs > 0)
-                {
-                    _monitorTimer = new System.Threading.Timer(MonitorServer, null, 
-                        TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs), 
-                        TimeSpan.FromMilliseconds(_settings.MonitorIntervalMs));
-                    LogInfo($"Started CNC server monitoring (interval: {_settings.MonitorIntervalMs}ms)", "CNCServer");
                 }
             }
             catch (Exception ex)
@@ -110,7 +93,7 @@ namespace HavenCNCServer.Services
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             LogInfo("🛑 CNCServerManager.StopAsync() called", "CNCServer");
-            
+
             bool wasManaging;
             lock (_lock)
             {
@@ -120,7 +103,7 @@ namespace HavenCNCServer.Services
                     LogInfo($"ℹ️ CNC server management is not running, exiting early (elapsed: {stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                     return;
                 }
-                    
+
                 LogInfo("🔄 Setting _isManaging = false", "CNCServer");
                 _isManaging = false;
             }
@@ -129,51 +112,33 @@ namespace HavenCNCServer.Services
 
             try
             {
-                // Stop monitoring immediately and dispose timer
-                LogInfo("⏱️ Stopping and disposing monitoring timer...", "CNCServer");
-                var timerStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                if (_monitorTimer != null)
-                {
-                    _monitorTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                    LogInfo($"⏹️ Timer change called ({timerStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
-                    _monitorTimer.Dispose();
-                    LogInfo($"🗑️ Timer disposed ({timerStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
-                    _monitorTimer = null;
-                    LogInfo($"✅ CNC server monitoring timer stopped ({timerStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
-                }
-                else
-                {
-                    LogInfo("ℹ️ No monitoring timer to stop", "CNCServer");
-                }
-
                 // Cancel any background operations
                 LogInfo("🛑 Cancelling background operations...", "CNCServer");
                 var cancelStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 _cancellationTokenSource?.Cancel();
                 LogInfo($"✅ Background operations cancelled ({cancelStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
 
-                // Stop server if we started it and setting is enabled
+                // Stop server if setting is enabled
                 LogInfo($"🔍 Checking server stop conditions:", "CNCServer");
-                LogInfo($"    _weStartedServer = {_weStartedServer}", "CNCServer");
                 LogInfo($"    _settings.StopServerOnShutdown = {_settings.StopServerOnShutdown}", "CNCServer");
                 LogInfo($"    _serverProcess != null = {_serverProcess != null}", "CNCServer");
                 LogInfo($"    _serverProcess?.HasExited = {_serverProcess?.HasExited}", "CNCServer");
-                
-                if (_weStartedServer && _settings.StopServerOnShutdown)
+
+                if (_settings.StopServerOnShutdown)
                 {
-                    LogInfo("🛑 Stopping CNC server (we started it)", "CNCServer");
+                    LogInfo("🛑 Stopping CNC server", "CNCServer");
                     var serverStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                    
+
                     // Add timeout protection for the StopServerAsync call
                     using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(8));
                     using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutSource.Token);
-                    
+
                     try
                     {
                         var stopServerTask = StopServerAsync();
                         var timeoutTask = Task.Delay(8000, combinedSource.Token);
                         var completedTask = await Task.WhenAny(stopServerTask, timeoutTask);
-                        
+
                         if (completedTask == stopServerTask)
                         {
                             var result = await stopServerTask;
@@ -193,15 +158,11 @@ namespace HavenCNCServer.Services
                         LogError($"❌ Error in StopServerAsync(): {ex.Message} ({serverStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                     }
                 }
-                else if (_weStartedServer)
+                else
                 {
                     LogInfo("ℹ️ Leaving CNC server running (StopServerOnShutdown is disabled)", "CNCServer");
                 }
-                else
-                {
-                    LogInfo("ℹ️ Not stopping CNC server (we didn't start it)", "CNCServer");
-                }
-                
+
                 LogInfo($"🏁 CNC server management shutdown completed successfully (Total: {stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
             }
             catch (Exception ex)
@@ -249,7 +210,7 @@ namespace HavenCNCServer.Services
                 }
 
                 LogInfo($"Starting CNC server: {_settings.ExecutablePath}", "CNCServer");
-                
+
                 // Automatically determine working directory from executable path
                 var executableDir = Path.GetDirectoryName(_settings.ExecutablePath);
                 if (string.IsNullOrEmpty(executableDir))
@@ -257,7 +218,7 @@ namespace HavenCNCServer.Services
                     LogError("Could not determine directory from executable path", "CNCServer");
                     return false;
                 }
-                
+
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = _settings.ExecutablePath,
@@ -285,7 +246,7 @@ namespace HavenCNCServer.Services
                     LogError("Failed to set working directory", "CNCServer");
                     return false;
                 }
-                
+
                 var languageFile = Path.Combine(startInfo.WorkingDirectory, "language.msg");
                 if (!File.Exists(languageFile))
                 {
@@ -293,7 +254,7 @@ namespace HavenCNCServer.Services
                 }
 
                 _serverProcess = Process.Start(startInfo);
-                
+
                 if (_serverProcess == null)
                 {
                     LogError("Failed to start CNC server process", "CNCServer");
@@ -301,21 +262,15 @@ namespace HavenCNCServer.Services
                     return false;
                 }
 
-                _weStartedServer = true;
-
-                // Set up process event handlers
-                _serverProcess.EnableRaisingEvents = true;
-                _serverProcess.Exited += OnServerProcessExited;
-
                 LogSuccess($"CNC server process started (PID: {_serverProcess.Id})", "CNCServer");
-                
+
                 // Give the process a moment to initialize and check if it's still running
                 await Task.Delay(2000);
-                
+
                 if (_serverProcess.HasExited)
                 {
                     LogError($"CNC server process exited immediately with code: {_serverProcess.ExitCode}", "CNCServer");
-                    
+
                     // Try to read any error output
                     try
                     {
@@ -324,7 +279,7 @@ namespace HavenCNCServer.Services
                         {
                             LogError($"Process error output: {errorOutput}", "CNCServer");
                         }
-                        
+
                         var standardOutput = await _serverProcess.StandardOutput.ReadToEndAsync();
                         if (!string.IsNullOrEmpty(standardOutput))
                         {
@@ -335,7 +290,7 @@ namespace HavenCNCServer.Services
                     {
                         LogError($"Could not read process output: {readEx.Message}", "CNCServer");
                     }
-                    
+
                     return false;
                 }
                 else
@@ -358,7 +313,7 @@ namespace HavenCNCServer.Services
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             LogInfo("🛑 StopServerAsync() called", "CNCServer");
-            
+
             try
             {
                 LogInfo("🔍 Checking server process state...", "CNCServer");
@@ -368,19 +323,13 @@ namespace HavenCNCServer.Services
                     return true;
                 }
 
-                if (!_weStartedServer)
-                {
-                    LogWarning($"⚠️ Cannot stop CNC server - we didn't start it (elapsed: {stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
-                    return false;
-                }
-
                 var processId = _serverProcess.Id;
                 LogInfo($"🎯 Stopping CNC server (PID: {processId}) - elapsed: {stopwatch.ElapsedMilliseconds}ms", "CNCServer");
 
                 // Skip graceful shutdown and go straight to termination for faster shutdown
                 LogInfo("� Terminating process immediately for fast shutdown...", "CNCServer");
                 var killStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                
+
                 try
                 {
                     _serverProcess.Kill();
@@ -391,13 +340,13 @@ namespace HavenCNCServer.Services
                     LogWarning($"⚠️ Kill() failed: {killEx.Message} ({killStopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                     // Process might have already exited
                 }
-                
+
                 // Now poll until the process is actually gone, with timeout
                 LogInfo("⏳ Polling until process actually exits...", "CNCServer");
                 var pollStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 var maxPollTime = 5000; // 5 second maximum
                 var pollInterval = 50;   // Check every 50ms
-                
+
                 while (pollStopwatch.ElapsedMilliseconds < maxPollTime)
                 {
                     try
@@ -408,10 +357,10 @@ namespace HavenCNCServer.Services
                             LogSuccess($"✅ Process confirmed exited (poll time: {pollStopwatch.ElapsedMilliseconds}ms, total: {stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                             return true;
                         }
-                        
+
                         // Check if process still exists by trying to get its main module
                         _ = _serverProcess.MainModule;
-                        
+
                         // If we get here, process is still running - wait and check again
                         await Task.Delay(pollInterval);
                     }
@@ -443,27 +392,8 @@ namespace HavenCNCServer.Services
                 var cleanupStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 _serverProcess?.Dispose();
                 _serverProcess = null;
-                _weStartedServer = false;
                 LogInfo($"✅ Server process cleanup completed (cleanup: {cleanupStopwatch.ElapsedMilliseconds}ms, total: {stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
             }
-        }
-
-        /// <summary>
-        /// Restart the CNC server
-        /// </summary>
-        public static async Task<bool> RestartServerAsync()
-        {
-            LogInfo("Restarting CNC server", "CNCServer");
-            
-            await StopServerAsync();
-            
-            if (_settings.RestartDelayMs > 0)
-            {
-                LogInfo($"Waiting {_settings.RestartDelayMs}ms before restart", "CNCServer");
-                await Task.Delay(_settings.RestartDelayMs);
-            }
-            
-            return await StartServerAsync();
         }
 
         /// <summary>
@@ -474,10 +404,10 @@ namespace HavenCNCServer.Services
             try
             {
                 await Task.Delay(1); // Make async
-                
+
                 var serverFileName = Path.GetFileNameWithoutExtension(_settings.ExecutablePath);
                 var processes = Process.GetProcessesByName(serverFileName);
-                
+
                 return processes.Length > 0;
             }
             catch (Exception ex)
@@ -488,109 +418,40 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Monitor the server process
-        /// </summary>
-        private static void MonitorServer(object? state)
-        {
-            try
-            {
-                if (!_isManaging || !_settings.AutoRestartServer)
-                    return;
-
-                if (_weStartedServer && (_serverProcess == null || _serverProcess.HasExited))
-                {
-                    LogWarning("CNC server has stopped unexpectedly, attempting restart", "CNCServer");
-                    
-                    // Use Task.Run to avoid blocking the timer thread
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            await Task.Delay(_settings.RestartDelayMs);
-                            await StartServerAsync();
-                        }
-                        catch (Exception ex)
-                        {
-                            LogError($"Failed to restart CNC server: {ex.Message}", "CNCServer");
-                        }
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error in server monitoring: {ex.Message}", "CNCServer");
-            }
-        }
-
-        /// <summary>
-        /// Handle server process exit event
-        /// </summary>
-        private static void OnServerProcessExited(object? sender, EventArgs e)
-        {
-            if (_serverProcess != null)
-            {
-                LogWarning($"CNC server process exited (Exit Code: {_serverProcess.ExitCode})", "CNCServer");
-                
-                // Log common exit codes for debugging
-                switch (_serverProcess.ExitCode)
-                {
-                    case 0:
-                        LogInfo("Process exited normally", "CNCServer");
-                        break;
-                    case -1:
-                    case 1:
-                        LogError("Process exited with error - check CNC server logs", "CNCServer");
-                        break;
-                    case -1073741819: // 0xC0000005
-                        LogError("Access violation - possible missing files or permissions issue", "CNCServer");
-                        break;
-                    default:
-                        LogError($"Process exited with unknown error code: {_serverProcess.ExitCode}", "CNCServer");
-                        break;
-                }
-                
-                if (_weStartedServer && _settings.AutoRestartServer)
-                {
-                    LogInfo("Process will be restarted due to AutoRestartServer setting", "CNCServer");
-                }
-            }
-        }
-
-        /// <summary>
         /// Wait for process to exit with timeout
         /// </summary>
         private static async Task<bool> WaitForExitAsync(Process process, int timeoutMs)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             LogInfo($"⏳ WaitForExitAsync() called with {timeoutMs}ms timeout", "CNCServer");
-            
+
             var tcs = new TaskCompletionSource<bool>();
-            
-            void ProcessExited(object? sender, EventArgs e) 
+
+            void ProcessExited(object? sender, EventArgs e)
             {
                 LogInfo($"🎯 Process.Exited event fired ({stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                 tcs.TrySetResult(true);
             }
-            
+
             try
             {
                 LogInfo("🔗 Subscribing to Process.Exited event...", "CNCServer");
                 process.Exited += ProcessExited;
-                
+
                 LogInfo("⚡ Setting EnableRaisingEvents = true...", "CNCServer");
                 process.EnableRaisingEvents = true;
-                
+
                 LogInfo($"🔍 Checking if process has already exited: {process.HasExited}", "CNCServer");
                 if (process.HasExited)
                 {
                     LogInfo($"✅ Process already exited ({stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                     return true;
                 }
-                
+
                 LogInfo($"⏱️ Starting timeout task ({timeoutMs}ms) and waiting...", "CNCServer");
                 var timeoutTask = Task.Delay(timeoutMs);
                 var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
-                
+
                 bool result = completedTask == tcs.Task;
                 LogInfo($"{(result ? "✅" : "⏰")} WaitForExitAsync completed: {(result ? "Process exited" : "Timeout")} ({stopwatch.ElapsedMilliseconds}ms)", "CNCServer");
                 return result;

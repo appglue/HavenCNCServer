@@ -86,11 +86,11 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Set up the three-column layout for logs, messages, and G-code
+        /// Set up the layout for tabs
         /// </summary>
         private void SetupLayout()
         {
-            // Subscribe to resize event to maintain proper layout
+            // Subscribe to resize event to position coordinate display
             this.Resize += MainForm_Resize;
 
             // Initial layout setup will be done in resize handler
@@ -98,27 +98,10 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Handle form resize to maintain three-column split between logs, messages, and G-code
+        /// Handle form resize to position coordinate display
         /// </summary>
         private void MainForm_Resize(object? sender, EventArgs e)
         {
-            if (txtLog != null && _messageDisplayComponent != null && _gCodeViewerComponent != null && pnlControls != null)
-            {
-                var availableWidth = this.ClientSize.Width - 36; // Account for margins
-                var columnWidth = availableWidth / 3 - 8; // Account for gaps between controls
-
-                // Update log section (left column)
-                txtLog.Width = columnWidth;
-
-                // Update messages section (center column)
-                _messageDisplayComponent.Left = txtLog.Right + 12; // 12px gap
-                _messageDisplayComponent.Width = columnWidth;
-
-                // Update G-code section (right column)
-                _gCodeViewerComponent.Left = _messageDisplayComponent.Right + 12; // 12px gap
-                _gCodeViewerComponent.Width = columnWidth;
-            }
-
             // Keep coordinate display positioned on the right side
             if (_coordinateDisplayComponent != null)
             {
@@ -148,19 +131,15 @@ namespace HavenCNCServer
         {
             try
             {
-                // Create the message display component 
+                // Create the message display component and add to Messages tab
                 _messageDisplayComponent = new MessageDisplayComponent();
-                _messageDisplayComponent.Location = new Point(462, 170);
-                _messageDisplayComponent.Size = new Size(430, 500);
-                _messageDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-                this.Controls.Add(_messageDisplayComponent);
+                _messageDisplayComponent.Dock = DockStyle.Fill;
+                tabMessages.Controls.Add(_messageDisplayComponent);
 
-                // Create the G-code viewer component  
+                // Create the G-code viewer component and add to G-Code tab
                 _gCodeViewerComponent = new GCodeViewerComponent();
-                _gCodeViewerComponent.Location = new Point(902, 170);
-                _gCodeViewerComponent.Size = new Size(430, 500);
-                _gCodeViewerComponent.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-                this.Controls.Add(_gCodeViewerComponent);
+                _gCodeViewerComponent.Dock = DockStyle.Fill;
+                tabGCode.Controls.Add(_gCodeViewerComponent);
 
                 // Create the coordinate display component and position it properly on the right
                 _coordinateDisplayComponent = new CoordinateDisplayComponent();
@@ -253,10 +232,6 @@ namespace HavenCNCServer
             var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
 
             await ApiManager.StartAsync(cancellationToken);
-
-            // Start CNC server management
-            await CNCServerManager.StartAsync(cancellationToken);
-            LogInfo("CNC Server Manager started", "CNCServer");
 
             // Start job listener with background monitoring
             CNCJobInfoListener.Start(cancellationToken);
@@ -426,24 +401,6 @@ namespace HavenCNCServer
 
                 // Clear all event listeners to prevent callbacks during shutdown
                 CNCJobInfoListener.ClearAllListeners();
-
-                // Stop CNC server manager
-                try
-                {
-                    // Create a timeout-protected call
-                    using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-                    using var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken, timeoutSource.Token);
-
-                    await CNCServerManager.StopAsync(combinedSource.Token);
-                }
-                catch (OperationCanceledException)
-                {
-                    LogWarning("CNC server manager stop timed out after 3 seconds", "System");
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Error stopping CNC server manager: {ex.Message}", "System");
-                }
 
                 // Stop API manager
                 try

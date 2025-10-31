@@ -63,9 +63,6 @@ namespace HavenCNCServer
             // Add SignalR
             services.AddSignalR();
 
-            // Register services
-            // Note: CNCServerManager is now static and doesn't need DI registration
-
             // Add SPA services for React app
             services.AddSpaStaticFiles(configuration =>
             {

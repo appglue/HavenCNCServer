@@ -28,10 +28,8 @@ namespace HavenCNCServer.Controllers
             return Ok(new CNCServerStatus
             {
                 IsRunning = CNCServerManager.IsServerRunning,
-                WeStartedServer = CNCServerManager.WeStartedServer,
                 CanStart = !CNCServerManager.IsServerRunning,
-                CanStop = CNCServerManager.IsServerRunning && CNCServerManager.WeStartedServer,
-                CanRestart = CNCServerManager.WeStartedServer
+                CanStop = CNCServerManager.IsServerRunning
             });
         }
 
@@ -53,7 +51,7 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Stop the CNC server (only if we started it)
+        /// Stop the CNC server
         /// </summary>
         /// <returns>Success status</returns>
         [HttpPost("stop")]
@@ -65,29 +63,7 @@ namespace HavenCNCServer.Controllers
                 return BadRequest("CNC server is not running");
             }
 
-            if (!CNCServerManager.WeStartedServer)
-            {
-                return BadRequest("Cannot stop CNC server - we didn't start it");
-            }
-
             var success = await CNCServerManager.StopServerAsync();
-            return Ok(success);
-        }
-
-        /// <summary>
-        /// Restart the CNC server
-        /// </summary>
-        /// <returns>Success status</returns>
-        [HttpPost("restart")]
-        [ProducesResponseType(typeof(bool), 200)]
-        public async Task<ActionResult<bool>> RestartServer()
-        {
-            if (!CNCServerManager.WeStartedServer)
-            {
-                return BadRequest("Cannot restart CNC server - we didn't start it");
-            }
-
-            var success = await CNCServerManager.RestartServerAsync();
             return Ok(success);
         }
     }
@@ -103,11 +79,6 @@ namespace HavenCNCServer.Controllers
         public bool IsRunning { get; set; }
 
         /// <summary>
-        /// Whether we started the server (and can manage it)
-        /// </summary>
-        public bool WeStartedServer { get; set; }
-
-        /// <summary>
         /// Whether the server can be started
         /// </summary>
         public bool CanStart { get; set; }
@@ -116,10 +87,5 @@ namespace HavenCNCServer.Controllers
         /// Whether the server can be stopped
         /// </summary>
         public bool CanStop { get; set; }
-
-        /// <summary>
-        /// Whether the server can be restarted
-        /// </summary>
-        public bool CanRestart { get; set; }
     }
 }
