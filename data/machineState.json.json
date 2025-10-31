@@ -34,9 +34,9 @@
       "z": 0
     },
     "Perspective": {
-      "x": 54.719999999999985,
-      "y": -46.19999999999894,
-      "z": 36.95999999999941
+      "x": 52.002895699984236,
+      "y": -10.32897232037007,
+      "z": 136.08291109988608
     }
   },
   "cameraTargets": {
@@ -71,10 +71,10 @@
   "isOverridingInputs": false,
   "isOverridingOutputs": false,
   "_currentMachinePoint": {
-    "x": 1.434125,
-    "y": -5.20025,
-    "z": -0.926875,
-    "coordinateType": "MachineZero"
+    "x": -30,
+    "y": -38,
+    "z": -3.508,
+    "coordinateType": "MachineHome"
   },
   "_proposedSpindlePosition": null,
   "_currentJob": null,
@@ -88,18 +88,18 @@
     "materialPositionReference": "Spoilboard",
     "runStatistics": [
       {
-        "startTime": "2025-10-26T13:45:37.896Z",
-        "endTime": "2025-10-26T13:47:37.896Z",
+        "startTime": "2025-10-29T19:24:17.985Z",
+        "endTime": "2025-10-29T19:26:17.985Z",
         "durationMs": 120000
       },
       {
-        "startTime": "2025-10-26T13:44:37.896Z",
-        "endTime": "2025-10-26T13:45:37.896Z",
+        "startTime": "2025-10-29T19:23:17.985Z",
+        "endTime": "2025-10-29T19:24:17.985Z",
         "durationMs": 60000
       },
       {
-        "startTime": "2025-10-26T13:42:37.896Z",
-        "endTime": "2025-10-26T13:44:37.896Z",
+        "startTime": "2025-10-29T19:21:17.985Z",
+        "endTime": "2025-10-29T19:23:17.985Z",
         "durationMs": 120000
       }
     ],
@@ -115,7 +115,7 @@
     },
     "clamps": [
       {
-        "id": "clamp_0eebzw90z_mh7rk5gw",
+        "id": "clamp_u273iya0g_mhcdz8jt",
         "clampname": "Front Left Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -127,7 +127,7 @@
         "clampOffsetZ": 0
       },
       {
-        "id": "clamp_o9j3tjdu8_mh7rk5gw",
+        "id": "clamp_r746895ff_mhcdz8jt",
         "clampname": "Front Right Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -139,7 +139,7 @@
         "clampOffsetZ": 0
       },
       {
-        "id": "clamp_fxlh7sx4w_mh7rk5gw",
+        "id": "clamp_yakfs7i69_mhcdz8jt",
         "clampname": "Back Left Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -151,7 +151,7 @@
         "clampOffsetZ": 0
       },
       {
-        "id": "clamp_lsxu0vb47_mh7rk5gw",
+        "id": "clamp_igvztq7dw_mhcdz8jt",
         "clampname": "Back Right Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,

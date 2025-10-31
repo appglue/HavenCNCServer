@@ -148,6 +148,51 @@ namespace HavenCNCServer.Services
                 LogError($"Error sending SignalR message to {messageType} subscribers: {ex.Message}", "SignalR");
             }
         }
+
+        /// <summary>
+        /// Broadcast the current machine position to all connected SignalR clients
+        /// Useful when position changes outside of normal DRO updates (e.g., fixture point changes)
+        /// </summary>
+        /// <param name="reason">Optional reason for the position broadcast</param>
+        public static async Task BroadcastCurrentPosition(string reason = "Position update")
+        {
+            if (_hubContext == null)
+            {
+                LogWarning("Cannot broadcast position - hub context not available", "SignalR");
+                return;
+            }
+
+            try
+            {
+                // Get current position from the service
+                var currentPosition = MachinePositionService.GetCurrentPosition();
+                
+                // Create a DRO event with current position
+                var droEvent = new DROEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Axis1 = currentPosition.X,
+                    Axis2 = currentPosition.Y,
+                    Axis3 = currentPosition.Z,
+                    Axis4 = currentPosition.A,
+                    Axis5 = 0,
+                    Axis6 = 0,
+                    Axis7 = 0,
+                    Axis8 = 0,
+                    Message = reason,
+                    MessageType = "DROEvent"
+                };
+                
+                // Send to all clients as a DRO update
+                await _hubContext.Clients.Group("CNCClients").SendAsync("DROUpdate", droEvent.ToSignalRData());
+                
+                LogInfo($"Broadcasted position: X={currentPosition.X:F4}, Y={currentPosition.Y:F4}, Z={currentPosition.Z:F4}, A={currentPosition.A:F4} - Reason: {reason}", "SignalR");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error broadcasting position: {ex.Message}", "SignalR");
+            }
+        }
     }
 
     /// <summary>

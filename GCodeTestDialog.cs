@@ -120,7 +120,12 @@ namespace HavenCNCServer
                 // Create the controller and execute the G-code
                 // The controller and CNCJob system will handle all logging and notifications
                 var controller = new Controllers.CNCProgramController();
-                await controller.RunGCode(gCodeLines, startImmediately: true);
+                var request = new Models.RunGCodeRequest
+                {
+                    GCodeLines = gCodeLines,
+                    StartImmediately = true
+                };
+                await controller.RunGCode(request);
             }
             catch (Exception ex)
             {
@@ -155,7 +160,11 @@ namespace HavenCNCServer
                 // Create the controller and execute the single command
                 // The controller and CNCJob system will handle all logging and notifications
                 var controller = new Controllers.CNCProgramController();
-                await controller.RunGCodeCommand(gCodeText);
+                var request = new Models.RunGCodeCommandRequest
+                {
+                    GCode = gCodeText
+                };
+                await controller.RunGCodeCommand(request);
             }
             catch (Exception ex)
             {

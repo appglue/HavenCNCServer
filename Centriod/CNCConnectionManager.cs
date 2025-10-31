@@ -178,6 +178,15 @@ namespace HavenCNCServer.Services
                             if (TestConnection(_cncPipe))
                             {
                                 NotifyStatusChanged(true, "CNC connection verified and ready");
+                                
+                                // Restore last fixture point asynchronously after successful connection
+                                _ = Task.Run(async () =>
+                                {
+                                    // Give Centroid a moment to fully stabilize
+                                    await Task.Delay(500);
+                                    await RestoreLastFixturePointAsync();
+                                });
+                                
                                 return _cncPipe;
                             }
                             else
@@ -373,6 +382,37 @@ namespace HavenCNCServer.Services
             catch (Exception)
             {
                 // Don't let event handler exceptions crash the connection manager
+            }
+        }
+
+        /// <summary>
+        /// Restores the last fixture point from CNCMovementController if one was previously set
+        /// Called automatically when connection is established
+        /// </summary>
+        private static async Task RestoreLastFixturePointAsync()
+        {
+            try
+            {
+                // Use reflection to avoid circular dependency
+                var movementControllerType = Type.GetType("HavenCNCServer.Controllers.CNCMovementController, HavenCNCServer");
+                if (movementControllerType != null)
+                {
+                    var restoreMethod = movementControllerType.GetMethod("RestoreLastFixturePointAsync", 
+                        System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    
+                    if (restoreMethod != null)
+                    {
+                        var task = restoreMethod.Invoke(null, null) as Task;
+                        if (task != null)
+                        {
+                            await task;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Silently fail - fixture point restoration is not critical for connection
             }
         }
     }

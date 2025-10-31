@@ -4,6 +4,7 @@ using HavenCNCServer.Models;
 using HavenCNCServer.Centriod;
 using HavenCNCServer.Services;
 using CentroidAPI;
+using System.Threading.Tasks;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
@@ -16,39 +17,50 @@ namespace HavenCNCServer.Controllers
     public class CNCMovementController : ControllerBase
     {
         /// <summary>
+        /// The last fixture point that was set - persists in memory across operations
+        /// </summary>
+        private static MachinePoint? _lastFixturePoint = null;
+
+        /// <summary>
+        /// Gets the last fixture point that was set
+        /// </summary>
+        public static MachinePoint? LastFixturePoint => _lastFixturePoint;
+
+        /// <summary>
+        /// Restores the last fixture point if one was previously set
+        /// Should be called when Centroid connection becomes available
+        /// </summary>
+        public static async Task RestoreLastFixturePointAsync()
+        {
+            if (_lastFixturePoint != null && CNCConnectionManager.IsConnected)
+            {
+                try
+                {
+                    LogInfo($"🔄 Restoring last fixture point: X={_lastFixturePoint.X:F4}, Y={_lastFixturePoint.Y:F4}, Z={_lastFixturePoint.Z:F4}, A={_lastFixturePoint.A:F4}", "Fixture");
+                    
+                    var controller = new CNCMovementController();
+                    await controller.SetFixturePoint(_lastFixturePoint);
+                    
+                    LogSuccess("✓ Last fixture point restored successfully", "Fixture");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"❌ Failed to restore last fixture point: {ex.Message}", "Fixture");
+                }
+            }
+        }
+
+        /// <summary>
         /// Constructor for CNC Movement Controller
         /// </summary>
         public CNCMovementController()
         {
         }
 
-        #region Movement Control
+        #region Position Query
 
         /// <summary>
-        /// Set the movement type (relative or absolute)
-        /// </summary>
-        [HttpPost("SetMoveType")]
-        public void SetMoveType([FromBody] MoveType moveType)
-        {
-            var cncPipe = CNCConnectionManager.GetCNCPipe();
-            if (cncPipe == null)
-                throw new InvalidOperationException("CNC connection not available");
-
-            // Send G90 for absolute, G91 for relative/incremental
-            string gcode = moveType == MoveType.Absolute ? "G90" : "G91";
-
-            // Use the CNCProgramController to send the G-code command
-            var programController = new CNCProgramController();
-            var result = programController.RunGCodeCommand(gcode).Result;
-
-            if (!result.Success)
-            {
-                throw new InvalidOperationException($"Failed to set move type: {result.Error ?? "Unknown error"}");
-            }
-        }
-
-        /// <summary>
-        /// Get the current movement type
+        /// Get the current movement type (absolute or relative positioning mode)
         /// </summary>
         [HttpGet("GetMoveType")]
         public MoveType GetMoveType()
@@ -80,234 +92,20 @@ namespace HavenCNCServer.Controllers
             return MachinePositionService.GetCurrentPosition();
         }
 
-        /// <summary>
-        /// Move to specified coordinates
-        /// </summary>
-        [HttpPost("MoveTo")]
-        public void MoveTo([FromBody] MoveToRequest request)
-        {
-            LoggingService.LogInfo($"🎯 MoveTo request: CoordinateType={request.CoordinateType}, Strategy={request.Strategy}, Point=({request.Point.X:F4}, {request.Point.Y:F4}, {request.Point.Z:F4}, {request.Point.A:F4}), XYSpeed={request.XYSpeed}, ZSpeed={request.ZSpeed}", "Movement");
-
-            var cncPipe = CNCConnectionManager.GetCNCPipe();
-            if (cncPipe == null)
-            {
-                LoggingService.LogError("❌ MoveTo failed: CNC connection not available", "Movement");
-                throw new InvalidOperationException("CNC connection not available");
-            }
-
-            var programController = new CNCProgramController();
-            var commands = new List<string>();
-
-            // Set coordinate system based on request
-            // G53 = Machine coordinates (absolute machine position, ignores work offsets)
-            // G54 = Work coordinate system 1 (default work zero with offsets)
-            string coordSystemCommand = request.CoordinateType == APICoordinateType.Machine ? "G53" : "G54";
-            commands.Add(coordSystemCommand);
-            LoggingService.LogInfo($"📍 Coordinate system: {coordSystemCommand}", "Movement");
-
-            if (request.Strategy == MoveStrategy.Direct)
-            {
-                // Direct move - all axes move simultaneously
-                var gcode = BuildMoveCommand(request.Point, request.XYSpeed);
-                commands.Add(gcode);
-                LoggingService.LogInfo($"📝 Direct move G-code: {gcode}", "Movement");
-            }
-            else // MoveStrategy.ZSeparate
-            {
-                // Get current position to determine Z direction
-                var currentPos = MachinePositionService.GetCurrentPosition();
-                double zDelta = request.Point.Z - currentPos.Z;
-
-                LoggingService.LogInfo($"📍 Current position: ({currentPos.X:F4}, {currentPos.Y:F4}, {currentPos.Z:F4}), Z delta: {zDelta:F4}", "Movement");
-
-                if (zDelta > 0)
-                {
-                    // Moving Z up (positive direction) - move Z first for safety
-                    var zMove = BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed);
-                    var xyMove = BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed);
-                    commands.Add(zMove);
-                    commands.Add(xyMove);
-                    LoggingService.LogInfo($"📝 Z-up strategy: 1) {zMove}  2) {xyMove}", "Movement");
-                }
-                else
-                {
-                    // Moving Z down (negative direction) - move XY first, then Z last for safety
-                    var xyMove = BuildMoveCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed);
-                    var zMove = BuildMoveCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed);
-                    commands.Add(xyMove);
-                    commands.Add(zMove);
-                    LoggingService.LogInfo($"📝 Z-down strategy: 1) {xyMove}  2) {zMove}", "Movement");
-                }
-            }
-
-            // Execute the commands via the program controller
-            LoggingService.LogInfo($"▶️ Executing {commands.Count} G-code command(s)...", "Movement");
-            var result = programController.RunGCode(commands.ToArray()).Result;
-
-            if (!result.Success)
-            {
-                LoggingService.LogError($"❌ MoveTo failed: {result.Error ?? "Unknown error"}", "Movement");
-                throw new InvalidOperationException($"Failed to execute move commands: {result.Error ?? "Unknown error"}");
-            }
-
-            LoggingService.LogInfo($"✅ MoveTo completed successfully. JobId: {result.JobId}", "Movement");
-        }
-
-        /// <summary>
-        /// Build a G-code move command from a MachinePoint
-        /// Uses G0 (rapid traverse) for fast positioning moves
-        /// </summary>
-        private string BuildMoveCommand(MachinePoint point, double? feedRate = null)
-        {
-            var parts = new List<string> { "G0" };
-
-            if (point.X != 0) parts.Add($"X{point.X:F4}");
-            if (point.Y != 0) parts.Add($"Y{point.Y:F4}");
-            if (point.Z != 0) parts.Add($"Z{point.Z:F4}");
-            if (point.A != 0) parts.Add($"A{point.A:F4}");
-
-            // Note: G0 ignores feed rate - moves at maximum rapid speed
-            // Feed rate parameter kept for API compatibility but not used in G0
-
-            return string.Join(" ", parts);
-        }
-
-        /// <summary>
-        /// Build a G31 probe command from a MachinePoint
-        /// G31 moves until probe input is triggered
-        /// </summary>
-        private string BuildProbeCommand(MachinePoint point, double? feedRate = null)
-        {
-            var parts = new List<string> { "G31" };
-
-            if (point.X != 0) parts.Add($"X{point.X:F4}");
-            if (point.Y != 0) parts.Add($"Y{point.Y:F4}");
-            if (point.Z != 0) parts.Add($"Z{point.Z:F4}");
-            if (point.A != 0) parts.Add($"A{point.A:F4}");
-
-            if (feedRate.HasValue && feedRate.Value > 0)
-                parts.Add($"F{feedRate.Value:F2}");
-
-            return string.Join(" ", parts);
-        }
-
-        /// <summary>
-        /// Move to coordinates until an IO event occurs
-        /// Uses G31 probe cycle for move-until-input operations
-        /// </summary>
-        [HttpPost("MoveToUtil")]
-        public void MoveToUntil([FromBody] MoveToUntilRequest request)
-        {
-            var cncPipe = CNCConnectionManager.GetCNCPipe();
-            if (cncPipe == null)
-                throw new InvalidOperationException("CNC connection not available");
-
-            var programController = new CNCProgramController();
-            var commands = new List<string>();
-
-            // Set coordinate system based on request
-            // G53 = Machine coordinates (absolute machine position, ignores work offsets)
-            // G54 = Work coordinate system 1 (default work zero with offsets)
-            string coordSystemCommand = request.CoordinateType == APICoordinateType.Machine ? "G53" : "G54";
-            commands.Add(coordSystemCommand);
-
-            // G31 is the probe/digitize cycle - moves until input is triggered
-            // Format: G31 X__ Y__ Z__ A__ F__ (feed rate)
-
-            if (request.Strategy == MoveStrategy.Direct)
-            {
-                // Direct move - all axes move simultaneously using G31
-                commands.Add(BuildProbeCommand(request.Point, request.XYSpeed));
-            }
-            else // MoveStrategy.ZSeparate
-            {
-                // Get current position to determine Z direction
-                var currentPos = MachinePositionService.GetCurrentPosition();
-                double zDelta = request.Point.Z - currentPos.Z;
-
-                if (zDelta > 0)
-                {
-                    // Moving Z up - move Z first for safety
-                    commands.Add(BuildProbeCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed));
-                    commands.Add(BuildProbeCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed));
-                }
-                else
-                {
-                    // Moving Z down - move XY first, then Z last for safety
-                    commands.Add(BuildProbeCommand(new MachinePoint { X = request.Point.X, Y = request.Point.Y, A = request.Point.A }, request.XYSpeed));
-                    commands.Add(BuildProbeCommand(new MachinePoint { Z = request.Point.Z }, request.ZSpeed));
-                }
-            }
-
-            // Execute the probe commands
-            var result = programController.RunGCode(commands.ToArray()).Result;
-            if (!result.Success)
-            {
-                throw new InvalidOperationException($"Failed to execute probe move commands: {result.Error ?? "Unknown error"}");
-            }
-        }
-
-        /// <summary>
-        /// Move in a direction until an IO event occurs
-        /// Uses G31 probe cycle with G91 (relative mode) for directional probing
-        /// </summary>
-        [HttpPost("MoveDirectionUntil")]
-        public void MoveDirectionUntil([FromBody] MoveDirectionUntilRequest request)
-        {
-            var cncPipe = CNCConnectionManager.GetCNCPipe();
-            if (cncPipe == null)
-                throw new InvalidOperationException("CNC connection not available");
-
-            var programController = new CNCProgramController();
-            var commands = new List<string>();
-
-            // Save current positioning mode, switch to incremental (G91)
-            commands.Add("G91");
-
-            // Build probe move based on direction
-            // Use a large distance (e.g., 1000 units) that will be stopped by the probe input
-            double probeDistance = 1000.0;
-            var probePoint = new MachinePoint();
-
-            switch (request.Direction)
-            {
-                case MoveDirection.XPositive:
-                    probePoint.X = probeDistance;
-                    break;
-                case MoveDirection.XNegative:
-                    probePoint.X = -probeDistance;
-                    break;
-                case MoveDirection.YPositive:
-                    probePoint.Y = probeDistance;
-                    break;
-                case MoveDirection.YNegative:
-                    probePoint.Y = -probeDistance;
-                    break;
-                case MoveDirection.ZPositive:
-                    probePoint.Z = probeDistance;
-                    break;
-                case MoveDirection.ZNegative:
-                    probePoint.Z = -probeDistance;
-                    break;
-            }
-
-            // Add the G31 probe command with the directional move
-            commands.Add(BuildProbeCommand(probePoint, request.Speed));
-
-            // Restore to absolute mode (G90)
-            commands.Add("G90");
-
-            // Execute the probe sequence
-            var result = programController.RunGCode(commands.ToArray()).Result;
-            if (!result.Success)
-            {
-                throw new InvalidOperationException($"Failed to execute directional probe: {result.Error ?? "Unknown error"}");
-            }
-        }
-
         #endregion
 
         #region Fixture Management
+
+        /// <summary>
+        /// Get the last fixture point that was set (persisted in memory)
+        /// </summary>
+        /// <returns>The last fixture point or null if none has been set</returns>
+        [HttpGet("GetLastFixturePoint")]
+        public ActionResult<MachinePoint?> GetLastFixturePoint()
+        {
+            LoggingService.LogInfo($"📍 GetLastFixturePoint called - Last point: {(_lastFixturePoint != null ? $"X={_lastFixturePoint.X:F4}, Y={_lastFixturePoint.Y:F4}, Z={_lastFixturePoint.Z:F4}, A={_lastFixturePoint.A:F4}" : "None")}", "Fixture");
+            return Ok(_lastFixturePoint);
+        }
 
         /// <summary>
         /// Set fixture point using current machine position or specified coordinates
@@ -315,14 +113,21 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         /// <param name="point">Machine point with X, Y, Z, A coordinates to set as the workpiece origin</param>
         [HttpPost("SetFixturePoint")]
-        public void SetFixturePoint([FromBody] MachinePoint point)
+        public async Task SetFixturePoint([FromBody] MachinePoint point)
         {
+            LoggingService.LogInfo($"📍 SetFixturePoint called: X={point.X:F4}, Y={point.Y:F4}, Z={point.Z:F4}, A={point.A:F4}", "Fixture");
+
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null)
+            {
+                LoggingService.LogError("❌ SetFixturePoint failed: CNC connection not available", "Fixture");
                 throw new InvalidOperationException("CNC connection not available. Ensure CNCConnectionManager is connected.");
+            }
 
             // Set workpiece location for each axis in the active WCS
             // Axis numbers: 1=X, 2=Y, 3=Z, 4=A
+
+            LoggingService.LogInfo("Setting workpiece location for all axes in active WCS...", "Fixture");
 
             // Set X axis (axis 1)
             cncPipe.wcs.SetWorkpieceLocation(1, point.X);
@@ -335,11 +140,26 @@ namespace HavenCNCServer.Controllers
 
             // Set A axis (axis 4)
             cncPipe.wcs.SetWorkpieceLocation(4, point.A);
+
+            // Save this as the last fixture point for restoration on reconnect
+            _lastFixturePoint = new MachinePoint
+            {
+                X = point.X,
+                Y = point.Y,
+                Z = point.Z,
+                A = point.A
+            };
+
+            LoggingService.LogSuccess($"✅ Fixture point set successfully: X={point.X:F4}, Y={point.Y:F4}, Z={point.Z:F4}, A={point.A:F4}", "Fixture");
+
+            // Broadcast the position change to all SignalR clients
+            // Since changing the fixture point changes the work coordinate display
+            await SignalRManager.BroadcastCurrentPosition("Fixture point changed");
         }
 
         #endregion
 
-        #region Feed Rate Control
+        #region Feed Rate Override
 
         /// <summary>
         /// Set feed rate override percentage
@@ -357,7 +177,11 @@ namespace HavenCNCServer.Controllers
 
             // Use M99 P__ to set feed rate override percentage
             var programController = new CNCProgramController();
-            var result = programController.RunGCodeCommand($"M99 P{percentage}").Result;
+            var request = new Models.RunGCodeCommandRequest
+            {
+                GCode = $"M99 P{percentage}"
+            };
+            var result = programController.RunGCodeCommand(request).Result;
 
             if (!result.Success)
             {
