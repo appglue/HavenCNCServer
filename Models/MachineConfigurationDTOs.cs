@@ -207,4 +207,46 @@ namespace HavenCNCServer.Models
         /// </summary>
         public ParameterInfo[] Parameters { get; set; } = Array.Empty<ParameterInfo>();
     }
+
+    /// <summary>
+    /// Travel limits for a single axis
+    /// </summary>
+    public class AxisTravelLimits
+    {
+        /// <summary>
+        /// Axis number (1-8)
+        /// </summary>
+        public int AxisNumber { get; set; }
+
+        /// <summary>
+        /// Axis label (X, Y, Z, A, B, C, U, V, W)
+        /// </summary>
+        public string AxisLabel { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Plus travel limit (maximum position)
+        /// </summary>
+        public double PlusLimit { get; set; }
+
+        /// <summary>
+        /// Minus travel limit (minimum position)
+        /// </summary>
+        public double MinusLimit { get; set; }
+    }
+
+    /// <summary>
+    /// Travel limits for all configured axes
+    /// </summary>
+    public class TravelLimitsResponse
+    {
+        /// <summary>
+        /// Travel limits for each axis
+        /// </summary>
+        public List<AxisTravelLimits> Axes { get; set; } = new();
+
+        /// <summary>
+        /// Descriptive message
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+    }
 }

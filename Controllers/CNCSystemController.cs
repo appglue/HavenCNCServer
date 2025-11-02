@@ -39,59 +39,40 @@ namespace HavenCNCServer.Controllers
         #region System Control
 
         /// <summary>
-        /// Enter full screen mode
+        /// Exit the CNC application
         /// </summary>
-        /// <returns>Enter full screen success</returns>
-        [HttpPost("EnterFullScreen")]
-        public bool EnterFullScreen()
+        [HttpPost("Exit")]
+        public void Exit()
         {
             try
             {
-                // TODO: Implement enter full screen functionality using CentroidAPI
-                // return CNCUtils.EnterFullScreen();
-                throw new NotImplementedException("Enter full screen functionality not yet implemented");
+                // TODO: Implement exit functionality using CentroidAPI
+                // CNCUtils.Exit();
+                throw new NotImplementedException("Exit functionality not yet implemented");
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to enter full screen: {ex.Message}", ex);
+                throw new InvalidOperationException($"Failed to exit: {ex.Message}", ex);
             }
         }
 
         /// <summary>
-        /// Exit full screen mode
+        /// Check if we are connected to Centroid by attempting to update current position
         /// </summary>
-        /// <returns>Exit full screen success</returns>
-        [HttpPost("ExitFullScreen")]
-        public bool ExitFullScreen()
+        /// <returns>True if connected and can retrieve position, false otherwise</returns>
+        [HttpGet("IsConnectedToCentroid")]
+        public bool IsConnectedToCentroid()
         {
             try
             {
-                // TODO: Implement exit full screen functionality using CentroidAPI
-                // return CNCUtils.ExitFullScreen();
-                throw new NotImplementedException("Exit full screen functionality not yet implemented");
+                // Try to get current position - this will fail if not connected
+                var position = Services.MachinePositionService.GetCurrentPosition();
+                return true;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new InvalidOperationException($"Failed to exit full screen: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Get current full screen state
-        /// </summary>
-        /// <returns>Full screen state</returns>
-        [HttpGet("GetFullScreenState")]
-        public bool GetFullScreenState()
-        {
-            try
-            {
-                // TODO: Implement get full screen state functionality using CentroidAPI
-                // return CNCUtils.IsFullScreen();
-                throw new NotImplementedException("Get full screen state functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to get full screen state: {ex.Message}", ex);
+                // If getting position fails, we're not connected
+                return false;
             }
         }
 

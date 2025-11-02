@@ -77,8 +77,8 @@ namespace HavenCNCServer.Models
         /// Default: %APPDATA%\HavenCNCServer\Logs
         /// </summary>
         public string LogDirectory { get; set; } = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-            "HavenCNCServer", 
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HavenCNCServer",
             "Logs");
 
         /// <summary>
@@ -121,6 +121,11 @@ namespace HavenCNCServer.Models
         /// Enable automatic API connection on startup
         /// </summary>
         public bool AutoConnectOnStartup { get; set; } = false;
+
+        /// <summary>
+        /// Heartbeat interval in milliseconds for SignalR status broadcasts
+        /// </summary>
+        public int HeartbeatIntervalMs { get; set; } = 30000;
 
         /// <summary>
         /// CNC server executable settings

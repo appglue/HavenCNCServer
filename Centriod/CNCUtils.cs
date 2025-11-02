@@ -764,5 +764,83 @@ namespace HavenCNCServer.Centriod
             }
         }
 
+        /// <summary>
+        /// Get travel limits for a specific axis
+        /// </summary>
+        /// <param name="axisNumber">Axis number (1-8)</param>
+        /// <param name="plusLimit">Plus travel limit</param>
+        /// <param name="minusLimit">Minus travel limit</param>
+        /// <returns>True if successful, false otherwise</returns>
+        public static bool GetAxisTravelLimits(int axisNumber, out double plusLimit, out double minusLimit)
+        {
+            plusLimit = 0;
+            minusLimit = 0;
+
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+            {
+                LogError("CNC connection not available", "CNCUtils");
+                return false;
+            }
+
+            try
+            {
+                // Convert axis number to CNCPipe.Axes enum
+                var axis = (CNCPipe.Axes)(axisNumber - 1);
+
+                // Get plus limit
+                var plusResult = cncPipe.axis.GetTravelLimit(axis, CNCPipe.Axis.Direction.PLUS, out plusLimit);
+                if (plusResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to get plus travel limit for axis {axisNumber}: {plusResult}", "CNCUtils");
+                    return false;
+                }
+
+                // Get minus limit
+                var minusResult = cncPipe.axis.GetTravelLimit(axis, CNCPipe.Axis.Direction.MINUS, out minusLimit);
+                if (minusResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to get minus travel limit for axis {axisNumber}: {minusResult}", "CNCUtils");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error getting travel limits for axis {axisNumber}: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get axis label (X, Y, Z, A, etc.) for a given axis number
+        /// </summary>
+        /// <param name="axisNumber">Axis number (1-8)</param>
+        /// <returns>Axis label or empty string if not available</returns>
+        public static string GetAxisLabel(int axisNumber)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+                return string.Empty;
+
+            try
+            {
+                var axis = (CNCPipe.Axes)(axisNumber - 1);
+                var result = cncPipe.axis.GetLabel(axis, out char axisLabel);
+
+                if (result == CNCPipe.ReturnCode.SUCCESS)
+                {
+                    return axisLabel.ToString();
+                }
+
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
     }
 }

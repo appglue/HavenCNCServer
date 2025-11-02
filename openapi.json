@@ -486,6 +486,36 @@
         }
       }
     },
+    "/api/CNCConfiguration/GetTravelLimits": {
+      "get": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Get travel limits for all configured axes",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelLimitsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelLimitsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TravelLimitsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCConfiguration/ConfigureSpindle": {
       "post": {
         "tags": [
@@ -2904,37 +2934,7 @@
         "tags": [
           "CNCServer"
         ],
-        "summary": "Stop the CNC server (only if we started it)",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCServer/restart": {
-      "post": {
-        "tags": [
-          "CNCServer"
-        ],
-        "summary": "Restart the CNC server",
+        "summary": "Stop the CNC server",
         "responses": {
           "200": {
             "description": "Success",
@@ -3334,72 +3334,25 @@
         }
       }
     },
-    "/api/CNCSystem/EnterFullScreen": {
+    "/api/CNCSystem/Exit": {
       "post": {
         "tags": [
           "CNCSystem"
         ],
-        "summary": "Enter full screen mode",
+        "summary": "Exit the CNC application",
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/CNCSystem/ExitFullScreen": {
-      "post": {
-        "tags": [
-          "CNCSystem"
-        ],
-        "summary": "Exit full screen mode",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCSystem/GetFullScreenState": {
+    "/api/CNCSystem/IsConnectedToCentroid": {
       "get": {
         "tags": [
           "CNCSystem"
         ],
-        "summary": "Get current full screen state",
+        "summary": "Check if we are connected to Centroid by attempting to update current position",
         "responses": {
           "200": {
             "description": "Success",
@@ -3886,16 +3839,39 @@
         "additionalProperties": false,
         "description": "Represents axis configuration parameters"
       },
+      "AxisTravelLimits": {
+        "type": "object",
+        "properties": {
+          "axisNumber": {
+            "type": "integer",
+            "description": "Axis number (1-8)",
+            "format": "int32"
+          },
+          "axisLabel": {
+            "type": "string",
+            "description": "Axis label (X, Y, Z, A, B, C, U, V, W)",
+            "nullable": true
+          },
+          "plusLimit": {
+            "type": "number",
+            "description": "Plus travel limit (maximum position)",
+            "format": "double"
+          },
+          "minusLimit": {
+            "type": "number",
+            "description": "Minus travel limit (minimum position)",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Travel limits for a single axis"
+      },
       "CNCServerStatus": {
         "type": "object",
         "properties": {
           "isRunning": {
             "type": "boolean",
             "description": "Whether the CNC server is currently running"
-          },
-          "weStartedServer": {
-            "type": "boolean",
-            "description": "Whether we started the server (and can manage it)"
           },
           "canStart": {
             "type": "boolean",
@@ -3904,10 +3880,6 @@
           "canStop": {
             "type": "boolean",
             "description": "Whether the server can be stopped"
-          },
-          "canRestart": {
-            "type": "boolean",
-            "description": "Whether the server can be restarted"
           }
         },
         "additionalProperties": false,
@@ -5292,6 +5264,26 @@
         },
         "additionalProperties": false,
         "description": "Represents touch plate configuration system"
+      },
+      "TravelLimitsResponse": {
+        "type": "object",
+        "properties": {
+          "axes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AxisTravelLimits"
+            },
+            "description": "Travel limits for each axis",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Descriptive message",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Travel limits for all configured axes"
       },
       "ValidationResult": {
         "type": "object",
