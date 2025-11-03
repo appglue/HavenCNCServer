@@ -9,7 +9,7 @@
   "currentFastTravelRate": 200,
   "currentFixtureNumber": "G54",
   "currentFixtureSaved": false,
-  "currentToolNumber": 1,
+  "currentToolNumber": 4,
   "isHomed": true,
   "materialTopZ": null,
   "cameraPositions": {
@@ -34,9 +34,9 @@
       "z": 0
     },
     "Perspective": {
-      "x": 52.002895699984236,
-      "y": -10.32897232037007,
-      "z": 136.08291109988608
+      "x": 48.06440103944783,
+      "y": -6.5843652143198454,
+      "z": 121.94226561627273
     }
   },
   "cameraTargets": {
@@ -71,10 +71,10 @@
   "isOverridingInputs": false,
   "isOverridingOutputs": false,
   "_currentMachinePoint": {
-    "x": -30,
-    "y": -38,
-    "z": -3.508,
-    "coordinateType": "MachineHome"
+    "x": 8,
+    "y": 5,
+    "z": -0.5115000000000016,
+    "coordinateType": "MachineZero"
   },
   "_proposedSpindlePosition": null,
   "_currentJob": null,

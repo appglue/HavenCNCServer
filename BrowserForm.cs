@@ -32,7 +32,7 @@ namespace HavenCNCServer
             this.Text = "HavenCNC Control Interface";
             this.BackColor = Color.Black;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.WindowState = FormWindowState.Maximized;
+            this.WindowState = FormWindowState.Normal;
             this.ShowInTaskbar = true;
             this.KeyPreview = true;
 
@@ -65,9 +65,6 @@ namespace HavenCNCServer
                     // Navigate to the URL
                     webView.CoreWebView2.Navigate(_url);
                 }
-                
-                // Start in windowed mode
-                ExitFullScreen();
             }
             catch (Exception ex)
             {

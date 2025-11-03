@@ -2959,6 +2959,94 @@
         }
       }
     },
+    "/api/CNCServer/ui/always-on-top": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Set the main window to always stay on top",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Get the current always on top state",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlwaysOnTopStatus"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlwaysOnTopStatus"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlwaysOnTopStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/ui/cancel-always-on-top": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Cancel the always on top behavior for the main window",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCSpindle/StartSpindle": {
       "post": {
         "tags": [
@@ -3657,6 +3745,17 @@
         },
         "additionalProperties": false,
         "description": "ATC validation result DTO for ATC configuration validation"
+      },
+      "AlwaysOnTopStatus": {
+        "type": "object",
+        "properties": {
+          "isAlwaysOnTop": {
+            "type": "boolean",
+            "description": "Whether the main window is currently set to always stay on top"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Always on top status information"
       },
       "AvailableParametersResponse": {
         "type": "object",

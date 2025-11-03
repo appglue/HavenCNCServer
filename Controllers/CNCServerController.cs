@@ -66,6 +66,45 @@ namespace HavenCNCServer.Controllers
             var success = await CNCServerManager.StopServerAsync();
             return Ok(success);
         }
+
+        /// <summary>
+        /// Set the main window to always stay on top
+        /// </summary>
+        /// <returns>Success status</returns>
+        [HttpPost("ui/always-on-top")]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<ActionResult<bool>> SetAlwaysOnTop()
+        {
+            var success = await UIControlService.SetAlwaysOnTopAsync(true);
+            return Ok(success);
+        }
+
+        /// <summary>
+        /// Cancel the always on top behavior for the main window
+        /// </summary>
+        /// <returns>Success status</returns>
+        [HttpPost("ui/cancel-always-on-top")]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<ActionResult<bool>> CancelAlwaysOnTop()
+        {
+            var success = await UIControlService.SetAlwaysOnTopAsync(false);
+            return Ok(success);
+        }
+
+        /// <summary>
+        /// Get the current always on top state
+        /// </summary>
+        /// <returns>Always on top status</returns>
+        [HttpGet("ui/always-on-top")]
+        [ProducesResponseType(typeof(AlwaysOnTopStatus), 200)]
+        public ActionResult<AlwaysOnTopStatus> GetAlwaysOnTop()
+        {
+            var isAlwaysOnTop = UIControlService.GetAlwaysOnTop();
+            return Ok(new AlwaysOnTopStatus
+            {
+                IsAlwaysOnTop = isAlwaysOnTop
+            });
+        }
     }
 
     /// <summary>
@@ -87,5 +126,16 @@ namespace HavenCNCServer.Controllers
         /// Whether the server can be stopped
         /// </summary>
         public bool CanStop { get; set; }
+    }
+
+    /// <summary>
+    /// Always on top status information
+    /// </summary>
+    public class AlwaysOnTopStatus
+    {
+        /// <summary>
+        /// Whether the main window is currently set to always stay on top
+        /// </summary>
+        public bool IsAlwaysOnTop { get; set; }
     }
 }

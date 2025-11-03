@@ -33,6 +33,8 @@ namespace HavenCNCServer
             this.btnOpenSwagger = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.RichTextBox();
             this.btnGCodeTest = new System.Windows.Forms.Button();
+            this.btnAlwaysOnTop = new System.Windows.Forms.Button();
+            this.btnShowUI = new System.Windows.Forms.Button();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -102,6 +104,26 @@ namespace HavenCNCServer
             this.btnGCodeTest.UseVisualStyleBackColor = true;
             this.btnGCodeTest.Click += new System.EventHandler(this.btnGCodeTest_Click);
             // 
+            // btnAlwaysOnTop
+            // 
+            this.btnAlwaysOnTop.Location = new System.Drawing.Point(270, 70);
+            this.btnAlwaysOnTop.Name = "btnAlwaysOnTop";
+            this.btnAlwaysOnTop.Size = new System.Drawing.Size(120, 30);
+            this.btnAlwaysOnTop.TabIndex = 11;
+            this.btnAlwaysOnTop.Text = "Always on Top: OFF";
+            this.btnAlwaysOnTop.UseVisualStyleBackColor = true;
+            this.btnAlwaysOnTop.Click += new System.EventHandler(this.btnAlwaysOnTop_Click);
+            // 
+            // btnShowUI
+            // 
+            this.btnShowUI.Location = new System.Drawing.Point(410, 70);
+            this.btnShowUI.Name = "btnShowUI";
+            this.btnShowUI.Size = new System.Drawing.Size(100, 30);
+            this.btnShowUI.TabIndex = 12;
+            this.btnShowUI.Text = "Show UI";
+            this.btnShowUI.UseVisualStyleBackColor = true;
+            this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
+            // 
             // webView
             // 
             this.webView.AllowExternalDrop = true;
@@ -125,6 +147,8 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.lblApiUrl);
             this.pnlControls.Controls.Add(this.btnOpenSwagger);
             this.pnlControls.Controls.Add(this.btnGCodeTest);
+            this.pnlControls.Controls.Add(this.btnAlwaysOnTop);
+            this.pnlControls.Controls.Add(this.btnShowUI);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1380, 120);
@@ -186,7 +210,7 @@ namespace HavenCNCServer
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
-            this.TopMost = true;
+            this.TopMost = false;  // Default to false, controlled by checkbox
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Location = new System.Drawing.Point(0, 0);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
@@ -205,6 +229,8 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnOpenSwagger;
         private System.Windows.Forms.RichTextBox txtLog;
         private System.Windows.Forms.Button btnGCodeTest;
+        private System.Windows.Forms.Button btnAlwaysOnTop;
+        private System.Windows.Forms.Button btnShowUI;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.TabControl tabControl;

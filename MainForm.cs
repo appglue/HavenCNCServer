@@ -34,7 +34,7 @@ namespace HavenCNCServer
 
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
-        private const string ReactAppUrl = "http://localhost:5000"; // Now served by the embedded server
+        private const string ReactAppUrl = "http://localhost:5000?url_to_havencnc_server=http://localhost:5000";
 
         /// <summary>
         /// Initializes a new instance of the MainForm class
@@ -447,6 +447,69 @@ namespace HavenCNCServer
             }
         }
 
+        /// <summary>
+        /// Toggle "Always on Top" window behavior
+        /// </summary>
+        private void btnAlwaysOnTop_Click(object sender, EventArgs e)
+        {
+            SetAlwaysOnTop(!this.TopMost);
+        }
+
+        /// <summary>
+        /// Set the "Always on Top" state programmatically (can be called from API)
+        /// </summary>
+        public void SetAlwaysOnTop(bool alwaysOnTop)
+        {
+            this.TopMost = alwaysOnTop;
+            btnAlwaysOnTop.Text = this.TopMost ? "Always on Top: ON" : "Always on Top: OFF";
+            btnAlwaysOnTop.BackColor = this.TopMost ? Color.LightGreen : SystemColors.Control;
+            
+            // Update any owned forms (child windows) to match the TopMost state
+            foreach (Form ownedForm in this.OwnedForms)
+            {
+                if (!ownedForm.IsDisposed)
+                {
+                    ownedForm.TopMost = alwaysOnTop;
+                }
+            }
+            
+            LogInfo($"Always on Top: {(this.TopMost ? "Enabled" : "Disabled")}", "UI");
+        }
+
+        /// <summary>
+        /// Show the browser UI form
+        /// </summary>
+        private void btnShowUI_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogInfo("Opening browser UI...", "UI");
+                var browserForm = new BrowserForm(ReactAppUrl);
+                
+                // Set the browser form width to match MainForm
+                browserForm.Width = this.Width;
+                browserForm.StartPosition = FormStartPosition.Manual;
+                browserForm.Location = new System.Drawing.Point(this.Location.X, this.Location.Y);
+                
+                // Set this form as the owner so the browser form stays on top of the main form
+                browserForm.Owner = this;
+                
+                // If main form is TopMost, make browser form TopMost too
+                if (this.TopMost)
+                {
+                    browserForm.TopMost = true;
+                }
+                
+                browserForm.Show();
+                LogInfo("Browser UI opened successfully", "UI");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to open browser UI: {ex.Message}", "UI");
+                MessageBox.Show($"Failed to open browser UI: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void btnOpenSwagger_Click(object sender, EventArgs e)
         {
             try
@@ -473,6 +536,12 @@ namespace HavenCNCServer
 
                 using (var gCodeDialog = new GCodeTestDialog(this))
                 {
+                    // If main form is TopMost, make dialog TopMost too
+                    if (this.TopMost)
+                    {
+                        gCodeDialog.TopMost = true;
+                    }
+                    
                     gCodeDialog.ShowDialog(this);
                 }
 
