@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\perform_tool_change.cnc</macro>
-  </run>
-</vcp_button>

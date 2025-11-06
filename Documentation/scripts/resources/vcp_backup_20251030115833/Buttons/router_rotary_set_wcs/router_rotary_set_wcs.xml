@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\set_router_rotary_wcs.cnc</macro>
-  </run>
-</vcp_button>

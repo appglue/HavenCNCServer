@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\perform_spindle_warmup.cnc</macro>
-  </run>
-</vcp_button>

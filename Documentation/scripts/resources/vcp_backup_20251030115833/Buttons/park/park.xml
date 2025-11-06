@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\perform_park.cnc</macro>
-  </run>
-</vcp_button>

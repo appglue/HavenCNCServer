@@ -1,5 +1,0 @@
-<vcp_button>
-	<run>
-		<macro>#400\system\check_laser_xy0.cnc</macro>
-	</run>
-</vcp_button>

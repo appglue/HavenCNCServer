@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\set_laser_csr.cnc</macro>
-  </run>
-</vcp_button>

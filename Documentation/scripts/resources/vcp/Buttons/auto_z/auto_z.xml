@@ -1,5 +1,0 @@
-<vcp_button>
-	<run>
-    <macro>#400\system\touch_plate_auto_z_zero.cnc</macro>
-  </run>
-</vcp_button>

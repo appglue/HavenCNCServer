@@ -1,5 +1,0 @@
-<vcp_button>
-  <run>
-    <macro>#400\system\goto_part_xy_zero.cnc</macro>
-  </run>
-</vcp_button>
