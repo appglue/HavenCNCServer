@@ -1,0 +1,5 @@
+<vcp_button>
+  <run>
+    <macro>#400\system\set_tool_number.cnc</macro>
+  </run>
+</vcp_button>

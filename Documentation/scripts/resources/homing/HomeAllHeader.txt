@@ -1,0 +1,8 @@
+N100 ;Check for open home switch
+IF !#[50000 + #9822] THEN M225 #100 "HomeAll switch tripped!!!\nPlease clear before Homing.\n\nPress Cycle Cancel to end Homing"
+IF !#[50000 + #9822] THEN GOTO 100
+
+;Disable all limits
+M94 /101 /102 /103 /104
+
+;Perform Homing commands

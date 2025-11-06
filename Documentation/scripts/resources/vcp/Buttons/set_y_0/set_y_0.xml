@@ -1,0 +1,5 @@
+<vcp_button>
+  <run>
+    <macro>#400\system\set_part_y_zero.cnc</macro>
+  </run>
+</vcp_button>

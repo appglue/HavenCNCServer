@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Drive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>DMM DYN4</Name>
+  <FileName>DMMDYN4.xml</FileName>
+  <IsCustom>false</IsCustom>
+  <HeaderType>ScrewTerminal</HeaderType>
+  <StepRate>200000</StepRate>
+  <DriveFaultDelay>1</DriveFaultDelay>
+  <Axes>
+    <Axis>
+      <Number>1</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>2</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>3</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>4</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>5</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>6</Number>
+      <StepsPerRev>4000</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+  </Axes>
+  <Schematics>
+    <Schematic>
+      <Text>S15164 - DMM DYN4 Drives</Text>
+      <Link>https://www.centroidcnc.com/centroid_diy/schematics/pbrowse.php?term=S15164</Link>
+    </Schematic>
+  </Schematics>
+</Drive>

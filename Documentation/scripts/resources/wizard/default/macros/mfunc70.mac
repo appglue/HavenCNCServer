@@ -1,0 +1,52 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc70.mac
+; M70 macro
+; Description: Sets an axis to zero
+; Notes:
+; #20101-#20108 store the ascii value of axis labels 1-8.
+; #23701-#23708 represent wther an axis has been homed or not. (0 = NOT homed.)
+; Ascii value of uppercase N is 78 (Only valid axes need to be homed)
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+  #103 = 0; number of valid axes.
+; #150 = label of first valid axis 
+; #151 = label of second valid axis
+; #152 = label of third valid axis
+; #153 = label of fourth valid axis 
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000 
+#101 = 0                         ;Initialize #101 to 1, (represents axis number)
+IF #70668 == 1 THEN #101 = 1 
+IF #50010      
+IF #70669 == 1 THEN #101 = 2 
+IF #50010      
+IF #70670 == 1 THEN #101 = 3 
+IF #50010      
+IF #70671 == 1 THEN #101 = 4 
+IF #50010      
+IF #101 == 0 THEN GOTO 1000
+IF #50010                        ;Prevent lookahead from parsing past here
+
+N200                             ;If an axis has not been homed, notify user part 0 can not be set.   
+#102 = #[20100 + #101]           ;Set #102 = Ascii value of current axis label
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 == 78 THEN GOTO 1000      ;Skip if axis label = N
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #[23700 + #101] THEN GOTO 300 ;If current axis has been homed, goto 300 to increment to next axis.
+                                 ;Otherwise, display message below
+M225 #100 "%c axis home is not set.\nPlease home your machine before attempting to set part 0.\nPress Cycle Start to exit and then home all axes." #102 
+IF 1 == 1 THEN GOTO 1000         ;Go to end of macro. Exit macro
+
+
+N300                             ;Loop through axes to make sure machine is homed
+IF [#25014 == 1] && [#102 != 78] THEN G92 $#102 0  
+IF [#25014 == 2] && [#102 != 78] THEN G50 $#102 0
+
+ 
+IF #50010                        ;Prevent lookahead from parsing past here
+
+N1000                            ;End of Macro

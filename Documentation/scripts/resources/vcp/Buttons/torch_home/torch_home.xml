@@ -1,0 +1,6 @@
+<!--Use set_torch_home, this button is legacy-->
+<vcp_button>
+  <run>
+    <macro>#400\system\set_torch_home.cnc</macro>
+  </run>
+</vcp_button>

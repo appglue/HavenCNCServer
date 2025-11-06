@@ -1,0 +1,18 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc89.mac
+; Turn off multiple outputs with one m-code macro: M89
+; Description: User Customizable Macro
+; Notes: Use Acorn Wizard i/o map to set Acorn Output 1 = to "OUTPUT1", Acorn Output 8 = to "OUTPUT8" then this macro (M89) will turn off those outputs all at once.
+; edit line 16 below to add or remove outputs to turn off.  
+; Requires: 
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000  
+
+M95 /61/68                       ;Cancel Multiple outputs at once example, cancels "OUTPUT1"(M61) and "OUTPUT8"(M68)
+
+N1000                            ;End of Macro

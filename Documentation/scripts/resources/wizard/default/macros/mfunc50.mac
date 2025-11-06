@@ -1,0 +1,64 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc50.mac - to run from aux 7, p194 = 5011
+; M50 macro
+; Description: Sets all axes to part 0.
+; Notes:
+; #20101-#20108 store the ascii value of axis labels 1-8.
+; #23701-#23708 represent wther an axis has been homed or not. (0 = NOT homed.)
+; Ascii value of uppercase N is 78 (Only valid axes need to be homed)
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+  #103 = 0; number of valid axes.
+; #150 = label of first valid axis 
+; #151 = label of second valid axis
+; #152 = label of third valid axis
+; #153 = label of fourth valid axis 
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000 
+#101 = 1                         ;Initialize #101 to 1, (represents axis number) 
+IF #50010                        ;Prevent lookahead from parsing past here
+
+N200                             ;If an axis has not been homed, notify user part 0 can not be set.   
+#102 = #[20100 + #101]           ;Set #102 = Ascii value of current axis label
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 != 78 THEN #[103 +#101] = #102 ;Put label into appropriate variable
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 != 78 THEN #103 = [[#103]+1]  ;Increment number of valid axes.
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 == 78 THEN GOTO 300      ;Skip if axis label = N
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #[23700 + #101] THEN GOTO 300 ;If current axis has been homed, goto 300 to increment to next axis.
+                                 ;Otherwise, display message below
+M225 #100 "%c axis home is not set.\nPlease home your machine before attempting to set part 0.\nPress Cycle Start to exit and then home all axes." #102 
+IF 1 == 1 THEN GOTO 1000         ;Go to end of macro. Exit macro
+
+N300
+;Convert to Ascii
+IF #102 == 1 THEN #102 = 65  ;A
+IF #102 == 2 THEN #102 = 66  ;B
+IF #102 == 3 THEN #102 = 67  ;C
+IF #102 == 21 THEN #102 = 85 ;U
+IF #102 == 22 THEN #102 = 86 ;V
+IF #102 == 23 THEN #102 = 87 ;W
+IF #102 == 24 THEN #102 = 88 ;X
+IF #102 == 25 THEN #102 = 89 ;Y
+IF #102 == 26 THEN #102 = 90 ;Z
+
+N350                             ;Loop through axes to make sure machine is homed
+IF [#25014 == 1] && [#102 != 78] THEN G92 $#102 0  
+IF [#25014 == 2] && [#102 != 78] THEN G50 $#102 0
+
+ 
+IF #50010                        ;Prevent lookahead from parsing past here
+#101 = #101 + 1                  ;Increment axis number 
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #101 < 5 THEN GOTO 200        ;Only need to check 4 axes, go to end
+IF #50010                        ;Prevent lookahead from parsing past here
+
+
+
+N1000                            ;End of Macro

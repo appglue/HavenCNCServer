@@ -1,0 +1,5 @@
+M225 #100 " Wait for Clearpath Hard Stop Homing cycle to complete. Then Press Cycle Start to set the Machine Home Position"
+
+M26/X
+M26/Y
+M26/Z

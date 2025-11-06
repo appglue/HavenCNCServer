@@ -1,0 +1,289 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc6.mac
+; Description: Tool Change Macro
+; Notes:
+; Requires: CNC12 V5.29.00+
+; Revision Date: 28 Aug 2025
+; Please see TB300 or the following link for tips on writing custom macros.
+; https://www.centroidcnc.com/centroid_diy/downloads/acorn_documentation/centroid_cnc_macro_programming.pdf
+; Copyright SMC 2025
+;------------------------------------------------------------------------------
+; Parameters:
+; #9011 = Probe Input
+; #9044 = TT Input
+; #9160 = Enhanced ATC Features (Bins)
+; #9161 = Maximum Tool Bins
+; #9431 = 0 : Hole Style Holder
+;         1 : Fork Style Holder
+; #9432 = 0 : Fixed TT Position
+;         1 : Surface Plate
+;         2 : Tool Library
+; #9433 = Surface Plate WCS Part 0
+; #9830 = ATC Type, 0 = None, 1 = Carousel, 7 = RackMount
+;
+; System Variables:
+; #4003 = Positioning Mode (G90/G91)
+; #4120 = Requested Tool
+;
+; PLC Variables:
+; ToolUnclampedState_M      IS MEM12  (#70012)
+; SpindleOrientedState_M    IS MEM13  (#70013)
+; SpindleZeroSpeedState_M   IS MEM14  (#70014)
+; AirPressureLow_M          IS MEM15  (#70015)
+; ToolClampedState_M        IS MEM17  (#70017)
+; ToolInSpindleState_M      IS MEM18  (#70018)
+; ToolChangeComplete_M      IS MEM52  (#70052)
+; AtPutbackLocation_M       IS MEM59  (#70059)
+; AtRequestedToolLocation_M IS MEM64  (#70064)
+; CarouselInState_M         IS MEM74  (#70074)
+; CarouselOutState_M        IS MEM75  (#70075)
+; ToolRackInState_M         IS MEM78  (#70078)
+; ToolRackOutState_M        IS MEM79  (#70079)
+; PutBackPosition_W         IS W50    (#96050)
+;
+; User Variables:
+; #101 = Saved Positioning Mode (G90/G91)
+; #106 = Tool Touch Height
+; #107 = New Tool Request Bin Location
+;
+; Return Points:
+; G28 = Used For ToolCheck Position / M25 Home Positions
+; G30 = Used for Z Height Flyover
+; G30 P3 = X,Y,Z TT Location
+;
+; tt_check_configuration.cnc:
+; #33001 = Tool Touch Input (Value from P11 or P44)
+; #33002 = Fast Probe Rate
+; #33003 = Slow Probe Rate
+;------------------------------------------------------------------------------
+IF #50001                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+IF #9006 == 0 THEN GOTO 950      ;Perform Default Macro if ATC not Installed
+IF #9830 == 1 THEN GOTO 600      ;Jump to Carousel Section of Macro
+IF #4120 == #9976 THEN GOTO 1000 ;Skip macro if requested tool is in spindle
+
+IF #9160 > 0 THEN #107 = #[#4120 + 17000] ELSE #107 = #4120
+
+IF #107 > #9161 THEN GOTO 800    ;Error Tool Change on Invalid Tool
+
+;==============================================================================
+; Rack Mount Tool Change Program Starts
+;==============================================================================
+#101 = #4003                     ;Save Positioning Mode
+G90
+G94                              ;Disable Inverse Time
+M5                               ;Turn off Spindle
+M9                               ;Disable Flood/Mist or DustCollector/VacuumHoldDown
+M25                              ;Move to Z-Home Position (Reference #1 Z)
+
+M101 /70014                      ;Ensure Spindle at Zero Speed
+
+IF !#70013 THEN M19              ;Orient Spindle
+M101 /70013                      ;Confirm Spindle Oriented
+
+M100 /70015                      ;Confirm AirPressure
+
+;ToolRack In
+M95 /81                           ;Tool Rack Out Off
+M94 /80                           ;Tool Rack In On
+IF #70078 THEN G4 P1              ;Dwell 1s if ToolRackIn Input already on
+M101 /70078                       ;Wait for ToolRackIn
+
+;Skip Putaway if No Tool in Spindle
+IF #9976 == 0 && #9431 == 0 THEN GOTO 150
+IF #9976 == 0 && #9431 == 1 THEN GOTO 250
+
+IF #9431 == 1 THEN GOTO 200      ;Skip to "Fork" Style Sections
+
+;------------------------------------------------------------------------------
+; Put Tool Away Section (Hole)
+;------------------------------------------------------------------------------
+N100                             ;Insert your code between N100 and N1000
+
+G65 "#400\system\rackmountbins\tool#9976position.cnc" A3 ;Move to Old Tool Position
+G30 G91 Z0                       ;Move Down to Z Clearance Height
+G90
+G65 "#400\system\rackmountbins\tool#9976position.cnc" A8 ;Move Z Down to Tool Rack Height
+M15
+G30 G91 Z0                       ;Clear Z from Tool
+
+;------------------------------------------------------------------------------
+; Get New Tool Section (Hole)
+;------------------------------------------------------------------------------
+N150
+
+G30 G91 Z0                       ;Clear Z from Tool
+G90
+G65 "#400\system\rackmountbins\tool#107position.cnc" A3 ;Move to New Tool Position
+M15                              ;Unclamp Tool
+G65 "#400\system\rackmountbins\tool#107position.cnc" A8 ;Move Z Down to Tool Rack Height
+M16                              ;Clamp Tool
+M101 /70017                      ;Confirm Tool is Clamped (ToolClamped)
+M101 /70018                      ;Confirm Tool in Spindle (Drawbar Up/Down)
+G28 G91 Z0                       ;Move Z Up to Clear
+G90
+M95 /1/2/19                      ;End Orient Requested
+
+GOTO 300
+
+;------------------------------------------------------------------------------
+; Put Tool Away Section (Fork)
+;------------------------------------------------------------------------------
+N200                             ;Insert your code between N100 and N1000
+
+G65 "#400\system\rackmountbins\tool#9976position.cnc" A5 ;Move to Old Tool Clearance Position
+G65 "#400\system\rackmountbins\tool#9976position.cnc" A4 ;Move Z Down to Infront of Tool Fingers
+G65 "#400\system\rackmountbins\tool#9976position.cnc" A6 ;Engage Fingers
+M15
+G30 G91 Z0                       ;Clear Z from Tool
+
+;------------------------------------------------------------------------------
+; Get New Tool Section (Fork)
+;------------------------------------------------------------------------------
+N250
+
+G30 G91 Z0                       ;Clear Z from Tool
+G90
+G65 "#400\system\rackmountbins\tool#107position.cnc" A3 ;Move to New Tool Position
+M15                              ;Unclamp Tool
+G65 "#400\system\rackmountbins\tool#107position.cnc" A4 ;Move Z Down to Tool Rack Height
+M16                              ;Clamp Tool
+G65 "#400\system\rackmountbins\tool#107position.cnc" A7 ;Disengage Fingers
+M95 /1/2/19                      ;End Orient Requested
+
+;------------------------------------------------------------------------------
+; Set Tool in Spindle
+;------------------------------------------------------------------------------
+N300
+IF #50001
+IF #9160 > 0 THEN G10 P976 R#[#4120 +17000] ELSE G10 P976 R#4120
+G4 P.2                             ;Dwell to ensure PLC Updates Putback Position
+
+G28 G91 Z0                          ;Move Z Up to Clear
+G90
+
+;ToolRack Out
+M95 /80                           ;Tool Rack In Off
+M94 /81                           ;Tool Rack Out On
+IF #70079 THEN G4 P1              ;Dwell 1s if ToolRackOut Input already on
+M101 /70079                       ;Wait for ToolRackOut
+
+;Prevent lookahead from reaching end of job and assigning putback before
+; location is updated.
+IF #50001
+
+IF #9160 > 0 THEN GOTO 900         ;Skip TT Sequence if Tool Library Used.
+
+;------------------------------------------------------------------------------
+; Tool Touch Off Sequence
+;------------------------------------------------------------------------------
+;--Tool Touch Off Check Configuration Block 500
+N500	;Check to make sure a TT1 is correctly configured
+
+G65 "#400\system\tt_check_configuration.cnc"
+
+;--Tool Touch Off Cycle Block 550
+N550
+;Move to Tool Touch Off Reference Location or Prompt Operator to Move to Surface Plate
+IF #9432 == 0 THEN G30 P3 G91 X0Y0Z0
+IF #9432 == 1 THEN M201 "Jog to Surface Plate\nPress Cycle Start to Continue."
+
+M115 /Z P[#33001] F[#33002]         ;Move at fast probing rate until TT detected
+M116 /Z P-[#33001] F[#33003]        ;Retract at slow probing rate until TT clears
+M115 /Z P[#33001] F[#33003]         ;Move at slow probing rate until TT detected
+
+IF [[#9043 - 1] % 2 == 0] THEN #106 = #9071 ELSE #106 = 0 ;Check parameter 43 for subtract height option
+G92 Z[0-[#106]]                     ;Set Z position to 0 + detector height stored in parameter 71 
+G4 P1                               ;Wait 1 second
+M25                                 ;Move to Z-Home Position (Reference #1 Z)
+G90
+
+GOTO 900
+
+;==============================================================================
+; Carousel Tool Change Program Starts
+;==============================================================================
+N600
+#101 = #4003                     ;Save Positioning Mode
+M109 /1/2                        ;Disable Overrides
+M5                               ;Disable Spindle
+M9                               ;Disable Coolant
+M107                             ;Send PLC Tool Number
+G4 P.25
+
+G30 G91 Z0                       ;Move Z to tool change position
+G90
+M94 /7                           ;Request Tool Change
+
+M101 /70014                      ;Ensure Spindle at Zero Speed
+
+IF !#70013 THEN M19              ;Orient Spindle
+M101 /70013                      ;Confirm Spindle Oriented
+
+M100 /70015                      ;Confirm AirPressure
+
+IF #96050 == 0 THEN GOTO 650     ;Skip putback
+;------------------------------------------------------------------------------
+; Carousel Tool Putback Section
+;------------------------------------------------------------------------------
+M101 /70013                      ;Confirm Spindle Oriented
+M101 /70059                      ;Wait for carousel at Putback Position
+G4 P.25
+
+;Move Carousel in and Unclamp Tool
+M101 /70059                      ;Ensure carousel at Putback Position
+M94 /80                          ;Request Carousel in
+M101 /70074                      ;Wait for Carousel In
+G4 P.5                           ;Carousel debounce
+M101 /70074                      ;Wait for Carousel In
+M15                              ;Unclamp Tool
+
+;------------------------------------------------------------------------------
+; Carousel Tool New Tool Section
+;------------------------------------------------------------------------------
+N650
+G53 Z0                           ;Raise head to Clearance
+M94 /40                          ;Set PutBackComplete
+M101 /70064                      ;Wait for carousel at Requested Tool Position
+M95 /40                          
+
+IF !#70012 THEN M101 /70013      ;Confirm Spindle Oriented if not Unclamped
+M94 /80                          ;Request Carousel in
+M101 /70074                      ;Wait for Carousel in
+G4 P.5                           ;Carousel debounce
+M101 /70074                      ;Wait for Carousel in
+
+IF !#70012 THEN M15              ;Request Unclamp if not already
+G30 G91 Z0                       ;Move Z to tool change Position
+G90
+M16                              ;Clamp Tool
+M101 /70017                      ;Wait for Tool Clamped
+M5                               ;Turn off spindle and orient request
+
+;------------------------------------------------------------------------------
+; Carousel Finish Section
+;------------------------------------------------------------------------------
+M94 /81                          ;Request Carousel Out
+M101 /70075                      ;Wait for Carousel Out
+G4 P.5                           ;Carousel debounce
+M101 /70075                      ;Wait for Carousel Out
+M101 /70052                      ;Wait for Tool Change Complete
+M95 /7                           ;Reset Tool Change Request
+
+M108 /1/2                        ;Enable Overrides
+
+GOTO 900
+
+N800 ;Errors
+M225 #100 "Invalid Tool Requested\nCycle Cancel to Abort"
+GOTO 800
+
+N900 ;Restore Modes
+G#101 ;Restore Positioning Mode
+
+GOTO 1000
+
+N950
+M6
+
+N1000                            ;End of Macro

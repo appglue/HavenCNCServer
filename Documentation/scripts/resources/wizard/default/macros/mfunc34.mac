@@ -1,0 +1,18 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc34.mac
+; Unused Macro
+; Description: User Customizable Macro
+; Notes:
+; Requires: 
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000  
+
+M95 /61                          ;Cancel Output 1
+
+N1000                            ;End of Macro
+

@@ -1,0 +1,51 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc55.mac - To run from VCP AUX 10 key, set p197 = 5511
+; M55 macro
+; Description: User Customizable Macro
+; Notes:
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+M225 #100 "This is an example macro named mfunc55.mac and can be found in ..\cncm or ..\cnct\nEdit it to include the desired functionality. Press Cycle Cancel/ESC to Exit"
+
+N100                             ;Insert your code between N100 and N1000  
+
+;---------Example Macro for a Manual Lube Pump Aux Key--------------------------------------
+; This Macro will activate the LubePump Logic in PLC and will keep pump on based on Parameter 179.
+; Example: Parameter 179 = 1015, Then when this macro is activated the LubePump will have power ON for 15 seconds.
+; A “ Lube pump Turn Off” Macro (M95) is not needed as the PLC resets the output in the logic when the ON timer is finished.
+; Each time this m code is issued the “G-code running” timer is reset, so in our example P179=1015. After the pump has run for 15
+; seconds the “G code running” timer begins again to count down 10 minutes before the next automatic lube cycle.
+; This macro can be used during a G code program, for example if the user wishes to pump some extra lube while the job is running.
+; Uncomment the M94 Line Below to set Aux 8 VCP Aux key as a manual lube pump one shot button.
+; This will set "SV_M94_M95_8" in the PLC, which a system variable used for lube pump operation that is pre-coded in the PLC.
+
+;M94 /8                ;M94 Requests to SET "ManualLubePump" in PLC.
+
+;------------------------------End of Example--------------------------------------------------
+
+;------------------Example Macro for PopUpPins Output---------------------------
+;Use Aux 8 and Aux 9 to Turn on and Off PopUpPins Output
+;M94 is used to Turn on a variable in PLC which in turn activates logic in the PLC
+;M95 is used to Turn Off the variable
+;Remove the ";" infront of code below in mfunc55 and mfunc56 to use
+
+;M94 /30			;Turn on PopUpPins
+
+;------------------------------End of Example-------------------------------------------
+
+;-----------------Example Macro for SpindleCooling Output---------------------------
+;Uses Aux 8 and Aux 9 to Turn On and Off the SpindleCooling Output
+;M94 is used to Turn on a variable in PLC which in turn activates logic in the PLC
+;M95 is used to Turn Off the variable
+;Remove the ";" infront of the code below in both mfunc55 and mfunc56 to use
+
+;M94 /31			;Turn on SpindleCooling
+
+;------------------------------End of Example-------------------------------------------
+
+N1000                            ;End of Macro

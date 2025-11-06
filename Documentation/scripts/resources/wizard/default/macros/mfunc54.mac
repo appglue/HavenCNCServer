@@ -1,0 +1,42 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc54.mac - Unused and Available for customization
+; M54 macro
+; Description: User Customizable Macro
+; Notes:
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+M225 #100 "This is an example macro named mfunc54.mac and can be found in ..\cncm or ..\cnct\nEdit it to include the desired functionality. Press Cycle Cancel/ESC to Exit"
+
+
+N100                             ;Insert your code between N100 and N1000  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+N1000                            ;End of Macro

@@ -1,0 +1,24 @@
+Author: Christopher Bowser
+Date: 7/13/2023
+Purpose: File to record all used user variables for macros within the system folder of CNC12.
+Note: For Probe User Variables, look at the probe_user_vars.txt
+
+For system files, variables 32000-34999 should be used when possible, this will prevent accidental overwriting of
+possible variables #100-159 and #29000-31999 as these may be used by enduser in program.
+
+;----------------------------------------------------------------------------------------------------------------------
+File: tt_check_configuration.cnc
+Systems: All
+;----------------------------------------------------------------------------------------------------------------------
+#33001 : TT Input
+#33002 : Fast Probing Rate
+#33003 : Slow Probing Rate
+
+;----------------------------------------------------------------------------------------------------------------------
+File: auto_z_zero_macro.cnc
+Systems: Plasma
+;----------------------------------------------------------------------------------------------------------------------
+#33004 : Saved X-Axis Position
+#33005 : Saved Y-Axis Position
+#33006 : Saved Positioning Mode (G90/G91)
+#33007 : Torch Clear Count

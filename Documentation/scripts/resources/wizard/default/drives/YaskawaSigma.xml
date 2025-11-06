@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Drive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Yaskawa Sigma</Name>
+  <FileName>YaskawaSigma.xml</FileName>
+  <IsCustom>false</IsCustom>
+  <HeaderType>ScrewTerminal</HeaderType>
+  <StepRate>200000</StepRate>
+  <DriveFaultDelay>1000</DriveFaultDelay>
+  <Axes>
+    <Axis>
+      <Number>1</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>2</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>3</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>4</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>5</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+    <Axis>
+      <Number>6</Number>
+      <StepsPerRev>4096</StepsPerRev>
+      <StepSignalInverted>false</StepSignalInverted>
+      <DirectionSignalInverted>false</DirectionSignalInverted>
+      <EnableSignalInverted>false</EnableSignalInverted>
+      <QuadratureSignalInverted>false</QuadratureSignalInverted>
+    </Axis>
+  </Axes>
+  <Schematics>
+    <Schematic>
+      <Text>S15176 - Yaskawa Sigma7 Drives</Text>
+      <Link>https://www.centroidcnc.com/centroid_diy/schematics/pbrowse.php?term=S15156</Link>
+    </Schematic>
+    <Schematic>
+      <Text>S15157 - Yaskawa Sigma5 Drives</Text>
+      <Link>https://www.centroidcnc.com/centroid_diy/schematics/pbrowse.php?term=S15157</Link>
+    </Schematic>
+  </Schematics>
+</Drive>

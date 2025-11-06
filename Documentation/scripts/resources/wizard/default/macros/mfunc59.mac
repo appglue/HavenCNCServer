@@ -1,0 +1,19 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc59.mac - to run from aux 16, p295= 5911
+; M59 macro Resets home for mill and lathe
+; Description: User Customizable Macro
+; Notes:
+; #21401-#21408 = plus home axes 1-8
+; #21301-21308 = minus home for axes 1-8
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+IF #50010                        ;Prevent lookahead from parsing past here
+
+IF #25014 == 1 THEN G65 "c:\cncm\cncm.hom"
+IF #25014 == 2 THEN G65 "c:\cnct\cnct.hom"
+
+N1000                            ;End of Macro

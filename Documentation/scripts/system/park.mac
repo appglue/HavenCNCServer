@@ -1,0 +1,26 @@
+;------------------------------------------------------------------------------
+; Filename: park.mac - Custom Park Button Macro
+; Description: This Machine Park macro controls the "F1 Park" command action found in the CNC12 "F10 Shut Down" menu.
+; park.mac is a user editable custom macro used for parking a machine tool at a specified position at a specified speed, typically used prior to shut down.
+; Notes: 
+; - This macro overrides the default CNC12 park behavior logic when selected to do so in the Wizard (the Wizard sets CNC12 parameter 413 = 1)
+; - This macro allows the user to customize the action and behavior of the "Park" feature in the CNC12 "Shut Down" menu by writing creating a custom G&M code program
+; - A semi colon ";" tells CNC12 that the line is a comment, remove semi colon for command to be run, add semi colon to beginning of line to be ignored
+;------------------------------------------------------------------------------
+M225 #100 "Please edit c:\cncm\system\park.mac to create a custom parking macro, press ESC to exit."
+;------------------------------------------------------------------------------
+; Example Custom Mill Park Macro assuming XYZ home position is set in the negative direction for each axis. 
+;G53 Z.25 L20  (Moves Z axis first in machine coordinates to .25 inches away from Z home position at 20 inches per minute)
+;G53 X1 L200   (Moves X axis second in machine coordinates to 1 inch away from X home position)
+;G53 Y1 L200   (Moves Y axis third in machine coordinates to 1 inch away from Y home position)
+;------------------------------------------------------------------------------
+; Example Custom Park Macro assuming Y home position is set in positive direction and XZ home position is set in the negative direction for each axis. 
+;G53 Z.25 L20  (Moves Z axis first in machine coordinates to .25 inches away from Z home position at 20 inches per minute)
+;G53 X1 L200   (Moves X axis second in machine coordinates to 1 inch away from X home position at 200 inches per minute)
+;G53 Y-1 L800   (Moves Y axis third in machine coordinates to 1 inch away from Y home position at 800 inches per minute)
+;------------------------------------------------------------------------------
+; Example Custom Park Macro assuming Y home position is set in positive direction and XZ home position is set in the negative direction for each axis. 
+;G53 Z.25 L20  (Moves Z axis first in machine coordinates to .25 inches away from Z home position at 20 inches per minute)
+;G53 X1 Y-1 L200   (Moves X and Y axis at the same time in machine coordinates to 1 inch away from X home position at 200 inches per minute)
+;G53 w0 L360  (Moves W rotary axis in machine coordinates to 0.000 at 360 degrees per minute)
+;------------------------------------------------------------------------------

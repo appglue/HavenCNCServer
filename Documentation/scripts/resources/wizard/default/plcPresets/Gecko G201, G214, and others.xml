@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IOPreset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Gecko G201, G214, and others</Name>
+  <Inputs>
+    <Definition>
+      <Function xsi:type="Input">
+        <ConfigLine />
+        <IsRequired>true</IsRequired>
+        <IsCustom>false</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>219</MemBit>
+        <Name>EStopOk</Name>
+        <DisplayName>EStopOk</DisplayName>
+        <Order>0</Order>
+        <RestrictedTo />
+        <Tooltip>E-Stop button input.  Connect E-Stop according to Acorn schematics.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>16</InputType>
+      </Function>
+      <IONumber>8</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyOpen</State>
+      <DisplayName />
+    </Definition>
+  </Inputs>
+  <Outputs>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT1</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>321</MemBit>
+        <Name>OUTPUT1</Name>
+        <DisplayName>OUTPUT1</DisplayName>
+        <Order>15</Order>
+        <RestrictedTo>
+          <int>1</int>
+          <int>33</int>
+          <int>69</int>
+          <int>85</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M61 to turn relay 1 on and M81 to turn relay 1 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>1</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT2</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>322</MemBit>
+        <Name>OUTPUT2</Name>
+        <DisplayName>OUTPUT2</DisplayName>
+        <Order>16</Order>
+        <RestrictedTo>
+          <int>2</int>
+          <int>34</int>
+          <int>70</int>
+          <int>86</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M62 to turn relay 2 on and M82 to turn relay 2 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>2</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT3</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>323</MemBit>
+        <Name>OUTPUT3</Name>
+        <DisplayName>OUTPUT3</DisplayName>
+        <Order>17</Order>
+        <RestrictedTo>
+          <int>3</int>
+          <int>35</int>
+          <int>71</int>
+          <int>87</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M63 to turn relay 3 on and M83 to turn relay 3 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>3</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT4</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>324</MemBit>
+        <Name>OUTPUT4</Name>
+        <DisplayName>OUTPUT4</DisplayName>
+        <Order>18</Order>
+        <RestrictedTo>
+          <int>4</int>
+          <int>36</int>
+          <int>72</int>
+          <int>88</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M64 to turn relay 4 on and M84 to turn relay 4 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>4</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT5</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>325</MemBit>
+        <Name>OUTPUT5</Name>
+        <DisplayName>OUTPUT5</DisplayName>
+        <Order>19</Order>
+        <RestrictedTo>
+          <int>5</int>
+          <int>37</int>
+          <int>73</int>
+          <int>89</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M65 to turn relay 5 on and M85 to turn relay 5 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>5</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT6</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>326</MemBit>
+        <Name>OUTPUT6</Name>
+        <DisplayName>OUTPUT6</DisplayName>
+        <Order>20</Order>
+        <RestrictedTo>
+          <int>6</int>
+          <int>38</int>
+          <int>74</int>
+          <int>90</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M66 to turn relay 6 on and M86 to turn relay 6 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>6</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT7</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>327</MemBit>
+        <Name>OUTPUT7</Name>
+        <DisplayName>OUTPUT7</DisplayName>
+        <Order>21</Order>
+        <RestrictedTo>
+          <int>7</int>
+          <int>39</int>
+          <int>75</int>
+          <int>91</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M67 to turn relay 7 on and M87 to turn relay 7 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>7</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+    <Definition>
+      <Function xsi:type="Output">
+        <ConfigLine>IF True THEN RST OUTPUT8</ConfigLine>
+        <IsRequired>false</IsRequired>
+        <IsCustom>true</IsCustom>
+        <IsATC>false</IsATC>
+        <Safety>false</Safety>
+        <Hidden>false</Hidden>
+        <Machine>
+          <MachineType>All</MachineType>
+        </Machine>
+        <MemBit>328</MemBit>
+        <Name>OUTPUT8</Name>
+        <DisplayName>OUTPUT8</DisplayName>
+        <Order>22</Order>
+        <RestrictedTo>
+          <int>8</int>
+          <int>40</int>
+          <int>76</int>
+          <int>92</int>
+        </RestrictedTo>
+        <Tooltip>General purpose output used to turn a relay on/off. Uses M68 to turn relay 8 on and M88 to turn relay 8 off.</Tooltip>
+        <Requires />
+        <Conflicts />
+        <InputType>0</InputType>
+      </Function>
+      <IONumber>8</IONumber>
+      <IsSelected>true</IsSelected>
+      <State>NormallyClosed</State>
+      <DisplayName />
+    </Definition>
+  </Outputs>
+  <IsCustom>false</IsCustom>
+</IOPreset>

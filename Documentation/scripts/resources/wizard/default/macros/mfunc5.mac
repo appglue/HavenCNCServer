@@ -1,0 +1,7 @@
+;-------
+;M5 macro
+;With Added Small delay for Laser
+;-------
+
+M95 /1/2/19
+G4P.01

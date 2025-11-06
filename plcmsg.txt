@@ -1,0 +1,205 @@
+1  9001 !!! PLC EXECUTION FAULT !!!
+5  5005 OVERRIDE IS ENABLED FOR RAPID MOVES
+6  5006 OVERRIDE IS DISABLED FOR RAPID MOVES
+7  9007 FAULT! TIMEOUT OPENING OR CLOSING CHUCK
+8  9008 FAULT! TIMEOUT OPERATING PART CHUTE
+9  9009 FAULT! TIMEOUT OPERATING CUT OFF
+14 9014 ORIENT_TIMEOUT
+15 9015 TOOL_UNCLAMP_TIMEOUT
+25 9025 Axis1 Drive Fault Detected
+26 9026 Axis2 Drive Fault Detected
+27 9027 Axis3 Drive Fault Detected
+28 9028 Axis4 Drive Fault Detected
+29 9029 Axis5 Drive Fault Detected
+30 9030 SPINDLE FAULT!
+31 9031 DRIVE FAULT!
+34 9034 FAULT! REMOVE PROBE FROM SPINDLE!!!
+35 5035 KEYBOARD JOGGING DISABLED
+36 9036 LUBE FAULT
+37 8037 PROBE TRIPPED WHILE JOGGING
+38 5038 SPECIFIED SPIN SPEED < MIN SPIN SPEED 
+39 9039 Software Exited, Cycle E-Stop/Reset to Continue
+40 8040 WARNING: PROBE TRIPPED
+41 7041 PROBE TRIPPED while MPG jogging! Switch to 1X to Clear
+42 4042 Probe Cleared
+43 7043 Warning!! Lube Low!!
+44 5044 Drawbar Released
+45 5045 Drawbar Clamped
+46 9046 Spindle Temperature Alarm!
+47 9047 Pressure Low!
+48 9048 Axis6 Drive Fault Detected
+50 5050 Auto Coolant Mode
+51 5051 Manual Coolant Mode
+53 7053 Select Auto Spindle, press CYCLE START
+54 7054 Select Auto Coolant, press CYCLE START
+55 9055 ETHER1616 OFFLINE!!!
+60 5060 X AXIS SELECTED
+61 5061 Y AXIS SELECTED
+62 5062 Z AXIS SELECTED
+63 5063 SHUTTLE_AXIS4_SELECTED
+64 5064 JOG_INCREMENT_INCREASED
+65 5065 JOG_INCREMENT_DECREASED
+66 5066 SHUTTLE_DISABLED
+67 5067 FAST_JOG_SELECTED
+68 5068 SLOW_JOG_SELECTED
+69 5069 CONTINUOUS_SELECTED
+70 5070 INCREMENTAL_SELECTED
+71 5071 PLEASE_SELECT_AN_AXIS
+73 5073 PRESS_ALT_J_TO_ENABLE_USB_JOGGING
+74 8074 TOOL TOUCH OFF TRIPPED WHILE JOGGING
+75 8075 WARNING: TOOL TOUCH OFF TRIPPED
+76 7076 Tool Touch Off Tripped while MPG jogging! Switch to 1X to Clear
+77 4077 Tool Touch Off Cleared
+80 7080 DOOR NOT CLOSED
+81 7081 WAITING FOR DOOR TO BE CLOSED
+82 7082 Door Open, Slow Jogging Only.
+83 4083 Door Closed, Press Cycle Start to Continue.
+84 4084 Door Closed, Cycle Reset to Continue.
+85 5085 Door Open.
+86 5086 Door Closed.
+87 9087 Door Lock Fault!
+90 9090 ATC_TIMEOUT
+91 7091 MANUAL INDEX WHILE ATC
+92 7092 ATC WHILE MANUAL INDEX
+93 9093 Invalid Tool Requested!
+94 9094 CAROUSEL MOVE TIME OUT
+95 8095 WARNING: TOUCH PLATE TRIPPED
+96 4096 Touch Plate Cleared
+99
+100 5100 BAD MESSAGE VALUE
+
+111 9111 USB-BOB 1 FAULT! (See USB-BOB manual.)
+112 9112 USB-BOB 2 FAULT! (See USB-BOB manual.)
+113 9113 USB-BOB 3 FAULT! (See USB-BOB manual.)
+114 9114 USB-BOB 4 FAULT! (See USB-BOB manual.)
+115 9115 Fault: Unexpected USB-BOB input on startup, see manual for troubleshooting.
+
+122 5122 Input 1 Closed
+123 5123 Input 1 Open
+124 5124 Input 2 Closed
+125 5125 Input 2 Open
+126 5126 Input 3 Closed
+127 5127 Input 3 Open
+128 5128 Input 4 Closed
+129 5129 Input 4 Open
+130 5130 Input 5 Closed
+131 5131 Input 5 Open
+132 5132 Input 6 Closed
+133 5133 Input 6 Open
+134 5134 Input 7 Closed
+135 5135 Input 7 Open
+136 5136 Input 8 Closed
+137 5137 Input 8 Open
+138 5138 Input 9 Closed
+139 5139 Input 9 Open
+140 5140 Input 10 Closed
+141 5141 Input 10 Open
+142 5142 Input 11 Closed
+143 5143 Input 11 Open
+144 5144 Input 12 Closed
+145 5145 Input 12 Open
+146 5146 Input 13 Closed
+147 5147 Input 13 Open
+148 5148 Input 14 Closed
+149 5149 Input 14 Open
+150 5150 Input 15 Closed
+151 5151 Input 15 Open
+152 5152 Input 16 Closed
+153 5153 Input 16 Open
+154 5154 Input 65 Closed
+155 5155 Input 65 Open
+156 5156 Input 66 Closed
+157 5157 Input 66 Open
+158 5158 Input 67 Closed
+159 5159 Input 67 Open
+160 5160 Input 68 Closed
+161 5161 Input 68 Open
+162 5162 Input 69 Closed
+163 5163 Input 69 Open
+164 5164 Input 70 Closed
+165 5165 Input 70 Open
+166 5166 Input 71 Closed
+167 5167 Input 71 Open
+168 5168 Input 72 Closed
+169 5169 Input 72 Open
+170 5170 Input 73 Closed
+171 5171 Input 73 Open
+172 5172 Input 74 Closed
+173 5173 Input 74 Open
+174 5174 Input 75 Closed
+175 5175 Input 75 Open
+176 5176 Input 76 Closed
+177 5177 Input 76 Open
+178 5178 Input 77 Closed
+179 5179 Input 77 Open
+180 5180 Input 78 Closed
+181 5181 Input 78 Open
+182 5182 Input 79 Closed
+183 5183 Input 79 Open
+184 5184 Input 80 Closed
+185 5185 Input 80 Open
+186 5186 Output 1 On
+187 5187 Output 1 Off
+188 5188 Output 2 On
+189 5189 Output 2 Off
+190 5190 Output 3 On
+191 5191 Output 3 Off
+192 5192 Output 4 On
+193 5193 Output 4 Off
+194 5194 Output 5 On
+195 5195 Output 5 Off
+196 5196 Output 6 On
+197 5197 Output 6 Off
+198 5198 Output 7 On
+199 5199 Output 7 Off
+200 5200 Output 8 On
+201 5201 Output 8 Off
+202 5202 Output 9 On
+203 5203 Output 9 Off
+204 5204 Output 10 On
+205 5205 Output 10 Off
+206 5206 Output 11 On
+207 5207 Output 11 Off
+208 5208 Output 12 On
+209 5209 Output 12 Off
+210 5210 Output 13 On
+211 5211 Output 13 Off
+212 5212 Output 14 On
+213 5213 Output 14 Off
+214 5214 Output 15 On
+215 5215 Output 15 Off
+216 5216 Output 16 On
+217 5217 Output 16 Off
+218 5218 Output 65 On
+219 5219 Output 65 Off
+220 5220 Output 66 On
+221 5221 Output 66 Off
+222 5222 Output 67 On
+223 5223 Output 67 Off
+224 5224 Output 68 On
+225 5225 Output 68 Off
+226 5226 Output 69 On
+227 5227 Output 69 Off
+228 5228 Output 70 On
+229 5229 Output 70 Off
+230 5230 Output 71 On
+231 5231 Output 71 Off
+232 5232 Output 72 On
+233 5233 Output 72 Off
+234 5234 Output 73 On
+235 5235 Output 73 Off
+236 5236 Output 74 On
+237 5237 Output 74 Off
+238 5238 Output 75 On
+239 5239 Output 75 Off
+240 5240 Output 76 On
+241 5241 Output 76 Off
+242 5242 Output 77 On
+243 5243 Output 77 Off
+244 5244 Output 78 On
+245 5245 Output 78 Off
+246 5246 Output 79 On
+247 5247 Output 79 Off
+248 5248 Output 80 On
+249 5249 Output 80 Off
+

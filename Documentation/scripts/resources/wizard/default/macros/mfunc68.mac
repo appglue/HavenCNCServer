@@ -1,0 +1,17 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc68.mac
+; Wizard OUTPUT8 M-code Macro: M68
+; Description: User Customizable Macro
+; Notes: Use Acorn Wizard i/o map to set Acorn Output 8 = to "OUTPUT8" then this macro m-code (M68) will turn on that output
+; Requires: 
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000  
+
+M94 /68                          ;Request OUTPUT8
+
+N1000                            ;End of Macro

@@ -1,0 +1,5 @@
+<vcp_button>
+  <run>
+    <macro>#400\system\goto_torch_home.cnc</macro>
+  </run>
+</vcp_button>

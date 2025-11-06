@@ -1,0 +1,10 @@
+;SET DustCollectionOn = M35, RST DustCollectionOn = M36 
+;mfunc36.mac
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 100  ;Skip macro if graphing or searching
+
+M95 /35                          ;Request to RST DustCollectionOn
+
+N100
+

@@ -1,0 +1,16 @@
+;-------
+;M7 macro
+; Displays message to select Auto Vac/Blow mode if it is not set
+;-------
+
+IF #4202 || #4201 THEN GOTO 200
+M94 /5
+IF #61077 THEN GOTO 200 ;skip check if auto-coolant is on
+M225 #140 "Please Select Auto Vac/Blow To Continue!"
+#140 = 1.5 
+G4 P.1
+N100
+IF !#61077 THEN M225 #140 "Please Select Auto Vac/Blow To Continue!" ;61077 = JPO22/CoolantAutoManualLED
+G4 P.5
+IF !#61077 THEN GOTO 100
+N200

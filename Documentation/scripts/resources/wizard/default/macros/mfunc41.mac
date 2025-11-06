@@ -1,0 +1,13 @@
+;-------
+;M41 macro
+; Selects Low Range Spindle
+;-------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 100  ;Skip macro if graphing or searching
+
+
+M95 /42/43                       ;Turn off Med & High Request
+M94 /41                          ;Request Low range
+
+N100

@@ -1,0 +1,79 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc49.mac - to run from aux 6, p193 = 4911
+; M49 macro
+; Description: Sets specified axis to 0 part 0.
+; Notes:
+; #20101-#20108 store the ascii value of axis labels 1-8.
+; #23701-#23708 represent wther an axis has been homed or not. (0 = NOT homed.)
+; Ascii value of uppercase N is 78 (Only valid axes need to be homed)
+; Requires: Machine home must be set prior to use.
+; Please see TB300 for tips on writing custom macros.
+  #103 = 0; number of valid axes.
+; #150 = label of first valid axis 
+; #151 = label of second valid axis
+; #152 = label of third valid axis
+; #153 = label of fourth valid axis 
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000 
+#101 = 1                         ;Initialize #101 to 1, (represents axis number) 
+IF #50010                        ;Prevent lookahead from parsing past here
+
+N200                             ;If an axis has not been homed, notify user part 0 can not be set.   
+#102 = #[20100 + #101]           ;Set #102 = Ascii value of current axis label
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 != 78 THEN #[103 +#101] = #102 ;Put label into appropriate variable
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 != 78 THEN #103 = [[#103]+1]  ;Increment number of valid axes.
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #102 == 78 THEN GOTO 300      ;Skip if axis label = N
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #[23700 + #101] THEN GOTO 300 ;If current axis has been homed, goto 300 to increment to next axis.
+                                 ;Otherwise, display message below
+M225 #100 "%c axis home is not set.\nPlease home your machine before attempting to set part 0.\nPress Cycle Start to exit and then home all axes." #102 
+IF 1 == 1 THEN GOTO 1000         ;Go to end of macro. Exit macro
+
+N300                             ;Loop through axes to make sure machine is homed 
+IF #50010                        ;Prevent lookahead from parsing past here
+#101 = #101 + 1                  ;Increment axis number 
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #101 < 5 THEN GOTO 200        ;Only need to check 4 axes, go to end
+IF #50010                        ;Prevent lookahead from parsing past here
+
+N400                             ;Ask user which axis to set part 0
+IF #103 == 1 THEN M224 #110 "Please enter label for the axis to set part 0 %c.\n Press Cycle Start to complete" #104 
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #103 == 2 THEN M224 #110 "Please enter label for the axis to set part 0 %c, %c.\n Press Cycle Start to complete" #104 #105 
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #103 == 3 THEN M224 #110 "Please enter label for the axis to set part 0 %c, %c, %c.\n Press Cycle Start to complete" #104 #105 #106
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #103 == 4 THEN M224 #110 "Please enter label for the axis to set part 0 %c, %c, %c, %c.\n Press Cycle Start to complete" #104 #105 #106 #107
+IF #50010                        ;Prevent lookahead from parsing past here
+;Convert to Ascii
+IF #110 == 1 THEN #110 = 65  ;A
+IF #110 == 2 THEN #110 = 66  ;B
+IF #110 == 3 THEN #110 = 67  ;C
+IF #110 == 21 THEN #110 = 85 ;U
+IF #110 == 22 THEN #110 = 86 ;V
+IF #110 == 23 THEN #110 = 87 ;W
+IF #110 == 24 THEN #110 = 88 ;X
+IF #110 == 25 THEN #110 = 89 ;Y
+IF #110 == 26 THEN #110 = 90 ;Z
+IF #50010                        ;Prevent lookahead from parsing past here
+
+;Set selected axis to 0
+IF #25014 == 1 THEN G92 $#110 0  
+IF #25014 == 2 THEN G50 $#110 0
+
+
+
+
+
+
+
+
+
+N1000                            ;End of Macro

@@ -1,0 +1,18 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc20.mac
+; Description: Turn Spindle Orientation Off Macro
+; Notes:
+; Requires: 
+;
+; Outputs:
+; OrientRequest	IS OUT7
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000  
+
+M95 /19                          ;Turn off SpindleOrient request
+
+N1000                            ;End of Macro

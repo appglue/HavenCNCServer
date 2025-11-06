@@ -1,0 +1,34 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc18.mac
+; Description: ATC Initialization
+; Notes: Initalizes Tool Rack ATC to Tool 1 in Spindle.
+;	 Assigns Bins to tools 1 - # based on Parameter 161
+; Requires: CNC12 V4.60 ACORN
+; Revision Date: 1 JUN 2021
+; Please see TB300 or the following link for tips on writing custom macros.
+; https://www.centroidcnc.com/centroid_diy/downloads/acorn_documentation/centroid_cnc_macro_programming.pdf
+;------------------------------------------------------------------------------
+; Parameters:
+;
+; System Variables:
+;
+; PLC Variables:
+;
+; User Variables:
+;
+;------------------------------------------------------------------------------
+
+IF #50001                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+IF #9830 == 1 THEN GOTO 200
+
+N100                             ;Insert your code between N100 and N1000  
+G10 P976 R1
+
+N200
+M94 /18                          ;Request Carousel at Position 1
+G4 P1
+M95 /18
+
+N1000                            ;End of Macro

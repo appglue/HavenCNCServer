@@ -47,7 +47,7 @@ namespace HavenCNCServer
 
             // Handle key events for ESC to exit full screen
             this.KeyDown += BrowserForm_KeyDown;
-            
+
             // Handle form events
             this.Load += BrowserForm_Load;
             this.FormClosing += BrowserForm_FormClosing;
@@ -61,14 +61,14 @@ namespace HavenCNCServer
                 if (webView != null)
                 {
                     await webView.EnsureCoreWebView2Async(null);
-                    
+
                     // Navigate to the URL
                     webView.CoreWebView2.Navigate(_url);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to initialize browser: {ex.Message}", "Error", 
+                MessageBox.Show($"Failed to initialize browser: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -102,7 +102,7 @@ namespace HavenCNCServer
             this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
-            
+
             _isFullScreen = true;
         }
 
@@ -117,7 +117,7 @@ namespace HavenCNCServer
             this.WindowState = FormWindowState.Normal;
             this.FormBorderStyle = FormBorderStyle.Sizable;
             this.WindowState = FormWindowState.Maximized;
-            
+
             _isFullScreen = false;
         }
 
@@ -146,7 +146,7 @@ namespace HavenCNCServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 800);
+            this.ClientSize = new System.Drawing.Size(1200, 1080);
             this.Name = "BrowserForm";
             this.Text = "HavenCNC Control Interface";
             this.ResumeLayout(false);

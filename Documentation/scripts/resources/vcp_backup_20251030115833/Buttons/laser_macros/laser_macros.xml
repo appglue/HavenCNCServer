@@ -1,0 +1,5 @@
+<vcp_button>
+  <run>
+    <macro>#400\system\select_laser_macros.cnc</macro>
+  </run>
+</vcp_button>

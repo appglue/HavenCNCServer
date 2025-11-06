@@ -1,0 +1,24 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc37.mac
+; Custom macro
+; Description: J-TECH Laser Enable
+; Notes:
+; Requires: v4.52 Acorn
+; Please see TB300 for tips on writing custom macros.
+;------------------------------------------------------------------------------
+
+IF #50010                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+N100                             ;Insert your code between N100 and N1000 
+
+M5 S-1				 ;Turn off Spindle and Set Speed to 0
+#159 = 1			 ;Set Variable for M38
+M94 /37                          ;Request Laser Enable
+M94 /38				 ;Request Laser PWM Enable
+M94 /39				 ;Request Laser Reset
+G4 P.5				 ;Pause
+M95 /39				 ;Turn off Reset 
+M3 S-1				 ;Turn on Spindle and Set Speed to 0
+
+N1000                            ;End of Macro

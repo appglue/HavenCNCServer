@@ -1,0 +1,38 @@
+;------------------------------------------------------------------------------
+; Filename: MPGMacro9.mac
+; Description: Smart Tool Release
+; Notes: For Smart Spindle VFD System
+; Requires: CNC12
+; Revision Date: 14 Jul 2025
+; Please see TB300 or the following link for tips on writing custom macros.
+; https://www.centroidcnc.com/centroid_diy/downloads/acorn_documentation/centroid_cnc_macro_programming.pdf
+; Copyright SMC 2025
+;------------------------------------------------------------------------------
+; Parameters:
+;
+; System Variables:
+;
+; PLC Variables:
+;
+; User Variables:
+;
+;------------------------------------------------------------------------------
+IF #50001                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+;Setup Defines
+G65 "#400\system\setup_defines.cnc"
+
+<M225_MESSAGE_TIMER> = 0
+
+N100
+
+M225 <M225_MESSAGE_TIMER> "Press Cycle Start to Enable Tool Release\nor\nPress Cycle Cancel to Abort."
+
+M94 /107                         ;Enable Tool Release
+
+M225 <M225_MESSAGE_TIMER> "Tool Release Now Enabled!\n\nPress Cycle Start after replacing the tool to Continue."
+
+M95 /107                         ;Disable Tool Release
+
+N1000                            ;End of Macro

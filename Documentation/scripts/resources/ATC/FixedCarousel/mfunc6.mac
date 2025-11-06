@@ -1,0 +1,120 @@
+;------------------------------------------------------------------------------
+; Filename: mfunc6.mac
+; Description: Tool Change Macro
+; Notes:
+; Requires: CNC12 V5.29.00+
+; Revision Date: 28 Aug 2025
+; Please see TB300 or the following link for tips on writing custom macros.
+; https://www.centroidcnc.com/centroid_diy/downloads/acorn_documentation/centroid_cnc_macro_programming.pdf
+; Copyright SMC 2025
+;------------------------------------------------------------------------------
+; Parameters:
+;
+; System Variables:
+; #4003 = Positioning Mode (G90/G91)
+;
+; PLC Variables:
+; ToolUnclampedState_M        IS MEM12  (#70012)
+; SpindleOrientedState_M      IS MEM13  (#70013)
+; SpindleZeroSpeedState_M     IS MEM14  (#70014)
+; ToolClampedState_M          IS MEM17  (#70017)
+; ToolChangeComplete_M        IS MEM52  (#70052)
+; AtPutbackLocation_M         IS MEM59  (#70059)
+; AtRequestedToolLocation_M   IS MEM64  (#70064)
+; CarouselInState_M           IS MEM74  (#70074)
+; CarouselOutState_M          IS MEM75  (#70075)
+; PutBackPosition_W           IS W50    (#96050)
+;
+; User Variables:
+; #101 = Saved Positioning Mode (G90/G91)
+;
+; Return Points:
+; G28 = Used For ToolCheck Position / M25 Home Positions
+; G30 P3 = X,Y,Z TT Location
+;------------------------------------------------------------------------------
+IF #50001                        ;Prevent lookahead from parsing past here
+IF #4201 || #4202 THEN GOTO 1000 ;Skip macro if graphing or searching
+
+;==============================================================================
+; Carousel Tool Change Program Starts
+;==============================================================================
+N100
+#101 = #4003                     ;Save Positioning Mode
+G90
+G94                              ;Disable Inverse Time
+M109 /1/2                        ;Disable Overrides
+M5                               ;Disable Spindle
+M9                               ;Disable Coolant
+M107                             ;Send PLC Tool Number
+G4 P.25
+
+M94 /7                           ;Request Tool Change
+M25                              ;Retract Z to Home
+
+M101 /70014                      ;Ensure Spindle at Zero Speed
+
+IF !#70013 THEN M19              ;Orient Spindle
+M101 /70013                      ;Confirm Spindle Oriented
+
+M100 /70015                      ;Confirm AirPressure
+
+IF #96050 == 0 THEN GOTO 150     ;Skip putback
+;------------------------------------------------------------------------------
+; Carousel Tool Putback Section
+;------------------------------------------------------------------------------
+M101 /70013                      ;Confirm Spindle Oriented
+
+;Move to XY Position infront of Carousel
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A5
+
+M101 /70059                      ;Wait for carousel at Putback Position
+G4 P.25
+M101 /70059                      ;Ensure carousel at Putback Position
+
+;Move Head Down to Tool Change Height
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A4
+
+;Move Head and Engage Carousel Fingers
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A6
+
+M15                              ;Unclamp Tool
+
+;------------------------------------------------------------------------------
+; Carousel Tool New Tool Section
+;------------------------------------------------------------------------------
+N150
+G53 Z0                           ;Raise head to Clearance
+M94 /40                          ;Set PutBackComplete
+M101 /70064                      ;Wait for carousel at Requested Tool Position
+M95 /40                          
+
+IF !#70012 THEN M101 /70013      ;Confirm Spindle Oriented if not Unclamped
+
+;Move Head Over Tool if not Already
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A3
+
+M101 /70059                      ;Ensure carousel at Putback Position
+
+IF !#70012 THEN M15              ;Request Unclamp if not already
+
+;Move Head Down to Engage Tool
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A4
+M16                              ;Clamp Tool
+M101 /70017                      ;Wait for Tool Clamped
+
+;Move Head and Disengage Fingers
+G65 "#400\system\fixedcarousel\fixedcarouselpositions.cnc" A7
+
+M5                               ;Turn off spindle and orient request
+
+;------------------------------------------------------------------------------
+; Carousel Finish Section
+;------------------------------------------------------------------------------
+M101 /70052                      ;Wait for Tool Change Complete
+M95 /7                           ;Reset Tool Change Request
+
+M108 /1/2                        ;Enable Overrides
+
+G#101 ;Restore Positioning Mode
+
+N1000                            ;End of Macro
