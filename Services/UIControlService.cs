@@ -168,17 +168,12 @@ namespace HavenCNCServer.Services
                 {
                     _browserForm = new BrowserForm("http://localhost:5000?url_to_havencnc_server=http://localhost:5000");
                     _browserForm.FormClosed += (s, e) => { _isBrowserOpen = false; _browserForm = null; };
-                    
+
                     // Set the main form as owner so browser stays on top of it
                     if (_mainForm != null && !_mainForm.IsDisposed)
                     {
                         _browserForm.Owner = _mainForm;
-                        
-                        // Match the main form's width
-                        _browserForm.Width = _mainForm.Width;
-                        _browserForm.StartPosition = FormStartPosition.Manual;
-                        _browserForm.Location = new System.Drawing.Point(_mainForm.Location.X, _mainForm.Location.Y);
-                        
+
                         // If main form is TopMost, make browser TopMost too
                         if (_mainForm.TopMost)
                         {
@@ -193,8 +188,7 @@ namespace HavenCNCServer.Services
                     _isBrowserOpen = true;
                 }
 
-                // Open in normal windowed mode instead of full screen for now
-                _browserForm.ExitFullScreen(); // Ensure it's not in full screen
+                // Open maximized
                 _browserForm.BringToFront();
                 return true;
             }

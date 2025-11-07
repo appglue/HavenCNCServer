@@ -271,7 +271,7 @@ namespace HavenCNCServer.Services
                 {
                     var isConnected = CNCConnectionManager.IsConnected;
 
-                    // Try to get current position if connected
+                    // Only try to get current position if connected
                     object? position = null;
                     if (isConnected)
                     {
@@ -286,9 +286,10 @@ namespace HavenCNCServer.Services
                                 A = currentPosition.A
                             };
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            // If we can't get position, just send null
+                            // If we can't get position even when "connected", log it and send null
+                            LogWarning($"Could not get position despite connection status: {ex.Message}", "SignalR");
                             position = null;
                         }
                     }

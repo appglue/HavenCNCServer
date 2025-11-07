@@ -33,7 +33,7 @@ namespace HavenCNCServer
             this.Text = "HavenCNC Control Interface";
             this.BackColor = Color.Black;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.WindowState = FormWindowState.Normal;
+            this.WindowState = FormWindowState.Maximized;
             this.ShowInTaskbar = true;
             this.KeyPreview = true;
 
@@ -161,7 +161,6 @@ namespace HavenCNCServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 1080);
             this.Name = "BrowserForm";
             this.Text = "HavenCNC Control Interface";
             this.ResumeLayout(false);
