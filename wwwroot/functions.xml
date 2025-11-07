@@ -150,7 +150,32 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>904</MemBit>
+    <Name>Flood</Name>
+    <DisplayName>Flood</DisplayName>
+    <Order>6</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Flood pump on/off relay output (M8 on M9 off). </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -169,12 +194,12 @@
     <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Output">
-    <ConfigLine>IF True_M THEN RST G540SpindleStage, SET StandardSpindleStage</ConfigLine>
+    <ConfigLine>IF True_M THEN SET G540SpindleDisabled_M</ConfigLine>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -193,12 +218,12 @@
     <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Output">
-    <ConfigLine>IF True_M THEN RST G540SpindleStage, SET StandardSpindleStage</ConfigLine>
+    <ConfigLine>IF True_M THEN SET G540SpindleDisabled_M</ConfigLine>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -211,6 +236,127 @@
     <Tooltip>Legacy G540 spindle control output (used when controlling the spindle through a G540).</Tooltip>
     <Requires>
       <string>G540SpinRevOff</string>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>905</MemBit>
+    <Name>Mist</Name>
+    <DisplayName>Mist</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Mister solenoid on/off relay output (M7 on M9 off).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>VacuumOn</Name>
+    <DisplayName>VacuumOn</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>An output relay to turn on/off a vacuum hold down (M33 on M34 off).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>DustCollectionOn</Name>
+    <DisplayName>DustCollectionOn</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>An output relay to turn on/off a dust collector contactor/relay (M35 on M36 off).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>IF True_M THEN RST OpenChuck</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>906</MemBit>
+    <Name>OpenChuck</Name>
+    <DisplayName>OpenChuck</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>A relay output used to a open a chuck (M10 on). It looks for ChuckIsOpen input or times out according to parameter 992 and then turns off the relay. 
+
+Parameter 992 is a timer (in ms) for Turnoff, or Fault if ChuckIsOpen Input is selected. M10 turns on OpenChuck, which turns off when the timer or input is seen. M10 Turns off M11.  See the Chuck appendix attached to this document.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>IF True_M THEN RST CloseChuck</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>907</MemBit>
+    <Name>CloseChuck</Name>
+    <DisplayName>CloseChuck</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>A relay output used to close a chuck (M11 on).  It looks for ChuckIsClosed input or times out according to parameter 992 and then turns off relay.</Tooltip>
+    <Requires>
     </Requires>
     <Conflicts>
     </Conflicts>
@@ -447,7 +593,55 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>CutOff</Name>
+    <DisplayName>CutOff</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output that controls a parts cutoff device commonly found on lathes (M27 on).  Looks for CutOffIsDown input to close or times out according to parameter 995 and then turns off relay (M28 forces output off).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>PartChute</Name>
+    <DisplayName>PartChute</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output that controls a parts catcher commonly found on lathes (M22 on).  Looks for PartChuteIsIn input or times out according to parameter 994 and then turns off relay (M23 forces output off).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -471,7 +665,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -495,7 +689,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -519,13 +713,61 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
     <MemBit>903</MemBit>
     <Name>Axis4BrakeRelease</Name>
     <DisplayName>Axis4BrakeRelease</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Brake control output for an axis brake.  Releases brake when axis motor power is enabled and applies the brake when axis motor enable is removed. Typically not IsRequired if axis motor/drives have a builtin brake.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>Axis5BrakeRelease</Name>
+    <DisplayName>Axis5BrakeRelease</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Brake control output for an axis brake.  Releases brake when axis motor power is enabled and applies the brake when axis motor enable is removed. Typically not IsRequired if axis motor/drives have a builtin brake.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>Axis6BrakeRelease</Name>
+    <DisplayName>Axis6BrakeRelease</DisplayName>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
@@ -592,7 +834,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -692,7 +934,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -718,7 +960,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -735,6 +977,58 @@
     </Conflicts>
     <InputType>0</InputType>
     <Axis>4</Axis>
+    <Direction>None</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="HomeLimit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>FifthAxisHomeLimitOk</Name>
+    <DisplayName>FifthAxisHomeLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for a combination home and limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>5</Axis>
+    <Direction>None</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="HomeLimit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>SixthAxisHomeLimitOk</Name>
+    <DisplayName>SixthAxisHomeLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for a combination home and limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>6</Axis>
     <Direction>None</Direction>
   </PlcFunction>
   <PlcFunction xsi:type="Input">
@@ -809,6 +1103,29 @@
     <InputType>1</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET BackGearDisabled_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>BackGear</Name>
+    <DisplayName>BackGear</DisplayName>
+    <Order>8</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Switch input to indicate to CNC12 that the machine is in BackGear so CNC12 will know to reverse the spindle direction automatically (M3  CW and M4  CCW).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
@@ -863,7 +1180,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -887,7 +1204,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -911,7 +1228,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -987,7 +1304,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1013,7 +1330,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1032,6 +1349,58 @@
     <Axis>4</Axis>
     <Direction>None</Direction>
   </PlcFunction>
+  <PlcFunction xsi:type="Home">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>FifthAxisHomeOk</Name>
+    <DisplayName>FifthAxisHomeOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual home switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>5</Axis>
+    <Direction>None</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Home">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>SixthAxisHomeOk</Name>
+    <DisplayName>SixthAxisHomeOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual home switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>6</Axis>
+    <Direction>None</Direction>
+  </PlcFunction>
   <PlcFunction xsi:type="Limit">
     <ConfigLine>
     </ConfigLine>
@@ -1039,7 +1408,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1065,7 +1434,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1091,7 +1460,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1117,7 +1486,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1143,7 +1512,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1169,7 +1538,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1195,7 +1564,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1221,7 +1590,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1239,6 +1608,202 @@
     <InputType>0</InputType>
     <Axis>4</Axis>
     <Direction>Plus</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Limit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>FifthAxisMinusLimitOk</Name>
+    <DisplayName>FifthAxisMinusLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>5</Axis>
+    <Direction>Minus</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Limit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>FifthAxisPlusLimitOk</Name>
+    <DisplayName>FifthAxisPlusLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>5</Axis>
+    <Direction>Plus</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Limit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>SixthAxisMinusLimitOk</Name>
+    <DisplayName>SixthAxisMinusLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>6</Axis>
+    <Direction>Minus</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Limit">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>SixthAxisPlusLimitOk</Name>
+    <DisplayName>SixthAxisPlusLimitOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual input for an individual limit switch (use HomeAll and/or LimitAll to save on inputs).</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <Axis>6</Axis>
+    <Direction>Plus</Direction>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET ChuckIsOpenIs_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ChuckIsOpen</Name>
+    <DisplayName>ChuckIsOpen</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Chuck open indicator switch input tells CNC12 that the chuck is open.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET ChuckIsClosedIs_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ChuckIsClosed</Name>
+    <DisplayName>ChuckIsClosed</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Chuck closed indicator switch input tells CNC12 that the chuck is closed.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET CutOffIsDownIs_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>CutOffIsDown</Name>
+    <DisplayName>CutOffIsDown</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>A switch input that tells CNC12 that the Cut Off device has completed its stroke.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET PartChuteIsInIs_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>PartChuteIsIn</Name>
+    <DisplayName>PartChuteIsIn</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>A switch input that tells CNC12 that the part chute has retracted.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Home">
     <ConfigLine>
@@ -1271,7 +1836,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1295,7 +1860,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1344,7 +1909,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1395,7 +1960,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1419,7 +1984,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>true</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1429,7 +1994,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Door closed confirmation input. Typically for a machine tool safety door switch, but could also be used for another safety deviceÃ¢â‚¬â„¢s input.  
+    <Tooltip>Door closed confirmation input. Typically for a machine tool safety door switch, but could also be used for another safety device’s input.  
 
 See Acorn Door Interlock Safety documentation for more details.
 P985 = 1, Allows slow jog with the door open
@@ -1447,7 +2012,7 @@ P985 = 2, Does not allow any movement with the door open</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>true</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1676,6 +2241,30 @@ See schematic S15008.</Tooltip>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>TailStockInOut</Name>
+    <DisplayName>TailStockInOut</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output that is typically used to activate air solenoid to move a Lathe TailStock In or Out. SPDT relay can be wired either way.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
     <IsATC>true</IsATC>
     <Hidden>false</Hidden>
     <Machine>
@@ -1797,6 +2386,54 @@ See schematic S15008.</Tooltip>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>Axis5DriveOk</Name>
+    <DisplayName>Axis5DriveOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual Drive Fault input for each axis. FirstAxisDriveOk SecondAxisDriveOk etc..  add corresponding drive fault message X axis drive Fault Y axis drive Fault etc..</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>Axis6DriveOk</Name>
+    <DisplayName>Axis6DriveOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Individual Drive Fault input for each axis. FirstAxisDriveOk SecondAxisDriveOk etc..  add corresponding drive fault message X axis drive Fault Y axis drive Fault etc..</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
     <IsATC>true</IsATC>
     <Hidden>false</Hidden>
     <Machine>
@@ -1822,7 +2459,7 @@ See schematic S15008.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1846,7 +2483,7 @@ See schematic S15008.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1860,6 +2497,31 @@ See schematic S15008.</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET DrawBarReleasedDisable_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>DrawBarReleased</Name>
+    <DisplayName>DrawBarReleased</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>An input that is typically used on ATC router spindles. Input is active when Draw Bar/Pull Stud is active indicating that the tool is released from the spindle.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+      <string>ToolIsUnclamped</string>
+      <string>DrawBarIsUp_I</string>
     </Conflicts>
     <InputType>0</InputType>
   </PlcFunction>
@@ -1882,7 +2544,7 @@ See schematic S15008.</Tooltip>
     </RestrictedTo>
     <Tooltip>Output to control (ON/OFF) a Dust Collection motor through a relay or contactor. 
 
-Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. CanÃ¢â‚¬â„¢t assign Flood and DustCollection at same time.</Tooltip>
+Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. Can’t assign Flood and DustCollection at same time.</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -1985,6 +2647,30 @@ Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. C
     </Conflicts>
     <InputType>0</InputType>
   </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>SpindleCooling</Name>
+    <DisplayName>SpindleCooling</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to control (on/off) spindle cooling typically a fan or water pump.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
   <PlcFunction xsi:type="Input">
     <ConfigLine>
     </ConfigLine>
@@ -1992,7 +2678,7 @@ Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. C
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2016,7 +2702,7 @@ Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. C
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2132,13 +2818,39 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Output">
+    <ConfigLine>IF True_M THEN SET ColletDisabled_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>ColletOpenClose</Name>
+    <DisplayName>ColletOpenClose</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>An output typically used for the 5C collet open/close function. 
+This output is typically used for a Dunham-style air-operated chuck. 
+Note: Output and VCP button skinevent 74 uses OUT1130 for the LED. 
+See the Chuck Appendix attached to this document.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2162,7 +2874,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2186,7 +2898,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2210,7 +2922,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2234,7 +2946,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2258,7 +2970,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2282,7 +2994,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2306,7 +3018,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2330,7 +3042,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2354,7 +3066,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2378,7 +3090,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2402,7 +3114,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2426,7 +3138,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2450,7 +3162,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2474,7 +3186,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2498,7 +3210,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2522,7 +3234,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2546,7 +3258,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2570,7 +3282,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2708,8 +3420,31 @@ See Acorn to Laser schematics for typical use.</Tooltip>
     <RestrictedTo>
       <int>2</int>
     </RestrictedTo>
-    <Tooltip>Pulse Width Modulation Output for lasers and spindles PWM signal output.
-Note: For Acorn only: Only available on Output #2  DB25 connector Pin #14  and Relay 2 is sacrificial and must be disconnected and cannot be used when using PWM Output. See Laser Hookup schematics for typical use.</Tooltip>
+    <Tooltip>PWM Output</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ChuckFootPedal_I</Name>
+    <DisplayName>ChuckFootPedal</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Lathe Chuck Foot Pedal input, When the Input is Closed (Green), it will toggle between Chuck Open/Close or ColletOpenClose ON/OFF</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -2723,7 +3458,7 @@ Note: For Acorn only: Only available on Output #2  DB25 connector Pin #14  and R
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2746,7 +3481,7 @@ Note: For Acorn only: Only available on Output #2  DB25 connector Pin #14  and R
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2771,44 +3506,18 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
-    <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
-      <MachineType>Mill</MachineType>
-      <MachineType>Router</MachineType>
+      <MachineType>Lathe</MachineType>
     </Machine>
     <MemBit>903</MemBit>
-    <Name>ATC_CarouselForward</Name>
-    <DisplayName>ATC_CarouselForward</DisplayName>
+    <Name>CAxisEnable</Name>
+    <DisplayName>CAxis Enable</DisplayName>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Output to control the ATC Carousel in the Forward direction so that it counts up in tools (1 Ã¢â€ â€™ 2 Ã¢â€ â€™ 3 Ã¢â€ â€™ etc.)</Tooltip>
-    <Requires>
-    </Requires>
-    <Conflicts>
-    </Conflicts>
-    <InputType>0</InputType>
-  </PlcFunction>
-  <PlcFunction xsi:type="Output">
-    <ConfigLine>
-    </ConfigLine>
-    <IsRequired>false</IsRequired>
-    <IsCustom>false</IsCustom>
-    <Safety>false</Safety>
-    <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
-    <Machine>
-      <MachineType>Mill</MachineType>
-      <MachineType>Router</MachineType>
-    </Machine>
-    <MemBit>903</MemBit>
-    <Name>ATC_CarouselReverse</Name>
-    <DisplayName>ATC_CarouselReverse</DisplayName>
-    <Order>0</Order>
-    <RestrictedTo>
-    </RestrictedTo>
-    <Tooltip>Output to command the ATC Carousel in the Reverse direction so that it counts down in tools (4 Ã¢â€ â€™ 3 Ã¢â€ â€™ 2 Ã¢â€ â€™ etc.)</Tooltip>
+    <Tooltip>Output used to enable the C-axis drive.</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -2822,7 +3531,278 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretPosBit1</Name>
+    <DisplayName>ToolTurretPosBit1</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Up to four inputs can be used as bits to determine the current active tool from the ATC. Typically used with a Lathe Turret.
+These four bits are used in combination to express the currently selected tool.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretPosBit2</Name>
+    <DisplayName>ToolTurretPosBit2</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Up to four inputs can be used as bits to determine the current active tool from the ATC. Typically used with a Lathe Turret.
+These four bits are used in combination to express the currently selected tool.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretPosBit3</Name>
+    <DisplayName>ToolTurretPosBit3</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Up to four inputs can be used as bits to determine the current active tool from the ATC. Typically used with a Lathe Turret.
+These four bits are used in combination to express the currently selected tool.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretPosBit4</Name>
+    <DisplayName>ToolTurretPosBit4</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Up to four inputs can be used as bits to determine the current active tool from the ATC. Typically used with a Lathe Turret.
+These four bits are used in combination to express the currently selected tool.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>RotateToolTurret</Name>
+    <DisplayName>RotateToolTurret</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to control rotation ON/OFF of tool turret, typically used with Lathe turrets</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>ReverseToolTurret</Name>
+    <DisplayName>ReverseToolTurret</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to reverse the direction of the tool turret, typically used with Lathe turrets.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretCounter</Name>
+    <DisplayName>ToolTurretCounter</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>This input is used to count the current turret position, typically used with a Lathe Turret.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ToolTurretSyncBit</Name>
+    <DisplayName>ToolTurretSyncBit</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>This input is used for homing ‘Counter’ and ‘Timer’ based turrets
+M18 rotates the turret to seek the turret home switch and waits for ToolTurretSyncBit to trigger, then sets the current turret tool position to 1. Typically used with a Lathe Turret.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>ToolTurretEnable</Name>
+    <DisplayName>ToolTurretEnable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to enable the Tool Turret, typically a lathe turret.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+      <MachineType>Router</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>ATC_CarouselForward</Name>
+    <DisplayName>ATC_CarouselForward</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to control the ATC Carousel in the Forward direction so that it counts up in tools (1 → 2 → 3 → etc.)</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Mill</MachineType>
+      <MachineType>Router</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>ATC_CarouselReverse</Name>
+    <DisplayName>ATC_CarouselReverse</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to command the ATC Carousel in the Reverse direction so that it counts down in tools (4 → 3 → 2 → etc.)</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>true</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2847,7 +3827,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2877,7 +3857,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2907,7 +3887,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2936,7 +3916,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2983,6 +3963,102 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     </Conflicts>
     <InputType>0</InputType>
   </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>Ax1_MinusJoystick_I</Name>
+    <DisplayName>Ax1_MinusJoystick</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input from axis jogging joystick switches to command movement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>Ax1_PlusJoystick_I</Name>
+    <DisplayName>Ax1_PlusJoystick</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input from axis jogging joystick switches to command movement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>Ax2_MinusJoystick_I</Name>
+    <DisplayName>Ax2_MinusJoystick</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input from axis jogging joystick switches to command movement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Lathe</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>Ax2_PlusJoystick_I</Name>
+    <DisplayName>Ax2_PlusJoystick</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input from axis jogging joystick switches to command movement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
   <PlcFunction xsi:type="Output">
     <ConfigLine>
     </ConfigLine>
@@ -2990,7 +4066,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -3067,7 +4143,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
-    <MemBit>901</MemBit>
+    <MemBit>902</MemBit>
     <Name>HomeLimitAll</Name>
     <DisplayName>HomeLimitAll</DisplayName>
     <Order>0</Order>
@@ -3110,7 +4186,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Lathe</MachineType>
@@ -3136,7 +4212,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Lathe</MachineType>
@@ -3155,54 +4231,6 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     </Conflicts>
     <InputType>4096</InputType>
   </PlcFunction>
-  <PlcFunction xsi:type="Probe">
-    <ConfigLine>
-    </ConfigLine>
-    <IsRequired>false</IsRequired>
-    <IsCustom>true</IsCustom>
-    <Safety>false</Safety>
-    <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
-    <Machine>
-      <MachineType>All</MachineType>
-    </Machine>
-    <MemBit>901</MemBit>
-    <Name>FixedToolTouchPlate</Name>
-    <DisplayName>FixedToolTouchPlate</DisplayName>
-    <Order>0</Order>
-    <RestrictedTo>
-    </RestrictedTo>
-    <Tooltip>Input for a fixed tool touch plate sensor used for tool length measurement.</Tooltip>
-    <Requires>
-    </Requires>
-    <Conflicts>
-    </Conflicts>
-    <InputType>4096</InputType>
-  </PlcFunction>
-  <PlcFunction xsi:type="Probe">
-    <ConfigLine>
-    </ConfigLine>
-    <IsRequired>false</IsRequired>
-    <IsCustom>true</IsCustom>
-    <Safety>false</Safety>
-    <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
-    <Machine>
-      <MachineType>All</MachineType>
-    </Machine>
-    <MemBit>901</MemBit>
-    <Name>MaterialToolTouchPlate</Name>
-    <DisplayName>MaterialToolTouchPlate</DisplayName>
-    <Order>0</Order>
-    <RestrictedTo>
-    </RestrictedTo>
-    <Tooltip>Input for a material-mounted tool touch plate sensor for workpiece height measurement.</Tooltip>
-    <Requires>
-    </Requires>
-    <Conflicts>
-    </Conflicts>
-    <InputType>4096</InputType>
-  </PlcFunction>
   <PlcFunction xsi:type="Output">
     <ConfigLine>
     </ConfigLine>
@@ -3210,7 +4238,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3234,7 +4262,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3283,7 +4311,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3332,7 +4360,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3381,7 +4409,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3430,7 +4458,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3480,7 +4508,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3530,7 +4558,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3580,7 +4608,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3630,7 +4658,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3680,7 +4708,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3730,7 +4758,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3780,7 +4808,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3830,7 +4858,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3880,7 +4908,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3930,7 +4958,207 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_Ax5PlusJog_SV</Name>
+    <DisplayName>Ax5PlusJog</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_Ax5PlusJogOut_SV</Name>
+      <DisplayName>Ax5PlusJogOut</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_Ax5MinusJog_SV</Name>
+    <DisplayName>Ax5MinusJog</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_Ax5MinusJogOut_SV</Name>
+      <DisplayName>Ax5MinusJogOut</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_Ax6PlusJog_SV</Name>
+    <DisplayName>Ax6PlusJog</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_Ax6PlusJogOut_SV</Name>
+      <DisplayName>Ax6PlusJogOut</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_Ax6MinusJog_SV</Name>
+    <DisplayName>Ax6MinusJog</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_Ax6MinusJogOut_SV</Name>
+      <DisplayName>Ax6MinusJogOut</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3980,7 +5208,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4030,7 +5258,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4080,7 +5308,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4130,7 +5358,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4180,7 +5408,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4230,7 +5458,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4280,7 +5508,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4330,7 +5558,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4380,7 +5608,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4430,7 +5658,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4480,7 +5708,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4530,7 +5758,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4580,7 +5808,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4630,7 +5858,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4680,7 +5908,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4730,7 +5958,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4780,7 +6008,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4830,7 +6058,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4880,7 +6108,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4930,7 +6158,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4980,7 +6208,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5030,7 +6258,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5080,7 +6308,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5130,7 +6358,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5180,7 +6408,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5230,7 +6458,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5280,7 +6508,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5330,7 +6558,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5380,7 +6608,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5430,7 +6658,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5480,7 +6708,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5530,7 +6758,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5580,7 +6808,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5630,7 +6858,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5680,7 +6908,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5730,7 +6958,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5780,7 +7008,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5830,7 +7058,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5880,7 +7108,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5930,7 +7158,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Router</MachineType>
     </Machine>
@@ -5979,7 +7207,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6029,7 +7257,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6079,7 +7307,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6129,7 +7357,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6179,7 +7407,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6229,7 +7457,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6279,7 +7507,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6329,7 +7557,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6379,7 +7607,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6429,7 +7657,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6479,7 +7707,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6529,7 +7757,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6579,7 +7807,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6629,7 +7857,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6679,7 +7907,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6729,7 +7957,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6779,7 +8007,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6829,7 +8057,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6879,7 +8107,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6929,7 +8157,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6979,7 +8207,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7029,7 +8257,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7079,7 +8307,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7129,7 +8357,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7179,7 +8407,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7229,7 +8457,107 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_MPGAxis5Select_SV</Name>
+    <DisplayName>MPG Axis 5 Select</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_MPGAxis5SelectOut_SV</Name>
+      <DisplayName>MPG Axis 5 Select Out</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>ExtUsb_MPGAxis6Select_SV</Name>
+    <DisplayName>MPG Axis 6 Select</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+    <PlcFunction xsi:type="UsbOutput">
+      <ConfigLine>
+      </ConfigLine>
+      <IsRequired>false</IsRequired>
+      <IsCustom>false</IsCustom>
+      <Safety>false</Safety>
+      <IsATC>false</IsATC>
+      <Hidden>false</Hidden>
+      <Machine>
+        <MachineType>All</MachineType>
+      </Machine>
+      <MemBit>903</MemBit>
+      <Name>ExtUsb_MPGAxis6SelectOut_SV</Name>
+      <DisplayName>MPG Axis 6 Select Out</DisplayName>
+      <Order>0</Order>
+      <RestrictedTo>
+      </RestrictedTo>
+      <Tooltip>
+      </Tooltip>
+      <Requires>
+      </Requires>
+      <Conflicts>
+      </Conflicts>
+      <InputType>0</InputType>
+    </PlcFunction>
+  </PlcFunction>
+  <PlcFunction xsi:type="UsbInput">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7279,7 +8607,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7329,7 +8657,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7379,7 +8707,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7429,7 +8757,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7479,7 +8807,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7529,7 +8857,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7572,6 +8900,174 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
       <InputType>0</InputType>
     </PlcFunction>
   </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>TorchOn</Name>
+    <DisplayName>TorchOn</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to Turn Plasma Torch On</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET TorchArcOkDisabled_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>TorchArcOk_I</Name>
+    <DisplayName>TorchArcOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input used for the Plasma cutter Arc box signal, letting CNC12 know that the Plasma arc is OK. See Plasma Operator manual for more info.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>IF True_M THEN SET TorchFloatSwitchDisabled_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>TorchFloatSwitch_I</Name>
+    <DisplayName>TorchFloatSwitch</DisplayName>
+    <Order>56</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Signal input from the Plasma Torch Mount Float Switch. See Plasma Operator manual for more info.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>512</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>OhmicSensor</Name>
+    <DisplayName>Ohmic Sensor</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input used for an ohmic specific plasma torch tip touch-off. 
+
+See the Plasma Installation Manual for more info. See the relevant schematic and Plasma manual for hook-up and use.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>Ohmic_Enable</Name>
+    <DisplayName>Ohmic Enable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to Enable Ohmic Sensor</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>TorchBreakawayOk</Name>
+    <DisplayName>TorchBreakawayOk</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>When this input is low (Red) will trigger a fault condition</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>1024</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Plasma</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>TorchTouchDisconnect</Name>
+    <DisplayName>TorchTouchDisconnect</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Output to Disconnect Torch Touch</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
   <PlcFunction xsi:type="UsbInput">
     <ConfigLine>
     </ConfigLine>
@@ -7579,7 +9075,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7629,7 +9125,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7661,7 +9157,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7693,7 +9189,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7724,7 +9220,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7755,7 +9251,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7798,24 +9294,24 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
       <InputType>0</InputType>
     </PlcFunction>
   </PlcFunction>
-  <PlcFunction xsi:type="Input">
+  <PlcFunction xsi:type="Output">
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
-      <MachineType>All</MachineType>
+      <MachineType>Plasma</MachineType>
     </Machine>
-    <MemBit>902</MemBit>
-    <Name>SlavedAxisDriveOk</Name>
-    <DisplayName>SlavedAxisDriveOk</DisplayName>
+    <MemBit>903</MemBit>
+    <Name>ScribeOn</Name>
+    <DisplayName>Scribe On</DisplayName>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Signal from axis drive that the drive is okay with no faults.</Tooltip>
+    <Tooltip>Output to turn on a metal scribe, typically used to turn on a Plasma Air/motor vibrating scribe for metal marking. </Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -7926,6 +9422,331 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     </Conflicts>
     <InputType>0</InputType>
   </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>LaserStandby_O</Name>
+    <DisplayName>Fiber Laser Standby Mode</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>LaserReady_I</Name>
+    <DisplayName>Fiber Laser Ready</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>FiberLaserOn_I</Name>
+    <DisplayName>Fiber Laser On</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>FiberLaserOk_I</Name>
+    <DisplayName>Fiber Laser Ok</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>LaserEnable_O</Name>
+    <DisplayName>Fiber Laser Enable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>AlignmentLaserEnable_O</Name>
+    <DisplayName>Fiber Alignment Laser Enable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>FiberLaserReset_O</Name>
+    <DisplayName>Fiber Laser Reset</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>LaserHeadOk_I</Name>
+    <DisplayName>Fiber Laser Head Ok</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Input">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>902</MemBit>
+    <Name>LaserHeadInPos_I</Name>
+    <DisplayName>Fiber Laser Head In Position</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>GasEnable_O</Name>
+    <DisplayName>Cutting Gas Enable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>NitrogenSelect_O</Name>
+    <DisplayName>Nitrogen Gas Select</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>OxygenSelect_O</Name>
+    <DisplayName>Oxygen Gas Select</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>AirSelect_O</Name>
+    <DisplayName>Air Select</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
   <PlcFunction xsi:type="UsbInput">
     <ConfigLine>
     </ConfigLine>
@@ -7933,7 +9754,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7983,7 +9804,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8033,7 +9854,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8083,7 +9904,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8133,7 +9954,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8183,7 +10004,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8233,7 +10054,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8283,7 +10104,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8357,13 +10178,62 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>true</Hidden>
+    <Hidden>false</Hidden>
     <Machine>
       <MachineType>Router</MachineType>
     </Machine>
     <MemBit>903</MemBit>
     <Name>SmartToolReleaseEnable_O</Name>
     <DisplayName>Smart Spindle Tool Release Enable</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>IF True_M THEN SET LaserHeadCalibrateDisabled_M</ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>LaserHeadCalibrate_O</Name>
+    <DisplayName>Laser Head Calibrate</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>
+    </Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>0</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Output">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>false</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>Laser</MachineType>
+    </Machine>
+    <MemBit>903</MemBit>
+    <Name>LaserHeadReset_O</Name>
+    <DisplayName>Laser Head Reset</DisplayName>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
