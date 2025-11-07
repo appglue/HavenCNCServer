@@ -150,7 +150,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -174,7 +174,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -198,7 +198,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -447,7 +447,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -471,7 +471,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -495,7 +495,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -519,7 +519,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -543,7 +543,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -592,7 +592,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -692,7 +692,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -718,7 +718,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -863,7 +863,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -887,7 +887,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -911,7 +911,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -987,7 +987,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1013,7 +1013,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1039,7 +1039,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1065,7 +1065,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1091,7 +1091,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1117,7 +1117,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1143,7 +1143,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1169,7 +1169,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1195,7 +1195,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1221,7 +1221,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1271,7 +1271,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1295,7 +1295,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1344,7 +1344,7 @@
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1395,7 +1395,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1419,7 +1419,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>true</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1429,7 +1429,7 @@ See Touch Probe Setup Manual for more detailed information.</Tooltip>
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Door closed confirmation input. Typically for a machine tool safety door switch, but could also be used for another safety deviceâ€™s input.  
+    <Tooltip>Door closed confirmation input. Typically for a machine tool safety door switch, but could also be used for another safety deviceÃ¢â‚¬â„¢s input.  
 
 See Acorn Door Interlock Safety documentation for more details.
 P985 = 1, Allows slow jog with the door open
@@ -1447,7 +1447,7 @@ P985 = 2, Does not allow any movement with the door open</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>true</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1822,7 +1822,7 @@ See schematic S15008.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1846,7 +1846,7 @@ See schematic S15008.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -1882,7 +1882,7 @@ See schematic S15008.</Tooltip>
     </RestrictedTo>
     <Tooltip>Output to control (ON/OFF) a Dust Collection motor through a relay or contactor. 
 
-Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. Canâ€™t assign Flood and DustCollection at same time.</Tooltip>
+Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. CanÃ¢â‚¬â„¢t assign Flood and DustCollection at same time.</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -1992,7 +1992,7 @@ Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. C
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2016,7 +2016,7 @@ Works exactly like Flood, uses M8/M9 and uses same button on the VCP as Flood. C
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2138,7 +2138,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2162,7 +2162,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2186,7 +2186,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2210,7 +2210,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2234,7 +2234,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2258,7 +2258,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2282,7 +2282,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2306,7 +2306,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2330,7 +2330,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2354,7 +2354,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2378,7 +2378,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2402,7 +2402,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2426,7 +2426,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2450,7 +2450,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2474,7 +2474,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2498,7 +2498,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2522,7 +2522,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2546,7 +2546,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2570,7 +2570,7 @@ Works just like the Low Lube Level Indicator Input. Issues a warning message and
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2697,7 +2697,7 @@ See Acorn to Laser schematics for typical use.</Tooltip>
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2723,7 +2723,7 @@ Note: For Acorn only: Only available on Output #2  DB25 connector Pin #14  and R
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2746,7 +2746,7 @@ Note: For Acorn only: Only available on Output #2  DB25 connector Pin #14  and R
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -2772,7 +2772,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2783,7 +2783,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Output to control the ATC Carousel in the Forward direction so that it counts up in tools (1 â†’ 2 â†’ 3 â†’ etc.)</Tooltip>
+    <Tooltip>Output to control the ATC Carousel in the Forward direction so that it counts up in tools (1 Ã¢â€ â€™ 2 Ã¢â€ â€™ 3 Ã¢â€ â€™ etc.)</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -2797,7 +2797,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2808,7 +2808,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <Order>0</Order>
     <RestrictedTo>
     </RestrictedTo>
-    <Tooltip>Output to command the ATC Carousel in the Reverse direction so that it counts down in tools (4 â†’ 3 â†’ 2 â†’ etc.)</Tooltip>
+    <Tooltip>Output to command the ATC Carousel in the Reverse direction so that it counts down in tools (4 Ã¢â€ â€™ 3 Ã¢â€ â€™ 2 Ã¢â€ â€™ etc.)</Tooltip>
     <Requires>
     </Requires>
     <Conflicts>
@@ -2822,7 +2822,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2847,7 +2847,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2877,7 +2877,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2907,7 +2907,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2936,7 +2936,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -2990,7 +2990,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -3110,7 +3110,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Lathe</MachineType>
@@ -3136,7 +3136,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Lathe</MachineType>
@@ -3162,7 +3162,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3186,7 +3186,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3235,7 +3235,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3284,7 +3284,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3333,7 +3333,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3382,7 +3382,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3432,7 +3432,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3482,7 +3482,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3532,7 +3532,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3582,7 +3582,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3632,7 +3632,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3682,7 +3682,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3732,7 +3732,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3782,7 +3782,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3832,7 +3832,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3882,7 +3882,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3932,7 +3932,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -3982,7 +3982,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4032,7 +4032,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4082,7 +4082,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4132,7 +4132,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4182,7 +4182,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4232,7 +4232,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4282,7 +4282,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4332,7 +4332,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4382,7 +4382,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4432,7 +4432,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4482,7 +4482,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4532,7 +4532,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4582,7 +4582,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4632,7 +4632,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4682,7 +4682,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4732,7 +4732,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4782,7 +4782,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4832,7 +4832,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4882,7 +4882,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4932,7 +4932,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -4982,7 +4982,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5032,7 +5032,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5082,7 +5082,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5132,7 +5132,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5182,7 +5182,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5232,7 +5232,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5282,7 +5282,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5332,7 +5332,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5382,7 +5382,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5432,7 +5432,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5482,7 +5482,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5532,7 +5532,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5582,7 +5582,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5632,7 +5632,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5682,7 +5682,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5732,7 +5732,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5782,7 +5782,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5832,7 +5832,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5882,7 +5882,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Router</MachineType>
     </Machine>
@@ -5931,7 +5931,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -5981,7 +5981,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6031,7 +6031,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6081,7 +6081,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6131,7 +6131,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6181,7 +6181,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6231,7 +6231,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6281,7 +6281,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6331,7 +6331,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6381,7 +6381,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6431,7 +6431,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6481,7 +6481,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6531,7 +6531,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6581,7 +6581,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6631,7 +6631,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6681,7 +6681,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6731,7 +6731,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6781,7 +6781,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6831,7 +6831,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6881,7 +6881,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6931,7 +6931,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -6981,7 +6981,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7031,7 +7031,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7081,7 +7081,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7131,7 +7131,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7181,7 +7181,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7231,7 +7231,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7281,7 +7281,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7331,7 +7331,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7381,7 +7381,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7431,7 +7431,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7481,7 +7481,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7531,7 +7531,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7581,7 +7581,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7613,7 +7613,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7645,7 +7645,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7676,7 +7676,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>true</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Mill</MachineType>
       <MachineType>Router</MachineType>
@@ -7707,7 +7707,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7757,7 +7757,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7885,7 +7885,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7935,7 +7935,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -7985,7 +7985,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8035,7 +8035,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8085,7 +8085,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8135,7 +8135,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8185,7 +8185,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8235,7 +8235,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>true</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>All</MachineType>
     </Machine>
@@ -8309,7 +8309,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
-    <Hidden>false</Hidden>
+    <Hidden>true</Hidden>
     <Machine>
       <MachineType>Router</MachineType>
     </Machine>
