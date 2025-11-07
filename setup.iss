@@ -72,6 +72,12 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
+; Install WebView2 Runtime if not present
+Filename: "https://go.microsoft.com/fwlink/p/?LinkId=2124703"; Description: "Download and install Microsoft Edge WebView2 Runtime"; Flags: shellexec waituntilterminated; Check: not IsWebView2Installed
+
+; Set permissions for application directory so it can write openapi.json
+Filename: "icacls"; Parameters: """{app}"" /grant ""Users:(OI)(CI)M"""; Flags: runhidden waituntilterminated; StatusMsg: "Setting application directory permissions..."
+
 ; Install and start service if selected
 Filename: "sc"; Parameters: "create ""{#MyServiceName}"" binpath= ""{app}\{#MyAppExeName} --service"" displayname= ""{#MyServiceDisplayName}"" start= auto"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; Tasks: installservice; StatusMsg: "Installing Windows Service..."
 Filename: "sc"; Parameters: "start ""{#MyServiceName}"""; Flags: runhidden waituntilterminated; Tasks: startservice; StatusMsg: "Starting service..."
@@ -143,8 +149,8 @@ var
   ErrorCode: Integer;
 begin
   // Check if .NET 8 Runtime is installed
-  if not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\Microsoft.WindowsDesktop.App') and
-     not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\Microsoft.WindowsDesktop.App') then
+  if not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App') and
+     not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App') then
   begin
     if MsgBox('.NET 8 Desktop Runtime is required but not found. Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
     begin
@@ -153,4 +159,15 @@ begin
     Result := False;
   end else
     Result := True;
+end;
+
+function IsWebView2Installed(): Boolean;
+var
+  Version: String;
+begin
+  // Check if WebView2 Runtime is installed by looking for the registry key
+  Result := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version) or
+            RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}', 'pv', Version) or
+            RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge WebView2 Runtime') or
+            RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge WebView2 Runtime');
 end;

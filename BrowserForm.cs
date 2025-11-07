@@ -1,6 +1,7 @@
 using Microsoft.Web.WebView2.WinForms;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -57,10 +58,24 @@ namespace HavenCNCServer
         {
             try
             {
-                // Initialize WebView2
+                // Initialize WebView2 with custom user data folder
                 if (webView != null)
                 {
-                    await webView.EnsureCoreWebView2Async(null);
+                    // Create a user data folder in a location we have write access to
+                    string userDataFolder = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "HavenCNC",
+                        "WebView2Data"
+                    );
+                    
+                    // Ensure the directory exists
+                    Directory.CreateDirectory(userDataFolder);
+                    
+                    // Create WebView2 environment with custom user data folder
+                    var environment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(
+                        null, userDataFolder, null);
+                    
+                    await webView.EnsureCoreWebView2Async(environment);
 
                     // Navigate to the URL
                     webView.CoreWebView2.Navigate(_url);
