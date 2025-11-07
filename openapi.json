@@ -1323,7 +1323,7 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get current input states",
+        "summary": "Get current input states for all available inputs",
         "responses": {
           "200": {
             "description": "Success",
@@ -1362,7 +1362,7 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get current output states",
+        "summary": "Get current output states for all available outputs",
         "responses": {
           "200": {
             "description": "Success",
@@ -1812,6 +1812,46 @@
               "text/json": {
                 "schema": {
                   "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCIO/GetIODefinitions": {
+      "get": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Get I/O definitions from the PLC source file",
+        "parameters": [
+          {
+            "name": "sourcePath",
+            "in": "query",
+            "description": "Optional path to the PLC source file. If not provided, uses default location.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IODefinitionsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IODefinitionsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IODefinitionsResponse"
                 }
               }
             }
@@ -4166,6 +4206,66 @@
         },
         "additionalProperties": false,
         "description": "I/O configuration DTO for API"
+      },
+      "IODefinition": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The symbolic name of the I/O (e.g., \"EStopOk\", \"SpinFWD\")",
+            "nullable": true
+          },
+          "number": {
+            "type": "integer",
+            "description": "The I/O number (e.g., 1, 2, 65, etc.)",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of I/O: \"INPUT\" or \"OUTPUT\"",
+            "nullable": true
+          },
+          "rawDefinition": {
+            "type": "string",
+            "description": "The raw definition line from the PLC source",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents an input or output definition from the PLC source file"
+      },
+      "IODefinitionsResponse": {
+        "type": "object",
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IODefinition"
+            },
+            "description": "List of all input definitions",
+            "nullable": true
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IODefinition"
+            },
+            "description": "List of all output definitions",
+            "nullable": true
+          },
+          "sourceFilePath": {
+            "type": "string",
+            "description": "The file path that was parsed",
+            "nullable": true
+          },
+          "parsedAt": {
+            "type": "string",
+            "description": "Timestamp when the definitions were parsed",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response containing all I/O definitions from the PLC source file"
       },
       "IOFunction": {
         "type": "object",

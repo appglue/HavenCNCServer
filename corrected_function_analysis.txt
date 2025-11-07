@@ -1,0 +1,1663 @@
+﻿==============================================================================
+CORRECTED FUNCTION ANALYSIS REPORT
+Generated: 11/07/2025 09:54:07
+==============================================================================
+
+SUMMARY:
+- Total function names from functions.xml: 285
+- Functions found in PLC logic (after line 3000): 251
+- Total usage instances found: 606
+- Percentage of functions used: 88.07%
+
+==============================================================================
+FUNCTIONS FOUND IN PLC LOGIC:
+==============================================================================
+
+Function: AirBlowNozzle
+  Usage count: 2
+  Found at lines:
+    Line 6943: IF AirBlowNozzle_SV THEN (AirBlowNozzle)
+    Line 6945: IF AirBlowNozzle THEN (AirBlowNozzleLED)
+
+Function: AirPressureLowMessage
+  Usage count: 2
+  Found at lines:
+    Line 7158: IF Initialize_T && AirPressureLowMessage THEN InfoMSG_W = AIRPRESSURELOW_MSG
+    Line 7168: IF AirPressureLowMessage || AirPressureLowStop || !ATC_AirPressureOk THEN (AirPressureLow_M)
+
+Function: AirPressureLowStop
+  Usage count: 2
+  Found at lines:
+    Line 7159: IF Initialize_T && AirPressureLowStop THEN FaultMsg_W = AIRPRESSURELOW_MSG, SET OtherFault_M
+    Line 7168: IF AirPressureLowMessage || AirPressureLowStop || !ATC_AirPressureOk THEN (AirPressureLow_M)
+
+Function: AirSelect_O
+  Usage count: 1
+  Found at lines:
+    Line 7575: IF M43_SV THEN (AirSelect_O)
+
+Function: AlignmentLaserEnable_O
+  Usage count: 1
+  Found at lines:
+    Line 7543: IF LaserReady_I && !M3_SV && !SV_STOP THEN (AlignmentLaserEnable_O)
+
+Function: AmberLight
+  Usage count: 1
+  Found at lines:
+    Line 7058: IF !SV_JOB_IN_PROGRESS && !SV_STOP && (LightTurnOnTimer || (SV_MACHINE_PARAMETER_890 == 1))  THEN (Amberlight) ; If not in job and not in fault then yellow light on
+
+Function: ATC_AirPressureOk
+  Usage count: 4
+  Found at lines:
+    Line 7162: IF Initialize_T && !ATC_AirPressureOk THEN InfoMSG_W = AIRPRESSURELOW_MSG
+    Line 7163: IF Initialize_T && !ATC_AirPressureOk && (UnclampTool || M80_SV || M81_SV) THEN SET AirPressureLost_T
+    Line 7164: IF ATC_AirPressureOk THEN RST AirPressureLost_T
+    Line 7168: IF AirPressureLowMessage || AirPressureLowStop || !ATC_AirPressureOk THEN (AirPressureLow_M)
+
+Function: ATC_CarouselForward
+  Usage count: 11
+  Found at lines:
+    Line 8035: IF (ATC_CarouselForward || ATC_CarouselReverse) && !ATC_ToolCounter THEN SET ToolCounterArmed_M
+    Line 8036: IF (ATC_CarouselForward || ATC_CarouselReverse) && ATC_ToolCounter && ToolCounterArmed_M
+    Line 8049: IF ToolCounterPD && ATC_CarouselForward THEN LastCarouselDir_W = 1
+    Line 8052: IF ToolCounterPD && ATC_CarouselForward && !CarouselReversed_M
+    Line 8112: THEN SET ATC_CarouselForward, RST ATC_CarouselReverse
+    Line 8116: THEN SET ATC_CarouselReverse, RST ATC_CarouselForward
+    Line 8118: IF DoingPutback_M && (ATC_CarouselForward || ATC_CarouselReverse) THEN SET WaitingForPutbackComplete_M
+    Line 8122: THEN RST ATC_CarouselForward, RST ATC_CarouselReverse
+    Line 8125: (!ATC_CarouselForward || !ATC_CarouselReverse) && !AtPutbackLocation_M
+    Line 8134: THEN RST RotateCarouselStage, RST ATC_CarouselForward, RST ATC_CarouselReverse, RST CarouselDirectionStage,
+    Line 8147: RST ATC_CarouselForward, RST ATC_CarouselReverse, RST CarouselDirectionStage, RST RotateCarouselStage,
+
+Function: ATC_CarouselIn
+  Usage count: 2
+  Found at lines:
+    Line 7749: THEN RST M81_SV, SET ATC_CarouselIn, SET CarouselInOutTimer_T,
+    Line 7753: THEN RST ATC_CarouselIn, RST M80_SV
+
+Function: ATC_CarouselIsIn
+  Usage count: 3
+  Found at lines:
+    Line 7752: IF SV_STOP || !SV_PROGRAM_RUNNING || (MovingCarouselIn_M && ATC_CarouselIsIn)
+    Line 7756: IF ATC_CarouselIsIn THEN (CarouselInState_M)
+    Line 7770: IF SV_STOP || !SV_PROGRAM_RUNNING || (MovingCarouselIn_M && ATC_CarouselIsIn) ||
+
+Function: ATC_CarouselIsOut
+  Usage count: 3
+  Found at lines:
+    Line 7763: IF SV_STOP || !SV_PROGRAM_RUNNING || (MovingCarouselOut_M && ATC_CarouselIsOut)
+    Line 7767: IF ATC_CarouselIsOut THEN (CarouselOutState_M)
+    Line 7771: (MovingCarouselOut_M && ATC_CarouselIsOut)
+
+Function: ATC_CarouselOut
+  Usage count: 2
+  Found at lines:
+    Line 7760: THEN RST M80_SV, SET ATC_CarouselOut, SET CarouselInOutTimer_T,
+    Line 7764: THEN RST ATC_CarouselOut, RST M81_SV
+
+Function: ATC_CarouselReverse
+  Usage count: 11
+  Found at lines:
+    Line 8035: IF (ATC_CarouselForward || ATC_CarouselReverse) && !ATC_ToolCounter THEN SET ToolCounterArmed_M
+    Line 8036: IF (ATC_CarouselForward || ATC_CarouselReverse) && ATC_ToolCounter && ToolCounterArmed_M
+    Line 8050: IF ToolCounterPD && ATC_CarouselReverse THEN LastCarouselDir_W = 0
+    Line 8054: IF ToolCounterPD && ATC_CarouselReverse && !CarouselReversed_M
+    Line 8112: THEN SET ATC_CarouselForward, RST ATC_CarouselReverse
+    Line 8116: THEN SET ATC_CarouselReverse, RST ATC_CarouselForward
+    Line 8118: IF DoingPutback_M && (ATC_CarouselForward || ATC_CarouselReverse) THEN SET WaitingForPutbackComplete_M
+    Line 8122: THEN RST ATC_CarouselForward, RST ATC_CarouselReverse
+    Line 8125: (!ATC_CarouselForward || !ATC_CarouselReverse) && !AtPutbackLocation_M
+    Line 8134: THEN RST RotateCarouselStage, RST ATC_CarouselForward, RST ATC_CarouselReverse, RST CarouselDirectionStage,
+    Line 8147: RST ATC_CarouselForward, RST ATC_CarouselReverse, RST CarouselDirectionStage, RST RotateCarouselStage,
+
+Function: ATC_ToolCounter
+  Usage count: 2
+  Found at lines:
+    Line 8035: IF (ATC_CarouselForward || ATC_CarouselReverse) && !ATC_ToolCounter THEN SET ToolCounterArmed_M
+    Line 8036: IF (ATC_CarouselForward || ATC_CarouselReverse) && ATC_ToolCounter && ToolCounterArmed_M
+
+Function: ATCAirBlowActivate
+  Usage count: 1
+  Found at lines:
+    Line 6831: IF UnclampTool THEN (ATCAirBlowActivate)
+
+Function: AutoSquareRelayForHardPair
+  Usage count: 1
+  Found at lines:
+    Line 6981: IF AutoSquareRelay_SV THEN (AutoSquareRelayForHardPair)
+
+Function: Axis1BrakeRelease
+  Usage count: 1
+  Found at lines:
+    Line 5849: IF (SV_PC_POWER_AXIS_1) THEN (Axis1BrakeRelease)
+
+Function: Axis1DriveOk
+  Usage count: 2
+  Found at lines:
+    Line 5829: IF SV_AXIS_VALID_1 && SV_PC_POWER_AXIS_1 && (!Axis1DriveOk && DriveFaultTimer)
+    Line 5862: IF !EStopOk_M || (DriveOk && Axis1DriveOk && Axis2DriveOk && Axis3DriveOk && Axis4DriveOk) ||
+
+Function: Axis2BrakeRelease
+  Usage count: 1
+  Found at lines:
+    Line 5850: IF (SV_PC_POWER_AXIS_2) THEN (Axis2BrakeRelease)
+
+Function: Axis2DriveOk
+  Usage count: 2
+  Found at lines:
+    Line 5832: IF SV_AXIS_VALID_2 && SV_PC_POWER_AXIS_2 && (!Axis2DriveOk && DriveFaultTimer)
+    Line 5862: IF !EStopOk_M || (DriveOk && Axis1DriveOk && Axis2DriveOk && Axis3DriveOk && Axis4DriveOk) ||
+
+Function: Axis3BrakeRelease
+  Usage count: 1
+  Found at lines:
+    Line 5851: IF (SV_PC_POWER_AXIS_3) THEN (Axis3BrakeRelease)
+
+Function: Axis3DriveOk
+  Usage count: 2
+  Found at lines:
+    Line 5835: IF SV_AXIS_VALID_3 && SV_PC_POWER_AXIS_3 && (!Axis3DriveOk && DriveFaultTimer)
+    Line 5862: IF !EStopOk_M || (DriveOk && Axis1DriveOk && Axis2DriveOk && Axis3DriveOk && Axis4DriveOk) ||
+
+Function: Axis4BrakeRelease
+  Usage count: 1
+  Found at lines:
+    Line 5852: IF (SV_PC_POWER_AXIS_4) THEN (Axis4BrakeRelease)
+
+Function: Axis4DriveOk
+  Usage count: 2
+  Found at lines:
+    Line 5838: IF SV_AXIS_VALID_4 && SV_PC_POWER_AXIS_4 && (!Axis4DriveOk && DriveFaultTimer)
+    Line 5862: IF !EStopOk_M || (DriveOk && Axis1DriveOk && Axis2DriveOk && Axis3DriveOk && Axis4DriveOk) ||
+
+Function: BackGear
+  Usage count: 2
+  Found at lines:
+    Line 5194: IF M41_SV || SkinSpindleLow_M || ExtUsb_SpindleLow_SV || (SpindleLowRange || (!BackGear && !BackGearDisabled_M))
+    Line 5203: (BackGear && !BackGearDisabled_M))
+
+Function: CAxisEnable
+  Usage count: 1
+  Found at lines:
+    Line 6969: IF M51_SV THEN (CAxisEnable)
+
+Function: ChuckFootPedal_I
+  Usage count: 2
+  Found at lines:
+    Line 6993: IF ChuckFootPedal_I && !SpindleEnableOut_M THEN (ChuckFootPedal_PD)
+    Line 7028: IF (SkinColletOpenClose_M || ChuckFootPedal_I || ExtUsb_ColletOpenClose_SV) && !SpindleEnableOut_M
+
+Function: ChuckIsClosed
+  Usage count: 1
+  Found at lines:
+    Line 7010: IF CloseChuck && !ChuckOpenCloseComplete_M && (ChuckIsClosed || (ChuckIsClosedIs_M && ChuckTimer))
+
+Function: ChuckIsOpen
+  Usage count: 1
+  Found at lines:
+    Line 7008: IF OpenChuck && !ChuckOpenCloseComplete_M && (ChuckIsOpen || (ChuckIsOpenIs_M && ChuckTimer))
+
+Function: CloseChuck
+  Usage count: 8
+  Found at lines:
+    Line 6036: IF True_M THEN RST CloseChuck
+    Line 6998: && !SpindleEnableOut_M && ChuckOpenCloseComplete_M THEN RST CloseChuck, SET OpenChuck, SET ChuckTimer,
+    Line 7003: IF ((CloseChuckPD && !CloseChuck) || (M10L && SV_PROGRAM_RUNNING)) && ColletDisabled_M
+    Line 7004: && !SpindleEnableOut_M && ChuckOpenCloseComplete_M THEN SET CloseChuck, RST OpenChuck, SET ChuckTimer,
+    Line 7010: IF CloseChuck && !ChuckOpenCloseComplete_M && (ChuckIsClosed || (ChuckIsClosedIs_M && ChuckTimer))
+    Line 7011: THEN SET ChuckOpenCloseComplete_M, RST CloseChuck, RST M10L, RST ChuckState_M
+    Line 7018: IF CloseChuck && !ChuckOpenCloseComplete_M && (ChuckTimer && !ChuckIsClosedIs_M)
+    Line 7019: THEN FaultMsg_W = CHUCK_TIMEOUT, Set OtherFault_M, RST ChuckTimer, RST CloseChuck, RST M10L
+
+Function: ColletOpenClose
+  Usage count: 3
+  Found at lines:
+    Line 7031: IF ((ColletOpenClosePD && !ColletOpenClose) || (M11L && SV_PROGRAM_RUNNING)) && !SpindleEnableOut_M THEN SET ColletOpenClose
+    Line 7032: IF ((ColletOpenClosePD && ColletOpenClose) || (M10L && SV_PROGRAM_RUNNING)) && !SpindleEnableOut_M THEN RST ColletOpenClose
+    Line 7033: IF ColletOpenClose THEN (ColletOpenCloseLED), (ExtUsb_ColletOpenCloseOut_SV)
+
+Function: CutOff
+  Usage count: 3
+  Found at lines:
+    Line 7077: IF M13 THEN SET CutOff, SET CutOffTimer
+    Line 7082: IF !M13 THEN RST CutOff, RST CutOffTimer, RST CutOffComplete
+    Line 7086: THEN FaultMsg_W = CUT_OFF_TIMEOUT, SET OtherFault_M, RST CutOff, RST CutOffTimer
+
+Function: CutOffIsDown
+  Usage count: 1
+  Found at lines:
+    Line 7079: IF CutOffIsDown || (CutOffIsDownIs_M && CutOffTimer)
+
+Function: CycleCancel2
+  Usage count: 5
+  Found at lines:
+    Line 4872: IF (CycleCancelKey_I || KbCycleCancel_M || SkinCycleCancel_SV || MpgResetKey_M || CycleCancel2 ||
+    Line 7384: IF SkinResetTorchCheck_SV || (CycleCancelKey_I || KbCycleCancel_M || SkinCycleCancel_SV || MpgResetKey_M || CycleCancel2) ||
+    Line 7394: IF SV_STOP || ((CycleCancelKey_I || KbCycleCancel_M || SkinCycleCancel_SV || MpgResetKey_M || CycleCancel2) &&
+    Line 7434: IF (CycleCancelKey_I || KbCycleCancel_M || SkinCycleCancel_SV || MpgResetKey_M || CycleCancel2) THEN SET CycleCancelPressed_M, SET ButtonPressed_T
+    Line 7502: IF SV_STOP || ((CycleCancelKey_I || KbCycleCancel_M || SkinCycleCancel_SV || MpgResetKey_M || CycleCancel2) &&
+
+Function: CycleStart2
+  Usage count: 2
+  Found at lines:
+    Line 4878: IF ((CycleStartKey_I || KbCycleStart_M || SkinCycleStart_SV || MpgCycleStart_M || CycleStart2 || ExtUsb_CycleStart_SV)
+    Line 7433: IF (CycleStartKey_I || KbCycleStart_M || SkinCycleStart_SV || MpgCycleStart_M || CycleStart2) THEN SET CycleStartPressed_M, SET ButtonPressed_T
+
+Function: DrawBarIsDown_I
+  Usage count: 2
+  Found at lines:
+    Line 6803: IF DrawBarIsDown_I && ToolClamped_I THEN (ToolClampedState_M)
+    Line 6806: IF (!DrawBarIsUp_I && !DrawBarIsDown_I) || DrawBarIsUpDisabled_M THEN (ToolInSpindleState_M)
+
+Function: DrawBarIsUp_I
+  Usage count: 2
+  Found at lines:
+    Line 6799: (DrawBarIsUp_I && ToolIsUnclampedDisable_M && DrawBarReleasedDisable_M)
+    Line 6806: IF (!DrawBarIsUp_I && !DrawBarIsDown_I) || DrawBarIsUpDisabled_M THEN (ToolInSpindleState_M)
+
+Function: DrawBarReleased
+  Usage count: 3
+  Found at lines:
+    Line 6787: IF DrawBarReleased && !DrawBarReleasedDisable_M && !ToolUnclampedState_M THEN InfoMsg_W = DRAWBAR_RELEASED_MSG
+    Line 6789: IF !DrawBarReleased && !DrawBarReleasedDisable_M && ToolUnclampedState_M THEN InfoMsg_W = DRAWBAR_CLAMPED_MSG
+    Line 6798: (DrawBarReleased && ToolIsUnclampedDisable_M && DrawBarIsUpDisabled_M) ||
+
+Function: DrawBarUp_O
+  Usage count: 2
+  Found at lines:
+    Line 6824: AllowToolRelease_M) || M15 && SV_PROGRAM_RUNNING) THEN (UnclampTool), (DrawBarUp_O),
+    Line 6845: RST DrawBarUp_O,
+
+Function: DriveOk
+  Usage count: 2
+  Found at lines:
+    Line 5862: IF !EStopOk_M || (DriveOk && Axis1DriveOk && Axis2DriveOk && Axis3DriveOk && Axis4DriveOk) ||
+    Line 5866: IF Initialize_T && (!DriveOk && DriveFaultTimer) && EStopOk_M && (SV_PC_POWER_AXIS_1 || SV_PC_POWER_AXIS_2 ||
+
+Function: DriveResetOut
+  Usage count: 1
+  Found at lines:
+    Line 6854: IF !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M) THEN (DriveResetOut)
+
+Function: DustCollectionOn
+  Usage count: 6
+  Found at lines:
+    Line 6887: IF StopRunningPD THEN RST DustCollectionOn
+    Line 6890: IF (DustCollectionPD && !DustCollectionOn && !SV_PROGRAM_RUNNING) ||
+    Line 6891: (M35 && SV_PROGRAM_RUNNING) THEN SET DustCollectionOn
+    Line 6892: IF (DustCollectionPD && DustCollectionOn && !SV_PROGRAM_RUNNING) ||
+    Line 6893: (!M35 && SV_PROGRAM_RUNNING) THEN RST DustCollectionOn
+    Line 6894: IF DustCollectionOn THEN (DustCollectionLED)
+
+Function: DustFootActivate
+  Usage count: 2
+  Found at lines:
+    Line 6900: IF DustFootActivate_SV THEN (DustFootActivate)
+    Line 6902: IF DustFootActivate THEN (DustFootLED)
+
+Function: EStopOk
+  Usage count: 7
+  Found at lines:
+    Line 6388: IF (SV_STOP || !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M)) && MachineIsLathe_M
+    Line 6432: IF (SkinResetButtonPressed_M || ExtUsb_VCPReset_SV) && EStopOk && (EStopOk2 || EStopOk2Disabled_M) THEN (SetResetPD)
+    Line 6433: IF EStopOk && (EStopOk2 || EStopOk2Disabled_M) THEN (EStopOkPD)
+    Line 6437: IF !(!EStopOk || ResetSet_M || (!EStopOk2 && !EStopOk2Disabled_M)) THEN (EStopOk_M)
+    Line 6442: IF !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M) THEN (SV_ESTOP_PRESSED)
+    Line 6854: IF !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M) THEN (DriveResetOut)
+    Line 6857: IF !EstopOK || (!EStopOk2 && !EStopOk2Disabled_M) THEN (VFDResetOut_O)
+
+Function: EStopOk2
+  Usage count: 7
+  Found at lines:
+    Line 6388: IF (SV_STOP || !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M)) && MachineIsLathe_M
+    Line 6432: IF (SkinResetButtonPressed_M || ExtUsb_VCPReset_SV) && EStopOk && (EStopOk2 || EStopOk2Disabled_M) THEN (SetResetPD)
+    Line 6433: IF EStopOk && (EStopOk2 || EStopOk2Disabled_M) THEN (EStopOkPD)
+    Line 6437: IF !(!EStopOk || ResetSet_M || (!EStopOk2 && !EStopOk2Disabled_M)) THEN (EStopOk_M)
+    Line 6442: IF !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M) THEN (SV_ESTOP_PRESSED)
+    Line 6854: IF !EStopOk || (!EStopOk2 && !EStopOk2Disabled_M) THEN (DriveResetOut)
+    Line 6857: IF !EstopOK || (!EStopOk2 && !EStopOk2Disabled_M) THEN (VFDResetOut_O)
+
+Function: ExtUsb_AirBlowNozzle_SV
+  Usage count: 1
+  Found at lines:
+    Line 6940: IF SkinAirBlowNozzle_M || ExtUsb_AirBlowNozzle_SV THEN (AirBlowNozzlePD)
+
+Function: ExtUsb_Aux1_SV
+  Usage count: 1
+  Found at lines:
+    Line 4931: IF (Aux1Key  || KbAux1Key_M || SkinAux1_M || ExtUsb_Aux1_SV) THEN (DoAux1Key), (ExtUsb_Aux1Out_SV)
+
+Function: ExtUsb_Aux10_SV
+  Usage count: 1
+  Found at lines:
+    Line 4941: IF (Aux10Key || KbAux10Key_M || SkinAux10_M || ExtUsb_Aux10_SV) THEN (DoAux10Key), (ExtUsb_Aux10Out_SV)
+
+Function: ExtUsb_Aux11_SV
+  Usage count: 1
+  Found at lines:
+    Line 4942: IF (Aux11Key || KbAux11Key_M || SkinAux11_M || ExtUsb_Aux11_SV) THEN (DoAux11Key), (ExtUsb_Aux11Out_SV)
+
+Function: ExtUsb_Aux12_SV
+  Usage count: 1
+  Found at lines:
+    Line 4943: IF (Aux12Key || KbAux12Key_M || SkinAux12_M || ExtUsb_Aux12_SV) THEN (DoAux12Key), (ExtUsb_Aux12Out_SV)
+
+Function: ExtUsb_Aux13_SV
+  Usage count: 1
+  Found at lines:
+    Line 4944: IF (Aux13Key || KbAux13Key_M || SkinAux13_M || ExtUsb_Aux13_SV) THEN (DoAux13Key), (ExtUsb_Aux13Out_SV)
+
+Function: ExtUsb_Aux14_SV
+  Usage count: 1
+  Found at lines:
+    Line 4945: IF (Aux14Key || KbAux14Key_M || SkinAux14_M || ExtUsb_Aux14_SV) THEN (DoAux14Key), (ExtUsb_Aux14Out_SV)
+
+Function: ExtUsb_Aux15_SV
+  Usage count: 1
+  Found at lines:
+    Line 4946: IF (Aux15Key || KbAux15Key_M || SkinAux15_M || ExtUsb_Aux15_SV) THEN (DoAux15Key), (ExtUsb_Aux15Out_SV)
+
+Function: ExtUsb_Aux16_SV
+  Usage count: 1
+  Found at lines:
+    Line 4947: IF (Aux16Key || KbAux16Key_M || SkinAux16_M || ExtUsb_Aux16_SV) THEN (DoAux16Key), (ExtUsb_Aux16Out_SV)
+
+Function: ExtUsb_Aux2_SV
+  Usage count: 1
+  Found at lines:
+    Line 4932: IF (Aux2Key  || KbAux2Key_M || SkinAux2_M || ExtUsb_Aux2_SV) THEN (DoAux2Key), (ExtUsb_Aux2Out_SV)
+
+Function: ExtUsb_Aux3_SV
+  Usage count: 1
+  Found at lines:
+    Line 4933: IF (Aux3Key  || KbAux3Key_M || SkinAux3_M || ExtUsb_Aux3_SV) THEN (DoAux3Key), (ExtUsb_Aux3Out_SV)
+
+Function: ExtUsb_Aux4_SV
+  Usage count: 1
+  Found at lines:
+    Line 4934: IF (Aux4Key  || KbAux4Key_M || SkinAux4_M || ExtUsb_Aux4_SV) THEN (DoAux4Key), (ExtUsb_Aux4Out_SV)
+
+Function: ExtUsb_Aux5_SV
+  Usage count: 1
+  Found at lines:
+    Line 4935: IF (Aux5Key  || KbAux5Key_M || SkinAux5_M || ExtUsb_Aux5_SV) ||
+
+Function: ExtUsb_Aux6_SV
+  Usage count: 1
+  Found at lines:
+    Line 4937: IF (Aux6Key  || KbAux6Key_M || SkinAux6_M || ExtUsb_Aux6_SV) THEN (DoAux6Key), (ExtUsb_Aux6Out_SV)
+
+Function: ExtUsb_Aux7_SV
+  Usage count: 1
+  Found at lines:
+    Line 4938: IF (Aux7Key  || KbAux7Key_M || SkinAux7_M || ExtUsb_Aux7_SV) THEN (DoAux7Key), (ExtUsb_Aux7Out_SV)
+
+Function: ExtUsb_Aux8_SV
+  Usage count: 1
+  Found at lines:
+    Line 4939: IF (Aux8Key  || KbAux8Key_M  || SkinAux8_M || ExtUsb_Aux8_SV)  THEN (DoAux8Key), (ExtUsb_Aux8Out_SV)
+
+Function: ExtUsb_Aux9_SV
+  Usage count: 1
+  Found at lines:
+    Line 4940: IF (Aux9Key  || KbAux9Key_M  || SkinAux9_M || ExtUsb_Aux9_SV)  THEN (DoAux9Key), (ExtUsb_Aux9Out_SV)
+
+Function: ExtUsb_Ax1Ax2MinusJog_SV
+  Usage count: 16
+  Found at lines:
+    Line 5604: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5614: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5633: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5643: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5662: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5672: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5691: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5701: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5720: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5730: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5749: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5759: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5778: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5788: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5807: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5817: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+
+Function: ExtUsb_Ax1Ax2PlusJog_SV
+  Usage count: 16
+  Found at lines:
+    Line 5599: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1PlusAx2Minus_M || KbJogAx1Ax2Plus_M ||
+    Line 5609: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5628: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5638: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5657: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5667: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5686: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5696: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5715: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5725: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5744: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5754: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5773: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5783: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5802: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5812: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+
+Function: ExtUsb_Ax1MinusAx2PlusJog_SV
+  Usage count: 16
+  Found at lines:
+    Line 5604: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5609: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5633: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5638: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5662: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5667: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5691: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5696: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5720: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5725: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5749: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5754: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5778: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5783: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5807: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5812: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1MinusAx2PlusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+
+Function: ExtUsb_Ax1MinusJog_SV
+  Usage count: 8
+  Found at lines:
+    Line 5603: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5632: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5661: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5690: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5719: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5748: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5777: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+    Line 5806: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax1MinusJog_SV ||
+
+Function: ExtUsb_Ax1PlusAx2MinusJog_SV
+  Usage count: 16
+  Found at lines:
+    Line 5599: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1PlusAx2Minus_M || KbJogAx1Ax2Plus_M ||
+    Line 5614: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5628: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5643: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5657: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5672: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5686: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5701: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5715: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5730: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5744: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5759: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5773: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5788: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1MinusAx2Plus_M ||
+    Line 5802: ExtUsb_Ax1Ax2PlusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Minus_M || KbJogAx1PlusAx2Minus_M ||
+    Line 5817: ExtUsb_Ax1Ax2MinusJog_SV || ExtUsb_Ax1PlusAx2MinusJog_SV || KbJogAx1Ax2Plus_M || KbJogAx1PlusAx2Minus_M ||
+
+Function: ExtUsb_Ax1PlusJog_SV
+  Usage count: 8
+  Found at lines:
+    Line 5598: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5627: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5656: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5685: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5714: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5743: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5772: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+    Line 5801: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax1PlusJog_SV ||
+
+Function: ExtUsb_Ax2MinusJog_SV
+  Usage count: 8
+  Found at lines:
+    Line 5613: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5642: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5671: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5700: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5729: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5758: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5787: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+    Line 5816: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax2MinusJog_SV ||
+
+Function: ExtUsb_Ax2PlusJog_SV
+  Usage count: 8
+  Found at lines:
+    Line 5608: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5637: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5666: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5695: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5724: SkinJogAx1Ax2Plus_SV || SkinJogAx1MinusAx2Plus_SV || Ax2_PlusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5753: SkinJogAx1Ax2Minus_SV || SkinJogAx1PlusAx2Minus_SV || Ax2_MinusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5782: SkinJogAx1Ax2Plus_SV || SkinJogAx1PlusAx2Minus_SV || Ax1_PlusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+    Line 5811: SkinJogAx1Ax2Minus_SV || SkinJogAx1MinusAx2Plus_SV || Ax1_MinusJoystick_I || ExtUsb_Ax2PlusJog_SV ||
+
+Function: ExtUsb_Ax3MinusJog_SV
+  Usage count: 1
+  Found at lines:
+    Line 4912: IF (Ax3MinusJogKey_I || KbJogAx3Minus_M || SkinJogAx3Minus_SV || UsbMpgAxis3JogMinus_M || ExtUsb_Ax3MinusJog_SV ||
+
+Function: ExtUsb_Ax3PlusJog_SV
+  Usage count: 1
+  Found at lines:
+    Line 4909: IF (Ax3PlusJogKey_I  || KbJogAx3Plus_M || SkinJogAx3Plus_SV || UsbMpgAxis3JogPlus_M || ExtUsb_Ax3PlusJog_SV ||
+
+Function: ExtUsb_Ax4MinusJog_SV
+  Usage count: 1
+  Found at lines:
+    Line 4918: IF (Ax4MinusJogKey_I || KbJogAx4Minus_M || SkinJogAx4Minus_SV || UsbMpgAxis4JogMinus_M || ExtUsb_Ax4MinusJog_SV ||
+
+Function: ExtUsb_Ax4PlusJog_SV
+  Usage count: 1
+  Found at lines:
+    Line 4915: IF (Ax4PlusJogKey_I  || KbJogAx4Plus_M || SkinJogAx4Plus_SV || UsbMpgAxis4JogPlus_M || ExtUsb_Ax4PlusJog_SV ||
+
+Function: ExtUsb_ChuckClose_SV
+  Usage count: 1
+  Found at lines:
+    Line 7002: IF SkinCloseChuck_M || ExtUsb_ChuckClose_SV || (ChuckFootPedal_PD && ChuckState_M) THEN (CloseChuckPD)
+
+Function: ExtUsb_ChuckOpen_SV
+  Usage count: 1
+  Found at lines:
+    Line 6996: IF SkinOpenChuck_M || ExtUsb_ChuckOpen_SV || (ChuckFootPedal_PD && !ChuckState_M) THEN (OpenChuckPD)
+
+Function: ExtUsb_ColletOpenClose_SV
+  Usage count: 1
+  Found at lines:
+    Line 7028: IF (SkinColletOpenClose_M || ChuckFootPedal_I || ExtUsb_ColletOpenClose_SV) && !SpindleEnableOut_M
+
+Function: ExtUsb_CoolAutoMan_SV
+  Usage count: 1
+  Found at lines:
+    Line 4960: IF CoolAutoManKey || KbTogCoolAutoMan_M || SkinCoolAutoMan_M || ExtUsb_CoolAutoMan_SV THEN (CoolantAutoManualPD)
+
+Function: ExtUsb_CycleCancel_SV
+  Usage count: 2
+  Found at lines:
+    Line 4370: IF ExtUsb_CycleStart_SV || ExtUsb_CycleCancel_SV || ExtUsb_SpinStart_SV || ExtUsb_SpinStop_SV || ExtUsb_ToolRelease_SV
+    Line 4873: SkinRestartCycleCancel_M || ExtUsb_CycleCancel_SV)
+
+Function: ExtUsb_CycleStart_SV
+  Usage count: 2
+  Found at lines:
+    Line 4370: IF ExtUsb_CycleStart_SV || ExtUsb_CycleCancel_SV || ExtUsb_SpinStart_SV || ExtUsb_SpinStop_SV || ExtUsb_ToolRelease_SV
+    Line 4878: IF ((CycleStartKey_I || KbCycleStart_M || SkinCycleStart_SV || MpgCycleStart_M || CycleStart2 || ExtUsb_CycleStart_SV)
+
+Function: ExtUsb_DryRun_SV
+  Usage count: 1
+  Found at lines:
+    Line 6868: IF (DryRun_M || (MpgFeedHold_M && PlasmaWMPG_M) || ExtUsb_DryRun_SV) && !SV_PROGRAM_RUNNING THEN (DryRunPD)
+
+Function: ExtUsb_FastSlowJog_SV
+  Usage count: 1
+  Found at lines:
+    Line 4465: IF (FastSlowKey || KbTogFastSlowJog_M || SkinFastSlowJog_M || ExtUsb_FastSlowJog_SV) THEN (SlowFastPD)
+
+Function: ExtUsb_FeedHold_SV
+  Usage count: 1
+  Found at lines:
+    Line 4497: (MpgFeedHold_M && !PlasmaWMPG_M) || ExtUsb_FeedHold_SV
+
+Function: ExtUsb_FeedOver100_SV
+  Usage count: 1
+  Found at lines:
+    Line 4632: IF SkinFeedOver100_M || KbFeedOver100_M || ExtUsb_FeedOver100_SV THEN KbOverride_W = 100, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_FeedOver25_SV
+  Usage count: 1
+  Found at lines:
+    Line 4635: IF SkinFeedOver25_M || ExtUsb_FeedOver25_SV THEN KbOverride_W = 25, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_FeedOver50_SV
+  Usage count: 1
+  Found at lines:
+    Line 4634: IF SkinFeedOver50_M || ExtUsb_FeedOver50_SV THEN KbOverride_W = 50, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_FeedOver75_SV
+  Usage count: 1
+  Found at lines:
+    Line 4633: IF SkinFeedOver75_M || ExtUsb_FeedOver75_SV THEN KbOverride_W = 75, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_FeedOverCustom_SV
+  Usage count: 1
+  Found at lines:
+    Line 4638: IF ExtUsb_FeedOverCustom_SV THEN KbOverride_W = SV_MACHINE_PARAMETER_454, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_FeedrateVariationMode_SV
+  Usage count: 1
+  Found at lines:
+    Line 4675: IF ExtUsb_FeedrateVariationMode_SV THEN (FeedrateVariationMode_PD)
+
+Function: ExtUsb_Flood_SV
+  Usage count: 1
+  Found at lines:
+    Line 4987: IF CoolFloodKey || KbFloodOnOff_M || SkinCoolFlood_M || ExtUsb_Flood_SV || ExtUsb_RouterDustCollection_SV
+
+Function: ExtUsb_IncrCont_SV
+  Usage count: 1
+  Found at lines:
+    Line 4455: IF IncrContKey || KbTogIncContJog_M || SkinIncCont_M || ExtUsb_IncrCont_SV
+
+Function: ExtUsb_JogDisable_SV
+  Usage count: 1
+  Found at lines:
+    Line 7223: IF ExtUsb_JogDisable_SV THEN (AllJogDisabled_PD)
+
+Function: ExtUsb_LaserAlign_SV
+  Usage count: 1
+  Found at lines:
+    Line 6905: IF SkinLaserAlign_M || ExtUsb_LaserAlign_SV THEN (LaserAlignPD)
+
+Function: ExtUsb_LimitDefeat_SV
+  Usage count: 1
+  Found at lines:
+    Line 3260: && SV_LIMIT_TRIPPED && (SkinLimitDefeat_M || ExtUsb_LimitDefeat_SV) && !WTF_Flag
+
+Function: ExtUsb_Mist_SV
+  Usage count: 1
+  Found at lines:
+    Line 4997: IF CoolMistKey || KbMistOnOff_M || SkinCoolMist_M || ExtUsb_Mist_SV || ExtUsb_RouterVacuumHoldDown_SV
+
+Function: ExtUsb_MPG_SV
+  Usage count: 1
+  Found at lines:
+    Line 4386: IF MPGKey || SkinMPG_M || ExtUsb_MPG_SV THEN (MpgPD)
+
+Function: ExtUsb_MPGAxis1Select_SV
+  Usage count: 1
+  Found at lines:
+    Line 4234: IF ExtUsb_MPGAxis1Select_SV && SV_AXIS_VALID_1 THEN ExtUsb_MPGAxisSelect_W = 1, (ExtUsb_MPGAxis1SelectOut_SV)
+
+Function: ExtUsb_MPGAxis2Select_SV
+  Usage count: 1
+  Found at lines:
+    Line 4235: IF ExtUsb_MPGAxis2Select_SV && SV_AXIS_VALID_2 THEN ExtUsb_MPGAxisSelect_W = 2, (ExtUsb_MPGAxis2SelectOut_SV)
+
+Function: ExtUsb_MPGAxis3Select_SV
+  Usage count: 1
+  Found at lines:
+    Line 4236: IF ExtUsb_MPGAxis3Select_SV && SV_AXIS_VALID_3 THEN ExtUsb_MPGAxisSelect_W = 3, (ExtUsb_MPGAxis3SelectOut_SV)
+
+Function: ExtUsb_MPGAxis4Select_SV
+  Usage count: 1
+  Found at lines:
+    Line 4237: IF ExtUsb_MPGAxis4Select_SV && SV_AXIS_VALID_4 THEN ExtUsb_MPGAxisSelect_W = 4, (ExtUsb_MPGAxis4SelectOut_SV)
+
+Function: ExtUsb_Output1Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7256: IF SkinOutput1Toggle_M || ExtUsb_Output1Toggle_SV THEN (Output1Toggle_PD)
+
+Function: ExtUsb_Output2Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7260: IF SkinOutput2Toggle_M || ExtUsb_Output2Toggle_SV THEN (Output2Toggle_PD)
+
+Function: ExtUsb_Output3Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7264: IF SkinOutput3Toggle_M || ExtUsb_Output3Toggle_SV THEN (Output3Toggle_PD)
+
+Function: ExtUsb_Output4Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7268: IF SkinOutput4Toggle_M || ExtUsb_Output4Toggle_SV THEN (Output4Toggle_PD)
+
+Function: ExtUsb_Output5Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7272: IF SkinOutput5Toggle_M || ExtUsb_Output5Toggle_SV THEN (Output5Toggle_PD)
+
+Function: ExtUsb_Output6Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7276: IF SkinOutput6Toggle_M || ExtUsb_Output6Toggle_SV THEN (Output6Toggle_PD)
+
+Function: ExtUsb_Output7Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7280: IF SkinOutput7Toggle_M || ExtUsb_Output7Toggle_SV THEN (Output7Toggle_PD)
+
+Function: ExtUsb_Output8Toggle_SV
+  Usage count: 1
+  Found at lines:
+    Line 7284: IF SkinOutput8Toggle_M || ExtUsb_Output8Toggle_SV THEN (Output8Toggle_PD)
+
+Function: ExtUsb_PopUpPins_SV
+  Usage count: 1
+  Found at lines:
+    Line 6923: IF SkinPopUpPins_M || ExtUsb_PopUpPins_SV THEN (PopUpPinsPD)
+
+Function: ExtUsb_RapidFeedLink_SV
+  Usage count: 1
+  Found at lines:
+    Line 4751: IF SkinFeedRapidLink_M || SV_PC_TOGGLE_RAPID_FEED_LINK || ExtUsb_RapidFeedLink_SV
+
+Function: ExtUsb_RapidOver100_SV
+  Usage count: 1
+  Found at lines:
+    Line 4760: IF SkinRapidOver100_M || ExtUsb_RapidOver100_SV THEN RapidRateOverride_W = 100, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_RapidOver25_SV
+  Usage count: 1
+  Found at lines:
+    Line 4763: IF SkinRapidOver25_M || ExtUsb_RapidOver25_SV THEN RapidRateOverride_W = 25, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_RapidOver50_SV
+  Usage count: 1
+  Found at lines:
+    Line 4762: IF SkinRapidOver50_M || ExtUsb_RapidOver50_SV THEN RapidRateOverride_W = 50, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_RapidOver75_SV
+  Usage count: 1
+  Found at lines:
+    Line 4761: IF SkinRapidOver75_M || ExtUsb_RapidOver75_SV THEN RapidRateOverride_W = 75, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_RapidOverCustom_SV
+  Usage count: 1
+  Found at lines:
+    Line 4766: IF ExtUsb_RapidOverCustom_SV THEN RapidRateOverride_W = SV_MACHINE_PARAMETER_456, RST UsingFeedrateKnob_M
+
+Function: ExtUsb_RouterDustCollection_SV
+  Usage count: 1
+  Found at lines:
+    Line 4987: IF CoolFloodKey || KbFloodOnOff_M || SkinCoolFlood_M || ExtUsb_Flood_SV || ExtUsb_RouterDustCollection_SV
+
+Function: ExtUsb_RouterVacuumHoldDown_SV
+  Usage count: 1
+  Found at lines:
+    Line 4997: IF CoolMistKey || KbMistOnOff_M || SkinCoolMist_M || ExtUsb_Mist_SV || ExtUsb_RouterVacuumHoldDown_SV
+
+Function: ExtUsb_SingleBlock_SV
+  Usage count: 1
+  Found at lines:
+    Line 4480: IF SingleBlockKey || KbTogSingleBlock_M || SkinSingleBlock_M || ExtUsb_SingleBlock_SV THEN (SingleBlockPD)
+
+Function: ExtUsb_SpinAutoMan_SV
+  Usage count: 1
+  Found at lines:
+    Line 5022: ExtUsb_SpinAutoMan_SV THEN (SpinAutoManPD)
+
+Function: ExtUsb_SpinCCW_SV
+  Usage count: 1
+  Found at lines:
+    Line 5090: IF ((KbSpinCCW_M || SpinCCWKey || SkinSpinCCW_M || ExtUsb_SpinCCW_SV) && !SpinAutoModeLED) || (M4_SV && SpinAutoModeLED)
+
+Function: ExtUsb_SpinCW_SV
+  Usage count: 1
+  Found at lines:
+    Line 5084: IF ((KbSpinCW_M || SpinCWKey || SkinSpinCW_M || ExtUsb_SpinCW_SV) && !SpinAutoModeLED) || (M3_SV && SpinAutoModeLED)
+
+Function: ExtUsb_SpindleBrake_SV
+  Usage count: 1
+  Found at lines:
+    Line 6723: IF (SkinSpindleBrake_M || ExtUsb_SpindleBrake_SV) && !SpindleBrakeDisabled_M THEN (SpindleBrakePD)
+
+Function: ExtUsb_SpindleHigh_SV
+  Usage count: 1
+  Found at lines:
+    Line 5202: IF OnAtPowerUp_M || M43_SV || SkinSpindleHigh_M || ExtUsb_SpindleHigh_SV || (SpindleHighRange ||
+
+Function: ExtUsb_SpindleLow_SV
+  Usage count: 1
+  Found at lines:
+    Line 5194: IF M41_SV || SkinSpindleLow_M || ExtUsb_SpindleLow_SV || (SpindleLowRange || (!BackGear && !BackGearDisabled_M))
+
+Function: ExtUsb_SpindleMed_SV
+  Usage count: 1
+  Found at lines:
+    Line 5198: IF ((M42_SV || SkinSpindleMed_M || ExtUsb_SpindleMed_SV || SpindleMedRange) && BackGearDisabled_M)
+
+Function: ExtUsb_SpindleSpeedVariationMode_SV
+  Usage count: 1
+  Found at lines:
+    Line 5260: IF ExtUsb_SpindleSpeedVariationMode_SV THEN (SpindleSpeedVariationMode_PD)
+
+Function: ExtUsb_SpinOnOff_SV
+  Usage count: 2
+  Found at lines:
+    Line 5036: IF MpgSpinOnOff_M || ExtUsb_SpinOnOff_SV THEN (SpindleToggle_PD)
+    Line 5038: IF !(MpgSpinOnOff_M || ExtUsb_SpinOnOff_SV) THEN RST SpinToggleOn_M, RST SpinToggleOff_M
+
+Function: ExtUsb_SpinOver100_SV
+  Usage count: 1
+  Found at lines:
+    Line 5118: IF SpinOver100Key || KbSpinOver100_M || OnAtPowerUp_M || SkinSpin100_M || ExtUsb_SpinOver100_SV
+
+Function: ExtUsb_SpinOverCustom_SV
+  Usage count: 1
+  Found at lines:
+    Line 5122: IF ExtUsb_SpinOverCustom_SV THEN SV_PLC_SPINDLE_KNOB = SV_MACHINE_PARAMETER_455
+
+Function: ExtUsb_SpinOverMinus_SV
+  Usage count: 1
+  Found at lines:
+    Line 5116: IF SpinOverMinusKey || KbDecSpinOver_M || SkinSpinOverMinus_M || ExtUsb_SpinOverMinus_SV
+
+Function: ExtUsb_SpinOverPlus_SV
+  Usage count: 1
+  Found at lines:
+    Line 5114: IF SpinOverPlusKey || KbIncSpinOver_M || SkinSpinOverPlus_M || ExtUsb_SpinOverPlus_SV
+
+Function: ExtUsb_SpinStart_SV
+  Usage count: 4
+  Found at lines:
+    Line 4370: IF ExtUsb_CycleStart_SV || ExtUsb_CycleCancel_SV || ExtUsb_SpinStart_SV || ExtUsb_SpinStop_SV || ExtUsb_ToolRelease_SV
+    Line 5050: IF ((M3_SV || M4_SV) && (SpinStartKey || KbSpinStart_M || SkinSpinStart_M || SpinToggleOn_M || ExtUsb_SpinStart_SV) ||
+    Line 5054: IF ((SpinStartKey || KbSpinStart_M || SkinSpinStart_M || SpinToggleOn_M || ExtUsb_SpinStart_SV) && !SpinAutoModeLED) ||
+    Line 5056: ((SpinStartKey || KbSpinStart_M || SkinSpinStart_M || SpinToggleOn_M || ExtUsb_SpinStart_SV) && ((M3_SV || M4_SV) &&
+
+Function: ExtUsb_SpinStop_SV
+  Usage count: 3
+  Found at lines:
+    Line 4370: IF ExtUsb_CycleStart_SV || ExtUsb_CycleCancel_SV || ExtUsb_SpinStart_SV || ExtUsb_SpinStop_SV || ExtUsb_ToolRelease_SV
+    Line 5049: ExtUsb_SpinStop_SV)) THEN SET SpindlePause_M
+    Line 5065: IF (SpinStopKey || KbSpinStop_M || SkinSpinStop_M || SpinToggleOff_M || ExtUsb_SpinStop_SV) ||
+
+Function: ExtUsb_TailStockInOut_SV
+  Usage count: 1
+  Found at lines:
+    Line 8157: IF SkinTailStock_M || ExtUsb_TailStockInOut_SV THEN (TailStockPD)
+
+Function: ExtUsb_ToolCheck_SV
+  Usage count: 1
+  Found at lines:
+    Line 4489: ToolCheck2 || ExtUsb_ToolCheck_SV) && EStopOk_M &&
+
+Function: ExtUsb_ToolRelease_SV
+  Usage count: 3
+  Found at lines:
+    Line 4370: IF ExtUsb_CycleStart_SV || ExtUsb_CycleCancel_SV || ExtUsb_SpinStart_SV || ExtUsb_SpinStop_SV || ExtUsb_ToolRelease_SV
+    Line 6684: IF (ToolUnclampButton || SkinToolRelease_M || ExtUsb_ToolRelease_SV) && MachineIsRouter_M &&
+    Line 6823: IF VFDZeroSpeed && (((ToolUnclampButton || SkinToolRelease_M || ExtUsb_ToolRelease_SV) && !SpindleEnableOut_M &&
+
+Function: ExtUsb_TurretIndex_SV
+  Usage count: 1
+  Found at lines:
+    Line 7735: IF SkinTurretIndex_M || ExtUsb_TurretIndex_SV THEN SET TurretIndex_M, SET IndexTurretStage
+
+Function: ExtUsb_VCPReset_SV
+  Usage count: 1
+  Found at lines:
+    Line 6432: IF (SkinResetButtonPressed_M || ExtUsb_VCPReset_SV) && EStopOk && (EStopOk2 || EStopOk2Disabled_M) THEN (SetResetPD)
+
+Function: ExtUsb_WorkLight_SV
+  Usage count: 1
+  Found at lines:
+    Line 6863: IF SkinWorklight_M || ExtUsb_WorkLight_SV THEN (WorklightPD)
+
+Function: ExtUsb_x100Jog_SV
+  Usage count: 4
+  Found at lines:
+    Line 4419: IF (x1JogKey || SkinX1_M || X1_M) && !(ExtUsb_x10Jog_SV || ExtUsb_x100Jog_SV ||
+    Line 4427: IF (x10JogKey || SkinX10_M || X10_M) && !(ExtUsb_x1Jog_SV || ExtUsb_x100Jog_SV ||
+    Line 4431: (!(UsbMpgOn_M && MPGLED) && (ExtUsb_x10Jog_SV || (ExtUsb_x100Jog_SV && (MpgZAxisLocked_M || DoorOpenSlowJog_M)))) ||
+    Line 4441: (!(UsbMpgOn_M && MPGLED) && ExtUsb_x100Jog_SV))) && !MpgZAxisLocked_M && !DoorOpenSlowJog_M
+
+Function: ExtUsb_x10Jog_SV
+  Usage count: 3
+  Found at lines:
+    Line 4419: IF (x1JogKey || SkinX1_M || X1_M) && !(ExtUsb_x10Jog_SV || ExtUsb_x100Jog_SV ||
+    Line 4431: (!(UsbMpgOn_M && MPGLED) && (ExtUsb_x10Jog_SV || (ExtUsb_x100Jog_SV && (MpgZAxisLocked_M || DoorOpenSlowJog_M)))) ||
+    Line 4437: IF (x100JogKey || SkinX100_M || X100_M) && !(ExtUsb_x1Jog_SV || ExtUsb_x10Jog_SV ||
+
+Function: ExtUsb_x1Jog_SV
+  Usage count: 3
+  Found at lines:
+    Line 4423: (!(UsbMpgOn_M && MPGLED) && ExtUsb_x1Jog_SV) THEN SET x1JogLED_O, RST x10JogLED_O, RST x100JogLED_O
+    Line 4427: IF (x10JogKey || SkinX10_M || X10_M) && !(ExtUsb_x1Jog_SV || ExtUsb_x100Jog_SV ||
+    Line 4437: IF (x100JogKey || SkinX100_M || X100_M) && !(ExtUsb_x1Jog_SV || ExtUsb_x10Jog_SV ||
+
+Function: FeedHold2
+  Usage count: 1
+  Found at lines:
+    Line 4496: IF FeedHoldKey || KbFeedHold_M || SkinFeedHold_M || FeedHold2 ||
+
+Function: FiberLaserOk_I
+  Usage count: 1
+  Found at lines:
+    Line 7552: IF Initialize_T && !FiberLaserOk_I THEN FaultMsg_W = FIBERLASER_FAULT_C,
+
+Function: FiberLaserOn_I
+  Usage count: 1
+  Found at lines:
+    Line 7549: IF FiberLaserOn_I || DryRunLED THEN (FiberLaserOnState_M)
+
+Function: FiberLaserReset_O
+  Usage count: 1
+  Found at lines:
+    Line 7556: IF !EStopOk_M THEN (FiberLaserReset_O)
+
+Function: FirstAxisHomeLimitOk
+  Usage count: 1
+  Found at lines:
+    Line 6712: IF !HomeAll || !SlavedHomeInput || !FirstAxisHomeOk || !FirstAxisHomeLimitOk ||
+
+Function: FirstAxisHomeOk
+  Usage count: 1
+  Found at lines:
+    Line 6712: IF !HomeAll || !SlavedHomeInput || !FirstAxisHomeOk || !FirstAxisHomeLimitOk ||
+
+Function: Flood
+  Usage count: 2
+  Found at lines:
+    Line 4989: IF (((Flood || RouterDustCollection) ^ (!CoolAutoModeLED && CoolantFloodPD)) ||
+    Line 4992: THEN (Flood), (CoolFloodLED), (SelectCoolantFlood), (RouterDustCollection)
+
+Function: G540SpinFwdOff
+  Usage count: 3
+  Found at lines:
+    Line 4325: IF SpindleForward_M && SpindleBrakeTimer THEN RST G540SpinFwdOff, SET G540SpinRevOff
+    Line 4326: IF SpindleReverse_M && SpindleBrakeTimer THEN RST G540SpinRevOff, SET G540SpinFwdOff
+    Line 4328: IF !SpindleForward_M || !SpindleBrakeTimer THEN SET G540SpinFwdOff
+
+Function: G540SpinRevOff
+  Usage count: 3
+  Found at lines:
+    Line 4325: IF SpindleForward_M && SpindleBrakeTimer THEN RST G540SpinFwdOff, SET G540SpinRevOff
+    Line 4326: IF SpindleReverse_M && SpindleBrakeTimer THEN RST G540SpinRevOff, SET G540SpinFwdOff
+    Line 4329: IF !SpindleReverse_M || !SpindleBrakeTimer THEN SET G540SpinRevOff
+
+Function: GasEnable_O
+  Usage count: 1
+  Found at lines:
+    Line 7540: IF LaserReady_I && M3_SV && !DryRunLED && !SV_STOP THEN (LaserEnable_O), (GasEnable_O)
+
+Function: GreenLight
+  Usage count: 1
+  Found at lines:
+    Line 7057: IF SV_JOB_IN_PROGRESS && (LightTurnOnTimer || (SV_MACHINE_PARAMETER_890 == 1)) THEN (GreenLight) ; If job running normally then greenlight on
+
+Function: HomeAll
+  Usage count: 1
+  Found at lines:
+    Line 6712: IF !HomeAll || !SlavedHomeInput || !FirstAxisHomeOk || !FirstAxisHomeLimitOk ||
+
+Function: HomeLimitAll
+  Usage count: 2
+  Found at lines:
+    Line 6713: !SecondAxisHomeOk || !SecondAxisHomeLimitOk || !HomeLimitAll THEN (PairedHomeTripped)
+    Line 6985: IF DisableAxisLimits || HomeLimitAll THEN (LimitOkState_M)
+
+Function: LaserAlignActivate
+  Usage count: 2
+  Found at lines:
+    Line 6917: IF LaserAlignActivate_M THEN (LaserAlignActivate)
+    Line 6919: IF LaserAlignActivate THEN (LaserAlignLED)
+
+Function: LaserCooling_Fan
+  Usage count: 2
+  Found at lines:
+    Line 6958: IF M37 THEN SET LaserCooling_Fan, RST LaserCooling_T
+    Line 6960: IF LaserCooling_T THEN RST LaserCooling_Fan
+
+Function: LaserDeploy_O
+  Usage count: 1
+  Found at lines:
+    Line 7097: IF LaserDeploy_SV THEN (LaserDeploy_O)
+
+Function: LaserEnable
+  Usage count: 1
+  Found at lines:
+    Line 7090: IF M37 && !SV_STOP THEN (LaserEnable)
+
+Function: LaserEnable_O
+  Usage count: 2
+  Found at lines:
+    Line 7540: IF LaserReady_I && M3_SV && !DryRunLED && !SV_STOP THEN (LaserEnable_O), (GasEnable_O)
+    Line 7546: IF SV_STOP || !LaserEnable_O THEN (DoSpindleStop)
+
+Function: LaserHeadInPos_I
+  Usage count: 1
+  Found at lines:
+    Line 7564: IF LaserHeadInPos_I THEN (LaserHeadInPosState_M)
+
+Function: LaserHeadOk_I
+  Usage count: 1
+  Found at lines:
+    Line 7560: IF Initialize_T && !LaserHeadOk_I && SV_PROGRAM_RUNNING THEN FaultMsg_W = LASER_HEAD_FAULT_C,
+
+Function: LaserReady_I
+  Usage count: 2
+  Found at lines:
+    Line 7540: IF LaserReady_I && M3_SV && !DryRunLED && !SV_STOP THEN (LaserEnable_O), (GasEnable_O)
+    Line 7543: IF LaserReady_I && !M3_SV && !SV_STOP THEN (AlignmentLaserEnable_O)
+
+Function: LaserReset
+  Usage count: 1
+  Found at lines:
+    Line 7092: IF LaserReset_SV && !SV_STOP THEN (LaserReset)
+
+Function: LaserStandby_O
+  Usage count: 1
+  Found at lines:
+    Line 7536: IF !SV_STOP THEN (LaserStandby_O)
+
+Function: LubeOk
+  Usage count: 2
+  Found at lines:
+    Line 7150: IF Initialize_T && !LubeOk && !SV_PROGRAM_RUNNING
+    Line 7170: IF !LubeOk && SV_PROGRAM_RUNNING THEN InfoMsg_W = LUBE_WARNING_MSG
+
+Function: LubePump
+  Usage count: 6
+  Found at lines:
+    Line 3805: IF SV_PROGRAM_RUNNING THEN SET LubePump, RST LubeM_T
+    Line 3807: IF LubeM_T || SV_STOP THEN RST LubePump
+    Line 3832: IF SkinManualLube_M && !LubePump THEN (ManualLubePD)
+    Line 3836: THEN SET LubePump, LubeS_T = LubeS_W, SET LubeS_T, RST LubeM_T, LubeAccumTime_W = 0
+    Line 3837: IF LubeS_T || SV_STOP THEN RST LubePump, RST LubeS_T, RST ManualLubePump_SV
+    Line 3838: IF LubePump THEN (ManualLubeLED)
+
+Function: Mist
+  Usage count: 2
+  Found at lines:
+    Line 4999: IF (((Mist || RouterVacuumHoldDown) ^ (!CoolAutoModeLED && CoolantMistPD))
+    Line 5003: THEN (Mist), (CoolMistLED), (SelectCoolantMist), (RouterVacuumHoldDown)
+
+Function: NitrogenSelect_O
+  Usage count: 1
+  Found at lines:
+    Line 7573: IF M41_SV THEN (NitrogenSelect_O)
+
+Function: NoFaultOut
+  Usage count: 1
+  Found at lines:
+    Line 6851: IF !SV_STOP THEN (NoFaultOut)
+
+Function: Ohmic_Enable
+  Usage count: 1
+  Found at lines:
+    Line 3527: IF DisableTouchFault_SV THEN (TouchOffStarted_PD), (Ohmic_Enable)
+
+Function: OhmicSensor
+  Usage count: 4
+  Found at lines:
+    Line 3528: IF TouchOffStarted_PD && ((TorchTipTouchOff_M && !THCNotInstalledBit_M) || OhmicSensor) && FloatWithSwitchBit_M && !TorchFloatSwitchDisabled_M THEN SET TorchIgnoreTip_M
+    Line 3532: IF (TorchFloatSwitch_I && (!TorchTipTouchOff_M || THCNotInstalledBit_M) && !OhmicSensor) ||
+    Line 3536: IF ((TorchTipTouchOff_M && !THCNotInstalledBit_M) || OhmicSensor) && FloatWithSwitchBit_M && !TorchIgnoreTip_M || TorchFloatSwitch_I THEN (TorchTouched_M), (TorchTouchLED)
+    Line 3540: IF (TorchTipTouchOff_M && !THCNotInstalledBit_M) || OhmicSensor THEN (TorchOhmicTouch_M)
+
+Function: OpenChuck
+  Usage count: 8
+  Found at lines:
+    Line 6035: IF True_M THEN RST OpenChuck
+    Line 6997: IF ((OpenChuckPD && !OpenChuck) || (M11L && SV_PROGRAM_RUNNING)) && ColletDisabled_M
+    Line 6998: && !SpindleEnableOut_M && ChuckOpenCloseComplete_M THEN RST CloseChuck, SET OpenChuck, SET ChuckTimer,
+    Line 7004: && !SpindleEnableOut_M && ChuckOpenCloseComplete_M THEN SET CloseChuck, RST OpenChuck, SET ChuckTimer,
+    Line 7008: IF OpenChuck && !ChuckOpenCloseComplete_M && (ChuckIsOpen || (ChuckIsOpenIs_M && ChuckTimer))
+    Line 7009: THEN SET ChuckOpenCloseComplete_M, RST OpenChuck, RST M11L, SET ChuckState_M
+    Line 7014: IF OpenChuck && !ChuckOpenCloseComplete_M && (ChuckTimer && !ChuckIsOpenIs_M)
+    Line 7015: THEN FaultMsg_W = CHUCK_TIMEOUT, Set OtherFault_M, RST ChuckTimer, RST OpenChuck, RST M11L
+
+Function: OrientSpindle
+  Usage count: 4
+  Found at lines:
+    Line 6768: IF M19 THEN (OrientSpindle), SET OrientTimer
+    Line 6771: IF OrientSpindle && SpindleOrientedState_M THEN RST OrientTimer
+    Line 6777: IF OrientSpindle && (OrientTimer && !SpindleOrientedState_M)
+    Line 6781: RST OrientSpindle,
+
+Function: OscillationOn
+  Usage count: 1
+  Found at lines:
+    Line 6977: IF OscillationOn_SV && !SV_STOP THEN (OscillationOn)
+
+Function: OUTPUT1
+  Usage count: 1
+  Found at lines:
+    Line 7258: IF M61 THEN (OUTPUT1), (OUTPUT1LED), (ExtUsb_Output1ToggleOut_SV)
+
+Function: OUTPUT2
+  Usage count: 1
+  Found at lines:
+    Line 7262: IF M62 THEN (OUTPUT2), (OUTPUT2LED), (ExtUsb_Output2ToggleOut_SV)
+
+Function: OUTPUT3
+  Usage count: 1
+  Found at lines:
+    Line 7266: IF M63 THEN (OUTPUT3), (OUTPUT3LED), (ExtUsb_Output3ToggleOut_SV)
+
+Function: OUTPUT4
+  Usage count: 1
+  Found at lines:
+    Line 7270: IF M64 THEN (OUTPUT4), (OUTPUT4LED), (ExtUsb_Output4ToggleOut_SV)
+
+Function: OUTPUT5
+  Usage count: 1
+  Found at lines:
+    Line 7274: IF M65 THEN (OUTPUT5), (OUTPUT5LED), (ExtUsb_Output5ToggleOut_SV)
+
+Function: OUTPUT6
+  Usage count: 1
+  Found at lines:
+    Line 7278: IF M66 THEN (OUTPUT6), (OUTPUT6LED), (ExtUsb_Output6ToggleOut_SV)
+
+Function: OUTPUT7
+  Usage count: 1
+  Found at lines:
+    Line 7282: IF M67 THEN (OUTPUT7), (OUTPUT7LED), (ExtUsb_Output7ToggleOut_SV)
+
+Function: OUTPUT8
+  Usage count: 1
+  Found at lines:
+    Line 7286: IF M68 THEN (OUTPUT8), (OUTPUT8LED), (ExtUsb_Output8ToggleOut_SV)
+
+Function: OxygenSelect_O
+  Usage count: 1
+  Found at lines:
+    Line 7574: IF M42_SV THEN (OxygenSelect_O)
+
+Function: PartChute
+  Usage count: 3
+  Found at lines:
+    Line 7039: IF M22 THEN SET PartChute, SET PartchuteTimer
+    Line 7043: IF !M22 THEN RST PartChute, RST PartchuteTimer, RST PartChuteComplete
+    Line 7047: THEN FaultMsg_W = PART_CHUTE_TIMEOUT, SET OtherFault_M, RST PartChute, RST PartchuteTimer
+
+Function: PartChuteIsIn
+  Usage count: 1
+  Found at lines:
+    Line 7040: IF PartChuteIsIn || (PartChuteIsInIs_M && PartChuteTimer)
+
+Function: PopUpPins
+  Usage count: 3
+  Found at lines:
+    Line 6925: IF (((PopUpPinsPD ^ PopUpPins) && !SV_PROGRAM_RUNNING) ||
+    Line 6926: PopUpPins_SV) ^ (DoCycleStart && PopUpPins && PopUpPinsCycleStart_M) THEN (PopUpPins)
+    Line 6927: IF PopUpPins THEN (PopUpPinsLED)
+
+Function: ProbeDetect
+  Usage count: 2
+  Found at lines:
+    Line 5060: IF ((ProbeDetect && !ProbeDetectDisabled_M || SV_FORCE_PROBE_DETECTION_ON) &&
+    Line 6459: IF (ProbeDetect && ProbeNO_M && !ProbeDetectDisabled_M) || !ProbeNO_M ||
+
+Function: ProbeTripped
+  Usage count: 1
+  Found at lines:
+    Line 6463: IF ProbeTripped && ProbeToolDetect_M THEN (ProbeToolTripped_M)
+
+Function: PWMSelect
+  Usage count: 1
+  Found at lines:
+    Line 7091: IF PWMSelect_SV && !SV_STOP THEN (PWMSelect)
+
+Function: RedLight
+  Usage count: 1
+  Found at lines:
+    Line 7059: IF SV_STOP && (LightTurnOnTimer || (SV_MACHINE_PARAMETER_890 == 1)) THEN (RedLight) ; if in fault then red light on
+
+Function: ReverseToolTurret
+  Usage count: 3
+  Found at lines:
+    Line 6378: RST ReverseToolTurret,
+    Line 6397: RST ReverseToolTurret,
+    Line 7943: IF ToolTurretOffCurrentToolTimer THEN SET ReverseToolTurret, SET TurretReverseTimer
+
+Function: RotateToolTurret
+  Usage count: 12
+  Found at lines:
+    Line 6395: RST RotateToolTurret,
+    Line 7878: IF RotateToolTurret THEN SET CountSkipTimer
+    Line 7881: IF !RotateToolTurret THEN RST CountSkipTimer, RST ToolTurretOffCurrentToolTimer
+    Line 7886: IF RotateToolTurret && ToolCounterPD && CountSkipTimer THEN CurrentTurretPosition_W = CurrentTurretPosition_W + 1
+    Line 7910: IF M18 && !TurretHomed_M THEN SET RotateToolTurret
+    Line 7916: IF ToolTurretOffCurrentToolTimer THEN RST RotateToolTurret,
+    Line 7933: THEN SET RotateToolTurret, SET ToolChangeTimeOutTimer, SET ToolTurretEnable
+    Line 7947: RST RotateToolTurret,
+    Line 7966: THEN SET RotateToolTurret, SET ToolChangeTimeOutTimer, SET ToolTurretEnable
+    Line 7974: IF ToolTurretOffCurrentToolTimer THEN RST RotateToolTurret, SET ToolChangeComplete_M, RST ToolTurretEnable
+    Line 8000: THEN SET RotateToolTurret, SET ToolChangeTimer, SET ToolTurretEnable
+    Line 8003: IF ToolChangeTimer THEN RST RotateToolTurret, SET ToolChangeComplete_M, RST ToolChangeTimer, RST ToolTurretEnable
+
+Function: RouterDustCollection
+  Usage count: 2
+  Found at lines:
+    Line 4989: IF (((Flood || RouterDustCollection) ^ (!CoolAutoModeLED && CoolantFloodPD)) ||
+    Line 4992: THEN (Flood), (CoolFloodLED), (SelectCoolantFlood), (RouterDustCollection)
+
+Function: RouterVacuumHoldDown
+  Usage count: 3
+  Found at lines:
+    Line 4999: IF (((Mist || RouterVacuumHoldDown) ^ (!CoolAutoModeLED && CoolantMistPD))
+    Line 5001: && !(SV_STOP || (CoolantAutoManualPD && !RouterVacuumHoldDown) ||
+    Line 5003: THEN (Mist), (CoolMistLED), (SelectCoolantMist), (RouterVacuumHoldDown)
+
+Function: RPM_Sensor
+  Usage count: 2
+  Found at lines:
+    Line 6016: IF True_M THEN RST RPM_Sensor, SET RPMSensorDisabled_M
+    Line 7315: IF RPM_Sensor THEN (RPMSensorPD)
+
+Function: SafetyDoorLockConfirmed_I
+  Usage count: 2
+  Found at lines:
+    Line 7641: IF SafetyDoorLockConfirmed_I THEN RST SafetyDoorLockConfirm_T
+    Line 7644: IF (DoorInterlockMode_M || DoorInterlockShutdown_M) && !SafetyDoorLockConfirmed_I && SafetyDoorLockConfirm_T
+
+Function: SafetyDoorLockOpen_O
+  Usage count: 2
+  Found at lines:
+    Line 7634: IF SafetyDoorLock_T THEN SET SafetyDoorLockOpen_O
+    Line 7639: THEN RST SafetyDoorLockOpen_O, SET SafetyDoorLockConfirm_T, RST SafetyDoorLock_T
+
+Function: SafetyDoorSwitchClosed_I
+  Usage count: 13
+  Found at lines:
+    Line 5105: IF (SpindleEnableOut_M || SpinStart_M) && ((DoorInterlockMode_M || DoorInterlockShutdown_M)  && !SafetyDoorSwitchClosed_I)
+    Line 7539: IF DryrunLED || ((DoorInterlockMode_M || DoorInterlockShutdown_M)  && !SafetyDoorSwitchClosed_I) THEN RST M3_SV
+    Line 7581: IF !SafetyDoorSwitchClosed_I && !DoorClosed_M THEN SET DoorOpen_M
+    Line 7582: IF SafetyDoorSwitchClosed_I && !DoorOpen_M THEN SET DoorClosed_M
+    Line 7586: && !SafetyDoorSwitchClosed_I)
+    Line 7591: && !SafetyDoorSwitchClosed_I) || ((!SV_PROGRAM_RUNNING || !SV_MDI_MODE) && DoorInterlockMode_M
+    Line 7592: && DoCycleStart && !SafetyDoorSwitchClosed_I)
+    Line 7596: IF DoorInterlockMode_M && !SafetyDoorSwitchClosed_I && DoorClosed_M
+    Line 7601: IF (DoorInterlockMode_M) && SafetyDoorSwitchClosed_I && DoorOpen_M
+    Line 7606: IF DoorInterlockMode_M && SafetyDoorSwitchClosed_I && FeedHoldLED && DoorFeedHold_M
+    Line 7615: IF (DoorInterlockShutdown_M && !SafetyDoorSwitchClosed_I)
+    Line 7622: IF DoorInterlockShutdown_M && SafetyDoorSwitchClosed_I && SV_STOP && DoorShutDownStop_M
+    Line 7626: IF !EStopOk_M && (DoorInterlockShutdown_M && SafetyDoorSwitchClosed_I)
+
+Function: ScribeOn
+  Usage count: 1
+  Found at lines:
+    Line 6972: IF M39_SV && !SV_STOP THEN (ScribeOn)
+
+Function: SecondAxisHomeLimitOk
+  Usage count: 1
+  Found at lines:
+    Line 6713: !SecondAxisHomeOk || !SecondAxisHomeLimitOk || !HomeLimitAll THEN (PairedHomeTripped)
+
+Function: SecondAxisHomeOk
+  Usage count: 1
+  Found at lines:
+    Line 6713: !SecondAxisHomeOk || !SecondAxisHomeLimitOk || !HomeLimitAll THEN (PairedHomeTripped)
+
+Function: SlavedHomeInput
+  Usage count: 2
+  Found at lines:
+    Line 6712: IF !HomeAll || !SlavedHomeInput || !FirstAxisHomeOk || !FirstAxisHomeLimitOk ||
+    Line 6715: IF SlavedHomeInput THEN (SlavedHomeTripOk_M)
+
+Function: SmartToolReleaseEnable_O
+  Usage count: 1
+  Found at lines:
+    Line 6814: IF SmartToolReleaseEnable_SV THEN (SmartToolReleaseEnable_O)
+
+Function: SpindleBrakeRelease
+  Usage count: 3
+  Found at lines:
+    Line 6745: THEN SET SpindleBrakeRelease
+    Line 6754: THEN RST SpindleBrakeRelease
+    Line 6756: IF !SpindleBrakeRelease THEN (SpindleBrakeLED)
+
+Function: SpindleCooling
+  Usage count: 4
+  Found at lines:
+    Line 6932: IF SpindleCoolingPD && !SpindleCooling THEN SET SpindleCooling_SV
+    Line 6933: IF SpindleCoolingPD && SpindleCooling THEN RST SpindleCooling_SV
+    Line 6935: IF SpindleCooling_SV THEN (SpindleCooling)
+    Line 6937: IF SpindleCooling THEN (SpindleCoolingLED)
+
+Function: SpindleCooling_Fan
+  Usage count: 2
+  Found at lines:
+    Line 6951: IF SpindleEnableOut_M && !M37 THEN SET SpindleCooling_Fan, RST SpindleCooling_T
+    Line 6953: IF SpindleCooling_T THEN RST SpindleCooling_Fan
+
+Function: SpindleHighRange
+  Usage count: 1
+  Found at lines:
+    Line 5202: IF OnAtPowerUp_M || M43_SV || SkinSpindleHigh_M || ExtUsb_SpindleHigh_SV || (SpindleHighRange ||
+
+Function: SpindleIsOriented
+  Usage count: 2
+  Found at lines:
+    Line 6765: IF SpindleIsOriented THEN (SpindleOrientedState_M)
+    Line 7748: IF VFDZeroSpeed && (SpindleIsOriented && M80_SV && M6) || (M80_SV && Aux14Key)
+
+Function: SpindleLowRange
+  Usage count: 1
+  Found at lines:
+    Line 5194: IF M41_SV || SkinSpindleLow_M || ExtUsb_SpindleLow_SV || (SpindleLowRange || (!BackGear && !BackGearDisabled_M))
+
+Function: SpindleMedRange
+  Usage count: 1
+  Found at lines:
+    Line 5198: IF ((M42_SV || SkinSpindleMed_M || ExtUsb_SpindleMed_SV || SpindleMedRange) && BackGearDisabled_M)
+
+Function: SpindleOk
+  Usage count: 1
+  Found at lines:
+    Line 7137: IF SpindleFaultTimer_T && !SpindleOk THEN FaultMsg_W = SPINDLE_FAULT_MSG, SET SpindleFault_M, SET OtherFault_M
+
+Function: SpindleTempAlarmMessage
+  Usage count: 1
+  Found at lines:
+    Line 7154: IF Initialize_T && SpindleTempAlarmMessage THEN InfoMSG_W = SPINDLETEMPALARM_MSG
+
+Function: SpindleTempAlarmStop
+  Usage count: 1
+  Found at lines:
+    Line 7155: IF Initialize_T && SpindleTempAlarmStop THEN FaultMsg_W = SPINDLETEMPALARM_MSG, SET SpindleFault_M
+
+Function: SpinFWD
+  Usage count: 1
+  Found at lines:
+    Line 4339: IF  SpindleEnableOut_M && !M37 && !SpindleDirectionOut_M && SpindleBrakeTimer THEN (SpinFWD)
+
+Function: SpinREV
+  Usage count: 1
+  Found at lines:
+    Line 4340: IF  SpindleEnableOut_M && !M37 && SpindleDirectionOut_M && SpindleBrakeTimer THEN (SpinREV), (VFDDirection_O)
+
+Function: TailStockInOut
+  Usage count: 5
+  Found at lines:
+    Line 8158: IF (TailStockPD && !SV_PROGRAM_RUNNING && !TailStockInOut) || (M32 && SV_PROGRAM_RUNNING)
+    Line 8159: THEN SET TailStockInOut, SET Aux11LED
+    Line 8160: IF (TailStockPD && !SV_PROGRAM_RUNNING && TailStockInOut) || (!M32 && SV_PROGRAM_RUNNING)
+    Line 8161: THEN RST TailStockInOut, RST Aux11LED
+    Line 8163: IF TailStockInOut THEN (ExtUsb_TailStockInOutOut_SV)
+
+Function: ToolCheck2
+  Usage count: 1
+  Found at lines:
+    Line 4489: ToolCheck2 || ExtUsb_ToolCheck_SV) && EStopOk_M &&
+
+Function: ToolClamped_I
+  Usage count: 1
+  Found at lines:
+    Line 6803: IF DrawBarIsDown_I && ToolClamped_I THEN (ToolClampedState_M)
+
+Function: ToolIsPresent_I
+  Usage count: 1
+  Found at lines:
+    Line 6810: IF ToolIsPresent_I THEN (ToolIsPresentState_M)
+
+Function: ToolIsUnclamped
+  Usage count: 1
+  Found at lines:
+    Line 6797: IF (ToolIsUnclamped && DrawBarReleasedDisable_M && DrawBarIsUpDisabled_M) ||
+
+Function: ToolRackIn_O
+  Usage count: 1
+  Found at lines:
+    Line 7782: IF M80_SV && !SV_STOP THEN (ToolRackIn_O)
+
+Function: ToolRackIsIn_I
+  Usage count: 1
+  Found at lines:
+    Line 7785: IF ToolRackIsIn_I THEN (ToolRackInState_M)
+
+Function: ToolRackIsOut_I
+  Usage count: 1
+  Found at lines:
+    Line 7791: IF ToolRackIsOut_I THEN (ToolRackOutState_M)
+
+Function: ToolRackOut_O
+  Usage count: 1
+  Found at lines:
+    Line 7788: IF M81_SV && !SV_STOP THEN (ToolRackOut_O)
+
+Function: ToolTouchOffDetect
+  Usage count: 2
+  Found at lines:
+    Line 5062: (ToolTouchOffDetect && !TTDetectDisabled_M && ((SV_MACHINE_PARAMETER_416 == 1) || SV_MACHINE_PARAMETER_416 == 2))
+    Line 6467: IF (ToolTouchOffDetect && !TTDetectDisabled_M) || TTDetectDisabled_M
+
+Function: ToolTouchOffTriggered
+  Usage count: 1
+  Found at lines:
+    Line 6471: IF ToolTouchOffTriggered && AuxToolDetect_M THEN (AuxToolTripped_M)
+
+Function: ToolTurretCounter
+  Usage count: 1
+  Found at lines:
+    Line 7885: IF ToolTurretCounter THEN (ToolCounterPD)
+
+Function: ToolTurretEnable
+  Usage count: 7
+  Found at lines:
+    Line 6396: RST ToolTurretEnable,
+    Line 7933: THEN SET RotateToolTurret, SET ToolChangeTimeOutTimer, SET ToolTurretEnable
+    Line 7948: RST ToolTurretEnable
+    Line 7966: THEN SET RotateToolTurret, SET ToolChangeTimeOutTimer, SET ToolTurretEnable
+    Line 7974: IF ToolTurretOffCurrentToolTimer THEN RST RotateToolTurret, SET ToolChangeComplete_M, RST ToolTurretEnable
+    Line 8000: THEN SET RotateToolTurret, SET ToolChangeTimer, SET ToolTurretEnable
+    Line 8003: IF ToolChangeTimer THEN RST RotateToolTurret, SET ToolChangeComplete_M, RST ToolChangeTimer, RST ToolTurretEnable
+
+Function: ToolTurretPosBit1
+  Usage count: 16
+  Found at lines:
+    Line 7813: IF !(ToolTurretPosBit1 ^ P831Bit0) && !(ToolTurretPosBit2 ^ P831Bit1)
+    Line 7816: IF !(ToolTurretPosBit1 ^ P832Bit0) && !(ToolTurretPosBit2 ^ P832Bit1)
+    Line 7819: IF !(ToolTurretPosBit1 ^ P833Bit0) && !(ToolTurretPosBit2 ^ P833Bit1)
+    Line 7822: IF !(ToolTurretPosBit1 ^ P834Bit0) && !(ToolTurretPosBit2 ^ P834Bit1)
+    Line 7825: IF !(ToolTurretPosBit1 ^ P835Bit0) && !(ToolTurretPosBit2 ^ P835Bit1)
+    Line 7828: IF !(ToolTurretPosBit1 ^ P836Bit0) && !(ToolTurretPosBit2 ^ P836Bit1)
+    Line 7831: IF !(ToolTurretPosBit1 ^ P837Bit0) && !(ToolTurretPosBit2 ^ P837Bit1)
+    Line 7834: IF !(ToolTurretPosBit1 ^ P838Bit0) && !(ToolTurretPosBit2 ^ P838Bit1)
+    Line 7837: IF !(ToolTurretPosBit1 ^ P839Bit0) && !(ToolTurretPosBit2 ^ P839Bit1)
+    Line 7840: IF !(ToolTurretPosBit1 ^ P840Bit0) && !(ToolTurretPosBit2 ^ P840Bit1)
+    Line 7843: IF !(ToolTurretPosBit1 ^ P841Bit0) && !(ToolTurretPosBit2 ^ P841Bit1)
+    Line 7846: IF !(ToolTurretPosBit1 ^ P842Bit0) && !(ToolTurretPosBit2 ^ P842Bit1)
+    Line 7849: IF !(ToolTurretPosBit1 ^ P843Bit0) && !(ToolTurretPosBit2 ^ P843Bit1)
+    Line 7852: IF !(ToolTurretPosBit1 ^ P844Bit0) && !(ToolTurretPosBit2 ^ P844Bit1)
+    Line 7855: IF !(ToolTurretPosBit1 ^ P845Bit0) && !(ToolTurretPosBit2 ^ P845Bit1)
+    Line 7858: IF !(ToolTurretPosBit1 ^ P846Bit0) && !(ToolTurretPosBit2 ^ P846Bit1)
+
+Function: ToolTurretPosBit2
+  Usage count: 16
+  Found at lines:
+    Line 7813: IF !(ToolTurretPosBit1 ^ P831Bit0) && !(ToolTurretPosBit2 ^ P831Bit1)
+    Line 7816: IF !(ToolTurretPosBit1 ^ P832Bit0) && !(ToolTurretPosBit2 ^ P832Bit1)
+    Line 7819: IF !(ToolTurretPosBit1 ^ P833Bit0) && !(ToolTurretPosBit2 ^ P833Bit1)
+    Line 7822: IF !(ToolTurretPosBit1 ^ P834Bit0) && !(ToolTurretPosBit2 ^ P834Bit1)
+    Line 7825: IF !(ToolTurretPosBit1 ^ P835Bit0) && !(ToolTurretPosBit2 ^ P835Bit1)
+    Line 7828: IF !(ToolTurretPosBit1 ^ P836Bit0) && !(ToolTurretPosBit2 ^ P836Bit1)
+    Line 7831: IF !(ToolTurretPosBit1 ^ P837Bit0) && !(ToolTurretPosBit2 ^ P837Bit1)
+    Line 7834: IF !(ToolTurretPosBit1 ^ P838Bit0) && !(ToolTurretPosBit2 ^ P838Bit1)
+    Line 7837: IF !(ToolTurretPosBit1 ^ P839Bit0) && !(ToolTurretPosBit2 ^ P839Bit1)
+    Line 7840: IF !(ToolTurretPosBit1 ^ P840Bit0) && !(ToolTurretPosBit2 ^ P840Bit1)
+    Line 7843: IF !(ToolTurretPosBit1 ^ P841Bit0) && !(ToolTurretPosBit2 ^ P841Bit1)
+    Line 7846: IF !(ToolTurretPosBit1 ^ P842Bit0) && !(ToolTurretPosBit2 ^ P842Bit1)
+    Line 7849: IF !(ToolTurretPosBit1 ^ P843Bit0) && !(ToolTurretPosBit2 ^ P843Bit1)
+    Line 7852: IF !(ToolTurretPosBit1 ^ P844Bit0) && !(ToolTurretPosBit2 ^ P844Bit1)
+    Line 7855: IF !(ToolTurretPosBit1 ^ P845Bit0) && !(ToolTurretPosBit2 ^ P845Bit1)
+    Line 7858: IF !(ToolTurretPosBit1 ^ P846Bit0) && !(ToolTurretPosBit2 ^ P846Bit1)
+
+Function: ToolTurretPosBit3
+  Usage count: 16
+  Found at lines:
+    Line 7814: && !(ToolTurretPosBit3 ^ P831Bit2) && !(ToolTurretPosBit4 ^ P831Bit3)
+    Line 7817: && !(ToolTurretPosBit3 ^ P832Bit2) && !(ToolTurretPosBit4 ^ P832Bit3)
+    Line 7820: && !(ToolTurretPosBit3 ^ P833Bit2) && !(ToolTurretPosBit4 ^ P833Bit3)
+    Line 7823: && !(ToolTurretPosBit3 ^ P834Bit2) && !(ToolTurretPosBit4 ^ P834Bit3)
+    Line 7826: && !(ToolTurretPosBit3 ^ P835Bit2) && !(ToolTurretPosBit4 ^ P835Bit3)
+    Line 7829: && !(ToolTurretPosBit3 ^ P836Bit2) && !(ToolTurretPosBit4 ^ P836Bit3)
+    Line 7832: && !(ToolTurretPosBit3 ^ P837Bit2) && !(ToolTurretPosBit4 ^ P837Bit3)
+    Line 7835: && !(ToolTurretPosBit3 ^ P838Bit2) && !(ToolTurretPosBit4 ^ P838Bit3)
+    Line 7838: && !(ToolTurretPosBit3 ^ P839Bit2) && !(ToolTurretPosBit4 ^ P839Bit3)
+    Line 7841: && !(ToolTurretPosBit3 ^ P840Bit2) && !(ToolTurretPosBit4 ^ P840Bit3)
+    Line 7844: && !(ToolTurretPosBit3 ^ P841Bit2) && !(ToolTurretPosBit4 ^ P841Bit3)
+    Line 7847: && !(ToolTurretPosBit3 ^ P842Bit2) && !(ToolTurretPosBit4 ^ P842Bit3)
+    Line 7850: && !(ToolTurretPosBit3 ^ P843Bit2) && !(ToolTurretPosBit4 ^ P843Bit3)
+    Line 7853: && !(ToolTurretPosBit3 ^ P844Bit2) && !(ToolTurretPosBit4 ^ P844Bit3)
+    Line 7856: && !(ToolTurretPosBit3 ^ P845Bit2) && !(ToolTurretPosBit4 ^ P845Bit3)
+    Line 7859: && !(ToolTurretPosBit3 ^ P846Bit2) && !(ToolTurretPosBit4 ^ P846Bit3)
+
+Function: ToolTurretPosBit4
+  Usage count: 16
+  Found at lines:
+    Line 7814: && !(ToolTurretPosBit3 ^ P831Bit2) && !(ToolTurretPosBit4 ^ P831Bit3)
+    Line 7817: && !(ToolTurretPosBit3 ^ P832Bit2) && !(ToolTurretPosBit4 ^ P832Bit3)
+    Line 7820: && !(ToolTurretPosBit3 ^ P833Bit2) && !(ToolTurretPosBit4 ^ P833Bit3)
+    Line 7823: && !(ToolTurretPosBit3 ^ P834Bit2) && !(ToolTurretPosBit4 ^ P834Bit3)
+    Line 7826: && !(ToolTurretPosBit3 ^ P835Bit2) && !(ToolTurretPosBit4 ^ P835Bit3)
+    Line 7829: && !(ToolTurretPosBit3 ^ P836Bit2) && !(ToolTurretPosBit4 ^ P836Bit3)
+    Line 7832: && !(ToolTurretPosBit3 ^ P837Bit2) && !(ToolTurretPosBit4 ^ P837Bit3)
+    Line 7835: && !(ToolTurretPosBit3 ^ P838Bit2) && !(ToolTurretPosBit4 ^ P838Bit3)
+    Line 7838: && !(ToolTurretPosBit3 ^ P839Bit2) && !(ToolTurretPosBit4 ^ P839Bit3)
+    Line 7841: && !(ToolTurretPosBit3 ^ P840Bit2) && !(ToolTurretPosBit4 ^ P840Bit3)
+    Line 7844: && !(ToolTurretPosBit3 ^ P841Bit2) && !(ToolTurretPosBit4 ^ P841Bit3)
+    Line 7847: && !(ToolTurretPosBit3 ^ P842Bit2) && !(ToolTurretPosBit4 ^ P842Bit3)
+    Line 7850: && !(ToolTurretPosBit3 ^ P843Bit2) && !(ToolTurretPosBit4 ^ P843Bit3)
+    Line 7853: && !(ToolTurretPosBit3 ^ P844Bit2) && !(ToolTurretPosBit4 ^ P844Bit3)
+    Line 7856: && !(ToolTurretPosBit3 ^ P845Bit2) && !(ToolTurretPosBit4 ^ P845Bit3)
+    Line 7859: && !(ToolTurretPosBit3 ^ P846Bit2) && !(ToolTurretPosBit4 ^ P846Bit3)
+
+Function: ToolTurretSyncBit
+  Usage count: 1
+  Found at lines:
+    Line 7913: IF M18 && ToolTurretSyncBit THEN SET ToolTurretOffCurrentToolTimer
+
+Function: ToolUnclampButton
+  Usage count: 3
+  Found at lines:
+    Line 6684: IF (ToolUnclampButton || SkinToolRelease_M || ExtUsb_ToolRelease_SV) && MachineIsRouter_M &&
+    Line 6823: IF VFDZeroSpeed && (((ToolUnclampButton || SkinToolRelease_M || ExtUsb_ToolRelease_SV) && !SpindleEnableOut_M &&
+    Line 6828: IF ToolUnclampButton THEN (ToolUnclampButtonState_M)
+
+Function: TorchArcOk_I
+  Usage count: 1
+  Found at lines:
+    Line 3465: (TorchArcOk_I && !TorchArcOkDisabled_M) || (THCNotInstalledBit_M && TorchArcOkDisabled_M)
+
+Function: TorchBreakawayOk
+  Usage count: 2
+  Found at lines:
+    Line 7355: IF Initialize_T && (!TorchBreakawayOk || (TorchFloatSwitch_I && !DisableTouchFault_SV)) THEN (TorchBreakawayFault_M)
+    Line 7365: IF (TorchBreakawayOk && !TorchFloatSwitch_I) || SV_PROGRAM_RUNNING THEN RST BreakAwayAllowZ_M
+
+Function: TorchFloatSwitch_I
+  Usage count: 5
+  Found at lines:
+    Line 3532: IF (TorchFloatSwitch_I && (!TorchTipTouchOff_M || THCNotInstalledBit_M) && !OhmicSensor) ||
+    Line 3536: IF ((TorchTipTouchOff_M && !THCNotInstalledBit_M) || OhmicSensor) && FloatWithSwitchBit_M && !TorchIgnoreTip_M || TorchFloatSwitch_I THEN (TorchTouched_M), (TorchTouchLED)
+    Line 3541: IF TorchFloatSwitch_I THEN (TorchFloatTouch_M)
+    Line 7355: IF Initialize_T && (!TorchBreakawayOk || (TorchFloatSwitch_I && !DisableTouchFault_SV)) THEN (TorchBreakawayFault_M)
+    Line 7365: IF (TorchBreakawayOk && !TorchFloatSwitch_I) || SV_PROGRAM_RUNNING THEN RST BreakAwayAllowZ_M
+
+Function: TorchOn
+  Usage count: 8
+  Found at lines:
+    Line 3456: IF TorchOn THEN TorchVoltage_W = SV_THC_VOLTAGE
+    Line 3457: IF !TorchOn THEN TorchVoltage_W = 0
+    Line 3469: IF TorchOn && TorchArcOk_M THEN SET TorchArcMonitor_M
+    Line 3470: IF !TorchOn THEN RST TorchArcMonitor_M, RST TorchArcLost_T
+    Line 3475: IF TorchOn && TorchArcLost_T THEN SET ActivateFeedHold_M, SET TorchRestartModeLED_O, KbOverride_W = 25
+    Line 3479: IF TorchOn && TorchArcOk_M THEN SET TorchMarking_T
+    Line 3480: IF !TorchOn THEN RST TorchMarking_T
+    Line 7406: IF TorchDisconnect_T THEN (TorchOn)
+
+Function: TorchTouchDisconnect
+  Usage count: 2
+  Found at lines:
+    Line 7403: !SV_STOP THEN (TorchOn_M), SET TorchTouchDisconnect
+    Line 7409: IF TorchConnect_T THEN RST TorchTouchDisconnect, RST TorchConnect_T
+
+Function: TouchPlateDetect
+  Usage count: 1
+  Found at lines:
+    Line 6605: IF TouchPlateDetect THEN (TouchPlateDetect_M)
+
+Function: TouchPlateTripped
+  Usage count: 1
+  Found at lines:
+    Line 6608: IF TouchPlateTripped && TouchPlateDetect_M THEN (TouchPlateTripped_M)
+
+Function: TurnClampOn
+  Usage count: 3
+  Found at lines:
+    Line 6874: IF ((ClampOnPD ^ TurnClampOn) && !SV_PROGRAM_RUNNING) || (M10M && SV_PROGRAM_RUNNING)
+    Line 6875: THEN (TurnClampOn)
+    Line 6876: IF TurnClampOn THEN (ClampOnLED)
+
+Function: UnclampTool
+  Usage count: 7
+  Found at lines:
+    Line 5069: !ChuckOpenCloseComplete_M || M51_SV || UnclampTool
+    Line 6824: AllowToolRelease_M) || M15 && SV_PROGRAM_RUNNING) THEN (UnclampTool), (DrawBarUp_O),
+    Line 6831: IF UnclampTool THEN (ATCAirBlowActivate)
+    Line 6834: IF UnclampTool && ToolUnclampedState_M || !M15 THEN RST ToolUnclampTimer
+    Line 6840: IF UnclampTool && (ToolUnclampTimer && !ToolUnclampedState_M)
+    Line 6844: RST UnclampTool,
+    Line 7163: IF Initialize_T && !ATC_AirPressureOk && (UnclampTool || M80_SV || M81_SV) THEN SET AirPressureLost_T
+
+Function: VacuumOn
+  Usage count: 2
+  Found at lines:
+    Line 6882: IF M27 THEN (VacuumOn)
+    Line 6884: IF VacuumOn THEN (VacOnLED)
+
+Function: VFDDirection_O
+  Usage count: 1
+  Found at lines:
+    Line 4340: IF  SpindleEnableOut_M && !M37 && SpindleDirectionOut_M && SpindleBrakeTimer THEN (SpinREV), (VFDDirection_O)
+
+Function: VFDEnable_O
+  Usage count: 1
+  Found at lines:
+    Line 4338: IF SpindleEnableOut_M && !M37 THEN (VFDEnable_O)
+
+Function: VFDResetOut_O
+  Usage count: 1
+  Found at lines:
+    Line 6857: IF !EstopOK || (!EStopOk2 && !EStopOk2Disabled_M) THEN (VFDResetOut_O)
+
+Function: VFDUpToSpeed
+  Usage count: 1
+  Found at lines:
+    Line 6966: IF VFDUpToSpeed THEN (SpindleUpToSpeedState_M)
+
+Function: VFDZeroSpeed
+  Usage count: 3
+  Found at lines:
+    Line 6823: IF VFDZeroSpeed && (((ToolUnclampButton || SkinToolRelease_M || ExtUsb_ToolRelease_SV) && !SpindleEnableOut_M &&
+    Line 6963: IF VFDZeroSpeed THEN (SpindleZeroSpeedState_M)
+    Line 7748: IF VFDZeroSpeed && (SpindleIsOriented && M80_SV && M6) || (M80_SV && Aux14Key)
+
+Function: WorkLight
+  Usage count: 1
+  Found at lines:
+    Line 6865: IF WorklightLED THEN (WorkLight), (ExtUsb_WorkLightOut_SV)
+
+==============================================================================
+FUNCTIONS NOT FOUND IN PLC LOGIC:
+==============================================================================
+
+ChargePump
+DSPProbe_I
+FirstAxisMinusLimitOk
+FirstAxisPlusLimitOk
+FourthAxisHomeLimitOk
+FourthAxisHomeOk
+FourthAxisMinusLimitOk
+FourthAxisPlusLimitOk
+LimitAll
+M94M95111
+M94M95112
+M94M95113
+M94M95114
+M94M95115
+M94M95116
+M94M95117
+M94M95118
+M94M95119
+M94M95120
+M94M95121
+M94M95122
+M94M95123
+M94M95124
+M94M95125
+M94M95126
+PWMOutput
+SecondAxisMinusLimitOk
+SecondAxisPlusLimitOk
+SlavedAxisDriveOk
+ThirdAxisHomeLimitOk
+ThirdAxisHomeOk
+ThirdAxisMinusLimitOk
+ThirdAxisPlusLimitOk
+ZriHomingAll

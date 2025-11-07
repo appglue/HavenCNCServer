@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
 using HavenCNCServer.Centriod;
+using HavenCNCServer.Services;
+using System.Text.RegularExpressions;
 
 namespace HavenCNCServer.Controllers
 {
@@ -53,33 +55,67 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get current input states
+        /// Get current input states for all available inputs
         /// </summary>
         [HttpGet("GetCurrentInputs")]
         public Dictionary<int, bool> GetCurrentInputs()
         {
-            // TODO: Implement actual CNC input reading
-            return new Dictionary<int, bool>
+            try
             {
-                { 1, true },
-                { 2, false },
-                { 3, true }
-            };
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                var inputStates = new Dictionary<int, bool>();
+                var availableInputs = CNCUtils.GetAvailableInputPorts();
+
+                foreach (var inputNumber in availableInputs)
+                {
+                    var result = cncPipe.plc.GetInputState(inputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
+                    if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        inputStates[inputNumber] = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                    }
+                }
+
+                return inputStates;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get input states: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
-        /// Get current output states
+        /// Get current output states for all available outputs
         /// </summary>
         [HttpGet("GetCurrentOutputs")]
         public Dictionary<int, bool> GetCurrentOutputs()
         {
-            // TODO: Implement actual CNC output reading
-            return new Dictionary<int, bool>
+            try
             {
-                { 1, false },
-                { 2, true },
-                { 3, false }
-            };
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                var outputStates = new Dictionary<int, bool>();
+                var availableOutputs = CNCUtils.GetAvailableOutputPorts();
+
+                foreach (var outputNumber in availableOutputs)
+                {
+                    var result = cncPipe.plc.GetOutputState(outputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
+                    if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        outputStates[outputNumber] = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                    }
+                }
+
+                return outputStates;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get output states: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -91,8 +127,22 @@ namespace HavenCNCServer.Controllers
             if (inputNumber <= 0)
                 throw new ArgumentException("Input number must be greater than 0");
 
-            // TODO: Implement actual input check
-            return false;
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                var result = cncPipe.plc.GetInputState(inputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
+                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    throw new InvalidOperationException($"Failed to read input {inputNumber}: {result}");
+
+                return (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to check input {inputNumber}: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -104,8 +154,22 @@ namespace HavenCNCServer.Controllers
             if (outputNumber <= 0)
                 throw new ArgumentException("Output number must be greater than 0");
 
-            // TODO: Implement actual output check
-            return false;
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                var result = cncPipe.plc.GetOutputState(outputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
+                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    throw new InvalidOperationException($"Failed to read output {outputNumber}: {result}");
+
+                return (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to check output {outputNumber}: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -117,7 +181,29 @@ namespace HavenCNCServer.Controllers
             if (request.Number <= 0)
                 throw new ArgumentException("Output number must be greater than 0");
 
-            // TODO: Implement actual output setting
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                // Use SetIoForceState to control the output
+                var forceState = request.Value ?
+                    CentroidAPI.CNCPipe.Plc.ForceState.ForcedOn :
+                    CentroidAPI.CNCPipe.Plc.ForceState.ForcedOff;
+
+                var result = cncPipe.plc.SetIoForceState(
+                    request.Number,
+                    CentroidAPI.CNCPipe.Plc.BitType.Output,
+                    forceState);
+
+                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    throw new InvalidOperationException($"Failed to set output {request.Number}: {result}");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to set output {request.Number} to {request.Value}: {ex.Message}", ex);
+            }
         }
 
         #endregion
@@ -252,6 +338,106 @@ namespace HavenCNCServer.Controllers
             {
                 throw new InvalidOperationException($"Failed to invert inputs: {ex.Message}", ex);
             }
+        }
+
+        #endregion
+
+        #region I/O Definitions
+
+        /// <summary>
+        /// Get I/O definitions from the PLC source file
+        /// </summary>
+        /// <param name="sourcePath">Optional path to the PLC source file. If not provided, uses default location.</param>
+        /// <returns>IODefinitionsResponse containing all input and output definitions</returns>
+        [HttpGet("GetIODefinitions")]
+        public ActionResult<IODefinitionsResponse> GetIODefinitions([FromQuery] string? sourcePath = null)
+        {
+            try
+            {
+                // Default to cncr directory if not specified
+                if (string.IsNullOrEmpty(sourcePath))
+                {
+                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "cncr", "acorn_router_plc.src");
+                }
+
+                // If cncr doesn't exist, fall back to the Scripts directory
+                if (!System.IO.File.Exists(sourcePath))
+                {
+                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "Centriod", "Scripts", "acorn_router_plc.src");
+                }
+
+                if (!System.IO.File.Exists(sourcePath))
+                {
+                    return NotFound(new { error = "PLC source file not found", searchedPath = sourcePath });
+                }
+
+                var response = ParseIODefinitions(sourcePath);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Failed to parse I/O definitions: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Parse I/O definitions from a PLC source file
+        /// </summary>
+        private IODefinitionsResponse ParseIODefinitions(string filePath)
+        {
+            var response = new IODefinitionsResponse
+            {
+                SourceFilePath = filePath,
+                ParsedAt = DateTime.UtcNow
+            };
+
+            // Regex patterns to match input and output definitions
+            // Format: Name IS INP<number> or Name IS OUT<number>
+            var inputPattern = new Regex(@"^([A-Za-z0-9_]+)\s+IS\s+INP(\d+)", RegexOptions.Compiled);
+            var outputPattern = new Regex(@"^([A-Za-z0-9_]+)\s+IS\s+OUT(\d+)", RegexOptions.Compiled);
+
+            var lines = System.IO.File.ReadAllLines(filePath);
+
+            foreach (var line in lines)
+            {
+                // Skip comments and empty lines
+                var trimmedLine = line.Trim();
+                if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith(";"))
+                    continue;
+
+                // Check for input definition
+                var inputMatch = inputPattern.Match(trimmedLine);
+                if (inputMatch.Success)
+                {
+                    response.Inputs.Add(new IODefinition
+                    {
+                        Name = inputMatch.Groups[1].Value,
+                        Number = int.Parse(inputMatch.Groups[2].Value),
+                        Type = "INPUT",
+                        RawDefinition = line
+                    });
+                    continue;
+                }
+
+                // Check for output definition
+                var outputMatch = outputPattern.Match(trimmedLine);
+                if (outputMatch.Success)
+                {
+                    response.Outputs.Add(new IODefinition
+                    {
+                        Name = outputMatch.Groups[1].Value,
+                        Number = int.Parse(outputMatch.Groups[2].Value),
+                        Type = "OUTPUT",
+                        RawDefinition = line
+                    });
+                }
+            }
+
+            // Sort by number for easier reading
+            response.Inputs = response.Inputs.OrderBy(i => i.Number).ToList();
+            response.Outputs = response.Outputs.OrderBy(o => o.Number).ToList();
+
+            return response;
         }
 
         #endregion
