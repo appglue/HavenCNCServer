@@ -67,14 +67,14 @@ namespace HavenCNCServer
                         "HavenCNC",
                         "WebView2Data"
                     );
-                    
+
                     // Ensure the directory exists
                     Directory.CreateDirectory(userDataFolder);
-                    
+
                     // Create WebView2 environment with custom user data folder
                     var environment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(
                         null, userDataFolder, null);
-                    
+
                     await webView.EnsureCoreWebView2Async(environment);
 
                     // Navigate to the URL
