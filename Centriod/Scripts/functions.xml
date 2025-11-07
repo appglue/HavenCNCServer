@@ -3155,6 +3155,54 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     </Conflicts>
     <InputType>4096</InputType>
   </PlcFunction>
+  <PlcFunction xsi:type="Probe">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>true</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>FixedToolTouchPlate</Name>
+    <DisplayName>FixedToolTouchPlate</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input for a fixed tool touch plate sensor used for tool length measurement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>4096</InputType>
+  </PlcFunction>
+  <PlcFunction xsi:type="Probe">
+    <ConfigLine>
+    </ConfigLine>
+    <IsRequired>false</IsRequired>
+    <IsCustom>true</IsCustom>
+    <Safety>false</Safety>
+    <IsATC>false</IsATC>
+    <Hidden>false</Hidden>
+    <Machine>
+      <MachineType>All</MachineType>
+    </Machine>
+    <MemBit>901</MemBit>
+    <Name>MaterialToolTouchPlate</Name>
+    <DisplayName>MaterialToolTouchPlate</DisplayName>
+    <Order>0</Order>
+    <RestrictedTo>
+    </RestrictedTo>
+    <Tooltip>Input for a material-mounted tool touch plate sensor for workpiece height measurement.</Tooltip>
+    <Requires>
+    </Requires>
+    <Conflicts>
+    </Conflicts>
+    <InputType>4096</InputType>
+  </PlcFunction>
   <PlcFunction xsi:type="Output">
     <ConfigLine>
     </ConfigLine>
