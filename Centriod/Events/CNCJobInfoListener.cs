@@ -25,6 +25,7 @@ namespace HavenCNCServer.Centriod.Events
         private static Thread? _monitoringThread = null;
         private static CancellationTokenSource? _cancellationTokenSource = null;
         private static bool _isShuttingDown = false; // Add shutdown flag
+        private static bool _hasLoggedDisconnectedState = false; // Track if we've logged disconnection
         
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
@@ -863,6 +864,25 @@ namespace HavenCNCServer.Centriod.Events
         {
             try
             {
+                // Early exit: Ignore all messages when CNC12 is not connected to prevent event flood
+                if (!CNCConnectionManager.IsConnected)
+                {
+                    // Log only once when entering disconnected state
+                    if (!_hasLoggedDisconnectedState)
+                    {
+                        LogWarning($"⚠️ CNC12 disconnected - Ignoring all incoming messages to prevent event flood", "JobInfo");
+                        _hasLoggedDisconnectedState = true;
+                    }
+                    return; // Skip all message processing when disconnected
+                }
+                
+                // Reset the disconnected state flag when we receive messages while connected
+                if (_hasLoggedDisconnectedState)
+                {
+                    LogSuccess($"✅ CNC12 reconnected - Resuming message processing", "JobInfo");
+                    _hasLoggedDisconnectedState = false;
+                }
+                
                 // Access the communication packet from event args
                 var packet = e.Data;
                 
