@@ -26,13 +26,13 @@ namespace HavenCNCServer.Centriod.Events
         private static CancellationTokenSource? _cancellationTokenSource = null;
         private static bool _isShuttingDown = false; // Add shutdown flag
         private static bool _hasLoggedDisconnectedState = false; // Track if we've logged disconnection
-        
+
         // File logging for detailed listener data
         private static StreamWriter? _logWriter;
         private static int _messageCount = 0;
         private static int _lastReportedCount = 0;
         private static DateTime _sessionStartTime = DateTime.Now;
-        
+
         // Duplicate message detection
         private static Dictionary<string, string> _lastMessageHashes = new Dictionary<string, string>();
         private static Dictionary<string, int> _duplicateCounters = new Dictionary<string, int>();
@@ -60,7 +60,7 @@ namespace HavenCNCServer.Centriod.Events
                     LogWarning("Cannot start CNC job listener - shutdown in progress", "JobInfo");
                     return;
                 }
-                
+
                 // Check if monitoring is already started
                 if (_isMonitoringStarted)
                 {
@@ -80,7 +80,7 @@ namespace HavenCNCServer.Centriod.Events
                 try
                 {
                     LogInfo("Starting background job listener monitoring...", "JobInfo");
-                    
+
                     // Continue monitoring and retry if connection is lost
                     while (_isMonitoringStarted && !_cancellationTokenSource.Token.IsCancellationRequested)
                     {
@@ -88,14 +88,14 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             // Check for cancellation
                             _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                            
+
                             // Check if we need to establish or re-establish connection
                             if (!CNCConnectionManager.IsConnected || !IsListening)
                             {
                                 if (!CNCConnectionManager.IsConnected)
                                 {
                                     LogInfo("CNC not connected - attempting to establish connection...", "JobInfo");
-                                    
+
                                     try
                                     {
                                         var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
@@ -109,7 +109,7 @@ namespace HavenCNCServer.Centriod.Events
                                         LogWarning($"CNC reconnection failed: {connEx.Message}", "JobInfo");
                                     }
                                 }
-                                
+
                                 // Try to start job listener if connected but not running
                                 if (CNCConnectionManager.IsConnected && !IsListening)
                                 {
@@ -117,7 +117,7 @@ namespace HavenCNCServer.Centriod.Events
                                     StartListening();
                                 }
                             }
-                            
+
                             // Check every 1 second with cancellation checks for faster shutdown response
                             try
                             {
@@ -126,7 +126,7 @@ namespace HavenCNCServer.Centriod.Events
                                 {
                                     if (_cancellationTokenSource.Token.IsCancellationRequested)
                                         break;
-                                    
+
                                     if (_cancellationTokenSource.Token.WaitHandle.WaitOne(200))
                                     {
                                         // Cancellation requested
@@ -160,7 +160,7 @@ namespace HavenCNCServer.Centriod.Events
                             Thread.Sleep(5000); // Wait a bit on error
                         }
                     }
-                    
+
                     LogInfo("Job listener monitoring stopped", "JobInfo");
                 }
                 catch (Exception ex)
@@ -174,7 +174,7 @@ namespace HavenCNCServer.Centriod.Events
                     {
                         _isMonitoringStarted = false;
                         _monitoringThread = null;
-                        
+
                         // Dispose cancellation token source
                         _cancellationTokenSource?.Dispose();
                         _cancellationTokenSource = null;
@@ -185,10 +185,10 @@ namespace HavenCNCServer.Centriod.Events
                 IsBackground = true,
                 Name = "CNCJobInfoListener-Monitor"
             };
-            
+
             _monitoringThread.Start();
         }
- 
+
         /// <summary>
         /// Start listening for JOB_INFO messages from CNC12
         /// </summary>
@@ -203,7 +203,7 @@ namespace HavenCNCServer.Centriod.Events
                     LogWarning("Cannot start JOB_INFO listener - shutdown in progress", "JobInfo");
                     return false;
                 }
-                
+
                 if (_isListening)
                 {
                     LogWarning("CNC JOB_INFO listener is already running", "JobInfo");
@@ -264,14 +264,14 @@ namespace HavenCNCServer.Centriod.Events
 
                     // Subscribe to MessageReceived event
                     cncPipe.MessageReceived += OnMessageReceived;
-                    
+
                     // Start listening for messages from CNC12
                     cncPipe.StartListening();
                     LogSuccess("Started CNC12 event-driven message listening", "JobInfo");
 
                     // Initialize file logging for detailed messages
                     InitializeFileLogging();
-                    
+
                     // Reset counters
                     _messageCount = 0;
                     _lastReportedCount = 0;
@@ -301,7 +301,7 @@ namespace HavenCNCServer.Centriod.Events
             {
                 // Set shutdown flag immediately to prevent any new operations
                 _isShuttingDown = true;
-                
+
                 // Early exit if nothing is running
                 if (!_isMonitoringStarted && _monitoringThread == null)
                 {
@@ -315,10 +315,10 @@ namespace HavenCNCServer.Centriod.Events
                 {
                     // Mark monitoring as stopped
                     _isMonitoringStarted = false;
-                    
+
                     // Cancel the monitoring operations
                     _cancellationTokenSource?.Cancel();
-                    
+
                     try
                     {
                         // For immediate shutdown - don't wait at all if CNC isn't connected
@@ -356,7 +356,7 @@ namespace HavenCNCServer.Centriod.Events
                         _cancellationTokenSource = null;
                     }
                 }
-                
+
                 // Also stop the message listener - call the internal method to avoid double locking
                 StopListeningInternal();
             }
@@ -379,7 +379,7 @@ namespace HavenCNCServer.Centriod.Events
         private static void StopListeningInternal()
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            
+
             if (!_isListening)
             {
                 LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
@@ -389,18 +389,18 @@ namespace HavenCNCServer.Centriod.Events
             try
             {
                 LogInfo("🔌 Stopping CNC pipe message listening...", "JobInfo");
-                
+
                 // Unsubscribe from MessageReceived event
                 if (_currentCNCPipe != null)
                 {
                     var unsubStopwatch = System.Diagnostics.Stopwatch.StartNew();
                     _currentCNCPipe.MessageReceived -= OnMessageReceived;
                     LogInfo($"📤 Event unsubscribed ({unsubStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
-                    
+
                     var stopStopwatch = System.Diagnostics.Stopwatch.StartNew();
                     _currentCNCPipe.StopListening();
                     LogInfo($"⏹️ CNCPipe.StopListening() completed ({stopStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
-                    
+
                     LogSuccess($"Stopped CNC12 event-driven message listening (total: {stopwatch.ElapsedMilliseconds}ms)", "JobInfo");
                     _currentCNCPipe = null;
                 }
@@ -417,7 +417,7 @@ namespace HavenCNCServer.Centriod.Events
             {
                 // Clean up resources
                 _currentCNCPipe = null;
-                
+
                 // Close file logging
                 if (_logWriter != null)
                 {
@@ -427,15 +427,15 @@ namespace HavenCNCServer.Centriod.Events
                     _logWriter.Close();
                     _logWriter = null;
                 }
-                
+
                 // Clear duplicate tracking
                 _lastMessageHashes.Clear();
                 _duplicateCounters.Clear();
-                
+
                 // Reset event-specific tracking
                 DROEvent.ResetTracking();
                 JobInfoEvent.ResetTracking();
-                
+
                 // Clear stored messages
                 lock (_storedMessagesLock)
                 {
@@ -463,7 +463,7 @@ namespace HavenCNCServer.Centriod.Events
                 MessageEventType.CommunicationError or
                 MessageEventType.StartupError or
                 MessageEventType.MiscellaneousError => true,  // Includes travel exceeded (907) and other serious errors
-                
+
                 // All other message types are not considered errors
                 _ => false
             };
@@ -585,10 +585,10 @@ namespace HavenCNCServer.Centriod.Events
 
                 // Notify all listeners
                 NotifyListeners(customEvent);
-                
+
                 // Store the event in message history
                 StoreMessage(customEvent, "CustomEvent");
-                
+
                 LogDebug($"Pushed custom event: {customEvent.GetType().Name} - {customEvent.Message}", "JobInfo");
             }
             catch (Exception ex)
@@ -630,7 +630,7 @@ namespace HavenCNCServer.Centriod.Events
         public static List<StoredMessage> GetRecentMessages(long timeCutoffMs)
         {
             var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-            
+
             lock (_storedMessagesLock)
             {
                 return _storedMessages
@@ -648,7 +648,7 @@ namespace HavenCNCServer.Centriod.Events
         public static List<StoredMessage> GetRecentMessagesByType<T>(long timeCutoffMs) where T : ICentroidEvent
         {
             var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-            
+
             lock (_storedMessagesLock)
             {
                 return _storedMessages
@@ -666,11 +666,11 @@ namespace HavenCNCServer.Centriod.Events
         public static List<StoredMessage> GetRecentMessagesByCommunicationType(long timeCutoffMs, string communicationType)
         {
             var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-            
+
             lock (_storedMessagesLock)
             {
                 return _storedMessages
-                    .Where(msg => msg.TimestampMs >= cutoffTime && 
+                    .Where(msg => msg.TimestampMs >= cutoffTime &&
                                   string.Equals(msg.CommunicationType, communicationType, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
@@ -710,27 +710,27 @@ namespace HavenCNCServer.Centriod.Events
             {
                 // Use configured log directory, fallback to application directory
                 var logsDir = SettingsManager.Settings.Files.JobListenerLogsDirectory;
-                
+
                 // If the configured directory is relative or doesn't exist, make it absolute
                 if (!Path.IsPathRooted(logsDir))
                 {
                     var appDir = AppDomain.CurrentDomain.BaseDirectory;
                     logsDir = Path.Combine(appDir, logsDir);
                 }
-                
+
                 Directory.CreateDirectory(logsDir);
-                
+
                 // Create main summary log
                 var logFileName = $"JobListener_{DateTime.Now:yyyyMMdd_HHmmss}.log";
                 var logFilePath = Path.Combine(logsDir, logFileName);
-                
+
                 _logWriter = new StreamWriter(logFilePath, true);
                 _logWriter.AutoFlush = true;
-                
+
                 _logWriter.WriteLine($"=== Job Listener Session Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
                 _logWriter.WriteLine($"Log file: {logFilePath}");
                 _logWriter.WriteLine("");
-                
+
                 LogInfo($"Job listener detailed logging to: {logFilePath}", "JobInfo");
             }
             catch (Exception ex)
@@ -787,16 +787,16 @@ namespace HavenCNCServer.Centriod.Events
             {
                 // Create stored message
                 var storedMessage = new StoredMessage(centroidEvent, communicationType);
-                
+
                 // Add at the beginning (most recent first)
                 _storedMessages.Insert(0, storedMessage);
-                
+
                 // Trim to maximum size if needed
                 if (_storedMessages.Count > MaxStoredMessages)
                 {
                     var removed = _storedMessages.Count - MaxStoredMessages;
                     _storedMessages.RemoveRange(MaxStoredMessages, removed);
-                    
+
                     // Log trimming occasionally to avoid spam
                     if (removed > 0 && (_messageCount % 500) == 0)
                     {
@@ -812,15 +812,15 @@ namespace HavenCNCServer.Centriod.Events
         private static void ProcessShutdownMessage(CNCPipe.InboundComm.CommPacket packet, string shutdownType)
         {
             LogToFile($"    {shutdownType} Shutdown Event:");
-            
+
             // According to API docs: "Flag - true if shutting down, false otherwise"
             var flag = GetPacketProperty<bool>(packet, "Flag", false);
             LogToFile($"    Shutting Down: {flag}");
-            
+
             // Also try other common flag names
             var isShuttingDown = GetPacketProperty<bool>(packet, "IsShuttingDown", false);
             var shutdown = GetPacketProperty<bool>(packet, "Shutdown", false);
-            
+
             if (isShuttingDown) LogToFile($"    IsShuttingDown: {isShuttingDown}");
             if (shutdown) LogToFile($"    Shutdown: {shutdown}");
         }
@@ -846,9 +846,9 @@ namespace HavenCNCServer.Centriod.Events
             {
                 var elapsed = DateTime.Now - _sessionStartTime;
                 var rate = _messageCount / elapsed.TotalMinutes;
-                
+
                 LogToFile($"📊 Job Listener Stats: {_messageCount} total messages ({newMessages} new), {rate:F1}/min");
-                
+
                 _lastReportedCount = _messageCount;
             }
         }
@@ -856,7 +856,7 @@ namespace HavenCNCServer.Centriod.Events
 
         static string _lastPacketHash = "";
         static int _sameObjectSkipCount = 0;
-        
+
         /// <summary>
         /// Event handler for CNC MessageReceived events
         /// </summary>
@@ -875,17 +875,17 @@ namespace HavenCNCServer.Centriod.Events
                     }
                     return; // Skip all message processing when disconnected
                 }
-                
+
                 // Reset the disconnected state flag when we receive messages while connected
                 if (_hasLoggedDisconnectedState)
                 {
                     LogSuccess($"✅ CNC12 reconnected - Resuming message processing", "JobInfo");
                     _hasLoggedDisconnectedState = false;
                 }
-                
+
                 // Access the communication packet from event args
                 var packet = e.Data;
-                
+
                 // Check if this packet is identical to the last one (since CommPacket is a struct)
                 var packetHash = CalculatePacketHash(packet);
                 if (_lastPacketHash == packetHash && !string.IsNullOrEmpty(_lastPacketHash))
@@ -926,14 +926,14 @@ namespace HavenCNCServer.Centriod.Events
             {
                 // Calculate hash of all packet data for duplicate detection
                 var packetHash = CalculatePacketHash(packet);
-                
+
                 // Check if this is a duplicate message
                 if (_lastMessageHashes.ContainsKey(commType))
                 {
                     if (_lastMessageHashes[commType] == packetHash)
                     {
                         _duplicateCounters[commType] = _duplicateCounters.GetValueOrDefault(commType, 0) + 1;
-                        
+
                         // Log only the duplicate notification - single line format
                         LogToFile($"Message #{_messageCount} {commType} (duplicate #{_duplicateCounters[commType]})");
                         return true; // Skip all other logging for duplicates
@@ -948,14 +948,14 @@ namespace HavenCNCServer.Centriod.Events
                         }
                     }
                 }
-                
+
                 // Store this message hash as the latest for this type
                 _lastMessageHashes[commType] = packetHash;
-                
+
                 // Log full details for non-duplicate messages
                 LogToFile($"Message #{_messageCount}: {commType}");
                 LogToFile($"  === {commType} Message #{_messageCount} ===");
-                
+
                 // Handle each communication type according to API documentation
                 bool shouldSkipRestOfLogging = false;
                 switch (commType)
@@ -967,47 +967,47 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             return false; // Skip all logging for unchanged DRO positions
                         }
-                        
+
                         // Log position details since positions changed
                         if (droEvent != null)
                         {
                             LogToFile($"    DRO Position Update:");
                             LogToFile($"    Positions: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}");
-                            
+
                             // Also log to main UI with coordinates
                             LogInfo($"📍 DRO: X:{droEvent.Axis1:F4} Y:{droEvent.Axis2:F4} Z:{droEvent.Axis3:F4}", "JobInfo");
                         }
                         break;
-                        
+
                     case "CNC12_SHUT_DOWN":
                         ProcessShutdownMessage(packet, "CNC12");
                         break;
-                        
+
                     case "PC_SHUT_DOWN":
                         ProcessShutdownMessage(packet, "PC");
                         break;
-                        
+
                     case "MESSAGE_WINDOW_MESSAGE":
                         // Use MessageEvent's processing method
                         MessageEvent.ProcessMessage(packet, LogToFile, StoreMessage, NotifyListeners);
                         break;
-                        
+
                     case "JOB_INFO":
                         // Use JobInfoEvent's processing method
                         JobInfoEvent.ProcessMessage(packet, LogToFile, StoreMessage, NotifyListeners);
                         break;
-                        
+
                     default:
                         ProcessUnknownMessage(packet, commType);
                         break;
                 }
-                
+
                 // Skip remaining logging if positions haven't changed for DRO messages
                 if (shouldSkipRestOfLogging)
                 {
                     return false; // Not a duplicate, but skip detailed logging
                 }
-                
+
                 // Extract and log basic data for job info events
                 var jobInfo = new JobInfoData
                 {
@@ -1021,10 +1021,10 @@ namespace HavenCNCServer.Centriod.Events
                 // Log summary info
                 if (jobInfo.LineNumber > 0 && jobInfo.LineNumber < 1000000)
                     LogToFile($"  Line: {jobInfo.LineNumber}");
-                    
+
                 if (jobInfo.StackLevel > 0 && jobInfo.StackLevel < 1000)
                     LogToFile($"  Stack: {jobInfo.StackLevel}");
-                    
+
                 if (!string.IsNullOrWhiteSpace(jobInfo.Message))
                     LogToFile($"  Message: {jobInfo.Message}");
 
@@ -1042,7 +1042,7 @@ namespace HavenCNCServer.Centriod.Events
                 {
                     LogError($"Error in JobInfoReceived event handler: {eventEx.Message}", "JobInfo");
                 }
-                
+
                 return false; // Not a duplicate
             }
             catch (Exception ex)
@@ -1061,11 +1061,11 @@ namespace HavenCNCServer.Centriod.Events
             {
                 var hashBuilder = new System.Text.StringBuilder();
                 var packetType = packet.GetType();
-                
+
                 // Add packet type to hash
                 hashBuilder.Append(packetType.FullName);
                 hashBuilder.Append("|");
-                
+
                 // Get all properties and their values
                 var properties = packetType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var prop in properties.OrderBy(p => p.Name)) // Sort for consistent ordering
@@ -1076,7 +1076,7 @@ namespace HavenCNCServer.Centriod.Events
                         {
                             var value = prop.GetValue(packet);
                             hashBuilder.Append($"{prop.Name}:");
-                            
+
                             if (value == null)
                             {
                                 hashBuilder.Append("NULL");
@@ -1118,7 +1118,7 @@ namespace HavenCNCServer.Centriod.Events
                         hashBuilder.Append($"{prop.Name}:ERROR|");
                     }
                 }
-                
+
                 // Also include fields
                 var fields = packetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var field in fields.OrderBy(f => f.Name))
@@ -1127,7 +1127,7 @@ namespace HavenCNCServer.Centriod.Events
                     {
                         var value = field.GetValue(packet);
                         hashBuilder.Append($"{field.Name}:");
-                        
+
                         if (value == null)
                         {
                             hashBuilder.Append("NULL");
@@ -1168,7 +1168,7 @@ namespace HavenCNCServer.Centriod.Events
                         hashBuilder.Append($"{field.Name}:ERROR|");
                     }
                 }
-                
+
                 return hashBuilder.ToString();
             }
             catch (Exception ex)
@@ -1185,7 +1185,7 @@ namespace HavenCNCServer.Centriod.Events
             try
             {
                 var packetType = packet.GetType();
-                
+
                 // Try property first
                 var property = packetType.GetProperty(propertyName);
                 if (property != null && property.CanRead)
@@ -1196,7 +1196,7 @@ namespace HavenCNCServer.Centriod.Events
                     if (value != null && typeof(T).IsAssignableFrom(value.GetType()))
                         return (T)value;
                 }
-                
+
                 // Try field if property doesn't exist
                 var field = packetType.GetField(propertyName);
                 if (field != null)
@@ -1207,7 +1207,7 @@ namespace HavenCNCServer.Centriod.Events
                     if (value != null && typeof(T).IsAssignableFrom(value.GetType()))
                         return (T)value;
                 }
-                
+
                 return defaultValue;
             }
             catch (Exception ex)

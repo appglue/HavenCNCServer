@@ -350,39 +350,39 @@ namespace HavenCNCServer.Services
                 try
                 {
                     var messageType = centroidEvent.GetType().Name;
-                    
+
                     // Reset skipped counter when connection is restored and we get a non-DRO event or connected DRO event
                     if (CNCConnectionManager.IsConnected && _skippedDroEventCount > 0)
                     {
                         LogSuccess($"🔄 CNC12 reconnected - Reset DRO skip counter (was {_skippedDroEventCount} events)", "SignalR");
                         _skippedDroEventCount = 0;
                     }
-                    
+
                     // Skip DRO events when CNC12 is not connected to prevent flood of disconnection events
                     if (messageType == "DROEvent" && !CNCConnectionManager.IsConnected)
                     {
                         // Special logging to track DRO events during disconnection
                         var droEvent = centroidEvent as DROEvent;
-                        var positionInfo = droEvent != null ? 
-                            $" - Position: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}" : 
+                        var positionInfo = droEvent != null ?
+                            $" - Position: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}" :
                             "";
-                        
+
                         // Only log this occasionally to avoid log spam, but show position data
                         if (DateTime.Now.Second % 15 == 0) // Log once every 15 seconds
                         {
                             LogWarning($"⚠️ DRO event received while CNC12 disconnected{positionInfo} - Skipping SignalR broadcast", "SignalR");
                         }
-                        
+
                         // Count total skipped events (log every 100 events)
                         if (_skippedDroEventCount % 100 == 0)
                         {
                             LogInfo($"📊 Total DRO events skipped during disconnection: {_skippedDroEventCount}", "SignalR");
                         }
                         _skippedDroEventCount++;
-                        
+
                         return;
                     }
-                    
+
                     var messageData = new
                     {
                         EventType = messageType,
