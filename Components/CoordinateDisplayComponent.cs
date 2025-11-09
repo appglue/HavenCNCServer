@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CentroidAPI;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Components
@@ -131,7 +131,7 @@ namespace HavenCNCServer.Components
             lblXValue.Text = "0.0000";
             lblYValue.Text = "0.0000";
             lblZValue.Text = "0.0000";
-            
+
             // Register as event listener with CNCJobInfoListener
             CNCJobInfoListener.AddListener(this);
         }

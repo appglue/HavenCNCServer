@@ -1,5 +1,5 @@
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Examples
@@ -55,11 +55,11 @@ namespace HavenCNCServer.Examples
                 {
                     var eventType = msg.Event.GetType().Name;
                     var timeAgo = DateTime.Now - msg.Timestamp;
-                    
+
                     LogInfo($"  [{msg.Timestamp:HH:mm:ss.fff}] ({timeAgo.TotalSeconds:F1}s ago)", "MessageStorage");
                     LogInfo($"    Type: {msg.CommunicationType} -> {eventType}", "MessageStorage");
                     LogInfo($"    Message: {msg.Event.Message}", "MessageStorage");
-                    
+
                     // Show specific details based on event type
                     switch (msg.Event)
                     {
@@ -91,10 +91,10 @@ namespace HavenCNCServer.Examples
         {
             // Get messages from last 10 seconds
             var recentMessages = CNCJobInfoListener.GetRecentMessages(10000);
-            
+
             // Check for error messages
             var errorMessages = recentMessages
-                .Where(msg => msg.Event is MessageEvent msgEvent && 
+                .Where(msg => msg.Event is MessageEvent msgEvent &&
                              (msgEvent.EventType == MessageEventType.SystemFault ||
                               msgEvent.EventType == MessageEventType.AxisFault ||
                               msgEvent.EventType == MessageEventType.LimitError))
@@ -123,7 +123,7 @@ namespace HavenCNCServer.Examples
             // Get job-related events from last 60 seconds
             var recentJobEvents = CNCJobInfoListener.GetRecentMessagesByType<JobInfoEvent>(60000);
             var recentMessageEvents = CNCJobInfoListener.GetRecentMessagesByType<MessageEvent>(60000)
-                .Where(msg => msg.Event is MessageEvent msgEvent && 
+                .Where(msg => msg.Event is MessageEvent msgEvent &&
                              (msgEvent.EventType == MessageEventType.JobStarted ||
                               msgEvent.EventType == MessageEventType.JobCompleted ||
                               msgEvent.EventType == MessageEventType.JobCancelled))
@@ -132,7 +132,7 @@ namespace HavenCNCServer.Examples
             if (recentJobEvents.Any() || recentMessageEvents.Any())
             {
                 LogInfo("📊 Recent job activity:", "JobTracker");
-                
+
                 // Show job info events
                 foreach (var jobEvent in recentJobEvents.Take(3))
                 {

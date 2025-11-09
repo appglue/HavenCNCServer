@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using CentroidAPI;
 using IOFile = System.IO.File;
 using static HavenCNCServer.Services.LoggingService;
@@ -541,7 +541,7 @@ namespace HavenCNCServer.Controllers
             try
             {
                 LogInfo($"🚀 RunGCode called with {request?.GCodeLines?.Length ?? 0} lines, startImmediately={request?.StartImmediately ?? true}", "Program");
-                
+
                 if (request == null || request.GCodeLines == null || request.GCodeLines.Length == 0)
                 {
                     LogWarning("RunGCode: G-code lines are null or empty", "Program");
@@ -565,10 +565,10 @@ namespace HavenCNCServer.Controllers
                         if (needsUpdate)
                         {
                             LogInfo($"📍 Setting fixture point before G-code execution: X={request.FixturePoint.X:F4}, Y={request.FixturePoint.Y:F4}, Z={request.FixturePoint.Z:F4}, A={request.FixturePoint.A:F4}", "Program");
-                            
+
                             var movementController = new CNCMovementController();
                             await movementController.SetFixturePoint(request.FixturePoint);
-                            
+
                             LogInfo("✓ Fixture point set successfully", "Program");
                         }
                         else
@@ -588,7 +588,7 @@ namespace HavenCNCServer.Controllers
                 try
                 {
                     LogInfo("Checking Centroid state before running G-code...", "Program");
-                    bool isReady = Centriod.CNCUtils.CheckAndResetCentroidState();
+                    bool isReady = Centroid.CNCUtils.CheckAndResetCentroidState();
                     if (!isReady)
                     {
                         LogWarning("Centroid state check failed - system not ready", "Program");
@@ -640,7 +640,7 @@ namespace HavenCNCServer.Controllers
                     {
                         var firstJob = _jobs.First();
                         bool firstJobNotStarted = !firstJob.IsRunning && !firstJob.IsComplete;
-                        
+
                         if (_jobs.Count == 1)
                         {
                             // This is the only job - start it

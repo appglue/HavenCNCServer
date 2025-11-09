@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
-using HavenCNCServer.Centriod;
+using HavenCNCServer.Centroid;
 using HavenCNCServer.Services;
 using System.Text.RegularExpressions;
 
@@ -363,7 +363,7 @@ namespace HavenCNCServer.Controllers
                 // If cncr doesn't exist, fall back to the Scripts directory
                 if (!System.IO.File.Exists(sourcePath))
                 {
-                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "Centriod", "Scripts", "acorn_router_plc.src");
+                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "Centroid", "Scripts", "acorn_router_plc.src");
                 }
 
                 if (!System.IO.File.Exists(sourcePath))

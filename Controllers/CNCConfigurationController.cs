@@ -4,8 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using HavenCNCServer.Models;
-using HavenCNCServer.Centriod;
-using HavenCNCServer.Centriod.Data;
+using HavenCNCServer.Centroid;
+using HavenCNCServer.Centroid.Data;
 
 namespace HavenCNCServer.Controllers
 {

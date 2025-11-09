@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using HavenCNCServer.Hubs;
-using HavenCNCServer.Centriod.Events;
-using HavenCNCServer.Centriod;
+using HavenCNCServer.Centroid.Events;
+using HavenCNCServer.Centroid;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

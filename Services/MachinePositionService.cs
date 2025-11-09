@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using HavenCNCServer.Models;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Services

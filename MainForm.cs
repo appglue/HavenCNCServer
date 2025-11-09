@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Components;
 using static HavenCNCServer.Services.LoggingService;
 
@@ -631,9 +631,9 @@ namespace HavenCNCServer
                 string appPath = AppDomain.CurrentDomain.BaseDirectory;
 
                 // Source files
-                string plcMsgSource = Path.Combine(appPath, "Centriod", "Scripts", "plcmsg.txt");
-                string functionsSource = Path.Combine(appPath, "Centriod", "Scripts", "functions.xml");
-                string plcSourceTemplate = Path.Combine(appPath, "Centriod", "Scripts", "acorn_router_plc.src");
+                string plcMsgSource = Path.Combine(appPath, "Centroid", "Scripts", "plcmsg.txt");
+                string functionsSource = Path.Combine(appPath, "Centroid", "Scripts", "functions.xml");
+                string plcSourceTemplate = Path.Combine(appPath, "Centroid", "Scripts", "acorn_router_plc.src");
 
                 // Destination paths for plcmsg.txt
                 string plcMsgDest1 = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "router_plcmsg.txt");

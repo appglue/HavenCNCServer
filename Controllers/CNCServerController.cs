@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Services;
 using HavenCNCServer.Models;
-using HavenCNCServer.Centriod;
+using HavenCNCServer.Centroid;
 
 namespace HavenCNCServer.Controllers
 {

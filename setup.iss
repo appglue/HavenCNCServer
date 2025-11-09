@@ -56,7 +56,7 @@ Source: "wwwroot\*"; DestDir: "{app}\wwwroot"; Flags: ignoreversion recursesubdi
 
 ; Centroid API and related files
 Source: "CentroidAPI.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Centriod\*"; DestDir: "{app}\Centriod"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+Source: "Centroid\*"; DestDir: "{app}\Centroid"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 ; Documentation
 Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist

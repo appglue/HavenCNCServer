@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
-using HavenCNCServer.Centriod;
+using HavenCNCServer.Centroid;
 using HavenCNCServer.Services;
 using CentroidAPI;
 using System.Threading.Tasks;
@@ -37,10 +37,10 @@ namespace HavenCNCServer.Controllers
                 try
                 {
                     LogInfo($"🔄 Restoring last fixture point: X={_lastFixturePoint.X:F4}, Y={_lastFixturePoint.Y:F4}, Z={_lastFixturePoint.Z:F4}, A={_lastFixturePoint.A:F4}", "Fixture");
-                    
+
                     var controller = new CNCMovementController();
                     await controller.SetFixturePoint(_lastFixturePoint);
-                    
+
                     LogSuccess("✓ Last fixture point restored successfully", "Fixture");
                 }
                 catch (Exception ex)

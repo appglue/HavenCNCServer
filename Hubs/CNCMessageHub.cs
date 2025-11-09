@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 
 namespace HavenCNCServer.Hubs
 {
@@ -15,7 +15,7 @@ namespace HavenCNCServer.Hubs
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "CNCClients");
-            
+
             // // Send current machine position immediately to the newly connected client
             // try
             // {
@@ -36,17 +36,17 @@ namespace HavenCNCServer.Hubs
             //         Message = "Initial position on connection",
             //         MessageType = "DROEvent"
             //     };
-                
+
             //     // Send directly to this specific client
             //     await Clients.Caller.SendAsync("DROUpdate", droEvent.ToSignalRData());
-                
+
             //     LoggingService.LogInfo($"Sent initial position to new SignalR client: X={currentPosition.X:F4}, Y={currentPosition.Y:F4}, Z={currentPosition.Z:F4}, A={currentPosition.A:F4}", "SignalR");
             // }
             // catch (Exception ex)
             // {
             //     LoggingService.LogWarning($"Failed to send initial position to SignalR client: {ex.Message}", "SignalR");
             // }
-            
+
             await base.OnConnectedAsync();
         }
 

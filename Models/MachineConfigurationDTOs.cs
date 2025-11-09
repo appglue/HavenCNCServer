@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using HavenCNCServer.Centriod.Data;
+using HavenCNCServer.Centroid.Data;
 
 namespace HavenCNCServer.Models
 {

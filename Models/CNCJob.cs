@@ -1,6 +1,6 @@
 using CentroidAPI;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using System.Threading;
 using System.Threading.Tasks;
 using IOFile = System.IO.File;
@@ -135,7 +135,7 @@ namespace HavenCNCServer.Models
         public static CNCJob CreateStepRunJob(string[] gCodeLines, string? gcodeParameterString = null)
         {
             var job = new CNCJob(gCodeLines, gcodeParameterString);
-            
+
             // Initialize step run mode
             job.IsStepRunMode = true;
             job.StepLineNumber = 1;
@@ -147,7 +147,7 @@ namespace HavenCNCServer.Models
 
             System.Diagnostics.Debug.WriteLine($"[CNCJob {job._jobId}] Created in step run mode with {gCodeLines.Length} lines");
             LoggingService.LogInfo($"Job {job._jobId} - Created in step run mode with {gCodeLines.Length} lines", "CNCJob");
-            
+
             return job;
         }
 
@@ -220,10 +220,10 @@ namespace HavenCNCServer.Models
                 {
                     LastError = $"Failed to start job with return code: {executeResult} (numeric: {(int)executeResult})";
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] ERROR: {LastError}");
-                    
+
                     // Log job start failure to main UI
                     LoggingService.LogError($"Job {_jobId} failed to start: {LastError}", "CNCJob");
-                    
+
                     // Stop listening since the job failed to start
                     StopListening();
                     return false;
@@ -248,10 +248,10 @@ namespace HavenCNCServer.Models
             {
                 LastError = ex.Message;
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Start failed: {ex.Message}");
-                
+
                 // Log job start exception to main UI
                 LoggingService.LogError($"Job {_jobId} start failed: {ex.Message}", "CNCJob");
-                
+
                 return false;
             }
         }
@@ -272,17 +272,17 @@ namespace HavenCNCServer.Models
                 // TODO: Implement actual stop functionality using CentroidAPI
                 // For now, just update the state
                 StopListening();
-                
+
                 IsRunning = false;
                 IsPaused = false;
                 IsComplete = true;
                 CompletedAt = DateTime.Now;
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped");
-                
+
                 // Notify completion callback
                 OnJobCompleted?.Invoke(this);
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -358,7 +358,7 @@ namespace HavenCNCServer.Models
             {
                 if (lineNumber <= 0 || lineNumber > TotalLines)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(lineNumber), 
+                    throw new ArgumentOutOfRangeException(nameof(lineNumber),
                         $"Line number must be between 1 and {TotalLines}");
                 }
 
@@ -404,7 +404,7 @@ namespace HavenCNCServer.Models
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Step run mode ended");
                 LoggingService.LogInfo($"Job {_jobId} - Step run mode ended", "CNCJob");
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -435,10 +435,10 @@ namespace HavenCNCServer.Models
                     IsComplete = true;
                     CompletedAt = DateTime.Now;
                     StopListening();
-                    
+
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] All steps completed");
                     LoggingService.LogSuccess($"✓ Job {_jobId} step run completed - all {TotalLines} lines executed", "CNCJob");
-                    
+
                     // Notify completion callback
                     OnJobCompleted?.Invoke(this);
                     return true;
@@ -446,18 +446,18 @@ namespace HavenCNCServer.Models
 
                 // Get the current line to execute
                 var lineToExecute = _gCodeLines[StepLineNumber - 1];
-                
+
                 // Skip empty lines and comments
-                if (string.IsNullOrWhiteSpace(lineToExecute) || 
-                    lineToExecute.Trim().StartsWith(";") || 
+                if (string.IsNullOrWhiteSpace(lineToExecute) ||
+                    lineToExecute.Trim().StartsWith(";") ||
                     lineToExecute.Trim().StartsWith("("))
                 {
                     StepLineNumber++;
                     LineNumber = StepLineNumber;
                     UpdateCurrentLine();
-                    
+
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Skipped comment/empty line {StepLineNumber - 1}: {lineToExecute}");
-                    
+
                     // Recursively try next line
                     return ExecuteNextStep();
                 }
@@ -484,7 +484,7 @@ namespace HavenCNCServer.Models
                 // Update tracking
                 LineNumber = StepLineNumber;
                 UpdateCurrentLine();
-                
+
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Executed step {StepLineNumber}: {lineToExecute}");
                 LoggingService.LogInfo($"Job {_jobId}: Step {StepLineNumber}/{TotalLines} - {lineToExecute}", "CNCJob");
 
@@ -522,19 +522,19 @@ namespace HavenCNCServer.Models
 
                 // Exit step run mode and run normally from current line
                 IsStepRunMode = false;
-                
+
                 // Create a subset of G-code lines from current step to end
                 var remainingLines = _gCodeLines.Skip(StepLineNumber - 1).ToArray();
-                
+
                 if (remainingLines.Length == 0)
                 {
                     IsComplete = true;
                     CompletedAt = DateTime.Now;
                     StopListening();
-                    
+
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] No remaining lines to execute");
                     LoggingService.LogSuccess($"✓ Job {_jobId} completed - no remaining lines", "CNCJob");
-                    
+
                     OnJobCompleted?.Invoke(this);
                     return true;
                 }
@@ -542,7 +542,7 @@ namespace HavenCNCServer.Models
                 // Write remaining lines to a temporary file
                 var tempFileName = $"job_{_jobId}_from_step_{StepLineNumber}_{DateTime.Now:yyyyMMdd_HHmmss}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
                 var tempFilePath = Path.Combine(SettingsManager.GetCncProgramsDirectory(), tempFileName);
-                
+
                 IOFile.WriteAllLines(tempFilePath, remainingLines);
 
                 // Get CNC pipe
@@ -596,13 +596,13 @@ namespace HavenCNCServer.Models
             if (_isListening) return;
 
             _isListening = true;
-            
+
             // Subscribe to job info events to track progress
             CNCJobInfoListener.JobInfoReceived += OnJobInfoReceived;
-            
+
             // Register as an event listener for message events (with error codes)
             CNCJobInfoListener.AddListener(this);
-            
+
             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Started listening for job updates and message events");
             LoggingService.LogInfo($"Job {_jobId} - Registered as listener. Total listeners: {CNCJobInfoListener.GetListenerCount()}", "CNCJob");
         }
@@ -615,13 +615,13 @@ namespace HavenCNCServer.Models
             if (!_isListening) return;
 
             _isListening = false;
-            
+
             // Unsubscribe from job info events
             CNCJobInfoListener.JobInfoReceived -= OnJobInfoReceived;
-            
+
             // Unregister as event listener for message events
             CNCJobInfoListener.RemoveListener(this);
-            
+
             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Stopped listening for job updates and message events");
         }
 
@@ -647,15 +647,15 @@ namespace HavenCNCServer.Models
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
-                            
+
                             // Cancel the monitoring task since we detected completion via event
                             _monitorCancellation?.Cancel();
-                            
+
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - received code 306: {messageEvent.Message}");
-                            
+
                             // Log job completion to main UI in GREEN
                             LoggingService.LogSuccess($"✓ Job {_jobId} completed - {messageEvent.Message}", "CNCJob");
-                            
+
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
                         }
@@ -666,10 +666,10 @@ namespace HavenCNCServer.Models
                     {
                         LastError = $"Error {messageEvent.EventCode}: {messageEvent.Message}";
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error detected - {LastError}");
-                        
+
                         // Log error to main UI
                         LoggingService.LogError($"Job {_jobId} error - {LastError}", "CNCJob");
-                        
+
                         // For critical errors, stop the job
                         if (messageEvent.EventType == MessageEventType.SystemFault ||
                             messageEvent.EventType == MessageEventType.AxisFault ||
@@ -680,15 +680,15 @@ namespace HavenCNCServer.Models
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
-                            
+
                             // Cancel the monitoring task since we detected completion via error
                             _monitorCancellation?.Cancel();
-                            
+
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped due to critical error: {LastError}");
-                            
+
                             // Log critical error job stop to main UI
                             LoggingService.LogError($"Job {_jobId} stopped due to critical error: {LastError}", "CNCJob");
-                            
+
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
                         }
@@ -711,9 +711,9 @@ namespace HavenCNCServer.Models
             {
                 // Wait a bit for the job to actually start running
                 await Task.Delay(100, cancellationToken);
-                
+
                 bool wasRunning = false;
-                
+
                 while (!IsComplete && !cancellationToken.IsCancellationRequested)
                 {
                     // Get CNC pipe
@@ -724,10 +724,10 @@ namespace HavenCNCServer.Models
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: CNC connection lost");
                         break;
                     }
-                    
+
                     // Check if any job is currently running
                     var result = cncPipe.state.IsJobRunning(out bool jobRunning);
-                    
+
                     if (result == CNCPipe.ReturnCode.SUCCESS)
                     {
                         if (jobRunning && !wasRunning)
@@ -740,25 +740,25 @@ namespace HavenCNCServer.Models
                         {
                             // Job WAS running but now stopped - mark as complete
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job stopped running (detected by API) - marking complete");
-                            
+
                             IsRunning = false;
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
-                            
+
                             // Log job completion to main UI
                             LoggingService.LogSuccess($"✓ Job {_jobId} completed (detected by API monitor)", "CNCJob");
-                            
+
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
                             break;
                         }
                     }
-                    
+
                     // Poll every 100ms for responsive completion detection
                     await Task.Delay(100, cancellationToken);
                 }
-                
+
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Exiting monitoring loop (Cancelled={cancellationToken.IsCancellationRequested})");
             }
             catch (OperationCanceledException)
@@ -787,12 +787,12 @@ namespace HavenCNCServer.Models
                 if (!IsRunning && !IsComplete)
                 {
                     var message = jobInfo.Message ?? "";
-                    
+
                     // Look for CNC program start indicators - be more flexible
                     bool jobStartDetected = false;
                     string startReason = "";
-                    
-                    if (message.Contains("program is now running") || 
+
+                    if (message.Contains("program is now running") ||
                         message.Contains("Running program:"))
                     {
                         jobStartDetected = true;
@@ -809,13 +809,13 @@ namespace HavenCNCServer.Models
                         jobStartDetected = true;
                         startReason = $"Line {jobInfo.LineNumber} execution: {message}";
                     }
-                    
+
                     if (jobStartDetected)
                     {
                         IsRunning = true;
                         StartedAt = DateTime.Now;
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job started - detected: {startReason}");
-                        
+
                         // Log job started to main UI in GREEN
                         LoggingService.LogSuccess($"✓ Job {_jobId} started successfully - {startReason}", "CNCJob");
                     }
@@ -829,7 +829,7 @@ namespace HavenCNCServer.Models
                     {
                         LineNumber = jobInfo.LineNumber;
                         UpdateCurrentLine();
-                        
+
                         // Send StepExecutionEvent for G-code viewer (for both regular and step run jobs)
                         var stepExecutionEvent = new StepExecutionEvent
                         {
@@ -843,15 +843,15 @@ namespace HavenCNCServer.Models
                             Status = StepExecutionStatus.Executing
                         };
                         CNCJobInfoListener.PushCustomEvent(stepExecutionEvent);
-                        
+
                         // Log progress to main UI only for significant lines (every 50 lines or major milestones)
                         if (LineNumber == 1 || LineNumber == TotalLines || LineNumber % 50 == 0)
                         {
                             LoggingService.LogInfo($"Job {_jobId}: Line {LineNumber}/{TotalLines} - {CurrentLine}", "CNCJob");
                         }
-                        
+
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Line {LineNumber}: {CurrentLine}");
-                        
+
                         // Check if we've reached the last line - mark job as complete
                         // This ensures fast jobs (like G0 rapid moves) complete even if we don't receive code 306
                         if (LineNumber >= TotalLines)
@@ -860,15 +860,15 @@ namespace HavenCNCServer.Models
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
                             StopListening();
-                            
+
                             // Cancel the monitoring task since we detected completion via line count
                             _monitorCancellation?.Cancel();
-                            
+
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - reached last line {LineNumber}/{TotalLines}");
-                            
+
                             // Log job completion to main UI in GREEN
                             LoggingService.LogSuccess($"✓ Job {_jobId} completed - executed all {TotalLines} lines", "CNCJob");
-                            
+
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
                         }
@@ -925,7 +925,7 @@ namespace HavenCNCServer.Models
         {
             // Stop listening first to unregister event handlers
             StopListening();
-            
+
             // Cancel and dispose the monitoring task
             if (_monitorCancellation != null)
             {
@@ -933,7 +933,7 @@ namespace HavenCNCServer.Models
                 _monitorCancellation.Dispose();
                 _monitorCancellation = null;
             }
-            
+
             // Clean up the G-code file
             try
             {
@@ -958,10 +958,10 @@ namespace HavenCNCServer.Models
         /// <returns>String representation showing job ID, status, and progress</returns>
         public override string ToString()
         {
-            var status = IsComplete ? "Complete" : 
-                        IsPaused ? "Paused" : 
+            var status = IsComplete ? "Complete" :
+                        IsPaused ? "Paused" :
                         IsRunning ? "Running" : "Ready";
-            
+
             return $"CNCJob[{_jobId}] {status} - Line {LineNumber}/{TotalLines}";
         }
 

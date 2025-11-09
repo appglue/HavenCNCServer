@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CentroidAPI;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Components
@@ -80,7 +80,7 @@ namespace HavenCNCServer.Components
             txtGCode.Clear();
             txtGCode.ReadOnly = true;
             lblCurrentJob.Text = "No active job";
-            
+
             // Register as event listener with CNCJobInfoListener
             CNCJobInfoListener.AddListener(this);
         }
@@ -205,15 +205,15 @@ namespace HavenCNCServer.Components
             {
                 // Load the G-code into the display
                 LoadGCodeForDisplay(jobStartedEvent.GCodeLines);
-                
+
                 // Update job info
                 lblCurrentJob.Text = $"Job Started: {jobStartedEvent.JobId} ({jobStartedEvent.TotalLines} lines)";
-                
+
                 // Reset current line to start
                 _currentLineNumber = 1;
-                
+
                 DisplayGCodeWithHighlight();
-                
+
                 LogInfo($"Job started event handled: {jobStartedEvent.JobId}", "GCodeDisplay");
             }
             catch (Exception ex)
@@ -229,14 +229,14 @@ namespace HavenCNCServer.Components
                 // Update job status
                 var status = jobCompletedEvent.Success ? "COMPLETED" : "FAILED";
                 var duration = jobCompletedEvent.Duration.TotalSeconds.ToString("F1");
-                
+
                 lblCurrentJob.Text = $"Job {status}: {jobCompletedEvent.JobId} ({duration}s, {jobCompletedEvent.LinesExecuted} lines)";
-                
+
                 if (!jobCompletedEvent.Success && !string.IsNullOrEmpty(jobCompletedEvent.ErrorMessage))
                 {
                     lblCurrentJob.Text += $" - Error: {jobCompletedEvent.ErrorMessage}";
                 }
-                
+
                 LogInfo($"Job completed event handled: {jobCompletedEvent.JobId} - Success: {jobCompletedEvent.Success}", "GCodeDisplay");
             }
             catch (Exception ex)

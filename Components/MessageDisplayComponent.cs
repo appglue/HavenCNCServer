@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using CentroidAPI;
 using HavenCNCServer.Services;
-using HavenCNCServer.Centriod.Events;
+using HavenCNCServer.Centroid.Events;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Components
@@ -80,7 +80,7 @@ namespace HavenCNCServer.Components
         private void SetupMessageDisplay()
         {
             txtMessages.Text = "=== CNC Message Monitor ===\r\nWaiting for CNC messages...\r\n\r\n";
-            
+
             // Register as event listener with CNCJobInfoListener
             CNCJobInfoListener.AddListener(this);
         }
@@ -119,7 +119,7 @@ namespace HavenCNCServer.Components
             else if (centroidEvent is StepExecutionEvent stepEvent)
             {
                 // Only show step execution events for significant status changes, not every executing step
-                if (stepEvent.Status == StepExecutionStatus.Failed || 
+                if (stepEvent.Status == StepExecutionStatus.Failed ||
                     stepEvent.Status == StepExecutionStatus.Completed ||
                     stepEvent.IsLastStep)
                 {
@@ -333,7 +333,7 @@ namespace HavenCNCServer.Components
                     var keepLines = lines.Skip(lines.Length - (_maxMessages * 3 / 4)).ToArray();
                     txtMessages.Lines = keepLines;
                     _currentMessageCount = keepLines.Length;
-                    
+
                     // Add separator to show where trimming occurred
                     AddColoredMessage("--- [Previous messages trimmed] ---", Color.Gray);
                 }
@@ -366,7 +366,7 @@ namespace HavenCNCServer.Components
                     txtMessages.Text = "=== CNC Message Monitor ===\r\n[Messages cleared]\r\n\r\n";
                     _currentMessageCount = 0;
                 }
-                
+
                 LogInfo("🗑️ Message display cleared", "MessageDisplay");
             }
             catch (Exception ex)
