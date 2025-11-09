@@ -469,7 +469,7 @@ namespace HavenCNCServer
             this.TopMost = alwaysOnTop;
             btnAlwaysOnTop.Text = this.TopMost ? "Always on Top: ON" : "Always on Top: OFF";
             btnAlwaysOnTop.BackColor = this.TopMost ? Color.LightGreen : SystemColors.Control;
-            
+
             // Update any owned forms (child windows) to match the TopMost state
             foreach (Form ownedForm in this.OwnedForms)
             {
@@ -478,7 +478,7 @@ namespace HavenCNCServer
                     ownedForm.TopMost = alwaysOnTop;
                 }
             }
-            
+
             LogInfo($"Always on Top: {(this.TopMost ? "Enabled" : "Disabled")}", "UI");
         }
 
@@ -491,21 +491,21 @@ namespace HavenCNCServer
             {
                 LogInfo("Opening browser UI...", "UI");
                 var browserForm = new BrowserForm(ReactAppUrl);
-                
+
                 // Set the browser form width to match MainForm
                 browserForm.Width = this.Width;
                 browserForm.StartPosition = FormStartPosition.Manual;
                 browserForm.Location = new System.Drawing.Point(this.Location.X, this.Location.Y);
-                
+
                 // Set this form as the owner so the browser form stays on top of the main form
                 browserForm.Owner = this;
-                
+
                 // If main form is TopMost, make browser form TopMost too
                 if (this.TopMost)
                 {
                     browserForm.TopMost = true;
                 }
-                
+
                 browserForm.Show();
                 LogInfo("Browser UI opened successfully", "UI");
             }
@@ -547,7 +547,7 @@ namespace HavenCNCServer
                     {
                         gCodeDialog.TopMost = true;
                     }
-                    
+
                     gCodeDialog.ShowDialog(this);
                 }
 
@@ -570,7 +570,7 @@ namespace HavenCNCServer
             {
                 folderDialog.Description = "Select CNC12 Installation Directory";
                 folderDialog.SelectedPath = txtCnc12Path.Text;
-                
+
                 if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
                     txtCnc12Path.Text = folderDialog.SelectedPath;
@@ -589,10 +589,10 @@ namespace HavenCNCServer
                 SettingsManager.Settings.Cnc.Cnc12Path = txtCnc12Path.Text;
                 SettingsManager.Settings.Cnc.UserName = txtUserName.Text;
                 SettingsManager.Settings.Cnc.MachineName = txtMachineName.Text;
-                
+
                 // Save to file
                 SettingsManager.SaveSettings();
-                
+
                 LogSuccess("Settings saved successfully", "Settings");
                 MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -629,31 +629,31 @@ namespace HavenCNCServer
             {
                 string cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
                 string appPath = AppDomain.CurrentDomain.BaseDirectory;
-                
+
                 // Source files
                 string plcMsgSource = Path.Combine(appPath, "Centriod", "Scripts", "plcmsg.txt");
                 string functionsSource = Path.Combine(appPath, "Centriod", "Scripts", "functions.xml");
                 string plcSourceTemplate = Path.Combine(appPath, "Centriod", "Scripts", "acorn_router_plc.src");
-                
+
                 // Destination paths for plcmsg.txt
                 string plcMsgDest1 = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "router_plcmsg.txt");
                 string plcMsgDest2 = Path.Combine(cnc12Path, "plcmsg.txt");
-                
+
                 // Destination path for functions.xml
                 string functionsDest = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "functions.xml");
-                
+
                 // Destination path for PLC source
                 string plcSourceDest = Path.Combine(cnc12Path, "acorn_router_plc.src");
-                
+
                 // Copy plcmsg.txt to both locations
                 if (File.Exists(plcMsgSource))
                 {
                     // Create directories if they don't exist
                     Directory.CreateDirectory(Path.GetDirectoryName(plcMsgDest1)!);
-                    
+
                     File.Copy(plcMsgSource, plcMsgDest1, overwrite: true);
                     LogSuccess($"Copied plcmsg.txt to {plcMsgDest1}", "Startup");
-                    
+
                     File.Copy(plcMsgSource, plcMsgDest2, overwrite: true);
                     LogSuccess($"Copied plcmsg.txt to {plcMsgDest2}", "Startup");
                 }
@@ -661,13 +661,13 @@ namespace HavenCNCServer
                 {
                     LogWarning($"Source file not found: {plcMsgSource}", "Startup");
                 }
-                
+
                 // Copy functions.xml
                 if (File.Exists(functionsSource))
                 {
                     // Create directory if it doesn't exist
                     Directory.CreateDirectory(Path.GetDirectoryName(functionsDest)!);
-                    
+
                     File.Copy(functionsSource, functionsDest, overwrite: true);
                     LogSuccess($"Copied functions.xml to {functionsDest}", "Startup");
                 }
@@ -675,12 +675,12 @@ namespace HavenCNCServer
                 {
                     LogWarning($"Source file not found: {functionsSource}", "Startup");
                 }
-                
+
                 // Copy PLC source template if destination doesn't have our logic
                 if (File.Exists(plcSourceTemplate))
                 {
                     bool shouldCopy = false;
-                    
+
                     if (!File.Exists(plcSourceDest))
                     {
                         // File doesn't exist, copy it
@@ -692,7 +692,7 @@ namespace HavenCNCServer
                         // Check if existing file has our custom logic
                         string existingContent = File.ReadAllText(plcSourceDest);
                         string searchPattern = "IF OUT10 && !OUT310 THEN InfoMsg_W = OUTPUT10_ON_MSG";
-                        
+
                         if (!existingContent.Contains(searchPattern))
                         {
                             shouldCopy = true;
@@ -703,7 +703,7 @@ namespace HavenCNCServer
                             LogInfo($"PLC source file already contains our logic, skipping copy", "Startup");
                         }
                     }
-                    
+
                     if (shouldCopy)
                     {
                         // Backup existing file if it exists
@@ -713,7 +713,7 @@ namespace HavenCNCServer
                             File.Copy(plcSourceDest, backupPath, overwrite: true);
                             LogInfo($"Backed up existing PLC source to: {backupPath}", "Startup");
                         }
-                        
+
                         File.Copy(plcSourceTemplate, plcSourceDest, overwrite: true);
                         LogSuccess($"Copied PLC source template to {plcSourceDest}", "Startup");
                     }
