@@ -147,17 +147,61 @@ end;
 function InitializeSetup(): Boolean;
 var
   ErrorCode: Integer;
+  DotNetMsg: String;
+  NeedsDotNet: Boolean;
+  NeedsAspNetCore: Boolean;
 begin
+  NeedsDotNet := False;
+  NeedsAspNetCore := False;
+  
   // Check if .NET 8 Runtime is installed
   if not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App') and
      not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App') then
+  begin
+    NeedsDotNet := True;
+  end;
+  
+  // Check if ASP.NET Core Runtime 8.0 is installed
+  if not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.AspNetCore.App') and
+     not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.AspNetCore.App') then
+  begin
+    NeedsAspNetCore := True;
+  end;
+  
+  // Show appropriate message based on what's missing
+  if NeedsDotNet and NeedsAspNetCore then
+  begin
+    DotNetMsg := '.NET 8 Desktop Runtime and ASP.NET Core Runtime 8.0 are required but not found.' + #13#10 + #13#10 +
+                 'Would you like to download them now?' + #13#10 + #13#10 +
+                 'You will need both:' + #13#10 +
+                 '1. .NET Desktop Runtime' + #13#10 +
+                 '2. ASP.NET Core Runtime';
+    if MsgBox(DotNetMsg, mbConfirmation, MB_YESNO) = IDYES then
+    begin
+      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+    end;
+    Result := False;
+  end
+  else if NeedsDotNet then
   begin
     if MsgBox('.NET 8 Desktop Runtime is required but not found. Would you like to download it now?', mbConfirmation, MB_YESNO) = IDYES then
     begin
       ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
     end;
     Result := False;
-  end else
+  end
+  else if NeedsAspNetCore then
+  begin
+    DotNetMsg := 'ASP.NET Core Runtime 8.0 is required but not found.' + #13#10 + #13#10 +
+                 'Would you like to download it now?' + #13#10 + #13#10 +
+                 'Direct download: ASP.NET Core Runtime 8.0.21 - Windows x64 Installer';
+    if MsgBox(DotNetMsg, mbConfirmation, MB_YESNO) = IDYES then
+    begin
+      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+    end;
+    Result := False;
+  end
+  else
     Result := True;
 end;
 

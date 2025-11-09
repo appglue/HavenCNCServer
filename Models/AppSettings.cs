@@ -103,6 +103,22 @@ namespace HavenCNCServer.Models
     public class CncSettings
     {
         /// <summary>
+        /// CNC12 installation directory path
+        /// Default: C:\cncm
+        /// </summary>
+        public string Cnc12Path { get; set; } = @"C:\cncm";
+
+        /// <summary>
+        /// User name for the CNC machine operator
+        /// </summary>
+        public string UserName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Machine name/identifier
+        /// </summary>
+        public string MachineName { get; set; } = string.Empty;
+
+        /// <summary>
         /// CentroidAPI connection timeout in milliseconds
         /// </summary>
         public int ConnectionTimeoutMs { get; set; } = 10000;

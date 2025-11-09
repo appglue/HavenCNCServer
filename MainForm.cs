@@ -231,6 +231,12 @@ namespace HavenCNCServer
         {
             var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
 
+            // Load settings into UI
+            LoadSettingsIntoUI();
+
+            // Copy CNC script files to CNC12 directories
+            CopyScriptFilesToCnc12();
+
             await ApiManager.StartAsync(cancellationToken);
 
             // Start job listener with background monitoring
@@ -552,6 +558,174 @@ namespace HavenCNCServer
                 var errorMessage = $"Error opening G-Code Test Dialog: {ex.Message}";
                 LogError(errorMessage, "UI");
                 MessageBox.Show(errorMessage, "Dialog Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Browse for CNC12 installation path
+        /// </summary>
+        private void btnBrowseCnc12Path_Click(object sender, EventArgs e)
+        {
+            using (var folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.Description = "Select CNC12 Installation Directory";
+                folderDialog.SelectedPath = txtCnc12Path.Text;
+                
+                if (folderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    txtCnc12Path.Text = folderDialog.SelectedPath;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Save settings to file
+        /// </summary>
+        private void btnSaveSettings_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Update settings from UI
+                SettingsManager.Settings.Cnc.Cnc12Path = txtCnc12Path.Text;
+                SettingsManager.Settings.Cnc.UserName = txtUserName.Text;
+                SettingsManager.Settings.Cnc.MachineName = txtMachineName.Text;
+                
+                // Save to file
+                SettingsManager.SaveSettings();
+                
+                LogSuccess("Settings saved successfully", "Settings");
+                MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save settings: {ex.Message}", "Settings");
+                MessageBox.Show($"Failed to save settings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Load settings into UI controls
+        /// </summary>
+        private void LoadSettingsIntoUI()
+        {
+            try
+            {
+                txtCnc12Path.Text = SettingsManager.Settings.Cnc.Cnc12Path;
+                txtUserName.Text = SettingsManager.Settings.Cnc.UserName;
+                txtMachineName.Text = SettingsManager.Settings.Cnc.MachineName;
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Failed to load settings into UI: {ex.Message}", "Settings");
+            }
+        }
+
+        /// <summary>
+        /// Copy script files to CNC12 directories on startup
+        /// </summary>
+        private void CopyScriptFilesToCnc12()
+        {
+            try
+            {
+                string cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
+                string appPath = AppDomain.CurrentDomain.BaseDirectory;
+                
+                // Source files
+                string plcMsgSource = Path.Combine(appPath, "Centriod", "Scripts", "plcmsg.txt");
+                string functionsSource = Path.Combine(appPath, "Centriod", "Scripts", "functions.xml");
+                string plcSourceTemplate = Path.Combine(appPath, "Centriod", "Scripts", "acorn_router_plc.src");
+                
+                // Destination paths for plcmsg.txt
+                string plcMsgDest1 = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "router_plcmsg.txt");
+                string plcMsgDest2 = Path.Combine(cnc12Path, "plcmsg.txt");
+                
+                // Destination path for functions.xml
+                string functionsDest = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "functions.xml");
+                
+                // Destination path for PLC source
+                string plcSourceDest = Path.Combine(cnc12Path, "acorn_router_plc.src");
+                
+                // Copy plcmsg.txt to both locations
+                if (File.Exists(plcMsgSource))
+                {
+                    // Create directories if they don't exist
+                    Directory.CreateDirectory(Path.GetDirectoryName(plcMsgDest1)!);
+                    
+                    File.Copy(plcMsgSource, plcMsgDest1, overwrite: true);
+                    LogSuccess($"Copied plcmsg.txt to {plcMsgDest1}", "Startup");
+                    
+                    File.Copy(plcMsgSource, plcMsgDest2, overwrite: true);
+                    LogSuccess($"Copied plcmsg.txt to {plcMsgDest2}", "Startup");
+                }
+                else
+                {
+                    LogWarning($"Source file not found: {plcMsgSource}", "Startup");
+                }
+                
+                // Copy functions.xml
+                if (File.Exists(functionsSource))
+                {
+                    // Create directory if it doesn't exist
+                    Directory.CreateDirectory(Path.GetDirectoryName(functionsDest)!);
+                    
+                    File.Copy(functionsSource, functionsDest, overwrite: true);
+                    LogSuccess($"Copied functions.xml to {functionsDest}", "Startup");
+                }
+                else
+                {
+                    LogWarning($"Source file not found: {functionsSource}", "Startup");
+                }
+                
+                // Copy PLC source template if destination doesn't have our logic
+                if (File.Exists(plcSourceTemplate))
+                {
+                    bool shouldCopy = false;
+                    
+                    if (!File.Exists(plcSourceDest))
+                    {
+                        // File doesn't exist, copy it
+                        shouldCopy = true;
+                        LogInfo($"PLC source file not found at destination, will copy template", "Startup");
+                    }
+                    else
+                    {
+                        // Check if existing file has our custom logic
+                        string existingContent = File.ReadAllText(plcSourceDest);
+                        string searchPattern = "IF OUT10 && !OUT310 THEN InfoMsg_W = OUTPUT10_ON_MSG";
+                        
+                        if (!existingContent.Contains(searchPattern))
+                        {
+                            shouldCopy = true;
+                            LogInfo($"PLC source file exists but doesn't contain our logic, will copy template", "Startup");
+                        }
+                        else
+                        {
+                            LogInfo($"PLC source file already contains our logic, skipping copy", "Startup");
+                        }
+                    }
+                    
+                    if (shouldCopy)
+                    {
+                        // Backup existing file if it exists
+                        if (File.Exists(plcSourceDest))
+                        {
+                            string backupPath = plcSourceDest + ".backup_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                            File.Copy(plcSourceDest, backupPath, overwrite: true);
+                            LogInfo($"Backed up existing PLC source to: {backupPath}", "Startup");
+                        }
+                        
+                        File.Copy(plcSourceTemplate, plcSourceDest, overwrite: true);
+                        LogSuccess($"Copied PLC source template to {plcSourceDest}", "Startup");
+                    }
+                }
+                else
+                {
+                    LogWarning($"PLC source template not found: {plcSourceTemplate}", "Startup");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to copy script files: {ex.Message}", "Startup");
             }
         }
 

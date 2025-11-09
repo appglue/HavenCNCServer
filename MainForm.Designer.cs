@@ -41,10 +41,20 @@ namespace HavenCNCServer
             this.tabLogs = new System.Windows.Forms.TabPage();
             this.tabMessages = new System.Windows.Forms.TabPage();
             this.tabGCode = new System.Windows.Forms.TabPage();
+            this.tabSettings = new System.Windows.Forms.TabPage();
+            this.lblCnc12Path = new System.Windows.Forms.Label();
+            this.txtCnc12Path = new System.Windows.Forms.TextBox();
+            this.btnBrowseCnc12Path = new System.Windows.Forms.Button();
+            this.lblUserName = new System.Windows.Forms.Label();
+            this.txtUserName = new System.Windows.Forms.TextBox();
+            this.lblMachineName = new System.Windows.Forms.Label();
+            this.txtMachineName = new System.Windows.Forms.TextBox();
+            this.btnSaveSettings = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabLogs.SuspendLayout();
+            this.tabSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
@@ -162,6 +172,7 @@ namespace HavenCNCServer
             this.tabControl.Controls.Add(this.tabLogs);
             this.tabControl.Controls.Add(this.tabMessages);
             this.tabControl.Controls.Add(this.tabGCode);
+            this.tabControl.Controls.Add(this.tabSettings);
             this.tabControl.Location = new System.Drawing.Point(12, 130);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -199,6 +210,92 @@ namespace HavenCNCServer
             this.tabGCode.Text = "G-Code";
             this.tabGCode.UseVisualStyleBackColor = true;
             // 
+            // tabSettings
+            // 
+            this.tabSettings.Controls.Add(this.btnSaveSettings);
+            this.tabSettings.Controls.Add(this.lblMachineName);
+            this.tabSettings.Controls.Add(this.txtMachineName);
+            this.tabSettings.Controls.Add(this.lblUserName);
+            this.tabSettings.Controls.Add(this.txtUserName);
+            this.tabSettings.Controls.Add(this.lblCnc12Path);
+            this.tabSettings.Controls.Add(this.txtCnc12Path);
+            this.tabSettings.Controls.Add(this.btnBrowseCnc12Path);
+            this.tabSettings.Location = new System.Drawing.Point(4, 24);
+            this.tabSettings.Name = "tabSettings";
+            this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSettings.Size = new System.Drawing.Size(1348, 522);
+            this.tabSettings.TabIndex = 3;
+            this.tabSettings.Text = "Settings";
+            this.tabSettings.UseVisualStyleBackColor = true;
+            // 
+            // lblCnc12Path
+            // 
+            this.lblCnc12Path.AutoSize = true;
+            this.lblCnc12Path.Location = new System.Drawing.Point(20, 20);
+            this.lblCnc12Path.Name = "lblCnc12Path";
+            this.lblCnc12Path.Size = new System.Drawing.Size(122, 15);
+            this.lblCnc12Path.TabIndex = 0;
+            this.lblCnc12Path.Text = "CNC12 Installation Path:";
+            // 
+            // txtCnc12Path
+            // 
+            this.txtCnc12Path.Location = new System.Drawing.Point(20, 40);
+            this.txtCnc12Path.Name = "txtCnc12Path";
+            this.txtCnc12Path.Size = new System.Drawing.Size(400, 23);
+            this.txtCnc12Path.TabIndex = 1;
+            // 
+            // btnBrowseCnc12Path
+            // 
+            this.btnBrowseCnc12Path.Location = new System.Drawing.Point(430, 38);
+            this.btnBrowseCnc12Path.Name = "btnBrowseCnc12Path";
+            this.btnBrowseCnc12Path.Size = new System.Drawing.Size(80, 27);
+            this.btnBrowseCnc12Path.TabIndex = 2;
+            this.btnBrowseCnc12Path.Text = "Browse...";
+            this.btnBrowseCnc12Path.UseVisualStyleBackColor = true;
+            this.btnBrowseCnc12Path.Click += new System.EventHandler(this.btnBrowseCnc12Path_Click);
+            // 
+            // lblUserName
+            // 
+            this.lblUserName.AutoSize = true;
+            this.lblUserName.Location = new System.Drawing.Point(20, 80);
+            this.lblUserName.Name = "lblUserName";
+            this.lblUserName.Size = new System.Drawing.Size(68, 15);
+            this.lblUserName.TabIndex = 3;
+            this.lblUserName.Text = "User Name:";
+            // 
+            // txtUserName
+            // 
+            this.txtUserName.Location = new System.Drawing.Point(20, 100);
+            this.txtUserName.Name = "txtUserName";
+            this.txtUserName.Size = new System.Drawing.Size(300, 23);
+            this.txtUserName.TabIndex = 4;
+            // 
+            // lblMachineName
+            // 
+            this.lblMachineName.AutoSize = true;
+            this.lblMachineName.Location = new System.Drawing.Point(20, 140);
+            this.lblMachineName.Name = "lblMachineName";
+            this.lblMachineName.Size = new System.Drawing.Size(90, 15);
+            this.lblMachineName.TabIndex = 5;
+            this.lblMachineName.Text = "Machine Name:";
+            // 
+            // txtMachineName
+            // 
+            this.txtMachineName.Location = new System.Drawing.Point(20, 160);
+            this.txtMachineName.Name = "txtMachineName";
+            this.txtMachineName.Size = new System.Drawing.Size(300, 23);
+            this.txtMachineName.TabIndex = 6;
+            // 
+            // btnSaveSettings
+            // 
+            this.btnSaveSettings.Location = new System.Drawing.Point(20, 200);
+            this.btnSaveSettings.Name = "btnSaveSettings";
+            this.btnSaveSettings.Size = new System.Drawing.Size(150, 30);
+            this.btnSaveSettings.TabIndex = 7;
+            this.btnSaveSettings.Text = "Save Settings";
+            this.btnSaveSettings.UseVisualStyleBackColor = true;
+            this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -219,6 +316,8 @@ namespace HavenCNCServer
             this.pnlControls.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabLogs.ResumeLayout(false);
+            this.tabSettings.ResumeLayout(false);
+            this.tabSettings.PerformLayout();
             this.ResumeLayout(false);
         }
 
@@ -237,5 +336,14 @@ namespace HavenCNCServer
         private System.Windows.Forms.TabPage tabLogs;
         private System.Windows.Forms.TabPage tabMessages;
         private System.Windows.Forms.TabPage tabGCode;
+        private System.Windows.Forms.TabPage tabSettings;
+        private System.Windows.Forms.Label lblCnc12Path;
+        private System.Windows.Forms.TextBox txtCnc12Path;
+        private System.Windows.Forms.Button btnBrowseCnc12Path;
+        private System.Windows.Forms.Label lblUserName;
+        private System.Windows.Forms.TextBox txtUserName;
+        private System.Windows.Forms.Label lblMachineName;
+        private System.Windows.Forms.TextBox txtMachineName;
+        private System.Windows.Forms.Button btnSaveSettings;
     }
 }
