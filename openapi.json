@@ -3087,6 +3087,329 @@
         }
       }
     },
+    "/api/CNCServer/skin-event": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Trigger a virtual control panel (skin) event",
+        "requestBody": {
+          "description": "The skin event request containing the event and action to perform",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/skin-event/{eventNumber}": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Trigger a skin event by number (alternative endpoint for direct event number access)",
+        "parameters": [
+          {
+            "name": "eventNumber",
+            "in": "path",
+            "description": "The skin event number (1-256)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The action request containing the action to perform",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventActionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventActionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinEventActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkinEventResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/reset-cnc-state": {
+      "post": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Reset CNC server state when in bad condition during G-code execution\r\nUses skin events to trigger the reset button and clear faults",
+        "parameters": [
+          {
+            "name": "resetEventNumber",
+            "in": "query",
+            "description": "Optional specific reset event number (defaults to system default)",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCResetResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCServer/cnc-ready": {
+      "get": {
+        "tags": [
+          "CNCServer"
+        ],
+        "summary": "Check if CNC is ready to accept commands (without attempting reset)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CNCReadyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCSpindle/StartSpindle": {
       "post": {
         "tags": [
@@ -4004,6 +4327,44 @@
         },
         "additionalProperties": false,
         "description": "Travel limits for a single axis"
+      },
+      "CNCReadyResponse": {
+        "type": "object",
+        "properties": {
+          "isReady": {
+            "type": "boolean",
+            "description": "Whether the CNC is ready to accept commands"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message describing the CNC readiness state",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for CNC readiness check"
+      },
+      "CNCResetResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the reset operation was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message describing the result of the reset operation",
+            "nullable": true
+          },
+          "resetEventUsed": {
+            "type": "integer",
+            "description": "The skin event number that was used for the reset operation",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for CNC reset operations"
       },
       "CNCServerStatus": {
         "type": "object",
@@ -4957,6 +5318,198 @@
         },
         "additionalProperties": false,
         "description": "Request model for setting output values"
+      },
+      "SkinEvent": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232
+        ],
+        "type": "integer",
+        "description": "Virtual Control Panel (Skin) Events - corresponds to SV_SKIN_EVENT_1 through SV_SKIN_EVENT_256",
+        "format": "int32"
+      },
+      "SkinEventAction": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "Actions that can be performed on skin events",
+        "format": "int32"
+      },
+      "SkinEventActionRequest": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/SkinEventAction"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for skin event actions (used with event number endpoint)"
+      },
+      "SkinEventRequest": {
+        "type": "object",
+        "properties": {
+          "skinEvent": {
+            "$ref": "#/components/schemas/SkinEvent"
+          },
+          "action": {
+            "$ref": "#/components/schemas/SkinEventAction"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for triggering skin events"
+      },
+      "SkinEventResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message describing the result of the operation",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response model for skin event operations"
       },
       "SpindleConfiguration": {
         "type": "object",
