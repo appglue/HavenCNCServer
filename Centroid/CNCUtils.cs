@@ -350,9 +350,13 @@ namespace HavenCNCServer.Centroid
                 cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions unlockVersion);
 
                 // Determine system-specific configuration
-                bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
-                bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
-                bool isHickory = unlockVersion.ToString().Contains("HICKORY");
+                string systemName = unlockVersion.ToString();
+                bool isAcorn = systemName.Contains("ACORN") && !systemName.Contains("ACORN_SIX");
+                bool isAcornSix = systemName.Contains("ACORN_SIX");
+                bool isHickory = systemName.Contains("HICKORY");
+                bool isProRouter = systemName.Contains("PRO_ROUTER");
+
+                LogInfo($"Detecting available I/O - System: {unlockVersion} (Acorn:{isAcorn}, AcornSix:{isAcornSix}, Hickory:{isHickory}, ProRouter:{isProRouter})", "CNCUtils");
 
                 // Standard Acorn and AcornSix: Base I/O is 1-16, Expansion starts at 65
                 // (This matches the typical Centroid I/O mapping where 17-64 are reserved)
@@ -366,27 +370,32 @@ namespace HavenCNCServer.Centroid
                     expansionStartIO = 129;
                 }
 
-                // Add base inputs (1-16 for Acorn/AcornSix, 1-32 for Hickory)
+                // Add base inputs (1-16 for Acorn/AcornSix/ProRouter, 1-32 for Hickory)
                 for (int i = 1; i <= baseInputCount; i++)
                 {
                     availableInputs.Add(i);
                 }
 
+                LogInfo($"Added base I/O: 1-{baseInputCount}", "CNCUtils");
+
                 // Detect expansion boards
                 int expansionCount = 0;
 
-                if (isAcorn)
+                if (isAcorn || isProRouter)
                 {
                     cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
                     expansionCount = devices?.Count ?? 0;
+                    LogInfo($"Detected {expansionCount} Ether1616 expansion boards", "CNCUtils");
                 }
                 else if (isAcornSix)
                 {
                     cncPipe.system.GetPLCEXP1616NumberofDevices(out expansionCount);
+                    LogInfo($"Detected {expansionCount} PLCEXP1616 expansion boards", "CNCUtils");
                 }
                 else if (isHickory)
                 {
                     cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
+                    LogInfo($"Detected {expansionCount} ECAT1616 expansion boards", "CNCUtils");
                 }
 
                 // Add expansion board I/O (typically one board = 65-80)
@@ -395,12 +404,18 @@ namespace HavenCNCServer.Centroid
                 {
                     for (int board = 0; board < expansionCount; board++)
                     {
+                        int startIO = expansionStartIO + (board * 16);
+                        int endIO = startIO + 15;
+                        LogInfo($"Adding expansion board {board + 1} I/O: {startIO}-{endIO}", "CNCUtils");
+
                         for (int i = 0; i < 16; i++)
                         {
                             availableInputs.Add(expansionStartIO + (board * 16) + i);
                         }
                     }
                 }
+
+                LogInfo($"Total available I/O ports: {availableInputs.Count} ({string.Join(", ", availableInputs.Take(5))}...{string.Join(", ", availableInputs.Skip(availableInputs.Count - 5))})", "CNCUtils");
 
                 return availableInputs.ToArray();
             }
@@ -802,6 +817,10 @@ namespace HavenCNCServer.Centroid
                     LogError($"Failed to get minus travel limit for axis {axisNumber}: {minusResult}", "CNCUtils");
                     return false;
                 }
+
+                // Log the raw values from the API to diagnose coordinate system issues
+                string axisLabel = GetAxisLabel(axisNumber);
+                LogInfo($"Travel limits for Axis {axisNumber} ({axisLabel}): Plus={plusLimit:F4}, Minus={minusLimit:F4}", "CNCUtils");
 
                 return true;
             }

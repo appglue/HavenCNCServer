@@ -9,8 +9,8 @@ namespace HavenCNCServer.Services
     public static class SettingsManager
     {
         private static readonly string _settingsFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-            "HavenCNCServer", 
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HavenCNCServer",
             "settings.json");
 
         private static AppSettings? _settings;
@@ -40,8 +40,11 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
+                    Console.WriteLine($"Loading settings from: {_settingsFilePath}");
+
                     if (File.Exists(_settingsFilePath))
                     {
+                        Console.WriteLine($"Settings file exists, reading...");
                         string json = File.ReadAllText(_settingsFilePath);
                         _settings = JsonSerializer.Deserialize<AppSettings>(json, new JsonSerializerOptions
                         {
@@ -49,15 +52,19 @@ namespace HavenCNCServer.Services
                             WriteIndented = true
                         });
 
+                        Console.WriteLine($"Loaded CNC12 path from settings: {_settings?.Cnc?.Cnc12Path ?? "NULL"}");
+
                         // Validate and fix any missing or invalid settings
                         ValidateSettings();
                     }
                     else
                     {
+                        Console.WriteLine($"Settings file does not exist, creating defaults...");
                         // Create default settings
                         _settings = new AppSettings();
                         ValidateSettings();
                         SaveSettings(); // Save default settings to file
+                        Console.WriteLine($"Created default settings with CNC12 path: {_settings.Cnc.Cnc12Path}");
                     }
                 }
                 catch (Exception ex)
@@ -66,7 +73,7 @@ namespace HavenCNCServer.Services
                     Console.WriteLine($"Error loading settings: {ex.Message}. Using default settings.");
                     _settings = new AppSettings();
                     ValidateSettings();
-                    
+
                     try
                     {
                         SaveSettings(); // Try to save corrected settings
@@ -152,7 +159,7 @@ namespace HavenCNCServer.Services
             }
 
             // Validate CNC programs directory if specified
-            if (!string.IsNullOrEmpty(_settings.Files.CncProgramsDirectory) && 
+            if (!string.IsNullOrEmpty(_settings.Files.CncProgramsDirectory) &&
                 !Directory.Exists(_settings.Files.CncProgramsDirectory))
             {
                 // Reset to null to trigger auto-detection
@@ -189,7 +196,7 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static string GetCncProgramsDirectory()
         {
-            if (!string.IsNullOrEmpty(Settings.Files.CncProgramsDirectory) && 
+            if (!string.IsNullOrEmpty(Settings.Files.CncProgramsDirectory) &&
                 Directory.Exists(Settings.Files.CncProgramsDirectory))
             {
                 return Settings.Files.CncProgramsDirectory;

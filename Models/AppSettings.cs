@@ -104,9 +104,9 @@ namespace HavenCNCServer.Models
     {
         /// <summary>
         /// CNC12 installation directory path
-        /// Default: C:\cncm
+        /// Default: C:\cncr
         /// </summary>
-        public string Cnc12Path { get; set; } = @"C:\cncm";
+        public string Cnc12Path { get; set; } = @"C:\cncr";
 
         /// <summary>
         /// User name for the CNC machine operator

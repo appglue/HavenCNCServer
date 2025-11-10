@@ -627,13 +627,23 @@ namespace HavenCNCServer
         {
             try
             {
+                LogInfo("=== Starting CopyScriptFilesToCnc12 ===", "Startup");
+
                 string cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
                 string appPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                LogInfo($"CNC12 Path: {cnc12Path}", "Startup");
+                LogInfo($"App Path: {appPath}", "Startup");
 
                 // Source files
                 string plcMsgSource = Path.Combine(appPath, "Centroid", "Scripts", "plcmsg.txt");
                 string functionsSource = Path.Combine(appPath, "Centroid", "Scripts", "functions.xml");
                 string plcSourceTemplate = Path.Combine(appPath, "Centroid", "Scripts", "acorn_router_plc.src");
+
+                LogInfo($"Source files:", "Startup");
+                LogInfo($"  plcmsg.txt: {plcMsgSource} (Exists: {File.Exists(plcMsgSource)})", "Startup");
+                LogInfo($"  functions.xml: {functionsSource} (Exists: {File.Exists(functionsSource)})", "Startup");
+                LogInfo($"  acorn_router_plc.src: {plcSourceTemplate} (Exists: {File.Exists(plcSourceTemplate)})", "Startup");
 
                 // Destination paths for plcmsg.txt
                 string plcMsgDest1 = Path.Combine(cnc12Path, "resources", "wizard", "default", "plc", "router_plcmsg.txt");
@@ -649,31 +659,38 @@ namespace HavenCNCServer
                 if (File.Exists(plcMsgSource))
                 {
                     // Create directories if they don't exist
-                    Directory.CreateDirectory(Path.GetDirectoryName(plcMsgDest1)!);
+                    string dir1 = Path.GetDirectoryName(plcMsgDest1)!;
+                    LogInfo($"Creating directory (if needed): {dir1}", "Startup");
+                    Directory.CreateDirectory(dir1);
 
+                    LogInfo($"Copying plcmsg.txt to: {plcMsgDest1}", "Startup");
                     File.Copy(plcMsgSource, plcMsgDest1, overwrite: true);
-                    LogSuccess($"Copied plcmsg.txt to {plcMsgDest1}", "Startup");
+                    LogSuccess($"✓ Copied plcmsg.txt to {plcMsgDest1}", "Startup");
 
+                    LogInfo($"Copying plcmsg.txt to: {plcMsgDest2}", "Startup");
                     File.Copy(plcMsgSource, plcMsgDest2, overwrite: true);
-                    LogSuccess($"Copied plcmsg.txt to {plcMsgDest2}", "Startup");
+                    LogSuccess($"✓ Copied plcmsg.txt to {plcMsgDest2}", "Startup");
                 }
                 else
                 {
-                    LogWarning($"Source file not found: {plcMsgSource}", "Startup");
+                    LogWarning($"❌ Source file not found: {plcMsgSource}", "Startup");
                 }
 
                 // Copy functions.xml
                 if (File.Exists(functionsSource))
                 {
                     // Create directory if it doesn't exist
-                    Directory.CreateDirectory(Path.GetDirectoryName(functionsDest)!);
+                    string dir2 = Path.GetDirectoryName(functionsDest)!;
+                    LogInfo($"Creating directory (if needed): {dir2}", "Startup");
+                    Directory.CreateDirectory(dir2);
 
+                    LogInfo($"Copying functions.xml to: {functionsDest}", "Startup");
                     File.Copy(functionsSource, functionsDest, overwrite: true);
-                    LogSuccess($"Copied functions.xml to {functionsDest}", "Startup");
+                    LogSuccess($"✓ Copied functions.xml to {functionsDest}", "Startup");
                 }
                 else
                 {
-                    LogWarning($"Source file not found: {functionsSource}", "Startup");
+                    LogWarning($"❌ Source file not found: {functionsSource}", "Startup");
                 }
 
                 // Copy PLC source template if destination doesn't have our logic
@@ -685,11 +702,12 @@ namespace HavenCNCServer
                     {
                         // File doesn't exist, copy it
                         shouldCopy = true;
-                        LogInfo($"PLC source file not found at destination, will copy template", "Startup");
+                        LogInfo($"PLC source file not found at {plcSourceDest}, will copy template", "Startup");
                     }
                     else
                     {
                         // Check if existing file has our custom logic
+                        LogInfo($"Checking existing PLC source at {plcSourceDest} for custom logic...", "Startup");
                         string existingContent = File.ReadAllText(plcSourceDest);
                         string searchPattern = "IF OUT10 && !OUT310 THEN InfoMsg_W = OUTPUT10_ON_MSG";
 
@@ -710,22 +728,27 @@ namespace HavenCNCServer
                         if (File.Exists(plcSourceDest))
                         {
                             string backupPath = plcSourceDest + ".backup_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                            LogInfo($"Backing up existing PLC source to: {backupPath}", "Startup");
                             File.Copy(plcSourceDest, backupPath, overwrite: true);
-                            LogInfo($"Backed up existing PLC source to: {backupPath}", "Startup");
+                            LogSuccess($"✓ Backed up existing PLC source", "Startup");
                         }
 
+                        LogInfo($"Copying PLC source template to: {plcSourceDest}", "Startup");
                         File.Copy(plcSourceTemplate, plcSourceDest, overwrite: true);
-                        LogSuccess($"Copied PLC source template to {plcSourceDest}", "Startup");
+                        LogSuccess($"✓ Copied PLC source template to {plcSourceDest}", "Startup");
                     }
                 }
                 else
                 {
-                    LogWarning($"PLC source template not found: {plcSourceTemplate}", "Startup");
+                    LogWarning($"❌ PLC source template not found: {plcSourceTemplate}", "Startup");
                 }
+
+                LogInfo("=== Finished CopyScriptFilesToCnc12 ===", "Startup");
             }
             catch (Exception ex)
             {
-                LogError($"Failed to copy script files: {ex.Message}", "Startup");
+                LogError($"❌ Failed to copy script files: {ex.Message}", "Startup");
+                LogError($"Stack trace: {ex.StackTrace}", "Startup");
             }
         }
 

@@ -14,7 +14,7 @@
     "logLevel": "Info"
   },
   "cnc": {
-    "cnc12Path": "C:\\cncm",
+    "cnc12Path": "C:\\cncr",
     "userName": "",
     "machineName": "",
     "connectionTimeoutMs": 10000,

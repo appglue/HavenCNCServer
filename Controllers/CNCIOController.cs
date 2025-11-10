@@ -391,6 +391,10 @@ namespace HavenCNCServer.Controllers
                 ParsedAt = DateTime.UtcNow
             };
 
+            // Get available I/O ports from hardware detection
+            var availableInputs = CNCUtils.GetAvailableInputPorts();
+            var availableOutputs = CNCUtils.GetAvailableOutputPorts();
+
             // Regex patterns to match input and output definitions
             // Format: Name IS INP<number> or Name IS OUT<number>
             var inputPattern = new Regex(@"^([A-Za-z0-9_]+)\s+IS\s+INP(\d+)", RegexOptions.Compiled);
@@ -409,13 +413,19 @@ namespace HavenCNCServer.Controllers
                 var inputMatch = inputPattern.Match(trimmedLine);
                 if (inputMatch.Success)
                 {
-                    response.Inputs.Add(new IODefinition
+                    int ioNumber = int.Parse(inputMatch.Groups[2].Value);
+
+                    // Only include if this input number is available on the hardware
+                    if (availableInputs.Contains(ioNumber))
                     {
-                        Name = inputMatch.Groups[1].Value,
-                        Number = int.Parse(inputMatch.Groups[2].Value),
-                        Type = "INPUT",
-                        RawDefinition = line
-                    });
+                        response.Inputs.Add(new IODefinition
+                        {
+                            Name = inputMatch.Groups[1].Value,
+                            Number = ioNumber,
+                            Type = "INPUT",
+                            RawDefinition = line
+                        });
+                    }
                     continue;
                 }
 
@@ -423,13 +433,19 @@ namespace HavenCNCServer.Controllers
                 var outputMatch = outputPattern.Match(trimmedLine);
                 if (outputMatch.Success)
                 {
-                    response.Outputs.Add(new IODefinition
+                    int ioNumber = int.Parse(outputMatch.Groups[2].Value);
+
+                    // Only include if this output number is available on the hardware
+                    if (availableOutputs.Contains(ioNumber))
                     {
-                        Name = outputMatch.Groups[1].Value,
-                        Number = int.Parse(outputMatch.Groups[2].Value),
-                        Type = "OUTPUT",
-                        RawDefinition = line
-                    });
+                        response.Outputs.Add(new IODefinition
+                        {
+                            Name = outputMatch.Groups[1].Value,
+                            Number = ioNumber,
+                            Type = "OUTPUT",
+                            RawDefinition = line
+                        });
+                    }
                 }
             }
 

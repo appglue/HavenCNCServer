@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Models;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Services;

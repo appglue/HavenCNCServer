@@ -139,7 +139,7 @@ namespace HavenCNCServer.Services
                 var settings = SettingsManager.Settings.Cnc;
                 int maxRetries = settings.ConnectionRetries;
                 int retryDelay = settings.RetryDelayMs;
-                
+
                 DateTime startTime = DateTime.Now;
 
                 for (int attempt = 1; attempt <= maxRetries; attempt++)
@@ -178,7 +178,7 @@ namespace HavenCNCServer.Services
                             if (TestConnection(_cncPipe))
                             {
                                 NotifyStatusChanged(true, "CNC connection verified and ready");
-                                
+
                                 // Restore last fixture point asynchronously after successful connection
                                 _ = Task.Run(async () =>
                                 {
@@ -186,7 +186,7 @@ namespace HavenCNCServer.Services
                                     await Task.Delay(500);
                                     await RestoreLastFixturePointAsync();
                                 });
-                                
+
                                 return _cncPipe;
                             }
                             else
@@ -250,12 +250,59 @@ namespace HavenCNCServer.Services
 
                 // Test system information
                 cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
-                
+
                 return true;
             }
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the CNC connection is actually working (health check)
+        /// If the connection appears established but is not working, disconnects automatically
+        /// </summary>
+        /// <returns>True if connection is healthy, false otherwise</returns>
+        public static bool VerifyConnectionHealth()
+        {
+            lock (_lock)
+            {
+                // If we're not supposed to be connected, return false
+                if (!_isConnected || _cncPipe == null)
+                {
+                    return false;
+                }
+
+                // Check if the pipe is still constructed
+                if (!_cncPipe.IsConstructed())
+                {
+                    NotifyStatusChanged(false, "Connection health check failed: CNCPipe not constructed");
+                    _isConnected = false;
+                    _cncPipe = null;
+                    return false;
+                }
+
+                // Try to read a parameter to verify the connection is actually working
+                try
+                {
+                    var result = _cncPipe.parameter.GetMachineParameterValue(1, out double _);
+                    if (result != CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        NotifyStatusChanged(false, "Connection health check failed: Cannot read parameters");
+                        _isConnected = false;
+                        _cncPipe = null;
+                        return false;
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    NotifyStatusChanged(false, $"Connection health check failed: {ex.Message}");
+                    _isConnected = false;
+                    _cncPipe = null;
+                    return false;
+                }
             }
         }
 
@@ -335,7 +382,7 @@ namespace HavenCNCServer.Services
             try
             {
                 pipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
-                
+
                 // Test parameter access
                 var param1Result = pipe.parameter.GetMachineParameterValue(1, out double param1);
                 var param34Result = pipe.parameter.GetMachineParameterValue(34, out double param34);
@@ -397,9 +444,9 @@ namespace HavenCNCServer.Services
                 var movementControllerType = Type.GetType("HavenCNCServer.Controllers.CNCMovementController, HavenCNCServer");
                 if (movementControllerType != null)
                 {
-                    var restoreMethod = movementControllerType.GetMethod("RestoreLastFixturePointAsync", 
+                    var restoreMethod = movementControllerType.GetMethod("RestoreLastFixturePointAsync",
                         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    
+
                     if (restoreMethod != null)
                     {
                         var task = restoreMethod.Invoke(null, null) as Task;
@@ -426,27 +473,27 @@ namespace HavenCNCServer.Services
         /// Gets or sets whether the CNC is currently connected
         /// </summary>
         public bool IsConnected { get; set; }
-        
+
         /// <summary>
         /// Gets or sets whether a connection attempt is in progress
         /// </summary>
         public bool IsConnecting { get; set; }
-        
+
         /// <summary>
         /// Gets or sets whether a CNCPipe instance exists
         /// </summary>
         public bool HasCNCPipe { get; set; }
-        
+
         /// <summary>
         /// Gets or sets whether the CNCPipe has been successfully constructed
         /// </summary>
         public bool IsConstructed { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the timestamp of the last connection attempt
         /// </summary>
         public DateTime LastConnectionAttempt { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the connection settings used
         /// </summary>
@@ -462,17 +509,17 @@ namespace HavenCNCServer.Services
         /// Gets or sets the connection timeout in milliseconds
         /// </summary>
         public int TimeoutMs { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the number of connection retry attempts
         /// </summary>
         public int Retries { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the delay between retry attempts in milliseconds
         /// </summary>
         public int RetryDelayMs { get; set; }
-        
+
         /// <summary>
         /// Gets or sets whether to automatically attempt connection on startup
         /// </summary>
@@ -488,22 +535,22 @@ namespace HavenCNCServer.Services
         /// Gets or sets the CNC system type description
         /// </summary>
         public string SystemType { get; set; } = "";
-        
+
         /// <summary>
         /// Gets or sets the value of Parameter 1 from the CNC system
         /// </summary>
         public double? Parameter1Value { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the value of Parameter 34 (spindle encoder counts) from the CNC system
         /// </summary>
         public double? Parameter34Value { get; set; }
-        
+
         /// <summary>
         /// Gets or sets whether parameter access is working correctly
         /// </summary>
         public bool IsParameterAccessWorking { get; set; }
-        
+
         /// <summary>
         /// Gets or sets any error message encountered during system info retrieval
         /// </summary>
