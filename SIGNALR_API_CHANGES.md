@@ -92,27 +92,28 @@ Each event in the `Data` field has its own `Timestamp` property marking when the
 
 ---
 
-## 4. Heartbeat Messages
+## 4. Server Status Messages (Heartbeat)
 
 ### Configuration
-- **Frequency**: Every 2 seconds (changed from 30 seconds)
-- **Event Type**: `"Heartbeat"`
-- **Delivery**: Through `"ReceiveCNCMessage"` (same as all other events)
-- **Group**: `"CNCClients"`
+- **Frequency**: Every 2 seconds (hardcoded for reliability)
+- **Event Type**: `"ServerStatus"` 
+- **Delivery**: Via `ReceiveCNCMessage` (same as all other events)
+- **Purpose**: Periodic status updates with connection state and current position
 
 ### Message Structure
-The heartbeat is delivered through the standard message wrapper:
+The server status is sent through the standard message wrapper:
 ```typescript
 {
-  EventType: "Heartbeat",
+  EventType: "ServerStatus",
   Timestamp: "2025-11-10T18:30:42.500Z",  // When sent
   Data: {
-    Timestamp: "2025-11-10T17:50:42.123Z",  // UTC
+    Timestamp: "2025-11-10T18:30:42.500Z",  // UTC
     ServerTime: "2025-11-10T12:50:42.123",  // Local
-    IsConnected: boolean,
+    IsConnected: boolean,                    // CNC connection status
     Status: "Connected" | "Disconnected",
-    MessageType: "Heartbeat",
-    Position: {
+    MessageType: "ServerStatus",
+    IsApiRestricted: boolean,                // Whether API is in restricted mode
+    Position: {                              // null if disconnected
       X: number,
       Y: number,
       Z: number,
@@ -124,21 +125,37 @@ The heartbeat is delivered through the standard message wrapper:
 
 ### Example Usage
 ```typescript
+// Listen for all messages including server status
 connection.on("ReceiveCNCMessage", (message) => {
-  if (message.EventType === "Heartbeat") {
-    const heartbeat = message.Data;
-    console.log(`CNC Status: ${heartbeat.Status}`);
-    if (heartbeat.Position) {
-      updatePositionDisplay(heartbeat.Position);
+  if (message.EventType === "ServerStatus") {
+    const status = message.Data;
+    console.log(`Server alive - CNC Status: ${status.Status}`);
+    updateLastHeartbeat(message.Timestamp);
+    
+    // Update position if available
+    if (status.Position) {
+      updatePositionDisplay(status.Position);
     }
+  }
+  
+  if (message.EventType === "DROEvent") {
+    // Real-time position updates during movement
+    updatePositionDisplay(message.Data);
   }
 });
 ```
 
 **Purpose:**
-- Connection keep-alive (every 2 seconds)
-- Real-time connection status updates
-- Position updates when connected
+- **Connection keepalive** (every 2 seconds) - detect disconnections quickly
+- **Connection status** - Connected/disconnected state
+- **Position snapshot** - Current position every 2 seconds (null when disconnected)
+- **Baseline updates** - Ensures position is updated even when not moving
+
+**Why This Design:**
+- ✅ **Consistent** - Uses same message channel as all other events
+- ✅ **Complete** - Includes both status and position data
+- ✅ **Reliable** - Regular 2-second updates ensure fresh data
+- ✅ **Complementary** - Works with DRO events for real-time movement updates
 
 ---
 
@@ -411,17 +428,19 @@ private const bool EnableThrottling = false; // Set to true to enable
 ## 8. Event Types Reference
 
 ### Core Events
-| Event Type | Frequency | Purpose |
-|------------|-----------|---------|
-| `Heartbeat` | Every 2s | Connection keep-alive, status, position |
-| `DROEvent` | ~10Hz (100ms)* | Real-time position updates |
-| `JobStartedEvent` | On start | Job start notification with JobId |
-| `StepExecutionEvent` | Per line | Line-by-line execution progress |
-| `JobCompletedEvent` | On completion | Job finish notification |
-| `ConnectionStatusChanged` | On change | CNC connection state changes |
-| `MessageEvent` | Variable | CNC12 messages and alerts |
+| Event Type | Frequency | Purpose | Delivery Method |
+|------------|-----------|---------|-----------------|
+| `Heartbeat` | Every 2s | Keepalive ping, connection status | Direct SignalR method `connection.on("Heartbeat")` |
+| `DROEvent` | ~10Hz (100ms)* | Real-time position updates | `ReceiveCNCMessage` with `EventType = "DROEvent"` |
+| `JobStartedEvent` | On start | Job start notification with JobId | `ReceiveCNCMessage` |
+| `StepExecutionEvent` | Per line | Line-by-line execution progress | `ReceiveCNCMessage` |
+| `JobCompletedEvent` | On completion | Job finish notification | `ReceiveCNCMessage` |
+| `ConnectionStatusChanged` | On change | CNC connection state changes | Direct SignalR method `connection.on("ConnectionStatusChanged")` |
+| `MessageEvent` | Variable | CNC12 messages and alerts | `ReceiveCNCMessage` |
 
 *When throttling is enabled (currently disabled)
+
+**Note:** Heartbeat and ConnectionStatusChanged use dedicated SignalR methods for better reliability. All other events use the standard `ReceiveCNCMessage` wrapper.
 
 ---
 

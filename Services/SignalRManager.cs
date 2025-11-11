@@ -211,31 +211,33 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Start the heartbeat timer that periodically sends system status to clients
+        /// Start the heartbeat timer that periodically sends server status updates to clients
+        /// Sends connection status and position data every 2 seconds
         /// </summary>
         private static void StartHeartbeatTimer()
         {
-            // Get interval from settings, default to 30 seconds
-            int intervalMs = SettingsManager.Settings.Cnc.HeartbeatIntervalMs;
+            // Use 2 seconds for server status updates for better responsiveness
+            int actualIntervalMs = 2000; // 2 seconds
 
             _heartbeatTimer = new System.Threading.Timer(
                 callback: _ => SendHeartbeat(),
                 state: null,
-                dueTime: TimeSpan.FromSeconds(5), // First heartbeat after 5 seconds
-                period: TimeSpan.FromMilliseconds(intervalMs)
+                dueTime: TimeSpan.FromSeconds(2), // First update after 2 seconds
+                period: TimeSpan.FromMilliseconds(actualIntervalMs)
             );
 
-            LogInfo($"Heartbeat timer started with interval: {intervalMs}ms", "SignalR");
+            LogInfo($"Server status timer started with interval: {actualIntervalMs}ms (2 seconds for status updates with position)", "SignalR");
         }
 
         /// <summary>
-        /// Send a heartbeat message with system status and current position to all connected clients
+        /// Send a server status message with system status and current position to all connected clients
+        /// This provides periodic updates every 2 seconds with connection status and position data
         /// </summary>
         private static void SendHeartbeat()
         {
             if (_hubContext == null)
             {
-                LogDebug("Heartbeat skipped - hub context is null", "SignalR");
+                LogDebug("Server status update skipped - hub context is null", "SignalR");
                 return;
             }
 
@@ -243,7 +245,7 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
-                    LogDebug("Sending heartbeat...", "SignalR");
+                    LogDebug("Sending server status update...", "SignalR");
 
                     var isConnected = CNCConnectionManager.IsConnected;
 
@@ -270,29 +272,30 @@ namespace HavenCNCServer.Services
                         }
                     }
 
-                    var heartbeat = new
+                    var serverStatus = new
                     {
                         Timestamp = DateTime.UtcNow,
                         ServerTime = DateTime.Now,
                         IsConnected = isConnected,
                         Status = isConnected ? "Connected" : "Disconnected",
-                        MessageType = "Heartbeat",
-                        Position = position
+                        MessageType = "ServerStatus",
+                        Position = position,
+                        IsApiRestricted = ApiManager.IsApiRestricted
                     };
 
-                    // Broadcast heartbeat to all clients using standard message format
+                    // Send server status as a regular SignalR message via ReceiveCNCMessage
                     await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", new
                     {
-                        EventType = "Heartbeat",
+                        EventType = "ServerStatus",
                         Timestamp = DateTime.UtcNow,
-                        Data = heartbeat
+                        Data = serverStatus
                     });
 
-                    LogDebug($"Heartbeat sent - IsConnected={isConnected}, Position={position != null}", "SignalR");
+                    LogDebug($"Server status sent via ReceiveCNCMessage - IsConnected={isConnected}, Position={position != null}", "SignalR");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"Error sending heartbeat: {ex.Message}", "SignalR");
+                    LogError($"Error sending server status: {ex.Message}", "SignalR");
                 }
             });
         }

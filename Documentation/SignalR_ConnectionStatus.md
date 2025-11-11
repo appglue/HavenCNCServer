@@ -6,13 +6,21 @@ The HavenCNCServer automatically broadcasts CNC connection status changes to all
 
 Additionally, the server sends periodic heartbeat messages containing system status information to ensure clients know the server is alive and operational.
 
-## Heartbeat Event
+## ServerStatus Event (Heartbeat)
 
 ### Event Name
-`Heartbeat`
+`ServerStatus`
 
 ### When Triggered
-This event is broadcast periodically (default: every 30 seconds, configurable in `appsettings.json` via `HeartbeatIntervalMs`) to inform clients that the server is alive and provide current system status.
+This event is broadcast periodically every **2 seconds** to inform clients that the server is alive and provide current CNC connection status and machine position.
+
+### Purpose
+- **Keepalive**: Detect server disconnections quickly (2-second interval)
+- **Status**: Connected/disconnected status for CNC
+- **Position**: Current machine position snapshot
+- **Baseline updates**: Ensures position is updated even when machine is idle
+
+**Note:** DRO events provide higher-frequency position updates during movement (~10Hz).
 
 ### Message Format
 
@@ -211,29 +219,39 @@ This event is broadcast whenever:
 ### JavaScript/TypeScript Example
 
 ```javascript
-let lastHeartbeatTime = null;
+let lastStatusTime = null;
 
-// Subscribe to heartbeat messages
-connection.on("Heartbeat", (heartbeat) => {
-    console.log(`Server alive at: ${heartbeat.ServerTime}`);
-    console.log(`CNC Status: ${heartbeat.Status}`);
-    
-    lastHeartbeatTime = new Date(heartbeat.Timestamp);
-    
-    // Update UI with connection status
-    updateServerStatus("Server Connected");
-    updateCNCStatus(heartbeat.IsConnected);
-    
-    // Update position display if available
-    if (heartbeat.Position) {
-        console.log(`Position: X=${heartbeat.Position.X}, Y=${heartbeat.Position.Y}, Z=${heartbeat.Position.Z}, A=${heartbeat.Position.A}`);
-        updatePositionDisplay(heartbeat.Position);
-    } else {
-        clearPositionDisplay();
+// Subscribe to all CNC messages (including server status)
+connection.on("ReceiveCNCMessage", (message) => {
+    if (message.EventType === "ServerStatus") {
+        const status = message.Data;
+        console.log(`Server alive at: ${status.ServerTime}`);
+        console.log(`CNC Status: ${status.Status}`);
+        
+        lastStatusTime = new Date(message.Timestamp);
+        
+        // Update UI with connection status
+        updateServerStatus("Server Connected");
+        updateCNCStatus(status.IsConnected);
+        
+        // Update position display if available
+        if (status.Position) {
+            console.log(`Position: X=${status.Position.X}, Y=${status.Position.Y}, Z=${status.Position.Z}, A=${status.Position.A}`);
+            updatePositionDisplay(status.Position);
+        } else {
+            clearPositionDisplay();
+        }
+        
+        // Clear any "server disconnected" warnings
+        clearServerWarning();
     }
     
-    // Clear any "server disconnected" warnings
-    clearServerWarning();
+    if (message.EventType === "DROEvent") {
+        // High-frequency position updates during movement
+        const position = message.Data;
+        console.log(`Position: X=${position.Axis1}, Y=${position.Axis2}, Z=${position.Axis3}, A=${position.Axis4}`);
+        updatePositionDisplay(position);
+    }
 });
 
 // Subscribe to connection status changes
@@ -242,54 +260,58 @@ connection.on("ConnectionStatusChanged", (status) => {
     console.log(`Message: ${status.Message}`);
     console.log(`Connected: ${status.IsConnected}`);
     
-    // Update UI based on connection status
-    if (status.IsConnected) {
-        showConnectedIndicator();
-        enableCNCControls();
-    } else {
-        showDisconnectedIndicator();
-        disableCNCControls();
+// Monitor for missed status updates (optional)
+setInterval(() => {
+    if (lastStatusTime) {
+        const secondsSinceStatus = (Date.now() - lastStatusTime.getTime()) / 1000;
+        // Warn if no status update for 6 seconds (3x the 2-second interval)
+        if (secondsSinceStatus > 6) {
+            showServerWarning("No status update received - server may be disconnected");
+        }
+    }
+}, 1000); // Check every second
+```Interval(() => {
+    if (lastHeartbeatTime) {
+        const secondsSinceHeartbeat = (Date.now() - lastHeartbeatTime.getTime()) / 1000;
+        // Warn if no heartbeat for 6 seconds (3x the 2-second interval)
+        if (secondsSinceHeartbeat > 6) {
+// Subscribe to all CNC messages (including server status)
+hubConnection.On<CNCMessage>("ReceiveCNCMessage", message =>
+{
+    if (message.EventType == "ServerStatus")
+    {
+        var status = JsonSerializer.Deserialize<ServerStatus>(message.Data.ToString());
+        Console.WriteLine($"Server Time: {status.ServerTime}");
+        Console.WriteLine($"CNC Status: {status.Status}");
+        
+        // Update last status timestamp
+        LastStatusReceived = status.Timestamp;
+        
+        // Update UI
+        UpdateServerStatus("Server Connected");
+        UpdateCNCStatus(status.IsConnected);
+        
+        // Update position display if available
+        if (status.Position != null)
+        {
+            Console.WriteLine($"Position: X={status.Position.X}, Y={status.Position.Y}, Z={status.Position.Z}, A={status.Position.A}");
+            UpdatePositionDisplay(status.Position);
+        }
+        else
+        {
+            ClearPositionDisplay();
+        }
+    }
+});mestamp;
+        
+        // Update UI
+        UpdateServerStatus("Server Connected");
+        UpdateCNCStatus(heartbeat.IsConnected);
     }
 });
 
-// Monitor for missed heartbeats (optional)
-setInterval(() => {
-    if (lastHeartbeatTime) {
-        const secondsSinceHeartbeat = (Date.now() - lastHeartbeatTime.getTime()) / 1000;
-        // Warn if no heartbeat for 60 seconds (2x the default interval)
-        if (secondsSinceHeartbeat > 60) {
-            showServerWarning("No heartbeat received - server may be disconnected");
-        }
-    }
-}, 10000); // Check every 10 seconds
-```
-
-### C# Example
-
-```csharp
-// Subscribe to heartbeat messages
-hubConnection.On<Heartbeat>("Heartbeat", heartbeat =>
-{
-    Console.WriteLine($"Server Time: {heartbeat.ServerTime}");
-    Console.WriteLine($"CNC Status: {heartbeat.Status}");
-    
-    // Update last heartbeat timestamp
-    LastHeartbeatReceived = heartbeat.Timestamp;
-    
-    // Update UI
-    UpdateServerStatus("Server Connected");
-    UpdateCNCStatus(heartbeat.IsConnected);
-    
-    // Update position display if available
-    if (heartbeat.Position != null)
-    {
-        Console.WriteLine($"Position: X={heartbeat.Position.X}, Y={heartbeat.Position.Y}, Z={heartbeat.Position.Z}, A={heartbeat.Position.A}");
-        UpdatePositionDisplay(heartbeat.Position);
-    }
-    else
-    {
-        ClearPositionDisplay();
-    }
+// Position updates come through DRO events
+// (Handle separately via ReceiveCNCMessage) }
 });
 
 // Subscribe to connection status changes
@@ -298,13 +320,24 @@ hubConnection.On<ConnectionStatus>("ConnectionStatusChanged", status =>
     Console.WriteLine($"CNC Status: {status.Status}");
     Console.WriteLine($"Message: {status.Message}");
     
-    if (status.IsConnected)
-    {
-        // Enable CNC operations
-    }
-    else
-    {
-        // Disable CNC operations
+public class ServerStatus
+{
+    public DateTime Timestamp { get; set; }
+    public DateTime ServerTime { get; set; }
+    public bool IsConnected { get; set; }
+    public string Status { get; set; }
+    public string MessageType { get; set; }
+    public bool IsApiRestricted { get; set; }
+    public MachinePosition? Position { get; set; }
+}
+
+public class MachinePosition
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Z { get; set; }
+    public double A { get; set; }
+}       // Disable CNC operations
     }
 });
 
@@ -315,23 +348,13 @@ public class Heartbeat
     public bool IsConnected { get; set; }
     public string Status { get; set; }
     public string MessageType { get; set; }
-    public MachinePosition? Position { get; set; }
-}
-
-public class MachinePosition
+public class Heartbeat
 {
-    public double X { get; set; }
-    public double Y { get; set; }
-    public double Z { get; set; }
-    public double A { get; set; }
-}
-
-public class ConnectionStatus
-{
-    public bool IsConnected { get; set; }
-    public string Message { get; set; }
     public DateTime Timestamp { get; set; }
+    public DateTime ServerTime { get; set; }
+    public bool IsConnected { get; set; }
     public string Status { get; set; }
+}   public string Status { get; set; }
 }
 ```
 
@@ -379,12 +402,12 @@ The heartbeat interval can be configured in `appsettings.json`:
 }
 ```
 
-Default: 30000 milliseconds (30 seconds)
-
-## Technical Details
-
-### Implementation
-The connection status broadcasting is implemented in:
+### ServerStatus Flow
+1. `SignalRManager.StartHeartbeatTimer()` is called during setup
+2. Timer fires every 2 seconds (hardcoded for reliability)
+3. `SendHeartbeat()` retrieves current CNC connection status and position
+4. ServerStatus message is formatted and broadcast to all SignalR clients in the `CNCClients` group using `ReceiveCNCMessage` with `EventType = "ServerStatus"`
+5. All connected clients receive the status update with position data
 - **Connection Manager**: `CNCConnectionManager` (raises `ConnectionStatusChanged` event)
 - **SignalR Manager**: `SignalRManager` (subscribes to event, broadcasts to clients, and manages heartbeat timer)
 
@@ -406,4 +429,9 @@ The connection status broadcasting is implemented in:
 Connection status messages are sent to:
 - **CNCClients**: All clients subscribed to CNC events
 
-To receive these messages, clients must join the `CNCClients` group when connecting to the hub.
+### Heartbeat Flow
+1. `SignalRManager.StartHeartbeatTimer()` is called during setup
+2. Timer fires every 2 seconds (hardcoded for reliability)
+3. `SendHeartbeat()` retrieves current CNC connection status
+4. Heartbeat message is formatted and broadcast to all SignalR clients in the `CNCClients` group using the dedicated `"Heartbeat"` method
+5. All connected clients receive the `Heartbeat` event as a simple ping
