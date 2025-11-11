@@ -237,7 +237,6 @@ namespace HavenCNCServer.Services
         {
             if (_hubContext == null)
             {
-                LogDebug("Server status update skipped - hub context is null", "SignalR");
                 return;
             }
 
@@ -245,9 +244,30 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
-                    LogDebug("Sending server status update...", "SignalR");
 
                     var isConnected = CNCConnectionManager.IsConnected;
+
+                    // Check if API is restricted
+                    bool isApiRestricted = false;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                var result = cncPipe.state.IsAPIRestricted(out isApiRestricted);
+                                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    LogWarning($"Failed to check API restriction status: {result}", "SignalR");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
+                        }
+                    }
 
                     // Only try to get current position if connected
                     object? position = null;
@@ -280,7 +300,7 @@ namespace HavenCNCServer.Services
                         Status = isConnected ? "Connected" : "Disconnected",
                         MessageType = "ServerStatus",
                         Position = position,
-                        IsApiRestricted = ApiManager.IsApiRestricted
+                        IsApiRestricted = isApiRestricted
                     };
 
                     // Send server status as a regular SignalR message via ReceiveCNCMessage
@@ -290,8 +310,6 @@ namespace HavenCNCServer.Services
                         Timestamp = DateTime.UtcNow,
                         Data = serverStatus
                     });
-
-                    LogDebug($"Server status sent via ReceiveCNCMessage - IsConnected={isConnected}, Position={position != null}", "SignalR");
                 }
                 catch (Exception ex)
                 {

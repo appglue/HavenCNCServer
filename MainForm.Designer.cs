@@ -35,6 +35,8 @@ namespace HavenCNCServer
             this.btnGCodeTest = new System.Windows.Forms.Button();
             this.btnAlwaysOnTop = new System.Windows.Forms.Button();
             this.btnShowUI = new System.Windows.Forms.Button();
+            this.btnViewLogs = new System.Windows.Forms.Button();
+            this.contextMenuLogs = new System.Windows.Forms.ContextMenuStrip();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -134,6 +136,21 @@ namespace HavenCNCServer
             this.btnShowUI.UseVisualStyleBackColor = true;
             this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
             // 
+            // btnViewLogs
+            // 
+            this.btnViewLogs.Location = new System.Drawing.Point(530, 70);
+            this.btnViewLogs.Name = "btnViewLogs";
+            this.btnViewLogs.Size = new System.Drawing.Size(100, 30);
+            this.btnViewLogs.TabIndex = 13;
+            this.btnViewLogs.Text = "View Logs ▼";
+            this.btnViewLogs.UseVisualStyleBackColor = true;
+            this.btnViewLogs.Click += new System.EventHandler(this.btnViewLogs_Click);
+            // 
+            // contextMenuLogs
+            // 
+            this.contextMenuLogs.Name = "contextMenuLogs";
+            this.contextMenuLogs.Size = new System.Drawing.Size(181, 26);
+            // 
             // webView
             // 
             this.webView.AllowExternalDrop = true;
@@ -159,6 +176,7 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnGCodeTest);
             this.pnlControls.Controls.Add(this.btnAlwaysOnTop);
             this.pnlControls.Controls.Add(this.btnShowUI);
+            this.pnlControls.Controls.Add(this.btnViewLogs);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1380, 120);
@@ -330,6 +348,8 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnGCodeTest;
         private System.Windows.Forms.Button btnAlwaysOnTop;
         private System.Windows.Forms.Button btnShowUI;
+        private System.Windows.Forms.Button btnViewLogs;
+        private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.TabControl tabControl;

@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,6 +63,9 @@ namespace HavenCNCServer
                 LogSuccess($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}", "Settings");
                 LogInfo($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}", "Settings");
                 LogInfo($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}", "Settings");
+
+                // Initialize MachinePositionService to listen for DRO events
+                MachinePositionService.Initialize();
 
                 // Subscribe to CNC connection status changes
                 CNCConnectionManager.ConnectionStatusChanged += OnCNCConnectionStatusChanged;
@@ -558,6 +562,161 @@ namespace HavenCNCServer
                 var errorMessage = $"Error opening G-Code Test Dialog: {ex.Message}";
                 LogError(errorMessage, "UI");
                 MessageBox.Show(errorMessage, "Dialog Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Show dropdown menu with available log files
+        /// </summary>
+        private void btnViewLogs_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Clear existing items
+                contextMenuLogs.Items.Clear();
+
+                // Get log directories
+                var mainLogDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
+                var jobListenerLogDir = SettingsManager.Settings.Files.JobListenerLogsDirectory;
+
+                // Make job listener log dir absolute if relative
+                if (!Path.IsPathRooted(jobListenerLogDir))
+                {
+                    jobListenerLogDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, jobListenerLogDir);
+                }
+
+                // Create directories if they don't exist
+                Directory.CreateDirectory(mainLogDir);
+                Directory.CreateDirectory(jobListenerLogDir);
+
+                var hasFiles = false;
+
+                // Add Job Listener logs
+                if (Directory.Exists(jobListenerLogDir))
+                {
+                    var jobListenerFiles = Directory.GetFiles(jobListenerLogDir, "JobListener_*.log")
+                        .OrderByDescending(f => new FileInfo(f).LastWriteTime)
+                        .Take(10)
+                        .ToArray();
+
+                    if (jobListenerFiles.Length > 0)
+                    {
+                        var headerItem = new ToolStripMenuItem("📋 Job Listener Logs") { Enabled = false };
+                        contextMenuLogs.Items.Add(headerItem);
+
+                        foreach (var logFile in jobListenerFiles)
+                        {
+                            var fileInfo = new FileInfo(logFile);
+                            var fileName = fileInfo.Name;
+                            var fileSize = fileInfo.Length / 1024; // KB
+                            var lastModified = fileInfo.LastWriteTime;
+
+                            var menuItem = new ToolStripMenuItem($"  {fileName} ({fileSize:N0} KB) - {lastModified:HH:mm:ss}");
+                            menuItem.Tag = logFile;
+                            menuItem.Click += LogFileMenuItem_Click;
+                            contextMenuLogs.Items.Add(menuItem);
+                        }
+
+                        hasFiles = true;
+                    }
+                }
+
+                // Add separator if we have job listener logs
+                if (hasFiles)
+                {
+                    contextMenuLogs.Items.Add(new ToolStripSeparator());
+                }
+
+                // Add other log files from temp directory
+                if (Directory.Exists(mainLogDir))
+                {
+                    var otherLogFiles = Directory.GetFiles(mainLogDir, "*.log")
+                        .Where(f => !f.Contains("JobListener_"))
+                        .OrderByDescending(f => new FileInfo(f).LastWriteTime)
+                        .Take(10)
+                        .ToArray();
+
+                    if (otherLogFiles.Length > 0)
+                    {
+                        var headerItem = new ToolStripMenuItem("📄 Other Logs") { Enabled = false };
+                        contextMenuLogs.Items.Add(headerItem);
+
+                        foreach (var logFile in otherLogFiles)
+                        {
+                            var fileInfo = new FileInfo(logFile);
+                            var fileName = fileInfo.Name;
+                            var fileSize = fileInfo.Length / 1024; // KB
+                            var lastModified = fileInfo.LastWriteTime;
+
+                            var menuItem = new ToolStripMenuItem($"  {fileName} ({fileSize:N0} KB) - {lastModified:HH:mm:ss}");
+                            menuItem.Tag = logFile;
+                            menuItem.Click += LogFileMenuItem_Click;
+                            contextMenuLogs.Items.Add(menuItem);
+                        }
+
+                        hasFiles = true;
+                    }
+                }
+
+                // Add "Open Log Folder" option
+                if (hasFiles)
+                {
+                    contextMenuLogs.Items.Add(new ToolStripSeparator());
+                }
+
+                var openFolderItem = new ToolStripMenuItem("📁 Open Log Folder");
+                openFolderItem.Click += (s, ev) =>
+                {
+                    try
+                    {
+                        Process.Start("explorer.exe", jobListenerLogDir);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to open folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+                contextMenuLogs.Items.Add(openFolderItem);
+
+                if (!hasFiles)
+                {
+                    contextMenuLogs.Items.Add(new ToolStripMenuItem("No log files found") { Enabled = false });
+                }
+
+                // Show the menu below the button
+                contextMenuLogs.Show(btnViewLogs, new Point(0, btnViewLogs.Height));
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error showing log files menu: {ex.Message}", "UI");
+                MessageBox.Show($"Failed to show log files: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Open a log file in a viewer window
+        /// </summary>
+        private void LogFileMenuItem_Click(object? sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem menuItem && menuItem.Tag is string logFilePath)
+            {
+                try
+                {
+                    if (File.Exists(logFilePath))
+                    {
+                        // Open in notepad
+                        Process.Start("notepad.exe", logFilePath);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Log file not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Failed to open log file: {ex.Message}", "UI");
+                    MessageBox.Show($"Failed to open log file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

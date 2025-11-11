@@ -11,11 +11,45 @@ namespace HavenCNCServer.Services
     /// </summary>
     public static class MachinePositionService
     {
-        private static MachinePoint? _cachedPosition = null;
+        private static MachinePoint? _lastPosition = null;
         private static readonly object _lock = new object();
+        private static bool _isListenerRegistered = false;
 
         /// <summary>
-        /// Get current machine position. Returns cached position from DRO events if available,
+        /// Initialize the service and register as event listener
+        /// </summary>
+        public static void Initialize()
+        {
+            lock (_lock)
+            {
+                if (!_isListenerRegistered)
+                {
+                    CNCJobInfoListener.AddListener(new MachinePositionListener());
+                    _isListenerRegistered = true;
+                    LogDebug("MachinePositionService listener registered", "MachinePositionService");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update position from DRO event (called by listener)
+        /// </summary>
+        internal static void UpdateFromDRO(DROEvent droEvent)
+        {
+            lock (_lock)
+            {
+                _lastPosition = new MachinePoint
+                {
+                    X = droEvent.Axis1,
+                    Y = droEvent.Axis2,
+                    Z = droEvent.Axis3,
+                    A = droEvent.Axis4
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get current machine position. Returns last known position from DRO events if available,
         /// otherwise fetches directly from CNC API
         /// </summary>
         /// <returns>Current machine position</returns>
@@ -23,31 +57,16 @@ namespace HavenCNCServer.Services
         {
             lock (_lock)
             {
-                // Return cached position if available (from previous DRO events or API fetch)
-                if (_cachedPosition != null)
+                // Return last known position from DRO events (most common case)
+                if (_lastPosition != null)
                 {
-                    return new MachinePoint(_cachedPosition.X, _cachedPosition.Y, _cachedPosition.Z, _cachedPosition.A);
+                    return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                 }
 
-                // No cached position yet - try to get from recent DRO events
-                var recentDroEvents = CNCJobInfoListener.GetRecentMessagesByType<DROEvent>(5000);
-                if (recentDroEvents.Count > 0)
-                {
-                    var latestDro = (DROEvent)recentDroEvents[0].Event;
-                    _cachedPosition = new MachinePoint
-                    {
-                        X = latestDro.Axis1,
-                        Y = latestDro.Axis2,
-                        Z = latestDro.Axis3,
-                        A = latestDro.Axis4
-                    };
-                    return new MachinePoint(_cachedPosition.X, _cachedPosition.Y, _cachedPosition.Z, _cachedPosition.A);
-                }
-
-                // No cache and no recent events - fetch from API
+                // No position yet - fetch from API (only happens on first call before any DRO events)
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
-                    throw new InvalidOperationException("CNC connection not available and no cached position");
+                    throw new InvalidOperationException("CNC connection not available and no position data");
 
                 try
                 {
@@ -88,10 +107,10 @@ namespace HavenCNCServer.Services
 
                     var position = new MachinePoint(x, y, z, a);
 
-                    // Cache the position for future calls
-                    _cachedPosition = position;
+                    // Store as last known position
+                    _lastPosition = position;
 
-                    LogDebug($"Fetched machine position from API: {position}", "MachinePositionService");
+                    LogDebug($"Fetched initial machine position from API: {position}", "MachinePositionService");
 
                     return position;
                 }
@@ -110,7 +129,21 @@ namespace HavenCNCServer.Services
         {
             lock (_lock)
             {
-                _cachedPosition = null;
+                _lastPosition = null;
+            }
+        }
+
+        /// <summary>
+        /// Internal listener class that updates position cache from DRO events
+        /// </summary>
+        private class MachinePositionListener : ICNCEventListener
+        {
+            public void EventReceived(ICentroidEvent centroidEvent)
+            {
+                if (centroidEvent is DROEvent droEvent)
+                {
+                    UpdateFromDRO(droEvent);
+                }
             }
         }
     }

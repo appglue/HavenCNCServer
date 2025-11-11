@@ -1062,8 +1062,8 @@ namespace HavenCNCServer.Centroid.Events
                     LogToFile($"  Message: {jobInfo.Message}");
 
                 // Always log all properties for debugging (only for non-duplicates)
-                // LogToFile($"  --- All Properties/Fields ---");
-                // LogAllPacketPropertiesToFile(packet);
+                LogToFile($"  --- All Properties/Fields ---");
+                LogAllPacketPropertiesToFile(packet);
                 LogToFile($""); // Empty line for readability
 
                 // Fire the event for any subscribers
@@ -1208,6 +1208,95 @@ namespace HavenCNCServer.Centroid.Events
             {
                 return $"HASH_ERROR:{ex.Message}";
             }
+        }
+
+        /// <summary>
+        /// Log all properties and fields of a CommPacket to file
+        /// </summary>
+        private static void LogAllPacketPropertiesToFile(CNCPipe.InboundComm.CommPacket packet)
+        {
+            try
+            {
+                var packetType = packet.GetType();
+
+                // Log all properties
+                var properties = packetType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var prop in properties.OrderBy(p => p.Name))
+                {
+                    try
+                    {
+                        if (prop.CanRead)
+                        {
+                            var value = prop.GetValue(packet);
+                            var valueStr = FormatPacketValue(value);
+                            LogToFile($"    {prop.Name} ({prop.PropertyType.Name}): {valueStr}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogToFile($"    {prop.Name}: ERROR - {ex.Message}");
+                    }
+                }
+
+                // Log all fields
+                var fields = packetType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var field in fields.OrderBy(f => f.Name))
+                {
+                    try
+                    {
+                        var value = field.GetValue(packet);
+                        var valueStr = FormatPacketValue(value);
+                        LogToFile($"    {field.Name} ({field.FieldType.Name}): {valueStr}");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogToFile($"    {field.Name}: ERROR - {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogToFile($"  ERROR logging packet properties: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Format a packet value for logging
+        /// </summary>
+        private static string FormatPacketValue(object? value)
+        {
+            if (value == null)
+                return "NULL";
+
+            if (value.GetType().IsArray)
+            {
+                var array = (Array)value;
+                var items = new List<string>();
+                for (int i = 0; i < Math.Min(array.Length, 20); i++) // Limit to first 20 items
+                {
+                    var element = array.GetValue(i);
+                    items.Add(element?.ToString() ?? "NULL");
+                }
+                var result = $"[{string.Join(", ", items)}]";
+                if (array.Length > 20)
+                    result += $" ... ({array.Length} items total)";
+                return result;
+            }
+
+            if (value is System.Collections.IEnumerable enumerable && !(value is string))
+            {
+                var items = new List<string>();
+                int count = 0;
+                foreach (var item in enumerable)
+                {
+                    if (count >= 20) break; // Limit to first 20 items
+                    items.Add(item?.ToString() ?? "NULL");
+                    count++;
+                }
+                return $"[{string.Join(", ", items)}]" + (count >= 20 ? " ..." : "");
+            }
+
+            return value.ToString() ?? "NULL";
         }
 
         /// <summary>
