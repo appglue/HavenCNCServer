@@ -383,19 +383,49 @@ namespace HavenCNCServer.Centroid
 
                 if (isAcorn || isProRouter)
                 {
-                    cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
-                    expansionCount = devices?.Count ?? 0;
-                    LogInfo($"Detected {expansionCount} Ether1616 expansion boards", "CNCUtils");
+                    var result = cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
+                    if (result == CNCPipe.ReturnCode.SUCCESS && devices != null)
+                    {
+                        expansionCount = devices.Count;
+                        LogInfo($"Detected {expansionCount} Ether1616 expansion boards (devices: {devices.Count})", "CNCUtils");
+
+                        // Log device details for debugging
+                        for (int i = 0; i < devices.Count; i++)
+                        {
+                            var device = devices[i];
+                            LogInfo($"  Ether1616 Board {i}: DeviceNumber={device.DeviceNumber}, IP={device.IP}", "CNCUtils");
+                        }
+                    }
+                    else
+                    {
+                        LogWarning($"GetEther1616DeviceInfo failed: {result}, devices null: {devices == null}", "CNCUtils");
+                    }
                 }
                 else if (isAcornSix)
                 {
-                    cncPipe.system.GetPLCEXP1616NumberofDevices(out expansionCount);
-                    LogInfo($"Detected {expansionCount} PLCEXP1616 expansion boards", "CNCUtils");
+                    var result = cncPipe.system.GetPLCEXP1616NumberofDevices(out expansionCount);
+                    if (result == CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        LogInfo($"Detected {expansionCount} PLCEXP1616 expansion boards", "CNCUtils");
+                    }
+                    else
+                    {
+                        LogWarning($"GetPLCEXP1616NumberofDevices failed: {result}", "CNCUtils");
+                        expansionCount = 0;
+                    }
                 }
                 else if (isHickory)
                 {
-                    cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
-                    LogInfo($"Detected {expansionCount} ECAT1616 expansion boards", "CNCUtils");
+                    var result = cncPipe.system.GetECAT1616NumberOfDevices(out expansionCount);
+                    if (result == CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        LogInfo($"Detected {expansionCount} ECAT1616 expansion boards", "CNCUtils");
+                    }
+                    else
+                    {
+                        LogWarning($"GetECAT1616NumberOfDevices failed: {result}", "CNCUtils");
+                        expansionCount = 0;
+                    }
                 }
 
                 // Add expansion board I/O (typically one board = 65-80)

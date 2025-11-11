@@ -141,7 +141,7 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Heartbeat interval in milliseconds for SignalR status broadcasts
         /// </summary>
-        public int HeartbeatIntervalMs { get; set; } = 30000;
+        public int HeartbeatIntervalMs { get; set; } = 2000;
 
         /// <summary>
         /// CNC server executable settings

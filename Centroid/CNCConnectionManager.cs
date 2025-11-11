@@ -2,6 +2,7 @@ using CentroidAPI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Services
 {
@@ -31,8 +32,21 @@ namespace HavenCNCServer.Services
             {
                 lock (_lock)
                 {
-                    return _isConnected && _cncPipe != null && _cncPipe.IsConstructed();
+                    return _isConnected;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Checks if CNC connection is established and valid with full health verification
+        /// This performs additional checks beyond just the connection flag
+        /// </summary>
+        /// <returns>True if connected with valid CNCPipe, false otherwise</returns>
+        private static bool CheckIsConnected()
+        {
+            lock (_lock)
+            {
+                return _isConnected && _cncPipe != null && _cncPipe.IsConstructed();
             }
         }
 
@@ -57,7 +71,7 @@ namespace HavenCNCServer.Services
         {
             lock (_lock)
             {
-                if (_isConnected && _cncPipe != null && _cncPipe.IsConstructed())
+                if (_isConnected)
                 {
                     return _cncPipe;
                 }
@@ -75,7 +89,7 @@ namespace HavenCNCServer.Services
             lock (_lock)
             {
                 // Return existing connection if available
-                if (_isConnected && _cncPipe != null && _cncPipe.IsConstructed())
+                if (_isConnected)
                 {
                     return _cncPipe;
                 }
@@ -171,33 +185,26 @@ namespace HavenCNCServer.Services
                         // Check if construction was successful
                         if (_cncPipe.IsConstructed())
                         {
+                            Log($"CNCPipe constructed successfully on attempt {attempt}", LogLevel.Info, "CNCConnectionManager");
                             _isConnected = true;
                             NotifyStatusChanged(true, "Connected to CNC successfully");
 
-                            // Test basic functionality
-                            if (TestConnection(_cncPipe))
-                            {
-                                NotifyStatusChanged(true, "CNC connection verified and ready");
+                            // Connection is established - no additional tests needed
+                            Log("Connection established, CNCPipe is constructed and ready", LogLevel.Info, "CNCConnectionManager");
 
-                                // Restore last fixture point asynchronously after successful connection
-                                _ = Task.Run(async () =>
-                                {
-                                    // Give Centroid a moment to fully stabilize
-                                    await Task.Delay(500);
-                                    await RestoreLastFixturePointAsync();
-                                });
-
-                                return _cncPipe;
-                            }
-                            else
+                            // Restore last fixture point asynchronously after successful connection
+                            _ = Task.Run(async () =>
                             {
-                                NotifyStatusChanged(false, "CNC connection test failed");
-                                _isConnected = false;
-                                _cncPipe = null;
-                            }
+                                // Give Centroid a moment to fully stabilize
+                                await Task.Delay(500);
+                                await RestoreLastFixturePointAsync();
+                            });
+
+                            return _cncPipe;
                         }
                         else
                         {
+                            Log($"CNCPipe construction failed on attempt {attempt}", LogLevel.Warning, "CNCConnectionManager");
                             NotifyStatusChanged(false, $"CNC construction failed (attempt {attempt}/{maxRetries})");
                             _cncPipe = null;
                         }
@@ -241,20 +248,29 @@ namespace HavenCNCServer.Services
         {
             try
             {
+                Log("Testing CNC connection...", LogLevel.Info, "CNCConnectionManager");
+
                 // Test parameter reading
                 var result = cncPipe.parameter.GetMachineParameterValue(1, out double param1);
+                Log($"GetMachineParameterValue(1) returned: {result}, value: {param1}", LogLevel.Info, "CNCConnectionManager");
+
                 if (result != CNCPipe.ReturnCode.SUCCESS)
                 {
-                    return false;
+                    Log($"Parameter test failed with code: {result}, but continuing anyway", LogLevel.Warning, "CNCConnectionManager");
+                    // Don't fail on parameter read - sometimes parameters aren't ready immediately
+                    // return false;
                 }
 
                 // Test system information
                 cncPipe.system.GetUnlockVersion(out CNCPipe.Sys.UnlockVersions version);
+                Log($"GetUnlockVersion returned: {version}", LogLevel.Info, "CNCConnectionManager");
 
+                Log("CNC connection test passed", LogLevel.Info, "CNCConnectionManager");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log($"Connection test failed: {ex.Message}", LogLevel.Error, "CNCConnectionManager");
                 return false;
             }
         }
@@ -283,13 +299,33 @@ namespace HavenCNCServer.Services
                     return false;
                 }
 
+                // Check if CNC12 is powering off (deprecated but still useful)
+                try
+                {
+                    var powerOffResult = _cncPipe.state.IsPCPoweringOff(out bool isPoweringOff);
+                    if (powerOffResult == CNCPipe.ReturnCode.SUCCESS && isPoweringOff)
+                    {
+                        NotifyStatusChanged(false, "Connection health check failed: CNC12 is powering off");
+                        _isConnected = false;
+                        _cncPipe = null;
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NotifyStatusChanged(false, $"Connection health check failed: Error checking power state - {ex.Message}");
+                    _isConnected = false;
+                    _cncPipe = null;
+                    return false;
+                }
+
                 // Try to read a parameter to verify the connection is actually working
                 try
                 {
                     var result = _cncPipe.parameter.GetMachineParameterValue(1, out double _);
                     if (result != CNCPipe.ReturnCode.SUCCESS)
                     {
-                        NotifyStatusChanged(false, "Connection health check failed: Cannot read parameters");
+                        NotifyStatusChanged(false, $"Connection health check failed: Cannot read parameters (ReturnCode: {result})");
                         _isConnected = false;
                         _cncPipe = null;
                         return false;

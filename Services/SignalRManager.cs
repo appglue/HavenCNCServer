@@ -263,6 +263,7 @@ namespace HavenCNCServer.Services
         {
             if (_hubContext == null)
             {
+                LogDebug("Heartbeat skipped - hub context is null", "SignalR");
                 return;
             }
 
@@ -270,6 +271,8 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
+                    LogDebug("Sending heartbeat...", "SignalR");
+
                     var isConnected = CNCConnectionManager.IsConnected;
 
                     // Only try to get current position if connected
@@ -307,6 +310,8 @@ namespace HavenCNCServer.Services
 
                     // Broadcast heartbeat to all clients
                     await _hubContext.Clients.Group("CNCClients").SendAsync("Heartbeat", heartbeat);
+
+                    LogDebug($"Heartbeat sent - IsConnected={isConnected}, Position={position != null}", "SignalR");
                 }
                 catch (Exception ex)
                 {

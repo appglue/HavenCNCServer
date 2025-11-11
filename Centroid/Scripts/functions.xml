@@ -3159,7 +3159,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
-    <IsCustom>true</IsCustom>
+    <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
     <Hidden>false</Hidden>
@@ -3183,7 +3183,7 @@ Typically used with Hall Effect sensors (Note: cannot be used for threading. Thr
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
-    <IsCustom>true</IsCustom>
+    <IsCustom>false</IsCustom>
     <Safety>false</Safety>
     <IsATC>false</IsATC>
     <Hidden>false</Hidden>

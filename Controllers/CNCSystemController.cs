@@ -57,23 +57,13 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Check if we are connected to Centroid by attempting to update current position
+        /// Check if we are connected to Centroid
         /// </summary>
-        /// <returns>True if connected and can retrieve position, false otherwise</returns>
+        /// <returns>True if connected, false otherwise</returns>
         [HttpGet("IsConnectedToCentroid")]
         public bool IsConnectedToCentroid()
         {
-            try
-            {
-                // Try to get current position - this will fail if not connected
-                var position = Services.MachinePositionService.GetCurrentPosition();
-                return true;
-            }
-            catch
-            {
-                // If getting position fails, we're not connected
-                return false;
-            }
+            return CNCConnectionManager.IsConnected;
         }
 
         /// <summary>

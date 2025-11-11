@@ -22,6 +22,7 @@ namespace HavenCNCServer.Centroid.Events
         private static System.Action<ICentroidEvent>? _pendingNotifyAction = null;
         private static bool _isTimerActive = false;
         private const int ThrottleIntervalMs = 100;
+        private const bool EnableThrottling = false; // Set to true to re-enable throttling
 
         /// <summary>
         /// Timestamp when the DRO update occurred
@@ -161,69 +162,68 @@ namespace HavenCNCServer.Centroid.Events
                     // Check if connection is healthy - this will automatically disconnect if not working
                     bool isHealthy = CNCConnectionManager.VerifyConnectionHealth();
                     LogWarning($"⚠️ LARGE DRO! Axis{largeValueAxis}={maxAbsValue:F0} ConnectionHealthy={isHealthy}", "DROEvent");
-                    // Create DRO event for position change
-                    var droEvent = new DROEvent
+
+                    if (!isHealthy)
                     {
-                        Timestamp = DateTime.Now,
-                        Axis1 = positions.Length > 0 ? positions[0] : 0.0,
-                        Axis2 = positions.Length > 1 ? positions[1] : 0.0,
-                        Axis3 = positions.Length > 2 ? positions[2] : 0.0,
-                        Axis4 = positions.Length > 3 ? positions[3] : 0.0,
-                        Axis5 = positions.Length > 4 ? positions[4] : 0.0,
-                        Axis6 = positions.Length > 5 ? positions[5] : 0.0,
-                        Axis7 = positions.Length > 6 ? positions[6] : 0.0,
-                        Axis8 = positions.Length > 7 ? positions[7] : 0.0,
-                        Message = $"DRO positions updated: {string.Join(", ", positions.Select(p => p.ToString("F4")))}"
-                    };
-                    // Store the DRO event in message history
-                    storeMessage(droEvent, "DRO_UPDATE");
-
-                    // Throttle listener notifications to avoid flooding the frontend
-                    // Send at most one event every 100ms - always use the latest event
-                    ThrottledNotifyListeners(droEvent, notifyListeners);
-
-                    return (false, droEvent); // Don't skip logging - positions have changed
-                    return (false, droEvent); // Don't skip logging - positions have changed
-                                              // Store the DRO event in message history
-                    storeMessage(droEvent, "DRO_UPDATE");
-
-                    // Notify listeners
-                    notifyListeners(droEvent);
-
-                    return (false, droEvent); // Don't skip logging - positions have changed
+                        LogWarning($"🔌 Connection health check failed during large DRO value - connection has been automatically disconnected", "DROEvent");
+                    }
                 }
 
-                return (false, null); // Don't skip logging but no event created
+                // Create DRO event for position change
+                var droEvent = new DROEvent
+                {
+                    Timestamp = DateTime.Now,
+                    Axis1 = positions.Length > 0 ? positions[0] : 0.0,
+                    Axis2 = positions.Length > 1 ? positions[1] : 0.0,
+                    Axis3 = positions.Length > 2 ? positions[2] : 0.0,
+                    Axis4 = positions.Length > 3 ? positions[3] : 0.0,
+                    Axis5 = positions.Length > 4 ? positions[4] : 0.0,
+                    Axis6 = positions.Length > 5 ? positions[5] : 0.0,
+                    Axis7 = positions.Length > 6 ? positions[6] : 0.0,
+                    Axis8 = positions.Length > 7 ? positions[7] : 0.0,
+                    Message = $"DRO positions updated: {string.Join(", ", positions.Select(p => p.ToString("F4")))}"
+                };
+
+                // Store the DRO event in message history
+                storeMessage(droEvent, "DRO_UPDATE");
+
+                // Throttle listener notifications to avoid flooding the frontend
+                // Send at most one event every 100ms - always use the latest event
+                if (EnableThrottling)
+                {
+                    ThrottledNotifyListeners(droEvent, notifyListeners);
+                }
+                else
+                {
+                    // Throttling disabled - send every event immediately
+                    notifyListeners(droEvent);
+                }
+
+                return (false, droEvent); // Don't skip logging - positions have changed
             }
+
+            return (false, null); // Don't skip logging but no event created
+        }
+
         /// <summary>
         /// Throttled notification to listeners - sends at most one event every 100ms
         /// Always sends the most recent event received during that interval
+        /// Timer runs continuously once started
         /// </summary>
         private static void ThrottledNotifyListeners(DROEvent droEvent, System.Action<ICentroidEvent> notifyListeners)
         {
             lock (_throttleLock)
             {
-                // Always store the latest event
+                // Always store the latest event - this will be sent on next timer tick
                 _pendingDroEvent = droEvent;
                 _pendingNotifyAction = notifyListeners;
 
-                // If timer is not active, start it and send immediately
+                // If timer is not active, start it
                 if (!_isTimerActive)
                 {
                     _isTimerActive = true;
 
-                    // Send the first event immediately
-                    try
-                    {
-                        notifyListeners(droEvent);
-                        _pendingDroEvent = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error in throttled DRO notification: {ex.Message}", "DROEvent");
-                    }
-
-                    // Start timer for subsequent events
+                    // Start timer - first event will be sent on first timer tick (within 100ms)
                     if (_throttleTimer == null)
                     {
                         _throttleTimer = new System.Threading.Timer(OnThrottleTimerElapsed, null, ThrottleIntervalMs, ThrottleIntervalMs);
@@ -239,6 +239,7 @@ namespace HavenCNCServer.Centroid.Events
 
         /// <summary>
         /// Called every 100ms - sends the most recent DRO event if one is pending
+        /// Timer continues to run to provide heartbeat functionality
         /// </summary>
         private static void OnThrottleTimerElapsed(object? state)
         {
@@ -249,6 +250,28 @@ namespace HavenCNCServer.Centroid.Events
             {
                 eventToSend = _pendingDroEvent;
                 actionToCall = _pendingNotifyAction;
+
+                // Clear the pending event after capturing it
+                // Note: We keep the timer running for heartbeat even if no event pending
+                if (eventToSend != null)
+                {
+                    _pendingDroEvent = null;
+                }
+            }
+
+            // Send the event outside the lock to avoid blocking
+            if (eventToSend != null && actionToCall != null)
+            {
+                try
+                {
+                    actionToCall(eventToSend);
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error in throttled DRO notification: {ex.Message}", "DROEvent");
+                }
+            }
+        }
 
         /// <summary>
         /// Reset static tracking data (used when listener stops)
@@ -267,34 +290,6 @@ namespace HavenCNCServer.Centroid.Events
                 _pendingDroEvent = null;
                 _pendingNotifyAction = null;
             }
-        }       {
-                    actionToCall(eventToSend);
-    }
-                catch (Exception ex)
-                {
-                    LogError($"Error in throttled DRO notification: {ex.Message}", "DROEvent");
-}
-            }
-        }
-
-        /// <summary>
-        /// Reset static tracking data (used when listener stops)
-        /// </summary>
-        public static void ResetTracking()
-{
-    _lastDroPositions = null;
-    _droSamePositionSkipCount = 0;
-
-    // Clean up debounce timer
-    lock (_debounceLock)
-    {
-        _debounceTimer?.Dispose();
-        _debounceTimer = null;
-        _pendingDroEvent = null;
-        _pendingNotifyAction = null;
-    }
-}
-_droSamePositionSkipCount = 0;
         }
 
         /// <summary>
@@ -302,68 +297,68 @@ _droSamePositionSkipCount = 0;
         /// </summary>
         /// <returns>The event itself for complete data transmission</returns>
         public object ToSignalRData()
-{
-    return this;
-}
-
-/// <summary>
-/// Safely get a property value from the CommPacket using reflection
-/// </summary>
-private static T GetPacketProperty<T>(CNCPipe.InboundComm.CommPacket packet, string propertyName, T defaultValue)
-{
-    try
-    {
-        var packetType = packet.GetType();
-        var property = packetType.GetProperty(propertyName);
-
-        if (property != null && property.CanRead)
         {
-            var value = property.GetValue(packet);
-            if (value is T typedValue)
-                return typedValue;
-
-            // Try to convert the value if it's not the exact type
-            if (value != null)
-            {
-                try
-                {
-                    return (T)Convert.ChangeType(value, typeof(T));
-                }
-                catch
-                {
-                    // Conversion failed, return default
-                }
-            }
+            return this;
         }
 
-        // Also try fields if property not found
-        var field = packetType.GetField(propertyName);
-        if (field != null)
+        /// <summary>
+        /// Safely get a property value from the CommPacket using reflection
+        /// </summary>
+        private static T GetPacketProperty<T>(CNCPipe.InboundComm.CommPacket packet, string propertyName, T defaultValue)
         {
-            var value = field.GetValue(packet);
-            if (value is T typedValue)
-                return typedValue;
-
-            if (value != null)
+            try
             {
-                try
+                var packetType = packet.GetType();
+                var property = packetType.GetProperty(propertyName);
+
+                if (property != null && property.CanRead)
                 {
-                    return (T)Convert.ChangeType(value, typeof(T));
+                    var value = property.GetValue(packet);
+                    if (value is T typedValue)
+                        return typedValue;
+
+                    // Try to convert the value if it's not the exact type
+                    if (value != null)
+                    {
+                        try
+                        {
+                            return (T)Convert.ChangeType(value, typeof(T));
+                        }
+                        catch
+                        {
+                            // Conversion failed, return default
+                        }
+                    }
                 }
-                catch
+
+                // Also try fields if property not found
+                var field = packetType.GetField(propertyName);
+                if (field != null)
                 {
-                    // Conversion failed, return default
+                    var value = field.GetValue(packet);
+                    if (value is T typedValue)
+                        return typedValue;
+
+                    if (value != null)
+                    {
+                        try
+                        {
+                            return (T)Convert.ChangeType(value, typeof(T));
+                        }
+                        catch
+                        {
+                            // Conversion failed, return default
+                        }
+                    }
                 }
+
+                return defaultValue;
+            }
+            catch (Exception ex)
+            {
+                LogDebug($"Error getting packet property '{propertyName}': {ex.Message}", "DROEvent");
+                return defaultValue;
             }
         }
-
-        return defaultValue;
-    }
-    catch (Exception ex)
-    {
-        LogDebug($"Error getting packet property '{propertyName}': {ex.Message}", "DROEvent");
-        return defaultValue;
-    }
-}
     }
 }

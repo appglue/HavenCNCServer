@@ -823,6 +823,39 @@ namespace HavenCNCServer.Centroid.Events
 
             if (isShuttingDown) LogToFile($"    IsShuttingDown: {isShuttingDown}");
             if (shutdown) LogToFile($"    Shutdown: {shutdown}");
+
+            // If CNC12 is shutting down, reset connection state and trigger reconnection
+            if (flag || isShuttingDown || shutdown)
+            {
+                LogWarning($"🔴 {shutdownType} is shutting down - resetting connection state", "CNCJobInfo");
+
+                // Disconnect - this will automatically trigger SignalR notification via ConnectionStatusChanged event
+                CNCConnectionManager.Disconnect();
+
+                // Attempt to reconnect after a delay
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(2000); // Wait 2 seconds before attempting reconnection
+                    LogInfo($"🔄 Attempting to reconnect after {shutdownType} shutdown...", "CNCJobInfo");
+
+                    try
+                    {
+                        var connected = await CNCConnectionManager.ConnectAsync();
+                        if (connected)
+                        {
+                            LogSuccess($"✅ Reconnected to CNC after {shutdownType} shutdown", "CNCJobInfo");
+                        }
+                        else
+                        {
+                            LogWarning($"⚠️ Failed to reconnect after {shutdownType} shutdown - will retry on next API call", "CNCJobInfo");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error during reconnection attempt: {ex.Message}", "CNCJobInfo");
+                    }
+                });
+            }
         }
 
         /// <summary>
