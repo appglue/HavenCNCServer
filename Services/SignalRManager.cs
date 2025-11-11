@@ -280,8 +280,13 @@ namespace HavenCNCServer.Services
                         Position = position
                     };
 
-                    // Broadcast heartbeat to all clients
-                    await _hubContext.Clients.Group("CNCClients").SendAsync("Heartbeat", heartbeat);
+                    // Broadcast heartbeat to all clients using standard message format
+                    await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", new
+                    {
+                        EventType = "Heartbeat",
+                        Timestamp = DateTime.UtcNow,
+                        Data = heartbeat
+                    });
 
                     LogDebug($"Heartbeat sent - IsConnected={isConnected}, Position={position != null}", "SignalR");
                 }

@@ -96,32 +96,41 @@ Each event in the `Data` field has its own `Timestamp` property marking when the
 
 ### Configuration
 - **Frequency**: Every 2 seconds (changed from 30 seconds)
-- **Event Name**: `"Heartbeat"`
+- **Event Type**: `"Heartbeat"`
+- **Delivery**: Through `"ReceiveCNCMessage"` (same as all other events)
 - **Group**: `"CNCClients"`
 
 ### Message Structure
+The heartbeat is delivered through the standard message wrapper:
 ```typescript
-interface HeartbeatMessage {
-  Timestamp: string;        // UTC: "2025-11-10T17:50:42.123Z"
-  ServerTime: string;       // Local: "2025-11-10T12:50:42.123"
-  IsConnected: boolean;     // CNC connection status
-  Status: "Connected" | "Disconnected";
-  MessageType: "Heartbeat";
-  Position: {               // null if disconnected
-    X: number;
-    Y: number;
-    Z: number;
-    A: number;
-  } | null;
+{
+  EventType: "Heartbeat",
+  Timestamp: "2025-11-10T18:30:42.500Z",  // When sent
+  Data: {
+    Timestamp: "2025-11-10T17:50:42.123Z",  // UTC
+    ServerTime: "2025-11-10T12:50:42.123",  // Local
+    IsConnected: boolean,
+    Status: "Connected" | "Disconnected",
+    MessageType: "Heartbeat",
+    Position: {
+      X: number,
+      Y: number,
+      Z: number,
+      A: number
+    } | null
+  }
 }
 ```
 
 ### Example Usage
 ```typescript
-connection.on("Heartbeat", (heartbeat: HeartbeatMessage) => {
-  console.log(`CNC Status: ${heartbeat.Status}`);
-  if (heartbeat.Position) {
-    updatePositionDisplay(heartbeat.Position);
+connection.on("ReceiveCNCMessage", (message) => {
+  if (message.EventType === "Heartbeat") {
+    const heartbeat = message.Data;
+    console.log(`CNC Status: ${heartbeat.Status}`);
+    if (heartbeat.Position) {
+      updatePositionDisplay(heartbeat.Position);
+    }
   }
 });
 ```
