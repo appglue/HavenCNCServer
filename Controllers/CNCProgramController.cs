@@ -203,7 +203,8 @@ namespace HavenCNCServer.Controllers
                     Success = completedJob.IsComplete && string.IsNullOrEmpty(completedJob.LastError),
                     ErrorMessage = completedJob.LastError,
                     Duration = duration,
-                    LinesExecuted = completedJob.LineNumber
+                    LinesExecuted = completedJob.LineNumber,
+                    FilePath = completedJob.FilePath
                 };
                 CNCJobInfoListener.PushCustomEvent(jobCompletedEvent);
 
@@ -725,7 +726,8 @@ namespace HavenCNCServer.Controllers
                         Success = true,
                         JobId = job.JobId,
                         Message = "Job created and started successfully",
-                        Job = jobDetails
+                        Job = jobDetails,
+                        FilePath = job.FilePath
                     };
                 }
                 else
@@ -741,7 +743,8 @@ namespace HavenCNCServer.Controllers
                         Success = true,
                         JobId = job.JobId,
                         Message = message,
-                        Job = jobDetails
+                        Job = jobDetails,
+                        FilePath = job.FilePath
                     };
                 }
             }

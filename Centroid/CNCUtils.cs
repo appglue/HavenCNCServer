@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CentroidAPI;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centroid.Data;
@@ -358,19 +359,36 @@ namespace HavenCNCServer.Centroid
 
                 LogInfo($"Detecting available I/O - System: {unlockVersion} (Acorn:{isAcorn}, AcornSix:{isAcornSix}, Hickory:{isHickory}, ProRouter:{isProRouter})", "CNCUtils");
 
-                // Standard Acorn and AcornSix: Base I/O is 1-16, Expansion starts at 65
-                // (This matches the typical Centroid I/O mapping where 17-64 are reserved)
-                int baseInputCount = 16;
-                int expansionStartIO = 65;
+                // Platform-specific I/O configuration
+                int baseInputCount;
+                int expansionStartIO;
 
-                if (isHickory)
+                if (isAcorn || isProRouter)
                 {
-                    // Hickory has different base count and expansion start
+                    // Acorn: Base I/O is 1-8, Ether1616 expansion starts at 33
+                    baseInputCount = 8;
+                    expansionStartIO = 33;
+                }
+                else if (isAcornSix)
+                {
+                    // AcornSix: Base I/O is 1-16, PLCEXP1616 expansion starts at 65
+                    baseInputCount = 16;
+                    expansionStartIO = 65;
+                }
+                else if (isHickory)
+                {
+                    // Hickory: Base I/O is 1-32, ECAT1616 expansion starts at 129
                     baseInputCount = 32;
                     expansionStartIO = 129;
                 }
+                else
+                {
+                    // Unknown platform - use conservative defaults
+                    baseInputCount = 16;
+                    expansionStartIO = 65;
+                }
 
-                // Add base inputs (1-16 for Acorn/AcornSix/ProRouter, 1-32 for Hickory)
+                // Add base inputs
                 for (int i = 1; i <= baseInputCount; i++)
                 {
                     availableInputs.Add(i);
@@ -384,21 +402,28 @@ namespace HavenCNCServer.Centroid
                 if (isAcorn || isProRouter)
                 {
                     var result = cncPipe.system.GetEther1616DeviceInfo(out List<CNCPipe.Sys.Ether1616Device> devices);
-                    if (result == CNCPipe.ReturnCode.SUCCESS && devices != null)
-                    {
-                        expansionCount = devices.Count;
-                        LogInfo($"Detected {expansionCount} Ether1616 expansion boards (devices: {devices.Count})", "CNCUtils");
+                    LogInfo($"GetEther1616DeviceInfo returned: {result}, devices: {devices?.Count ?? 0}", "CNCUtils");
 
-                        // Log device details for debugging
+                    if (result == CNCPipe.ReturnCode.SUCCESS && devices != null && devices.Count > 0)
+                    {
+                        // Filter out invalid/disconnected devices
+                        var validDevices = devices.Where(d => d.DeviceNumber.HasValue && d.DeviceNumber.Value >= 0).ToList();
+                        expansionCount = validDevices.Count;
+
+                        LogInfo($"Detected {devices.Count} Ether1616 devices, {expansionCount} valid", "CNCUtils");
+
+                        // Log all device details for debugging
                         for (int i = 0; i < devices.Count; i++)
                         {
                             var device = devices[i];
-                            LogInfo($"  Ether1616 Board {i}: DeviceNumber={device.DeviceNumber}, IP={device.IP}", "CNCUtils");
+                            bool isValid = device.DeviceNumber.HasValue && device.DeviceNumber.Value >= 0;
+                            LogInfo($"  Device {i}: DeviceNumber={device.DeviceNumber}, IP={device.IP}, Valid={isValid}", "CNCUtils");
                         }
                     }
                     else
                     {
-                        LogWarning($"GetEther1616DeviceInfo failed: {result}, devices null: {devices == null}", "CNCUtils");
+                        LogWarning($"GetEther1616DeviceInfo: result={result}, devices={devices?.Count ?? 0}", "CNCUtils");
+                        expansionCount = 0;
                     }
                 }
                 else if (isAcornSix)
@@ -428,7 +453,7 @@ namespace HavenCNCServer.Centroid
                     }
                 }
 
-                // Add expansion board I/O (typically one board = 65-80)
+                // Add expansion board I/O
                 // Each expansion board provides 16 I/O
                 if (expansionCount > 0)
                 {
@@ -440,12 +465,12 @@ namespace HavenCNCServer.Centroid
 
                         for (int i = 0; i < 16; i++)
                         {
-                            availableInputs.Add(expansionStartIO + (board * 16) + i);
+                            availableInputs.Add(startIO + i);
                         }
                     }
                 }
 
-                LogInfo($"Total available I/O ports: {availableInputs.Count} ({string.Join(", ", availableInputs.Take(5))}...{string.Join(", ", availableInputs.Skip(availableInputs.Count - 5))})", "CNCUtils");
+                LogInfo($"Total available I/O ports: {availableInputs.Count} ({string.Join(", ", availableInputs.Take(5))}...{string.Join(", ", availableInputs.Skip(Math.Max(0, availableInputs.Count - 5)))})", "CNCUtils");
 
                 return availableInputs.ToArray();
             }

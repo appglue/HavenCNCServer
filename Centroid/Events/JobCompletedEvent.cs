@@ -48,6 +48,11 @@ namespace HavenCNCServer.Centroid.Events
         public int LinesExecuted { get; set; }
 
         /// <summary>
+        /// File path of the G-code file that was executed
+        /// </summary>
+        public string? FilePath { get; set; }
+
+        /// <summary>
         /// Serialize the job completed event for SignalR transmission
         /// </summary>
         /// <returns>The event itself for complete data transmission</returns>

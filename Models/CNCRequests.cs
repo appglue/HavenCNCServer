@@ -408,6 +408,11 @@ namespace HavenCNCServer.Models
         public JobDetails Job { get; set; } = new JobDetails();
 
         /// <summary>
+        /// File path of the created G-code file
+        /// </summary>
+        public string? FilePath { get; set; }
+
+        /// <summary>
         /// Error details if operation failed
         /// </summary>
         public string? Error { get; set; }
