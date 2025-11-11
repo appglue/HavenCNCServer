@@ -130,34 +130,6 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Send a message to clients subscribed to a specific message type
-        /// </summary>
-        /// <param name="messageType">Type of the message</param>
-        /// <param name="data">Message data</param>
-        public static async Task SendToMessageTypeAsync(string messageType, object data)
-        {
-            if (_hubContext == null)
-            {
-                LogWarning("Cannot send SignalR message - hub context not available", "SignalR");
-                return;
-            }
-
-            try
-            {
-                await _hubContext.Clients.Group($"MessageType_{messageType}").SendAsync("ReceiveCNCMessage", new
-                {
-                    MessageType = messageType,
-                    Timestamp = DateTime.UtcNow,
-                    Data = data
-                });
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error sending SignalR message to {messageType} subscribers: {ex.Message}", "SignalR");
-            }
-        }
-
-        /// <summary>
         /// Broadcast the current machine position to all connected SignalR clients
         /// Useful when position changes outside of normal DRO updates (e.g., fixture point changes)
         /// </summary>
@@ -336,76 +308,132 @@ namespace HavenCNCServer.Services
 
     /// <summary>
     /// Event listener that forwards CNC events to SignalR clients
+    /// Uses a dedicated thread with queue to ensure ordered delivery
     /// </summary>
     public class SignalREventListener : ICNCEventListener
     {
         private readonly IHubContext<CNCMessageHub> _hubContext;
         private long _skippedDroEventCount = 0;
 
+        // Queue-based processing for ordered message delivery
+        private readonly System.Collections.Concurrent.BlockingCollection<ICentroidEvent> _messageQueue;
+        private readonly Thread _processingThread;
+        private readonly CancellationTokenSource _cancellationTokenSource;
+        private bool _isRunning = false;
+
         public SignalREventListener(IHubContext<CNCMessageHub> hubContext)
         {
             _hubContext = hubContext;
+            _messageQueue = new System.Collections.Concurrent.BlockingCollection<ICentroidEvent>(boundedCapacity: 1000);
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            // Start dedicated processing thread for ordered delivery
+            _processingThread = new Thread(ProcessMessageQueue)
+            {
+                Name = "SignalR-MessageProcessor",
+                IsBackground = true,
+                Priority = ThreadPriority.AboveNormal // Higher priority for real-time messages
+            };
+            _isRunning = true;
+            _processingThread.Start();
+
+            LogInfo("SignalR message queue processor started with bounded capacity of 1000", "SignalR");
         }
 
         public void EventReceived(ICentroidEvent centroidEvent)
         {
-            // Don't block the main thread with SignalR calls
-            _ = Task.Run(async () =>
+            if (!_isRunning)
             {
-                try
+                return;
+            }
+
+            // Try to add to queue without blocking
+            if (!_messageQueue.TryAdd(centroidEvent))
+            {
+                // Queue is full - log and drop the event
+                LogWarning($"SignalR message queue full - dropping {centroidEvent.GetType().Name} event", "SignalR");
+            }
+        }
+
+        /// <summary>
+        /// Dedicated thread that processes messages from queue in order
+        /// </summary>
+        private void ProcessMessageQueue()
+        {
+            LogInfo("SignalR message processor thread started", "SignalR");
+
+            try
+            {
+                foreach (var centroidEvent in _messageQueue.GetConsumingEnumerable(_cancellationTokenSource.Token))
                 {
-                    var messageType = centroidEvent.GetType().Name;
-
-                    // Reset skipped counter when connection is restored and we get a non-DRO event or connected DRO event
-                    if (CNCConnectionManager.IsConnected && _skippedDroEventCount > 0)
+                    try
                     {
-                        LogSuccess($"🔄 CNC12 reconnected - Reset DRO skip counter (was {_skippedDroEventCount} events)", "SignalR");
-                        _skippedDroEventCount = 0;
+                        ProcessEventAsync(centroidEvent).Wait();
                     }
-
-                    // Skip DRO events when CNC12 is not connected to prevent flood of disconnection events
-                    if (messageType == "DROEvent" && !CNCConnectionManager.IsConnected)
+                    catch (Exception ex)
                     {
-                        // Special logging to track DRO events during disconnection
-                        var droEvent = centroidEvent as DROEvent;
-                        var positionInfo = droEvent != null ?
-                            $" - Position: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}" :
-                            "";
-
-                        // Only log this occasionally to avoid log spam, but show position data
-                        if (DateTime.Now.Second % 15 == 0) // Log once every 15 seconds
-                        {
-                            LogWarning($"⚠️ DRO event received while CNC12 disconnected{positionInfo} - Skipping SignalR broadcast", "SignalR");
-                        }
-
-                        // Count total skipped events (log every 100 events)
-                        if (_skippedDroEventCount % 100 == 0)
-                        {
-                            LogInfo($"📊 Total DRO events skipped during disconnection: {_skippedDroEventCount}", "SignalR");
-                        }
-                        _skippedDroEventCount++;
-
-                        return;
+                        LogError($"Error processing event in queue: {ex.Message}", "SignalR");
                     }
-
-                    var messageData = new
-                    {
-                        EventType = messageType,
-                        Timestamp = DateTime.UtcNow,
-                        Data = SerializeEvent(centroidEvent)
-                    };
-
-                    // Send to all clients
-                    await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", messageData);
-
-                    // Also send to specific message type subscribers
-                    await _hubContext.Clients.Group($"MessageType_{messageType}").SendAsync("ReceiveCNCMessage", messageData);
                 }
-                catch (Exception ex)
+            }
+            catch (OperationCanceledException)
+            {
+                LogInfo("SignalR message processor cancelled", "SignalR");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Fatal error in SignalR message processor: {ex.Message}", "SignalR");
+            }
+        }
+
+        /// <summary>
+        /// Process a single event and send to SignalR
+        /// </summary>
+        private async Task ProcessEventAsync(ICentroidEvent centroidEvent)
+        {
+            var messageType = centroidEvent.GetType().Name;
+
+            // Reset skipped counter when connection is restored and we get a non-DRO event or connected DRO event
+            if (CNCConnectionManager.IsConnected && _skippedDroEventCount > 0)
+            {
+                LogSuccess($"🔄 CNC12 reconnected - Reset DRO skip counter (was {_skippedDroEventCount} events)", "SignalR");
+                _skippedDroEventCount = 0;
+            }
+
+            // Skip DRO events when CNC12 is not connected to prevent flood of disconnection events
+            if (messageType == "DROEvent" && !CNCConnectionManager.IsConnected)
+            {
+                // Special logging to track DRO events during disconnection
+                var droEvent = centroidEvent as DROEvent;
+                var positionInfo = droEvent != null ?
+                    $" - Position: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}" :
+                    "";
+
+                // Only log this occasionally to avoid log spam, but show position data
+                if (DateTime.Now.Second % 15 == 0) // Log once every 15 seconds
                 {
-                    LogError($"Error forwarding event to SignalR: {ex.Message}", "SignalR");
+                    LogWarning($"⚠️ DRO event received while CNC12 disconnected{positionInfo} - Skipping SignalR broadcast", "SignalR");
                 }
-            });
+
+                // Count total skipped events (log every 100 events)
+                if (_skippedDroEventCount % 100 == 0)
+                {
+                    LogInfo($"📊 Total DRO events skipped during disconnection: {_skippedDroEventCount}", "SignalR");
+                }
+                _skippedDroEventCount++;
+
+                return;
+            }
+
+            var messageData = new
+            {
+                EventType = messageType,
+                Timestamp = DateTime.UtcNow,
+                Data = SerializeEvent(centroidEvent)
+            };
+
+            // Send to all clients in CNCClients group
+            await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", messageData);
         }
 
         private static object SerializeEvent(ICentroidEvent centroidEvent)
@@ -419,6 +447,26 @@ namespace HavenCNCServer.Services
             // Fallback: return the event object as-is for JSON serialization
             // This preserves all properties without transformation
             return centroidEvent;
+        }
+
+        /// <summary>
+        /// Stop the message processor and clean up resources
+        /// </summary>
+        public void Dispose()
+        {
+            _isRunning = false;
+            _cancellationTokenSource.Cancel();
+            _messageQueue.CompleteAdding();
+
+            if (!_processingThread.Join(TimeSpan.FromSeconds(5)))
+            {
+                LogWarning("SignalR message processor thread did not stop within timeout", "SignalR");
+            }
+
+            _messageQueue.Dispose();
+            _cancellationTokenSource.Dispose();
+
+            LogInfo("SignalR message processor stopped", "SignalR");
         }
     }
 }
