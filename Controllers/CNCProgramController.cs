@@ -25,6 +25,18 @@ namespace HavenCNCServer.Controllers
         private static readonly object _jobsLock = new object();
 
         /// <summary>
+        /// Check if any job is currently running
+        /// </summary>
+        /// <returns>True if a job is running</returns>
+        public static bool IsJobRunning()
+        {
+            lock (_jobsLock)
+            {
+                return _jobs.Any(j => j.IsRunning);
+            }
+        }
+
+        /// <summary>
         /// Get all active jobs (internal method)
         /// </summary>
         /// <returns>List of active jobs</returns>

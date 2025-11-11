@@ -247,25 +247,35 @@ namespace HavenCNCServer.Services
 
                     var isConnected = CNCConnectionManager.IsConnected;
 
-                    // Check if API is restricted
+                    // Check if API is restricted (only when NOT running a job)
+                    // When a job is running, API is always restricted, so we can assume true without checking
                     bool isApiRestricted = false;
                     if (isConnected)
                     {
-                        try
+                        // Check if a job is running - if so, API is restricted
+                        if (Controllers.CNCProgramController.IsJobRunning())
                         {
-                            var cncPipe = CNCConnectionManager.GetCNCPipe();
-                            if (cncPipe != null)
+                            isApiRestricted = true;
+                        }
+                        else
+                        {
+                            // No job running - check API restriction status via CNC API
+                            try
                             {
-                                var result = cncPipe.state.IsAPIRestricted(out isApiRestricted);
-                                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                                if (cncPipe != null)
                                 {
-                                    LogWarning($"Failed to check API restriction status: {result}", "SignalR");
+                                    var result = cncPipe.state.IsAPIRestricted(out isApiRestricted);
+                                    if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                    {
+                                        LogWarning($"Failed to check API restriction status: {result}", "SignalR");
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
+                            catch (Exception ex)
+                            {
+                                LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
+                            }
                         }
                     }
 
@@ -292,6 +302,28 @@ namespace HavenCNCServer.Services
                         }
                     }
 
+                    // Get incremental jog mode status (Output 1082)
+                    bool isIncrementalJogMode = false;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                var result = cncPipe.plc.GetOutputState(1082, out CentroidAPI.CNCPipe.Plc.IOState state);
+                                if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    isIncrementalJogMode = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Could not get incremental jog mode status: {ex.Message}", "SignalR");
+                        }
+                    }
+
                     var serverStatus = new
                     {
                         Timestamp = DateTime.UtcNow,
@@ -300,7 +332,8 @@ namespace HavenCNCServer.Services
                         Status = isConnected ? "Connected" : "Disconnected",
                         MessageType = "ServerStatus",
                         Position = position,
-                        IsApiRestricted = isApiRestricted
+                        IsApiRestricted = isApiRestricted,
+                        IsIncrementalJogMode = isIncrementalJogMode
                     };
 
                     // Send server status as a regular SignalR message via ReceiveCNCMessage

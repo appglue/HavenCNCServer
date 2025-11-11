@@ -32,6 +32,8 @@ This event is broadcast periodically every **2 seconds** to inform clients that 
   "IsConnected": true,
   "Status": "Connected",
   "MessageType": "Heartbeat",
+  "IsApiRestricted": false,
+  "IsIncrementalJogMode": false,
   "Position": {
     "X": 1.2345,
     "Y": 2.3456,
@@ -49,6 +51,8 @@ This event is broadcast periodically every **2 seconds** to inform clients that 
   "IsConnected": false,
   "Status": "Disconnected",
   "MessageType": "Heartbeat",
+  "IsApiRestricted": false,
+  "IsIncrementalJogMode": false,
   "Position": null
 }
 ```
@@ -62,6 +66,8 @@ This event is broadcast periodically every **2 seconds** to inform clients that 
 | `IsConnected` | `boolean` | `true` if server is connected to CNC, `false` otherwise |
 | `Status` | `string` | Either `"Connected"` or `"Disconnected"` |
 | `MessageType` | `string` | Always `"Heartbeat"` |
+| `IsApiRestricted` | `boolean` | `true` if API commands are restricted (job running, menu open, etc.) |
+| `IsIncrementalJogMode` | `boolean` | `true` if incremental jog mode is active (Output 1082) |
 | `Position` | `object` or `null` | Current machine position if connected, `null` if disconnected or position unavailable |
 | `Position.X` | `number` | X-axis position in machine units (inches or mm) |
 | `Position.Y` | `number` | Y-axis position in machine units |
@@ -89,6 +95,8 @@ interface Heartbeat {
   IsConnected: boolean;     // true = CNC connected, false = CNC disconnected
   Status: string;           // "Connected" or "Disconnected"
   MessageType: string;      // Always "Heartbeat"
+  IsApiRestricted: boolean; // true = API commands restricted (job running, etc.)
+  IsIncrementalJogMode: boolean; // true = Incremental jog mode active
   Position: {               // null if disconnected or unavailable
     X: number;              // X-axis position (machine units)
     Y: number;              // Y-axis position (machine units)

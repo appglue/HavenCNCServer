@@ -113,6 +113,7 @@ The server status is sent through the standard message wrapper:
     Status: "Connected" | "Disconnected",
     MessageType: "ServerStatus",
     IsApiRestricted: boolean,                // Whether API is in restricted mode
+    IsIncrementalJogMode: boolean,           // Whether incremental jog mode is active (Output 1082)
     Position: {                              // null if disconnected
       X: number,
       Y: number,
@@ -149,6 +150,8 @@ connection.on("ReceiveCNCMessage", (message) => {
 - **Connection keepalive** (every 2 seconds) - detect disconnections quickly
 - **Connection status** - Connected/disconnected state
 - **Position snapshot** - Current position every 2 seconds (null when disconnected)
+- **API restriction status** - Know when commands can/cannot be executed
+- **Jog mode** - Whether incremental jog mode is active
 - **Baseline updates** - Ensures position is updated even when not moving
 
 **Why This Design:**
