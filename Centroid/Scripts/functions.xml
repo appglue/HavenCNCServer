@@ -24,7 +24,7 @@
     </Conflicts>
     <InputType>0</InputType>
   </PlcFunction>
-   <PlcFunction xsi:type="Probe">
+   <PlcFunction xsi:type="Input">
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>
@@ -48,7 +48,7 @@
     </Conflicts>
     <InputType>1</InputType>
   </PlcFunction>
-  <PlcFunction xsi:type="Probe">
+  <PlcFunction xsi:type="Input">
     <ConfigLine>
     </ConfigLine>
     <IsRequired>false</IsRequired>

@@ -324,6 +324,28 @@ namespace HavenCNCServer.Services
                         }
                     }
 
+                    // Get fast jogging mode status (Output 1094)
+                    bool isFastJogging = false;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                var result = cncPipe.plc.GetOutputState(1094, out CentroidAPI.CNCPipe.Plc.IOState state);
+                                if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    isFastJogging = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Could not get fast jogging status: {ex.Message}", "SignalR");
+                        }
+                    }
+
                     var serverStatus = new
                     {
                         Timestamp = DateTime.UtcNow,
@@ -333,7 +355,8 @@ namespace HavenCNCServer.Services
                         MessageType = "ServerStatus",
                         Position = position,
                         IsApiRestricted = isApiRestricted,
-                        IsIncrementalJogMode = isIncrementalJogMode
+                        IsIncrementalJogMode = isIncrementalJogMode,
+                        IsFastJogging = isFastJogging
                     };
 
                     // Send server status as a regular SignalR message via ReceiveCNCMessage
