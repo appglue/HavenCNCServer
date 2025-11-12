@@ -247,37 +247,34 @@ namespace HavenCNCServer.Services
 
                     var isConnected = CNCConnectionManager.IsConnected;
 
-                    // Check if API is restricted (only when NOT running a job)
-                    // When a job is running, API is always restricted, so we can assume true without checking
+                    // Check if a job is running
+                    bool isJobRunning = Controllers.CNCProgramController.IsJobRunning();
+
+                    // Check if API is restricted
+                    // When a job is running, API is considered NOT restricted (false)
+                    // Otherwise, check the actual API restriction status
                     bool isApiRestricted = false;
-                    if (isConnected)
+                    if (isConnected && !isJobRunning)
                     {
-                        // Check if a job is running - if so, API is restricted
-                        if (Controllers.CNCProgramController.IsJobRunning())
+                        // No job running - check API restriction status via CNC API
+                        try
                         {
-                            isApiRestricted = true;
-                        }
-                        else
-                        {
-                            // No job running - check API restriction status via CNC API
-                            try
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
                             {
-                                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                                if (cncPipe != null)
+                                var result = cncPipe.state.IsAPIRestricted(out isApiRestricted);
+                                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                                 {
-                                    var result = cncPipe.state.IsAPIRestricted(out isApiRestricted);
-                                    if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
-                                    {
-                                        LogWarning($"Failed to check API restriction status: {result}", "SignalR");
-                                    }
+                                    LogWarning($"Failed to check API restriction status: {result}", "SignalR");
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
                         }
                     }
+                    // If job is running (isJobRunning == true), isApiRestricted stays false
 
                     // Only try to get current position if connected
                     object? position = null;
@@ -355,6 +352,7 @@ namespace HavenCNCServer.Services
                         MessageType = "ServerStatus",
                         Position = position,
                         IsApiRestricted = isApiRestricted,
+                        IsJobRunning = isJobRunning,
                         IsIncrementalJogMode = isIncrementalJogMode,
                         IsFastJogging = isFastJogging
                     };

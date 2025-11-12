@@ -46,7 +46,7 @@
     </Requires>
     <Conflicts>
     </Conflicts>
-    <InputType>1</InputType>
+    <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Input">
     <ConfigLine>
@@ -70,7 +70,7 @@
     </Requires>
     <Conflicts>
     </Conflicts>
-    <InputType>1</InputType>
+    <InputType>0</InputType>
   </PlcFunction>
   <PlcFunction xsi:type="Output">
     <ConfigLine>

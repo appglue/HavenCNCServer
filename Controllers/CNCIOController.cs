@@ -347,28 +347,22 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Get I/O definitions from the PLC source file
         /// </summary>
-        /// <param name="sourcePath">Optional path to the PLC source file. If not provided, uses default location.</param>
+        /// <param name="sourcePath">Optional path to the PLC source file. If not provided, uses C:\cncr\acorn_router_plc.src</param>
         /// <returns>IODefinitionsResponse containing all input and output definitions</returns>
         [HttpGet("GetIODefinitions")]
         public ActionResult<IODefinitionsResponse> GetIODefinitions([FromQuery] string? sourcePath = null)
         {
             try
             {
-                // Default to cncr directory if not specified
+                // Default to C:\cncr directory (where CNC12 is running from)
                 if (string.IsNullOrEmpty(sourcePath))
                 {
-                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "cncr", "acorn_router_plc.src");
-                }
-
-                // If cncr doesn't exist, fall back to the Scripts directory
-                if (!System.IO.File.Exists(sourcePath))
-                {
-                    sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "Centroid", "Scripts", "acorn_router_plc.src");
+                    sourcePath = @"C:\cncr\acorn_router_plc.src";
                 }
 
                 if (!System.IO.File.Exists(sourcePath))
                 {
-                    return NotFound(new { error = "PLC source file not found", searchedPath = sourcePath });
+                    return NotFound(new { error = "PLC source file not found", path = sourcePath });
                 }
 
                 var response = ParseIODefinitions(sourcePath);
@@ -382,6 +376,8 @@ namespace HavenCNCServer.Controllers
 
         /// <summary>
         /// Parse I/O definitions from a PLC source file
+        /// Reads definitions from INPUT DEFINITIONS and Output Definitions sections only,
+        /// stopping immediately after ; #endregion marker
         /// </summary>
         private IODefinitionsResponse ParseIODefinitions(string filePath)
         {
@@ -391,33 +387,52 @@ namespace HavenCNCServer.Controllers
                 ParsedAt = DateTime.UtcNow
             };
 
-            // Get available I/O ports from hardware detection
-            var availableInputs = CNCUtils.GetAvailableInputPorts();
-            var availableOutputs = CNCUtils.GetAvailableOutputPorts();
-
             // Regex patterns to match input and output definitions
             // Format: Name IS INP<number> or Name IS OUT<number>
             var inputPattern = new Regex(@"^([A-Za-z0-9_]+)\s+IS\s+INP(\d+)", RegexOptions.Compiled);
             var outputPattern = new Regex(@"^([A-Za-z0-9_]+)\s+IS\s+OUT(\d+)", RegexOptions.Compiled);
 
             var lines = System.IO.File.ReadAllLines(filePath);
+            bool inInputSection = false;
+            bool inOutputSection = false;
 
             foreach (var line in lines)
             {
-                // Skip comments and empty lines
                 var trimmedLine = line.Trim();
+
+                // Detect section start
+                if (trimmedLine.Contains("INPUT DEFINITIONS"))
+                {
+                    inInputSection = true;
+                    inOutputSection = false;
+                    continue;
+                }
+                else if (trimmedLine.Contains("Output Definitions") || trimmedLine.Contains("OUTPUT DEFINITIONS"))
+                {
+                    inOutputSection = true;
+                    inInputSection = false;
+                    continue;
+                }
+
+                // Stop reading section immediately when we see #endregion
+                if (trimmedLine == "; #endregion")
+                {
+                    inInputSection = false;
+                    inOutputSection = false;
+                    continue;
+                }
+
+                // Skip comments and empty lines
                 if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith(";"))
                     continue;
 
-                // Check for input definition
-                var inputMatch = inputPattern.Match(trimmedLine);
-                if (inputMatch.Success)
+                // Parse input definitions when in input section
+                if (inInputSection)
                 {
-                    int ioNumber = int.Parse(inputMatch.Groups[2].Value);
-
-                    // Only include if this input number is available on the hardware
-                    if (availableInputs.Contains(ioNumber))
+                    var inputMatch = inputPattern.Match(trimmedLine);
+                    if (inputMatch.Success)
                     {
+                        int ioNumber = int.Parse(inputMatch.Groups[2].Value);
                         response.Inputs.Add(new IODefinition
                         {
                             Name = inputMatch.Groups[1].Value,
@@ -426,18 +441,15 @@ namespace HavenCNCServer.Controllers
                             RawDefinition = line
                         });
                     }
-                    continue;
                 }
 
-                // Check for output definition
-                var outputMatch = outputPattern.Match(trimmedLine);
-                if (outputMatch.Success)
+                // Parse output definitions when in output section
+                if (inOutputSection)
                 {
-                    int ioNumber = int.Parse(outputMatch.Groups[2].Value);
-
-                    // Only include if this output number is available on the hardware
-                    if (availableOutputs.Contains(ioNumber))
+                    var outputMatch = outputPattern.Match(trimmedLine);
+                    if (outputMatch.Success)
                     {
+                        int ioNumber = int.Parse(outputMatch.Groups[2].Value);
                         response.Outputs.Add(new IODefinition
                         {
                             Name = outputMatch.Groups[1].Value,
