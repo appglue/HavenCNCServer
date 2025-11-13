@@ -1,5 +1,6 @@
 using CentroidAPI;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centroid;
 using HavenCNCServer.Centroid.Events;
 using System.Threading;
 using System.Threading.Tasks;
@@ -269,8 +270,38 @@ namespace HavenCNCServer.Models
                     return true; // Already stopped
                 }
 
-                // TODO: Implement actual stop functionality using CentroidAPI
-                // For now, just update the state
+                // Send Cycle Cancel skin event (SV_SKIN_EVENT_46)
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe != null)
+                {
+                    try
+                    {
+                        // Press Cycle Cancel
+                        var pressResult = cncPipe.plc.SetSkinEventState((int)SkinEvent.CycleCancel, 1);
+                        if (pressResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            System.Threading.Thread.Sleep(100); // Wait 100ms
+
+                            // Release Cycle Cancel
+                            var releaseResult = cncPipe.plc.SetSkinEventState((int)SkinEvent.CycleCancel, 0);
+
+                            if (releaseResult != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Failed to release Cycle Cancel: {releaseResult}");
+                            }
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Failed to press Cycle Cancel: {pressResult}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error sending Cycle Cancel: {ex.Message}");
+                    }
+                }
+
+                // Stop listening to events
                 StopListening();
 
                 IsRunning = false;

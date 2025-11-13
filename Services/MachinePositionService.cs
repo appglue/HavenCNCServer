@@ -49,24 +49,25 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Get current machine position. Returns last known position from DRO events if available,
-        /// otherwise fetches directly from CNC API
+        /// Get current machine position. Always fetches fresh data from CNC API.
         /// </summary>
         /// <returns>Current machine position</returns>
         public static MachinePoint GetCurrentPosition()
         {
             lock (_lock)
             {
-                // Return last known position from DRO events (most common case)
-                if (_lastPosition != null)
-                {
-                    return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
-                }
-
-                // No position yet - fetch from API (only happens on first call before any DRO events)
+                // Always fetch from API for most accurate real-time position
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
+                {
+                    // Fallback to cached position if API unavailable
+                    if (_lastPosition != null)
+                    {
+                        LogWarning("CNC connection not available, returning last known position", "MachinePositionService");
+                        return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
+                    }
                     throw new InvalidOperationException("CNC connection not available and no position data");
+                }
 
                 try
                 {
@@ -107,16 +108,21 @@ namespace HavenCNCServer.Services
 
                     var position = new MachinePoint(x, y, z, a);
 
-                    // Store as last known position
+                    // Update cache with latest position
                     _lastPosition = position;
-
-                    LogDebug($"Fetched initial machine position from API: {position}", "MachinePositionService");
 
                     return position;
                 }
                 catch (Exception ex)
                 {
                     LogError($"Failed to get machine position from API: {ex.Message}", "MachinePositionService");
+
+                    // Fallback to cached position if API call fails
+                    if (_lastPosition != null)
+                    {
+                        LogWarning("Using last known position due to API error", "MachinePositionService");
+                        return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
+                    }
                     throw;
                 }
             }
