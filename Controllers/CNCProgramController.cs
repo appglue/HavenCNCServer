@@ -842,22 +842,25 @@ namespace HavenCNCServer.Controllers
         #region G-Code Management
 
         /// <summary>
-        /// Get current G-code
+        /// Get all G-code lines from the currently running job
         /// </summary>
-        /// <returns>Current G-code lines</returns>
+        /// <returns>All G-code lines, or empty array if no job running</returns>
         [HttpGet("GetCurrentGCode")]
         public string[] GetCurrentGCode()
         {
             try
             {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
+                lock (_jobsLock)
                 {
-                    throw new InvalidOperationException("Cannot get G-code: No CNC connection");
-                }
+                    var currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        return Array.Empty<string>();
+                    }
 
-                // TODO: Implement get current G-code using CentroidAPI
-                throw new NotImplementedException("Get current G-code functionality not yet fully implemented");
+                    // Return all G-code lines from the job
+                    return currentJob.GCodeLines;
+                }
             }
             catch (Exception ex)
             {
@@ -866,22 +869,24 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get current line number
+        /// Get current line number being executed
         /// </summary>
-        /// <returns>Current line number</returns>
+        /// <returns>Current line number (1-based), or 0 if no job running</returns>
         [HttpGet("GetCurrentLineNumber")]
         public int GetCurrentLineNumber()
         {
             try
             {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
+                lock (_jobsLock)
                 {
-                    throw new InvalidOperationException("Cannot get line number: No CNC connection");
-                }
+                    var currentJob = GetCurrentJob();
+                    if (currentJob == null)
+                    {
+                        return 0;
+                    }
 
-                // TODO: Implement get current line number using CentroidAPI
-                throw new NotImplementedException("Get current line number functionality not yet fully implemented");
+                    return currentJob.LineNumber;
+                }
             }
             catch (Exception ex)
             {

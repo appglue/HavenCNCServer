@@ -208,52 +208,6 @@ namespace HavenCNCServer.Controllers
 
         #endregion
 
-        #region Testing Methods (IO Overrides)
-
-        /// <summary>
-        /// Override input for testing
-        /// </summary>
-        [HttpPost("OverrideInput")]
-        public void OverrideInput([FromBody] OverrideIORequest request)
-        {
-            if (request.Number <= 0)
-                throw new ArgumentException("Input number must be greater than 0");
-
-            // TODO: Implement input override
-        }
-
-        /// <summary>
-        /// Override output for testing
-        /// </summary>
-        [HttpPost("OverrideOutput")]
-        public void OverrideOutput([FromBody] OverrideIORequest request)
-        {
-            if (request.Number <= 0)
-                throw new ArgumentException("Output number must be greater than 0");
-
-            // TODO: Implement output override
-        }
-
-        /// <summary>
-        /// Reset all input overrides
-        /// </summary>
-        [HttpPost("ResetInputOverrides")]
-        public void ResetInputOverrides()
-        {
-            // TODO: Implement reset input overrides
-        }
-
-        /// <summary>
-        /// Reset all output overrides
-        /// </summary>
-        [HttpPost("ResetOutputOverrides")]
-        public void ResetOutputOverrides()
-        {
-            // TODO: Implement reset output overrides
-        }
-
-        #endregion
-
         #region I/O Port Information
 
         /// <summary>

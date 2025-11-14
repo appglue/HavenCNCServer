@@ -89,6 +89,11 @@ namespace HavenCNCServer.Models
         public int TotalLines => _gCodeLines.Length;
 
         /// <summary>
+        /// All G-code lines in this job
+        /// </summary>
+        public string[] GCodeLines => _gCodeLines;
+
+        /// <summary>
         /// File path where the G-code is stored
         /// </summary>
         public string FilePath => _filePath;
