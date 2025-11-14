@@ -75,7 +75,31 @@ namespace HavenCNCServer.Services
                     var result = cncPipe.dro.GetDro(CentroidAPI.CNCPipe.Dro.DroCoordinates.DRO_MACHINE, out var droStrings);
 
                     if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        LogWarning($"API returned error code for DRO position: {result}", "MachinePositionService");
+
+                        // Fallback to cached position
+                        if (_lastPosition != null)
+                        {
+                            LogWarning("Using last known position due to API error response", "MachinePositionService");
+                            return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
+                        }
                         throw new InvalidOperationException($"Failed to get DRO position: {result}");
+                    }
+
+                    // Check if we got valid data back
+                    if (droStrings == null || droStrings.Length == 0)
+                    {
+                        LogWarning("API returned no DRO data", "MachinePositionService");
+
+                        // Fallback to cached position
+                        if (_lastPosition != null)
+                        {
+                            LogWarning("Using last known position due to empty API response", "MachinePositionService");
+                            return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
+                        }
+                        throw new InvalidOperationException("API returned no DRO data");
+                    }
 
                     // Parse DRO strings into MachinePoint
                     // droStrings is an array of Tuple<string, string, string> (Axis, Position, Load Meter)
@@ -120,7 +144,7 @@ namespace HavenCNCServer.Services
                     // Fallback to cached position if API call fails
                     if (_lastPosition != null)
                     {
-                        LogWarning("Using last known position due to API error", "MachinePositionService");
+                        LogWarning("Using last known position due to API exception", "MachinePositionService");
                         return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                     }
                     throw;

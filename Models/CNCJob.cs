@@ -807,7 +807,7 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Handle job info updates from the CNC system (mainly for line number tracking and job start detection)
         /// </summary>
-        private void OnJobInfoReceived(JobInfoData jobInfo)
+        private async void OnJobInfoReceived(JobInfoData jobInfo)
         {
             try
             {
@@ -883,10 +883,15 @@ namespace HavenCNCServer.Models
 
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Line {LineNumber}: {CurrentLine}");
 
-                        // Check if we've reached the last line - mark job as complete
-                        // This ensures fast jobs (like G0 rapid moves) complete even if we don't receive code 306
+                        // Check if we've reached the last line - wait for machine to actually finish
+                        // This ensures we don't send completion message before the last move completes
                         if (LineNumber >= TotalLines)
                         {
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Reached last line {LineNumber}/{TotalLines}, waiting for machine to finish...");
+
+                            // Wait for up to 10 seconds for the machine to actually finish
+                            bool machineFinished = await WaitForMachineToFinish(TimeSpan.FromSeconds(10));
+
                             IsRunning = false;
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
@@ -895,10 +900,16 @@ namespace HavenCNCServer.Models
                             // Cancel the monitoring task since we detected completion via line count
                             _monitorCancellation?.Cancel();
 
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - reached last line {LineNumber}/{TotalLines}");
-
-                            // Log job completion to main UI in GREEN
-                            LoggingService.LogSuccess($"✓ Job {_jobId} completed - executed all {TotalLines} lines", "CNCJob");
+                            if (machineFinished)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - machine finished executing");
+                                LoggingService.LogSuccess($"✓ Job {_jobId} completed - executed all {TotalLines} lines", "CNCJob");
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - timeout waiting for machine (sent completion anyway)");
+                                LoggingService.LogWarning($"Job {_jobId} completed with timeout - machine may still be executing final moves", "CNCJob");
+                            }
 
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
@@ -915,6 +926,51 @@ namespace HavenCNCServer.Models
             {
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error processing job info: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Wait for the machine to finish executing (IsJobRunning returns false)
+        /// </summary>
+        /// <param name="timeout">Maximum time to wait</param>
+        /// <returns>True if machine finished within timeout, false if timed out</returns>
+        private async Task<bool> WaitForMachineToFinish(TimeSpan timeout)
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            while (stopwatch.Elapsed < timeout)
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    // Connection lost - assume finished
+                    return true;
+                }
+
+                try
+                {
+                    var result = cncPipe.state.IsJobRunning(out bool jobRunning);
+                    if (result == CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        if (!jobRunning)
+                        {
+                            // Machine is no longer running - finished successfully
+                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Machine finished after {stopwatch.ElapsedMilliseconds}ms");
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error checking IsJobRunning: {ex.Message}");
+                }
+
+                // Poll every 50ms for responsive detection
+                await Task.Delay(50);
+            }
+
+            // Timed out
+            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Timeout waiting for machine to finish after {stopwatch.ElapsedMilliseconds}ms");
+            return false;
         }
 
         /// <summary>
