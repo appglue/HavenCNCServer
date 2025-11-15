@@ -679,6 +679,8 @@ namespace HavenCNCServer.Models
                     {
                         if (messageEvent.EventCode == 306)
                         {
+                            LoggingService.LogSuccess($"✓ Job {_jobId} received completion event (code 306): {messageEvent.Message}", "CNCJob");
+
                             IsRunning = false;
                             IsComplete = true;
                             CompletedAt = DateTime.Now;
@@ -688,9 +690,6 @@ namespace HavenCNCServer.Models
                             _monitorCancellation?.Cancel();
 
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - received code 306: {messageEvent.Message}");
-
-                            // Log job completion to main UI in GREEN
-                            LoggingService.LogSuccess($"✓ Job {_jobId} completed - {messageEvent.Message}", "CNCJob");
 
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
@@ -740,6 +739,7 @@ namespace HavenCNCServer.Models
         /// <summary>
         /// Monitor job completion by polling the Centroid API IsJobRunning method
         /// This provides reliable completion detection for fast jobs that may not send completion events
+        /// Polls every 250ms to catch stuck jobs
         /// </summary>
         private async Task MonitorJobCompletion(CancellationToken cancellationToken)
         {
@@ -749,14 +749,21 @@ namespace HavenCNCServer.Models
                 await Task.Delay(100, cancellationToken);
 
                 bool wasRunning = false;
+                int pollCount = 0;
+                DateTime lastStateLogTime = DateTime.Now;
+
+                LoggingService.LogInfo($"📊 Job {_jobId} monitor started - polling every 250ms", "CNCJob");
 
                 while (!IsComplete && !cancellationToken.IsCancellationRequested)
                 {
+                    pollCount++;
+
                     // Get CNC pipe
                     var cncPipe = CNCConnectionManager.GetCNCPipe();
                     if (cncPipe == null)
                     {
                         // Connection lost
+                        LoggingService.LogWarning($"Job {_jobId} monitor: CNC connection lost at poll #{pollCount}", "CNCJob");
                         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: CNC connection lost");
                         break;
                     }
@@ -766,15 +773,24 @@ namespace HavenCNCServer.Models
 
                     if (result == CNCPipe.ReturnCode.SUCCESS)
                     {
+                        // Log state every 5 seconds (20 polls at 250ms)
+                        if ((DateTime.Now - lastStateLogTime).TotalSeconds >= 5)
+                        {
+                            LoggingService.LogInfo($"📊 Job {_jobId} state: IsRunning={IsRunning}, IsPaused={IsPaused}, IsComplete={IsComplete}, API_JobRunning={jobRunning}, Line={LineNumber}/{TotalLines}, Poll#{pollCount}", "CNCJob");
+                            lastStateLogTime = DateTime.Now;
+                        }
+
                         if (jobRunning && !wasRunning)
                         {
                             // Job just started running
                             wasRunning = true;
+                            LoggingService.LogSuccess($"✓ Job {_jobId} started running (detected by API at poll #{pollCount})", "CNCJob");
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job started running (detected by API)");
                         }
                         else if (!jobRunning && wasRunning && !IsComplete)
                         {
                             // Job WAS running but now stopped - mark as complete
+                            LoggingService.LogSuccess($"✓ Job {_jobId} stopped running (detected by API at poll #{pollCount}) - marking complete", "CNCJob");
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job stopped running (detected by API) - marking complete");
 
                             IsRunning = false;
@@ -782,24 +798,32 @@ namespace HavenCNCServer.Models
                             CompletedAt = DateTime.Now;
                             StopListening();
 
-                            // Log job completion to main UI
-                            LoggingService.LogSuccess($"✓ Job {_jobId} completed (detected by API monitor)", "CNCJob");
-
                             // Notify completion callback
                             OnJobCompleted?.Invoke(this);
                             break;
                         }
+                        else if (!jobRunning && !wasRunning && pollCount > 20)
+                        {
+                            // Job never started running after 5 seconds (20 polls) - likely stuck
+                            LoggingService.LogWarning($"⚠️ Job {_jobId} never started running after {pollCount} polls (5+ seconds) - may be stuck", "CNCJob");
+                        }
+                    }
+                    else
+                    {
+                        LoggingService.LogWarning($"Job {_jobId} monitor: IsJobRunning returned {result} at poll #{pollCount}", "CNCJob");
                     }
 
-                    // Poll every 100ms for responsive completion detection
-                    await Task.Delay(100, cancellationToken);
+                    // Poll every 250ms for responsive completion detection
+                    await Task.Delay(250, cancellationToken);
                 }
 
+                LoggingService.LogInfo($"📊 Job {_jobId} monitor exiting after {pollCount} polls (Cancelled={cancellationToken.IsCancellationRequested}, IsComplete={IsComplete})", "CNCJob");
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Exiting monitoring loop (Cancelled={cancellationToken.IsCancellationRequested})");
             }
             catch (OperationCanceledException)
             {
                 // Monitor was cancelled (likely due to 306 message event) - this is normal
+                LoggingService.LogInfo($"📊 Job {_jobId} monitor cancelled by event-based completion", "CNCJob");
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Cancelled by event-based completion");
             }
             catch (Exception ex)
