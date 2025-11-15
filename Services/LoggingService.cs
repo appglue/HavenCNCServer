@@ -16,17 +16,17 @@ namespace HavenCNCServer.Services
         private static readonly object _lock = new object();
         private static readonly List<LogEntry> _logEntries = new List<LogEntry>();
         private static readonly HashSet<ILogTarget> _targets = new HashSet<ILogTarget>();
-        
+
         /// <summary>
         /// Maximum number of log entries to keep in memory
         /// </summary>
         public static int MaxLogEntries { get; set; } = 2000;
-        
+
         /// <summary>
         /// Maximum number of log entries to display in UI (to prevent flickering)
         /// </summary>
         public static int MaxDisplayEntries { get; set; } = 50;
-        
+
         /// <summary>
         /// Event fired when a new log entry is added
         /// </summary>
@@ -41,22 +41,22 @@ namespace HavenCNCServer.Services
             /// Gets or sets the timestamp when the log entry was created
             /// </summary>
             public DateTime Timestamp { get; set; }
-            
+
             /// <summary>
             /// Gets or sets the log message content
             /// </summary>
             public string Message { get; set; }
-            
+
             /// <summary>
             /// Gets or sets the log level of this entry
             /// </summary>
             public LogLevel Level { get; set; }
-            
+
             /// <summary>
             /// Gets or sets the source component that generated this log entry
             /// </summary>
             public string Source { get; set; }
-            
+
             /// <summary>
             /// Initializes a new instance of the LogEntry class
             /// </summary>
@@ -70,7 +70,7 @@ namespace HavenCNCServer.Services
                 Level = level;
                 Source = source;
             }
-            
+
             /// <summary>
             /// Format the log entry for display
             /// </summary>
@@ -85,14 +85,14 @@ namespace HavenCNCServer.Services
                     LogLevel.Debug => "🔍",
                     _ => ""
                 };
-                
+
                 var timestamp = Timestamp.ToString("HH:mm:ss");
                 var sourcePrefix = !string.IsNullOrEmpty(Source) && Source != "System" ? $"[{Source}] " : "";
-                
+
                 return $"[{timestamp}] {levelIcon} {sourcePrefix}{Message}";
             }
         }
-        
+
         /// <summary>
         /// Log level enumeration
         /// </summary>
@@ -102,28 +102,28 @@ namespace HavenCNCServer.Services
             /// Debug level for detailed diagnostic information
             /// </summary>
             Debug,
-            
+
             /// <summary>
             /// Information level for general application flow
             /// </summary>
             Info,
-            
+
             /// <summary>
             /// Success level for successful operations
             /// </summary>
             Success,
-            
+
             /// <summary>
             /// Warning level for potentially harmful situations
             /// </summary>
             Warning,
-            
+
             /// <summary>
             /// Error level for error events
             /// </summary>
             Error
         }
-        
+
         /// <summary>
         /// Interface for log targets (UI controls that display logs)
         /// </summary>
@@ -134,13 +134,13 @@ namespace HavenCNCServer.Services
             /// </summary>
             /// <param name="entries">The log entries to display</param>
             void UpdateLog(IEnumerable<LogEntry> entries);
-            
+
             /// <summary>
             /// Gets a value indicating whether this log target has been disposed
             /// </summary>
             bool IsDisposed { get; }
         }
-        
+
         /// <summary>
         /// TextBox log target implementation
         /// </summary>
@@ -148,12 +148,12 @@ namespace HavenCNCServer.Services
         {
             private readonly TextBox _textBox;
             private readonly Form _parentForm;
-            
+
             /// <summary>
             /// Gets a value indicating whether this log target has been disposed
             /// </summary>
             public bool IsDisposed => _textBox.IsDisposed || _parentForm.IsDisposed;
-            
+
             /// <summary>
             /// Initializes a new instance of the TextBoxLogTarget class
             /// </summary>
@@ -164,7 +164,7 @@ namespace HavenCNCServer.Services
                 _textBox = textBox ?? throw new ArgumentNullException(nameof(textBox));
                 _parentForm = parentForm ?? throw new ArgumentNullException(nameof(parentForm));
             }
-            
+
             /// <summary>
             /// Updates the TextBox with the provided log entries
             /// </summary>
@@ -172,7 +172,7 @@ namespace HavenCNCServer.Services
             public void UpdateLog(IEnumerable<LogEntry> entries)
             {
                 if (IsDisposed) return;
-                
+
                 try
                 {
                     if (_parentForm.InvokeRequired)
@@ -181,20 +181,20 @@ namespace HavenCNCServer.Services
                         _parentForm.BeginInvoke(() => UpdateLog(entries));
                         return;
                     }
-                    
+
                     // Only display the last MaxDisplayEntries entries to prevent flickering
                     var displayEntries = entries.TakeLast(MaxDisplayEntries);
-                    
+
                     // Build the complete log text
                     var logText = new StringBuilder();
                     foreach (var entry in displayEntries)
                     {
                         logText.AppendLine(entry.FormatForDisplay());
                     }
-                    
+
                     // Update the textbox
                     _textBox.Text = logText.ToString();
-                    
+
                     // Scroll to bottom
                     _textBox.SelectionStart = _textBox.Text.Length;
                     _textBox.ScrollToCaret();
@@ -214,12 +214,12 @@ namespace HavenCNCServer.Services
         {
             private readonly RichTextBox _richTextBox;
             private readonly Form _parentForm;
-            
+
             /// <summary>
             /// Gets a value indicating whether this log target has been disposed
             /// </summary>
             public bool IsDisposed => _richTextBox.IsDisposed || _parentForm.IsDisposed;
-            
+
             /// <summary>
             /// Initializes a new instance of the RichTextBoxLogTarget class
             /// </summary>
@@ -230,7 +230,7 @@ namespace HavenCNCServer.Services
                 _richTextBox = richTextBox ?? throw new ArgumentNullException(nameof(richTextBox));
                 _parentForm = parentForm ?? throw new ArgumentNullException(nameof(parentForm));
             }
-            
+
             /// <summary>
             /// Updates the RichTextBox with the provided log entries with color coding
             /// </summary>
@@ -238,7 +238,7 @@ namespace HavenCNCServer.Services
             public void UpdateLog(IEnumerable<LogEntry> entries)
             {
                 if (IsDisposed) return;
-                
+
                 try
                 {
                     if (_parentForm.InvokeRequired)
@@ -247,23 +247,23 @@ namespace HavenCNCServer.Services
                         _parentForm.BeginInvoke(() => UpdateLog(entries));
                         return;
                     }
-                    
+
                     // Only display the last MaxDisplayEntries entries to prevent flickering
                     var displayEntries = entries.TakeLast(MaxDisplayEntries).ToList();
-                    
+
                     // Clear and rebuild the rich text with colors
                     _richTextBox.Clear();
-                    
+
                     foreach (var entry in displayEntries)
                     {
                         // Set color based on log level
                         var color = GetColorForLogLevel(entry.Level);
-                        
+
                         // Add the text with color
                         var text = entry.FormatForDisplay() + Environment.NewLine;
                         AppendColoredText(text, color);
                     }
-                    
+
                     // Scroll to bottom
                     _richTextBox.SelectionStart = _richTextBox.Text.Length;
                     _richTextBox.ScrollToCaret();
@@ -274,7 +274,7 @@ namespace HavenCNCServer.Services
                     System.Diagnostics.Debug.WriteLine($"Error updating rich text log target: {ex.Message}");
                 }
             }
-            
+
             /// <summary>
             /// Appends colored text to the RichTextBox
             /// </summary>
@@ -286,7 +286,7 @@ namespace HavenCNCServer.Services
                 _richTextBox.AppendText(text);
                 _richTextBox.SelectionColor = _richTextBox.ForeColor; // Reset to default
             }
-            
+
             /// <summary>
             /// Gets the color for a specific log level
             /// </summary>
@@ -303,63 +303,127 @@ namespace HavenCNCServer.Services
                 };
             }
         }
-        
+
+        /// <summary>
+        /// Flicker-free log target implementation optimized for append-only updates
+        /// </summary>
+        public class FlickerFreeLogTarget : ILogTarget
+        {
+            private readonly Components.FlickerFreeLogViewer _logViewer;
+            private readonly Form _parentForm;
+
+            /// <summary>
+            /// Gets a value indicating whether this log target has been disposed
+            /// </summary>
+            public bool IsDisposed => _logViewer.IsDisposed || _parentForm.IsDisposed;
+
+            /// <summary>
+            /// Initializes a new instance of the FlickerFreeLogTarget class
+            /// </summary>
+            /// <param name="logViewer">The FlickerFreeLogViewer control to display logs in</param>
+            /// <param name="parentForm">The parent form containing the log viewer</param>
+            public FlickerFreeLogTarget(Components.FlickerFreeLogViewer logViewer, Form parentForm)
+            {
+                _logViewer = logViewer ?? throw new ArgumentNullException(nameof(logViewer));
+                _parentForm = parentForm ?? throw new ArgumentNullException(nameof(parentForm));
+            }
+
+            /// <summary>
+            /// Updates the log viewer with the provided log entries using efficient append-only updates
+            /// </summary>
+            /// <param name="entries">The log entries to display</param>
+            public void UpdateLog(IEnumerable<LogEntry> entries)
+            {
+                if (IsDisposed) return;
+
+                try
+                {
+                    _logViewer.UpdateLogEntries(
+                        entries,
+                        entry => GetColorForLogLevel(entry.Level),
+                        entry => entry.FormatForDisplay()
+                    );
+                }
+                catch (Exception ex)
+                {
+                    // Avoid infinite recursion if logging fails
+                    System.Diagnostics.Debug.WriteLine($"Error updating flicker-free log target: {ex.Message}");
+                }
+            }
+
+            /// <summary>
+            /// Gets the color for a specific log level
+            /// </summary>
+            private static Color GetColorForLogLevel(LogLevel level)
+            {
+                return level switch
+                {
+                    LogLevel.Success => Color.Green,
+                    LogLevel.Error => Color.Red,
+                    LogLevel.Warning => Color.Orange,
+                    LogLevel.Info => Color.Black,
+                    LogLevel.Debug => Color.Gray,
+                    _ => Color.Black
+                };
+            }
+        }
+
         /// <summary>
         /// Add a log target to receive log updates
         /// </summary>
         public static void AddTarget(ILogTarget target)
         {
             if (target == null) return;
-            
+
             lock (_lock)
             {
                 _targets.Add(target);
-                
+
                 // Send current log entries to the new target
                 target.UpdateLog(_logEntries);
             }
         }
-        
+
         /// <summary>
         /// Remove a log target
         /// </summary>
         public static void RemoveTarget(ILogTarget target)
         {
             if (target == null) return;
-            
+
             lock (_lock)
             {
                 _targets.Remove(target);
             }
         }
-        
+
         /// <summary>
         /// Log a message with specified level and source
         /// </summary>
         public static void Log(string message, LogLevel level = LogLevel.Info, string source = "System")
         {
             if (string.IsNullOrEmpty(message)) return;
-            
+
             var entry = new LogEntry(message, level, source);
-            
+
             lock (_lock)
             {
                 // Add the new entry
                 _logEntries.Add(entry);
-                
+
                 // Trim old entries if we exceed the limit
                 while (_logEntries.Count > MaxLogEntries)
                 {
                     _logEntries.RemoveAt(0);
                 }
-                
+
                 // Clean up disposed targets
                 var disposedTargets = _targets.Where(t => t.IsDisposed).ToList();
                 foreach (var disposedTarget in disposedTargets)
                 {
                     _targets.Remove(disposedTarget);
                 }
-                
+
                 // Update all targets
                 foreach (var target in _targets)
                 {
@@ -373,11 +437,11 @@ namespace HavenCNCServer.Services
                     }
                 }
             }
-            
+
             // Fire the event
             LogEntryAdded?.Invoke(entry);
         }
-        
+
         /// <summary>
         /// Log an informational message
         /// </summary>
@@ -385,7 +449,7 @@ namespace HavenCNCServer.Services
         {
             Log(message, LogLevel.Info, source);
         }
-        
+
         /// <summary>
         /// Log a success message
         /// </summary>
@@ -393,7 +457,7 @@ namespace HavenCNCServer.Services
         {
             Log(message, LogLevel.Success, source);
         }
-        
+
         /// <summary>
         /// Log a warning message
         /// </summary>
@@ -401,7 +465,7 @@ namespace HavenCNCServer.Services
         {
             Log(message, LogLevel.Warning, source);
         }
-        
+
         /// <summary>
         /// Log an error message
         /// </summary>
@@ -409,7 +473,7 @@ namespace HavenCNCServer.Services
         {
             Log(message, LogLevel.Error, source);
         }
-        
+
         /// <summary>
         /// Log a debug message
         /// </summary>
@@ -417,7 +481,7 @@ namespace HavenCNCServer.Services
         {
             Log(message, LogLevel.Debug, source);
         }
-        
+
         /// <summary>
         /// Get all current log entries
         /// </summary>
@@ -428,7 +492,7 @@ namespace HavenCNCServer.Services
                 return _logEntries.ToList();
             }
         }
-        
+
         /// <summary>
         /// Clear all log entries
         /// </summary>
@@ -437,7 +501,7 @@ namespace HavenCNCServer.Services
             lock (_lock)
             {
                 _logEntries.Clear();
-                
+
                 // Update all targets
                 foreach (var target in _targets)
                 {
@@ -452,7 +516,7 @@ namespace HavenCNCServer.Services
                 }
             }
         }
-        
+
         /// <summary>
         /// Get log entries filtered by level
         /// </summary>
@@ -463,7 +527,7 @@ namespace HavenCNCServer.Services
                 return _logEntries.Where(e => e.Level == level).ToList();
             }
         }
-        
+
         /// <summary>
         /// Get log entries filtered by source
         /// </summary>

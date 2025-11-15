@@ -31,11 +31,12 @@ namespace HavenCNCServer
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblApiUrl = new System.Windows.Forms.Label();
             this.btnOpenSwagger = new System.Windows.Forms.Button();
-            this.txtLog = new System.Windows.Forms.RichTextBox();
+            this.txtLog = new HavenCNCServer.Components.FlickerFreeLogViewer();
             this.btnGCodeTest = new System.Windows.Forms.Button();
             this.btnAlwaysOnTop = new System.Windows.Forms.Button();
             this.btnShowUI = new System.Windows.Forms.Button();
             this.btnViewLogs = new System.Windows.Forms.Button();
+            this.btnOpenDataFolder = new System.Windows.Forms.Button();
             this.contextMenuLogs = new System.Windows.Forms.ContextMenuStrip();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
@@ -146,6 +147,16 @@ namespace HavenCNCServer
             this.btnViewLogs.UseVisualStyleBackColor = true;
             this.btnViewLogs.Click += new System.EventHandler(this.btnViewLogs_Click);
             // 
+            // btnOpenDataFolder
+            // 
+            this.btnOpenDataFolder.Location = new System.Drawing.Point(650, 70);
+            this.btnOpenDataFolder.Name = "btnOpenDataFolder";
+            this.btnOpenDataFolder.Size = new System.Drawing.Size(120, 30);
+            this.btnOpenDataFolder.TabIndex = 14;
+            this.btnOpenDataFolder.Text = "Open Data Folder";
+            this.btnOpenDataFolder.UseVisualStyleBackColor = true;
+            this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
+            // 
             // contextMenuLogs
             // 
             this.contextMenuLogs.Name = "contextMenuLogs";
@@ -177,6 +188,7 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.btnAlwaysOnTop);
             this.pnlControls.Controls.Add(this.btnShowUI);
             this.pnlControls.Controls.Add(this.btnViewLogs);
+            this.pnlControls.Controls.Add(this.btnOpenDataFolder);
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1380, 120);
@@ -194,7 +206,7 @@ namespace HavenCNCServer
             this.tabControl.Location = new System.Drawing.Point(12, 130);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1356, 550);
+            this.tabControl.Size = new System.Drawing.Size(1356, 938);
             this.tabControl.TabIndex = 11;
             // 
             // tabLogs
@@ -203,7 +215,7 @@ namespace HavenCNCServer
             this.tabLogs.Location = new System.Drawing.Point(4, 24);
             this.tabLogs.Name = "tabLogs";
             this.tabLogs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLogs.Size = new System.Drawing.Size(1348, 522);
+            this.tabLogs.Size = new System.Drawing.Size(1348, 910);
             this.tabLogs.TabIndex = 0;
             this.tabLogs.Text = "Logs";
             this.tabLogs.UseVisualStyleBackColor = true;
@@ -213,7 +225,7 @@ namespace HavenCNCServer
             this.tabMessages.Location = new System.Drawing.Point(4, 24);
             this.tabMessages.Name = "tabMessages";
             this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMessages.Size = new System.Drawing.Size(1348, 522);
+            this.tabMessages.Size = new System.Drawing.Size(1348, 910);
             this.tabMessages.TabIndex = 1;
             this.tabMessages.Text = "Messages";
             this.tabMessages.UseVisualStyleBackColor = true;
@@ -223,7 +235,7 @@ namespace HavenCNCServer
             this.tabGCode.Location = new System.Drawing.Point(4, 24);
             this.tabGCode.Name = "tabGCode";
             this.tabGCode.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGCode.Size = new System.Drawing.Size(1348, 522);
+            this.tabGCode.Size = new System.Drawing.Size(1348, 910);
             this.tabGCode.TabIndex = 2;
             this.tabGCode.Text = "G-Code";
             this.tabGCode.UseVisualStyleBackColor = true;
@@ -344,11 +356,12 @@ namespace HavenCNCServer
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label lblApiUrl;
         private System.Windows.Forms.Button btnOpenSwagger;
-        private System.Windows.Forms.RichTextBox txtLog;
+        private HavenCNCServer.Components.FlickerFreeLogViewer txtLog;
         private System.Windows.Forms.Button btnGCodeTest;
         private System.Windows.Forms.Button btnAlwaysOnTop;
         private System.Windows.Forms.Button btnShowUI;
         private System.Windows.Forms.Button btnViewLogs;
+        private System.Windows.Forms.Button btnOpenDataFolder;
         private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;

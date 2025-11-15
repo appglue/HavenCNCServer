@@ -118,14 +118,14 @@ namespace HavenCNCServer
         /// </summary>
         private void SetupLogging()
         {
-            // Create and register a log target for the main form's text box
-            var logTarget = new RichTextBoxLogTarget(txtLog, this);
+            // Create and register a log target for the main form's flicker-free log viewer
+            var logTarget = new LoggingService.FlickerFreeLogTarget(txtLog, this);
             LoggingService.AddTarget(logTarget);
 
             // Set maximum log entries from settings or default
-            LoggingService.MaxLogEntries = 2000;
+            LoggingService.MaxLogEntries = 10000;
 
-            LogInfo("Logging system initialized", "System");
+            LogInfo("Logging system initialized with flicker-free log viewer", "System");
         }
 
         /// <summary>
@@ -717,6 +717,32 @@ namespace HavenCNCServer
                     LogError($"Failed to open log file: {ex.Message}", "UI");
                     MessageBox.Show($"Failed to open log file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Open the data folder in Windows Explorer
+        /// </summary>
+        private void btnOpenDataFolder_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
+
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(dataDirectory))
+                {
+                    Directory.CreateDirectory(dataDirectory);
+                }
+
+                // Open in Windows Explorer
+                Process.Start("explorer.exe", dataDirectory);
+                LogInfo($"Opened data folder: {dataDirectory}", "UI");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to open data folder: {ex.Message}", "UI");
+                MessageBox.Show($"Failed to open data folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

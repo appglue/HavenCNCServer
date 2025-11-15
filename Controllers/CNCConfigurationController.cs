@@ -30,6 +30,8 @@ namespace HavenCNCServer.Controllers
             // Ensure directories exist
             Directory.CreateDirectory(_dataDirectory);
             Directory.CreateDirectory(_checkpointsDirectory);
+
+            Services.LoggingService.LogInfo($"CNCConfigurationController initialized. Data directory: {_dataDirectory}", "Config");
         }
 
         #region Data Management
@@ -42,25 +44,31 @@ namespace HavenCNCServer.Controllers
         [HttpGet("GetData/{name}")]
         public string? GetData(string name)
         {
+            Services.LoggingService.LogInfo($"🔵 GetData ENDPOINT HIT - name parameter: '{name}'", "Config");
             try
             {
-                Services.LoggingService.LogInfo($"📖 GetData request: '{name}'", "Config");
+                Services.LoggingService.LogInfo($"📖 GetData request received: '{name}'", "Config");
+                Services.LoggingService.LogDebug($"Data directory: {_dataDirectory}", "Config");
 
-                var filePath = Path.Combine(_dataDirectory, $"{name}.json");
+                var filePath = Path.Combine(_dataDirectory, name);
+                Services.LoggingService.LogDebug($"Looking for file at: {filePath}", "Config");
 
                 if (!System.IO.File.Exists(filePath))
                 {
                     Services.LoggingService.LogWarning($"❌ Data '{name}' not found at: {filePath}", "Config");
+                    Services.LoggingService.LogDebug($"File.Exists returned false for: {filePath}", "Config");
                     return null; // Return null instead of throwing error
                 }
 
+                Services.LoggingService.LogDebug($"File exists, reading content from: {filePath}", "Config");
                 var content = System.IO.File.ReadAllText(filePath);
-                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} characters", "Config");
+                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} characters from {filePath}", "Config");
                 return content;
             }
             catch (Exception ex)
             {
                 Services.LoggingService.LogError($"Failed to read data '{name}': {ex.Message}", "Config");
+                Services.LoggingService.LogError($"Stack trace: {ex.StackTrace}", "Config");
                 throw new InvalidOperationException($"Failed to read data '{name}': {ex.Message}", ex);
             }
         }
@@ -83,7 +91,11 @@ namespace HavenCNCServer.Controllers
 
                 Services.LoggingService.LogInfo($"💾 SetData request: '{request.Name}' ({(request.Content?.Length ?? 0)} chars)", "Config");
 
-                var filePath = Path.Combine(_dataDirectory, $"{request.Name}.json");
+                var filePath = Path.Combine(_dataDirectory, request.Name);
+
+                // Create backup before saving
+                Services.BackupService.CreateBackup(filePath);
+
                 System.IO.File.WriteAllText(filePath, request.Content ?? string.Empty);
 
                 Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved to: {filePath}", "Config");
@@ -98,20 +110,27 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// List all available data names
         /// </summary>
-        /// <returns>Array of data names</returns>
+        /// <returns>Array of data names (full filenames with extensions)</returns>
         [HttpGet("ListData")]
         public string[] ListData()
         {
             try
             {
-                return Directory.GetFiles(_dataDirectory, "*.json")
-                    .Select(f => Path.GetFileNameWithoutExtension(f))
+                Services.LoggingService.LogInfo($"📋 ListData request - checking directory: {_dataDirectory}", "Config");
+
+                var files = Directory.GetFiles(_dataDirectory, "*.json")
+                    .Select(f => Path.GetFileName(f))  // Get full filename with .json extension
                     .Where(name => !string.IsNullOrEmpty(name))
                     .OrderBy(name => name)
                     .ToArray();
+
+                Services.LoggingService.LogInfo($"📋 ListData returning {files.Length} files: [{string.Join(", ", files)}]", "Config");
+
+                return files;
             }
             catch (Exception ex)
             {
+                Services.LoggingService.LogError($"Failed to list data: {ex.Message}", "Config");
                 throw new InvalidOperationException($"Failed to list data: {ex.Message}", ex);
             }
         }
@@ -126,7 +145,7 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                var filePath = Path.Combine(_dataDirectory, $"{name}.json");
+                var filePath = Path.Combine(_dataDirectory, name);
 
                 if (!System.IO.File.Exists(filePath))
                 {
@@ -174,7 +193,11 @@ namespace HavenCNCServer.Controllers
                     if (string.IsNullOrWhiteSpace(dataItem.Name))
                         continue;
 
-                    var filePath = Path.Combine(checkpointDir, $"{dataItem.Name}.json");
+                    var filePath = Path.Combine(checkpointDir, dataItem.Name);
+
+                    // Create backup before saving
+                    Services.BackupService.CreateBackup(filePath);
+
                     System.IO.File.WriteAllText(filePath, dataItem.Content ?? string.Empty);
                 }
             }
@@ -300,7 +323,7 @@ namespace HavenCNCServer.Controllers
 
                 foreach (var file in files)
                 {
-                    var name = Path.GetFileNameWithoutExtension(file);
+                    var name = Path.GetFileName(file);  // Keep full filename with .json
                     var content = System.IO.File.ReadAllText(file);
                     contents.Add(new DataItem { Name = name, Content = content });
                 }

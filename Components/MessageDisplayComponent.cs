@@ -14,10 +14,10 @@ namespace HavenCNCServer.Components
     /// </summary>
     public class MessageDisplayComponent : UserControl, ICNCEventListener
     {
-        private RichTextBox txtMessages = null!;
+        private FlickerFreeLogViewer txtMessages = null!;
         private Label lblMessages = null!;
         private Button btnClear = null!;
-        private int _maxMessages = 1000;
+        private int _maxMessages = 5000;
         private int _currentMessageCount = 0;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace HavenCNCServer.Components
         private void InitializeComponent()
         {
             this.lblMessages = new Label();
-            this.txtMessages = new RichTextBox();
+            this.txtMessages = new FlickerFreeLogViewer();
             this.btnClear = new Button();
             this.SuspendLayout();
 
@@ -60,26 +60,25 @@ namespace HavenCNCServer.Components
             this.txtMessages.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom)
                         | AnchorStyles.Left)
                         | AnchorStyles.Right)));
-            this.txtMessages.Location = new Point(3, 24);
+            this.txtMessages.Location = new Point(3, 28);
             this.txtMessages.Name = "txtMessages";
-            this.txtMessages.ReadOnly = true;
-            this.txtMessages.Size = new Size(394, 373);
             this.txtMessages.TabIndex = 1;
-            this.txtMessages.Text = "";
+            this.txtMessages.Dock = DockStyle.None;  // Use anchoring for proper sizing
 
             // MessageDisplayComponent
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.txtMessages);
             this.Controls.Add(this.lblMessages);
             this.Name = "MessageDisplayComponent";
-            this.Size = new Size(400, 400);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
         private void SetupMessageDisplay()
         {
-            txtMessages.Text = "=== CNC Message Monitor ===\r\nWaiting for CNC messages...\r\n\r\n";
+            txtMessages.AppendLogEntry("=== CNC Message Monitor ===", Color.DarkBlue);
+            txtMessages.AppendLogEntry("Waiting for CNC messages...", Color.Gray);
+            txtMessages.AppendLogEntry("", Color.Black);
 
             // Register as event listener with CNCJobInfoListener
             CNCJobInfoListener.AddListener(this);
@@ -252,28 +251,8 @@ namespace HavenCNCServer.Components
         {
             try
             {
-                // Save current selection
-                var originalStart = txtMessages.SelectionStart;
-                var originalLength = txtMessages.SelectionLength;
-
-                // Move to end and add text
-                txtMessages.SelectionStart = txtMessages.Text.Length;
-                txtMessages.SelectionLength = 0;
-                txtMessages.SelectionColor = color;
-                txtMessages.AppendText(message + Environment.NewLine);
-
-                // Reset color to default
-                txtMessages.SelectionColor = Color.Black;
-
-                // Scroll to bottom to show latest messages
-                txtMessages.ScrollToCaret();
-
-                // Restore original selection (if any)
-                if (originalLength > 0)
-                {
-                    txtMessages.SelectionStart = originalStart;
-                    txtMessages.SelectionLength = originalLength;
-                }
+                // Use the efficient append method from FlickerFreeLogViewer
+                txtMessages.AppendLogEntry(message, color);
             }
             catch (Exception ex)
             {
@@ -324,24 +303,9 @@ namespace HavenCNCServer.Components
 
         private void TrimOldMessages()
         {
-            try
-            {
-                var lines = txtMessages.Lines;
-                if (lines.Length > _maxMessages)
-                {
-                    // Keep only the most recent messages
-                    var keepLines = lines.Skip(lines.Length - (_maxMessages * 3 / 4)).ToArray();
-                    txtMessages.Lines = keepLines;
-                    _currentMessageCount = keepLines.Length;
-
-                    // Add separator to show where trimming occurred
-                    AddColoredMessage("--- [Previous messages trimmed] ---", Color.Gray);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error trimming old messages: {ex.Message}", "MessageDisplay");
-            }
+            // FlickerFreeLogViewer automatically trims old messages
+            // Just reset the counter since trimming is handled by the viewer
+            _currentMessageCount = txtMessages.Lines.Length;
         }
 
         /// <summary>
@@ -362,8 +326,10 @@ namespace HavenCNCServer.Components
                 }
                 else
                 {
-                    txtMessages.Clear();
-                    txtMessages.Text = "=== CNC Message Monitor ===\r\n[Messages cleared]\r\n\r\n";
+                    txtMessages.Reset();
+                    txtMessages.AppendLogEntry("=== CNC Message Monitor ===", Color.DarkBlue);
+                    txtMessages.AppendLogEntry("[Messages cleared]", Color.Gray);
+                    txtMessages.AppendLogEntry("", Color.Black);
                     _currentMessageCount = 0;
                 }
 

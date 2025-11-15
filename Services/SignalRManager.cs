@@ -438,6 +438,10 @@ namespace HavenCNCServer.Services
         private readonly CancellationTokenSource _cancellationTokenSource;
         private bool _isRunning = false;
 
+        /// <summary>
+        /// Initializes a new instance of the SignalREventListener class with a dedicated message queue processor
+        /// </summary>
+        /// <param name="hubContext">The SignalR hub context for broadcasting messages</param>
         public SignalREventListener(IHubContext<CNCMessageHub> hubContext)
         {
             _hubContext = hubContext;
@@ -457,6 +461,10 @@ namespace HavenCNCServer.Services
             LogInfo("SignalR message queue processor started with bounded capacity of 1000", "SignalR");
         }
 
+        /// <summary>
+        /// Receives a CNC event and queues it for processing and broadcast to SignalR clients
+        /// </summary>
+        /// <param name="centroidEvent">The CNC event to process and broadcast</param>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
             if (!_isRunning)
