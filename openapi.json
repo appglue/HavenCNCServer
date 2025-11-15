@@ -1239,7 +1239,7 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get available input port numbers",
+        "summary": "Get available input port numbers from PLC source file",
         "responses": {
           "200": {
             "description": "Success",
@@ -1281,7 +1281,7 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get available output port numbers",
+        "summary": "Get available output port numbers from PLC source file",
         "responses": {
           "200": {
             "description": "Success",
@@ -1478,12 +1478,51 @@
         }
       }
     },
+    "/api/CNCIO/GetForcedOutputs": {
+      "get": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Get all outputs that are currently in a forced state",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCIO/SetOutputState": {
       "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Set output state",
+        "summary": "Set output state and broadcast the change via SignalR",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1510,31 +1549,23 @@
         }
       }
     },
-    "/api/CNCIO/OverrideInput": {
+    "/api/CNCIO/ResetOutput/{outputNumber}": {
       "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Override input for testing",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
+        "summary": "Reset output to normal (remove forced state)",
+        "parameters": [
+          {
+            "name": "outputNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -1542,57 +1573,12 @@
         }
       }
     },
-    "/api/CNCIO/OverrideOutput": {
+    "/api/CNCIO/ResetAllOutputs": {
       "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Override output for testing",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/OverrideIORequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/ResetInputOverrides": {
-      "post": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Reset all input overrides",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/ResetOutputOverrides": {
-      "post": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Reset all output overrides",
+        "summary": "Reset all outputs to normal (remove all forced states)",
         "responses": {
           "200": {
             "description": "Success"
@@ -1829,7 +1815,7 @@
           {
             "name": "sourcePath",
             "in": "query",
-            "description": "Optional path to the PLC source file. If not provided, uses default location.",
+            "description": "Optional path to the PLC source file. If not provided, uses C:\\cncr\\acorn_router_plc.src",
             "schema": {
               "type": "string"
             }
@@ -2331,7 +2317,7 @@
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Get current G-code",
+        "summary": "Get all G-code lines from the currently running job",
         "responses": {
           "200": {
             "description": "Success",
@@ -2370,7 +2356,7 @@
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Get current line number",
+        "summary": "Get current line number being executed",
         "responses": {
           "200": {
             "description": "Success",
@@ -2391,6 +2377,36 @@
                 "schema": {
                   "type": "integer",
                   "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCProgram/IsJobRunning": {
+      "get": {
+        "tags": [
+          "CNCProgram"
+        ],
+        "summary": "Check if a job is currently running (calls Centroid API)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -3803,7 +3819,7 @@
         "tags": [
           "CNCSystem"
         ],
-        "summary": "Check if we are connected to Centroid by attempting to update current position",
+        "summary": "Check if we are connected to Centroid",
         "responses": {
           "200": {
             "description": "Success",
@@ -4788,22 +4804,6 @@
         "description": "Types of movement commands",
         "format": "int32"
       },
-      "OverrideIORequest": {
-        "type": "object",
-        "properties": {
-          "number": {
-            "type": "integer",
-            "description": "IO number",
-            "format": "int32"
-          },
-          "value": {
-            "type": "boolean",
-            "description": "Override value"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for IO override operations"
-      },
       "PWMConfiguration": {
         "type": "object",
         "properties": {
@@ -5263,6 +5263,11 @@
           },
           "job": {
             "$ref": "#/components/schemas/JobDetails"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "File path of the created G-code file",
+            "nullable": true
           },
           "error": {
             "type": "string",

@@ -187,17 +187,9 @@ namespace HavenCNCServer.Centroid.Events
                 // Store the DRO event in message history
                 storeMessage(droEvent, "DRO_UPDATE");
 
-                // Throttle listener notifications to avoid flooding the frontend
-                // Send at most one event every 100ms - always use the latest event
-                if (EnableThrottling)
-                {
-                    ThrottledNotifyListeners(droEvent, notifyListeners);
-                }
-                else
-                {
-                    // Throttling disabled - send every event immediately
-                    notifyListeners(droEvent);
-                }
+                // Throttling disabled - send every event immediately
+                // Note: EnableThrottling is set to false. If re-enabled, use ThrottledNotifyListeners instead.
+                notifyListeners(droEvent);
 
                 return (false, droEvent); // Don't skip logging - positions have changed
             }

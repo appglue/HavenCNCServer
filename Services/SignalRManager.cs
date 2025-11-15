@@ -130,6 +130,43 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
+        /// Broadcast output state change to all connected SignalR clients
+        /// </summary>
+        /// <param name="outputNumber">The output number that changed</param>
+        /// <param name="state">The new state (true = on/forced on, false = off/forced off)</param>
+        /// <param name="forceState">The force state (ForcedOn, ForcedOff, or NotForced)</param>
+        public static async Task BroadcastOutputStateChanged(int outputNumber, bool state, string forceState)
+        {
+            if (_hubContext == null)
+            {
+                LogWarning("Cannot broadcast output state change - hub context not available", "SignalR");
+                return;
+            }
+
+            try
+            {
+                await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", new
+                {
+                    EventType = "OutputStateChanged",
+                    Timestamp = DateTime.UtcNow,
+                    Data = new
+                    {
+                        OutputNumber = outputNumber,
+                        State = state,
+                        ForceState = forceState,
+                        IsForced = forceState != "NotForced"
+                    }
+                });
+
+                LogInfo($"Broadcasted output state change: OUT{outputNumber} = {state} ({forceState})", "SignalR");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error broadcasting output state change: {ex.Message}", "SignalR");
+            }
+        }
+
+        /// <summary>
         /// Broadcast the current machine position to all connected SignalR clients
         /// Useful when position changes outside of normal DRO updates (e.g., fixture point changes)
         /// </summary>

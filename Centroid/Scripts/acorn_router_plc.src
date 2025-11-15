@@ -652,23 +652,22 @@ OUTPUT80_OFF_MSG                    IS 63746;(2+256*249)
 
 ; DO NOT MODIFY
 ; #wizardregion Inputs
-EStopOk                  IS INP1
-ToolClamped_I            IS INP2
-ToolIsPresent_I          IS INP3
-ToolIsUnclamped          IS INP4
-ToolUnclampButton        IS INP5
-AirPressureLowStop       IS INP6
-ToolTouchOffTriggered    IS INP8
-FirstAxisHomeOk          IS INP9
-SecondAxisHomeOk         IS INP10
-ThirdAxisHomeOk          IS INP11
-SlavedHomeInput          IS INP12
-HomeAll                  IS INP14
-Axis1DriveOk             IS INP65
-Axis2DriveOk             IS INP66
-Axis3DriveOk             IS INP67
-Axis4DriveOk             IS INP68
-SpindleOk                IS INP69
+EStopOk                IS INP1
+ToolClamped_I          IS INP2
+ToolIsPresent_I        IS INP3
+ToolIsUnclamped        IS INP4
+ToolUnclampButton      IS INP5
+ATC_AirPressureOk      IS INP6
+FixedToolTouchPlate    IS INP8
+FirstAxisHomeOk        IS INP9
+SecondAxisHomeOk       IS INP10
+ThirdAxisHomeOk        IS INP11
+SlavedHomeInput        IS INP12
+Axis1DriveOk           IS INP65
+Axis2DriveOk           IS INP66
+Axis3DriveOk           IS INP67
+Axis4DriveOk           IS INP68
+SpindleOk              IS INP69
 ; #endregion
 
 ;------------------------------------------------------------------------------
@@ -1556,7 +1555,6 @@ P846Bit3                        IS MEM900
 ; #wizardregion MemoryBits
 RPM_Sensor                                IS MEM287
 ExtUsb_AirBlowNozzle_SV                   IS MEM901
-ExtUsb_Output4Toggle_SV                   IS MEM901
 ExtUsb_Output5Toggle_SV                   IS MEM901
 ExtUsb_Output6Toggle_SV                   IS MEM901
 ExtUsb_Output7Toggle_SV                   IS MEM901
@@ -1564,6 +1562,7 @@ ExtUsb_Output8Toggle_SV                   IS MEM901
 PartChuteIsIn                             IS MEM901
 ExtUsb_PopUpPins_SV                       IS MEM901
 AirPressureLowMessage                     IS MEM901
+AirPressureLowStop                        IS MEM901
 ProbeDetect                               IS MEM901
 ProbeTripped                              IS MEM901
 ExtUsb_RapidOver100_SV                    IS MEM901
@@ -1574,12 +1573,10 @@ ExtUsb_RapidOverCustom_SV                 IS MEM901
 ExtUsb_RouterDustCollection_SV            IS MEM901
 ExtUsb_RouterVacuumHoldDown_SV            IS MEM901
 SecondAxisMinusLimitOk                    IS MEM901
+ExtUsb_Output4Toggle_SV                   IS MEM901
 ExtUsb_Output3Toggle_SV                   IS MEM901
 ExtUsb_Output2Toggle_SV                   IS MEM901
 ExtUsb_Output1Toggle_SV                   IS MEM901
-OhmicSensor                               IS MEM901
-FifthAxisMinusLimitOk                     IS MEM901
-FifthAxisPlusLimitOk                      IS MEM901
 FirstAxisMinusLimitOk                     IS MEM901
 FirstAxisPlusLimitOk                      IS MEM901
 ExtUsb_Flood_SV                           IS MEM901
@@ -1587,8 +1584,9 @@ FourthAxisMinusLimitOk                    IS MEM901
 FourthAxisPlusLimitOk                     IS MEM901
 ExtUsb_FeedrateVariationMode_SV           IS MEM901
 ExtUsb_IncrCont_SV                        IS MEM901
-SecondAxisPlusLimitOk                     IS MEM901
 ExtUsb_JogDisable_SV                      IS MEM901
+ExtUsb_LimitDefeat_SV                     IS MEM901
+SecondAxisPlusLimitOk                     IS MEM901
 LimitAll                                  IS MEM901
 ExtUsb_Mist_SV                            IS MEM901
 ExtUsb_MPGAxis1Select_SV                  IS MEM901
@@ -1598,20 +1596,22 @@ ExtUsb_MPGAxis4Select_SV                  IS MEM901
 ExtUsb_MPGAxis5Select_SV                  IS MEM901
 ExtUsb_MPGAxis6Select_SV                  IS MEM901
 ExtUsb_MPG_SV                             IS MEM901
-ExtUsb_LimitDefeat_SV                     IS MEM901
-ExtUsb_FeedOverCustom_SV                  IS MEM901
+OhmicSensor                               IS MEM901
+MaterialToolTouchPlate                    IS MEM901
 ExtUsb_SingleBlock_SV                     IS MEM901
+SixthAxisMinusLimitOk                     IS MEM901
 SixthAxisPlusLimitOk                      IS MEM901
 ExtUsb_ToolRelease_SV                     IS MEM901
 ToolCheck2                                IS MEM901
 ToolTouchOffDetect                        IS MEM901
+ToolTouchOffTriggered                     IS MEM901
 ToolTurretCounter                         IS MEM901
 ToolTurretPosBit1                         IS MEM901
 ToolTurretPosBit2                         IS MEM901
 ToolTurretPosBit3                         IS MEM901
 ToolTurretPosBit4                         IS MEM901
+ExtUsb_ToolCheck_SV                       IS MEM901
 ToolTurretSyncBit                         IS MEM901
-TorchArcOk_I                              IS MEM901
 TorchFloatSwitch_I                        IS MEM901
 TouchPlateTripped                         IS MEM901
 ExtUsb_TurretIndex_SV                     IS MEM901
@@ -1621,9 +1621,9 @@ ExtUsb_x100Jog_SV                         IS MEM901
 ExtUsb_x10Jog_SV                          IS MEM901
 ExtUsb_x1Jog_SV                           IS MEM901
 ZriHomingAll                              IS MEM901
-ExtUsb_ToolCheck_SV                       IS MEM901
+TorchArcOk_I                              IS MEM901
+FifthAxisPlusLimitOk                      IS MEM901
 ThirdAxisPlusLimitOk                      IS MEM901
-ThirdAxisMinusLimitOk                     IS MEM901
 ExtUsb_TailStockInOut_SV                  IS MEM901
 ExtUsb_SpinAutoMan_SV                     IS MEM901
 ExtUsb_SpindleBrake_SV                    IS MEM901
@@ -1634,7 +1634,7 @@ ExtUsb_SpindleLow_SV                      IS MEM901
 ExtUsb_SpindleMed_SV                      IS MEM901
 ExtUsb_SpinOver100_SV                     IS MEM901
 ExtUsb_SpinOverCustom_SV                  IS MEM901
-SixthAxisMinusLimitOk                     IS MEM901
+ThirdAxisMinusLimitOk                     IS MEM901
 ExtUsb_SpinOverMinus_SV                   IS MEM901
 ExtUsb_SpinStart_SV                       IS MEM901
 ExtUsb_SpinOnOff_SV                       IS MEM901
@@ -1646,262 +1646,265 @@ SpindleTempAlarmMessage                   IS MEM901
 SpindleTempAlarmStop                      IS MEM901
 ExtUsb_SpindleSpeedVariationMode_SV       IS MEM901
 ExtUsb_SpinOverPlus_SV                    IS MEM901
-ExtUsb_FeedOver75_SV                      IS MEM901
+FifthAxisMinusLimitOk                     IS MEM901
 ExtUsb_RapidFeedLink_SV                   IS MEM901
-ExtUsb_FeedOver25_SV                      IS MEM901
-Ax2_PlusJoystick_I                        IS MEM901
-ExtUsb_Ax2MinusJog_SV                     IS MEM901
-ExtUsb_Ax2PlusJog_SV                      IS MEM901
-ExtUsb_Ax3MinusJog_SV                     IS MEM901
-ExtUsb_Ax3PlusJog_SV                      IS MEM901
-ExtUsb_Ax4MinusJog_SV                     IS MEM901
-ExtUsb_Ax4PlusJog_SV                      IS MEM901
-ExtUsb_Ax5MinusJog_SV                     IS MEM901
-ExtUsb_Ax5PlusJog_SV                      IS MEM901
-ExtUsb_Ax6MinusJog_SV                     IS MEM901
-ExtUsb_Ax6PlusJog_SV                      IS MEM901
-BackGear                                  IS MEM901
-ExtUsb_ChuckClose_SV                      IS MEM901
-ExtUsb_ChuckOpen_SV                       IS MEM901
-ChuckFootPedal_I                          IS MEM901
-ChuckIsClosed                             IS MEM901
-ChuckIsOpen                               IS MEM901
+ExtUsb_Aux8_SV                            IS MEM901
+ExtUsb_Aux9_SV                            IS MEM901
+ExtUsb_Aux7_SV                            IS MEM901
+ExtUsb_Aux6_SV                            IS MEM901
 ExtUsb_ColletOpenClose_SV                 IS MEM901
 ExtUsb_CoolAutoMan_SV                     IS MEM901
 ExtUsb_LaserAlign_SV                      IS MEM901
 CutOffIsDown                              IS MEM901
+ExtUsb_Aux5_SV                            IS MEM901
+ExtUsb_Aux4_SV                            IS MEM901
+Ax1_MinusJoystick_I                       IS MEM901
+ExtUsb_Aux3_SV                            IS MEM901
 ExtUsb_CycleCancel_SV                     IS MEM901
+ExtUsb_Aux16_SV                           IS MEM901
 ExtUsb_CycleStart_SV                      IS MEM901
+CycleCancel2                              IS MEM901
+CycleStart2                               IS MEM901
+ExtUsb_Aux15_SV                           IS MEM901
+ExtUsb_Aux14_SV                           IS MEM901
+ExtUsb_Aux13_SV                           IS MEM901
+ExtUsb_Aux12_SV                           IS MEM901
+ExtUsb_Aux2_SV                            IS MEM901
+Ax1_PlusJoystick_I                        IS MEM901
+ExtUsb_Ax1Ax2MinusJog_SV                  IS MEM901
+ChuckIsOpen                               IS MEM901
+ExtUsb_Ax6PlusJog_SV                      IS MEM901
+ExtUsb_Ax5PlusJog_SV                      IS MEM901
+ExtUsb_Ax5MinusJog_SV                     IS MEM901
+ExtUsb_Ax4PlusJog_SV                      IS MEM901
+ExtUsb_Ax4MinusJog_SV                     IS MEM901
+ExtUsb_Ax3PlusJog_SV                      IS MEM901
+ExtUsb_Ax3MinusJog_SV                     IS MEM901
+ExtUsb_Ax2PlusJog_SV                      IS MEM901
+ExtUsb_Ax2MinusJog_SV                     IS MEM901
+Ax2_PlusJoystick_I                        IS MEM901
 Ax2_MinusJoystick_I                       IS MEM901
+BackGear                                  IS MEM901
 ExtUsb_Ax1PlusJog_SV                      IS MEM901
 ExtUsb_Ax1PlusAx2MinusJog_SV              IS MEM901
 ExtUsb_Ax1MinusJog_SV                     IS MEM901
-ATC_CarouselIsIn                          IS MEM901
-ATC_CarouselIsOut                         IS MEM901
-ATC_ToolCounter                           IS MEM901
-ExtUsb_Aux1_SV                            IS MEM901
-ExtUsb_Aux10_SV                           IS MEM901
-ExtUsb_Aux11_SV                           IS MEM901
-ExtUsb_Aux12_SV                           IS MEM901
-ExtUsb_Aux13_SV                           IS MEM901
-ExtUsb_Aux14_SV                           IS MEM901
-ExtUsb_Aux15_SV                           IS MEM901
-ExtUsb_Aux16_SV                           IS MEM901
-CycleCancel2                              IS MEM901
-ExtUsb_Aux2_SV                            IS MEM901
-ExtUsb_Aux4_SV                            IS MEM901
-ExtUsb_Aux5_SV                            IS MEM901
-ExtUsb_FeedOver50_SV                      IS MEM901
-ExtUsb_Aux7_SV                            IS MEM901
-ExtUsb_Aux8_SV                            IS MEM901
-ExtUsb_Aux9_SV                            IS MEM901
-Ax1_MinusJoystick_I                       IS MEM901
-Ax1_PlusJoystick_I                        IS MEM901
-ExtUsb_Ax1Ax2MinusJog_SV                  IS MEM901
-ExtUsb_Ax1Ax2PlusJog_SV                   IS MEM901
 ExtUsb_Ax1MinusAx2PlusJog_SV              IS MEM901
-ExtUsb_Aux3_SV                            IS MEM901
-CycleStart2                               IS MEM901
-ExtUsb_Aux6_SV                            IS MEM901
-ExtUsb_DryRun_SV                          IS MEM901
-DSPProbe_I                                IS MEM901
-ExtUsb_FeedOver100_SV                     IS MEM901
+ExtUsb_Ax1Ax2PlusJog_SV                   IS MEM901
+ExtUsb_ChuckClose_SV                      IS MEM901
+ExtUsb_ChuckOpen_SV                       IS MEM901
+ChuckFootPedal_I                          IS MEM901
+ChuckIsClosed                             IS MEM901
+ExtUsb_Aux11_SV                           IS MEM901
+ExtUsb_Aux10_SV                           IS MEM901
+ExtUsb_Ax6MinusJog_SV                     IS MEM901
+ATC_CarouselIsIn                          IS MEM901
 FeedHold2                                 IS MEM901
 ExtUsb_FeedHold_SV                        IS MEM901
 ExtUsb_FastSlowJog_SV                     IS MEM901
+ExtUsb_FeedOver50_SV                      IS MEM901
+ExtUsb_FeedOver75_SV                      IS MEM901
+ExtUsb_Aux1_SV                            IS MEM901
+ExtUsb_FeedOverCustom_SV                  IS MEM901
+ExtUsb_FeedOver100_SV                     IS MEM901
+ATC_CarouselIsOut                         IS MEM901
+DSPProbe_I                                IS MEM901
+ExtUsb_DryRun_SV                          IS MEM901
+ExtUsb_FeedOver25_SV                      IS MEM901
+ATC_ToolCounter                           IS MEM901
 TouchPlateDetect                          IS MEM902
-ToolRackIsIn_I                            IS MEM902
-FifthAxisHomeLimitOk                      IS MEM902
-FifthAxisHomeOk                           IS MEM902
-ThirdAxisHomeLimitOk                      IS MEM902
-FirstAxisHomeLimitOk                      IS MEM902
-Axis6DriveOk                              IS MEM902
-Axis5DriveOk                              IS MEM902
-EStopOk2                                  IS MEM902
-FourthAxisHomeLimitOk                     IS MEM902
-SpindleIsOriented                         IS MEM902
-FourthAxisHomeOk                          IS MEM902
-SafetyDoorLockConfirmed_I                 IS MEM902
-SafetyDoorSwitchClosed_I                  IS MEM902
-SecondAxisHomeLimitOk                     IS MEM902
-LubeOk                                    IS MEM902
-DrawBarIsUp_I                             IS MEM902
-SixthAxisHomeLimitOk                      IS MEM902
-SixthAxisHomeOk                           IS MEM902
-DrawBarReleased                           IS MEM902
-HomeLimitAll                              IS MEM902
 ToolRackIsOut_I                           IS MEM902
-LaserReady_I                              IS MEM902
-DriveOk                                   IS MEM902
-FiberLaserOn_I                            IS MEM902
-FiberLaserOk_I                            IS MEM902
-VFDUpToSpeed                              IS MEM902
+HomeLimitAll                              IS MEM902
+HomeAll                                   IS MEM902
+SpindleIsOriented                         IS MEM902
+Axis5DriveOk                              IS MEM902
 LaserHeadOk_I                             IS MEM902
-VFDZeroSpeed                              IS MEM902
-DrawBarIsDown_I                           IS MEM902
+Axis6DriveOk                              IS MEM902
+FirstAxisHomeLimitOk                      IS MEM902
 LaserHeadInPos_I                          IS MEM902
 TorchBreakawayOk                          IS MEM902
-ATC_AirPressureOk                         IS MEM902
-ExtUsb_ChuckClosedOut_SV                  IS MEM903
-ExtUsb_ChuckOpenOut_SV                    IS MEM903
-ExtUsb_ColletOpenCloseOut_SV              IS MEM903
-ExtUsb_Aux3Out_SV                         IS MEM903
-ExtUsb_Aux2Out_SV                         IS MEM903
-ExtUsb_Aux15Out_SV                        IS MEM903
-ExtUsb_Aux4Out_SV                         IS MEM903
-ExtUsb_Aux14Out_SV                        IS MEM903
-ExtUsb_CoolantAutoManualOut_SV            IS MEM903
-ExtUsb_LaserAlignOut_SV                   IS MEM903
-ExtUsb_CycleCancelOut_SV                  IS MEM903
+SixthAxisHomeLimitOk                      IS MEM902
+FourthAxisHomeOk                          IS MEM902
+FourthAxisHomeLimitOk                     IS MEM902
+FifthAxisHomeOk                           IS MEM902
+DrawBarIsDown_I                           IS MEM902
+EStopOk2                                  IS MEM902
+VFDZeroSpeed                              IS MEM902
+SecondAxisHomeLimitOk                     IS MEM902
+FiberLaserOk_I                            IS MEM902
+ToolRackIsIn_I                            IS MEM902
+SafetyDoorSwitchClosed_I                  IS MEM902
+FiberLaserOn_I                            IS MEM902
+LubeOk                                    IS MEM902
+SixthAxisHomeOk                           IS MEM902
+FifthAxisHomeLimitOk                      IS MEM902
+DrawBarIsUp_I                             IS MEM902
+DrawBarReleased                           IS MEM902
+DriveOk                                   IS MEM902
+ThirdAxisHomeLimitOk                      IS MEM902
+VFDUpToSpeed                              IS MEM902
+SafetyDoorLockConfirmed_I                 IS MEM902
+LaserReady_I                              IS MEM902
+ExtUsb_Ax5PlusJogOut_SV                   IS MEM903
 ExtUsb_Aux13Out_SV                        IS MEM903
-ExtUsb_Aux16Out_SV                        IS MEM903
-ExtUsb_Ax6PlusJogOut_SV                   IS MEM903
-ExtUsb_Aux7Out_SV                         IS MEM903
-ExtUsb_Aux6Out_SV                         IS MEM903
-ExtUsb_Ax3MinusJogOut_SV                  IS MEM903
-ExtUsb_Ax3PlusJogOut_SV                   IS MEM903
-ExtUsb_Ax4MinusJogOut_SV                  IS MEM903
-ExtUsb_CycleStartOut_SV                   IS MEM903
-ExtUsb_Ax2MinusJogOut_SV                  IS MEM903
-ExtUsb_Ax1PlusJogOut_SV                   IS MEM903
-ExtUsb_Ax1PlusAx2MinusJogOut_SV           IS MEM903
-ExtUsb_Ax5MinusJogOut_SV                  IS MEM903
+ExtUsb_Aux14Out_SV                        IS MEM903
 ExtUsb_Ax1MinusJogOut_SV                  IS MEM903
+ExtUsb_Ax5MinusJogOut_SV                  IS MEM903
 ExtUsb_Ax1MinusAx2PlusJogOut_SV           IS MEM903
+ExtUsb_Ax1PlusAx2MinusJogOut_SV           IS MEM903
 ExtUsb_Ax1Ax2PlusJogOut_SV                IS MEM903
 ExtUsb_Ax1Ax2MinusJogOut_SV               IS MEM903
-ExtUsb_Ax5PlusJogOut_SV                   IS MEM903
 ExtUsb_Aux9Out_SV                         IS MEM903
-ExtUsb_Ax6MinusJogOut_SV                  IS MEM903
 ExtUsb_Aux8Out_SV                         IS MEM903
-ExtUsb_Ax2PlusJogOut_SV                   IS MEM903
+ExtUsb_Ax2MinusJogOut_SV                  IS MEM903
+ExtUsb_Aux7Out_SV                         IS MEM903
+ExtUsb_Aux6Out_SV                         IS MEM903
 ExtUsb_Aux5Out_SV                         IS MEM903
+ExtUsb_Aux4Out_SV                         IS MEM903
+ExtUsb_Ax2PlusJogOut_SV                   IS MEM903
+ExtUsb_Aux3Out_SV                         IS MEM903
+ExtUsb_Ax3MinusJogOut_SV                  IS MEM903
+ExtUsb_Ax3PlusJogOut_SV                   IS MEM903
+ExtUsb_Aux2Out_SV                         IS MEM903
+ExtUsb_Ax4MinusJogOut_SV                  IS MEM903
 ExtUsb_Ax4PlusJogOut_SV                   IS MEM903
-ExtUsb_FeedOver25Out_SV                   IS MEM903
-ExtUsb_FastSlowJogOut_SV                  IS MEM903
-ExtUsb_RapidOver75Out_SV                  IS MEM903
-ExtUsb_RapidOverCustomOut_SV              IS MEM903
-ExtUsb_RouterDustCollectionOut_SV         IS MEM903
-ExtUsb_RouterVacuumHoldDownOut_SV         IS MEM903
-ExtUsb_SingleBlockOut_SV                  IS MEM903
-ExtUsb_SpinAutoManOut_SV                  IS MEM903
-ExtUsb_SpindleBrakeOut_SV                 IS MEM903
-ExtUsb_SpinCCWOut_SV                      IS MEM903
+ExtUsb_Aux16Out_SV                        IS MEM903
+ExtUsb_Aux15Out_SV                        IS MEM903
+ExtUsb_Ax1PlusJogOut_SV                   IS MEM903
+ExtUsb_FeedOver75Out_SV                   IS MEM903
+ExtUsb_Ax6PlusJogOut_SV                   IS MEM903
 ExtUsb_SpinCWOut_SV                       IS MEM903
+ExtUsb_SpinCCWOut_SV                      IS MEM903
+ExtUsb_SpindleBrakeOut_SV                 IS MEM903
+ExtUsb_SpinAutoManOut_SV                  IS MEM903
+ExtUsb_SingleBlockOut_SV                  IS MEM903
+ExtUsb_RouterVacuumHoldDownOut_SV         IS MEM903
 ExtUsb_SpindleHighOut_SV                  IS MEM903
-ExtUsb_SpindleLowOut_SV                   IS MEM903
-ExtUsb_SpindleMedOut_SV                   IS MEM903
-ExtUsb_SpinOver100Out_SV                  IS MEM903
-ExtUsb_SpinOverCustomOut_SV               IS MEM903
-ExtUsb_SpinOverMinusOut_SV                IS MEM903
-ExtUsb_SpinOverPlusOut_SV                 IS MEM903
-ExtUsb_SpinStartOut_SV                    IS MEM903
-ExtUsb_SpinOnOffOut_SV                    IS MEM903
-ExtUsb_SpinStopOut_SV                     IS MEM903
-ExtUsb_SpindleSpeedVariationModeOut_SV    IS MEM903
-ExtUsb_TailStockInOutOut_SV               IS MEM903
-ExtUsb_ToolCheckOut_SV                    IS MEM903
-ExtUsb_ToolReleaseOut_SV                  IS MEM903
-ExtUsb_TurretIndexOut_SV                  IS MEM903
-ExtUsb_VCPResetOut_SV                     IS MEM903
-ExtUsb_WorkLightOut_SV                    IS MEM903
-ExtUsb_x100JogOut_SV                      IS MEM903
+ExtUsb_RouterDustCollectionOut_SV         IS MEM903
+ExtUsb_RapidOver75Out_SV                  IS MEM903
 ExtUsb_RapidOver50Out_SV                  IS MEM903
 ExtUsb_RapidOver25Out_SV                  IS MEM903
 ExtUsb_RapidOver100Out_SV                 IS MEM903
 ExtUsb_RapidFeedLinkOut_SV                IS MEM903
-ExtUsb_FeedHoldOut_SV                     IS MEM903
-ExtUsb_FeedOver100Out_SV                  IS MEM903
+ExtUsb_PopUpPinsOut_SV                    IS MEM903
+ExtUsb_RapidOverCustomOut_SV              IS MEM903
+ExtUsb_Output8ToggleOut_SV                IS MEM903
+ExtUsb_SpindleLowOut_SV                   IS MEM903
+ExtUsb_SpinOver100Out_SV                  IS MEM903
+ExtUsb_x100JogOut_SV                      IS MEM903
+ExtUsb_WorkLightOut_SV                    IS MEM903
+ExtUsb_VCPResetOut_SV                     IS MEM903
+ExtUsb_TurretIndexOut_SV                  IS MEM903
+ExtUsb_ToolReleaseOut_SV                  IS MEM903
+ExtUsb_ToolCheckOut_SV                    IS MEM903
+ExtUsb_SpindleMedOut_SV                   IS MEM903
+ExtUsb_TailStockInOutOut_SV               IS MEM903
+ExtUsb_SpinStopOut_SV                     IS MEM903
+ExtUsb_SpinOnOffOut_SV                    IS MEM903
+ExtUsb_SpinStartOut_SV                    IS MEM903
+ExtUsb_SpinOverPlusOut_SV                 IS MEM903
+ExtUsb_SpinOverMinusOut_SV                IS MEM903
+ExtUsb_SpinOverCustomOut_SV               IS MEM903
+ExtUsb_SpindleSpeedVariationModeOut_SV    IS MEM903
+ExtUsb_Ax6MinusJogOut_SV                  IS MEM903
+ExtUsb_Output7ToggleOut_SV                IS MEM903
+ExtUsb_Output5ToggleOut_SV                IS MEM903
 ExtUsb_Aux12Out_SV                        IS MEM903
 ExtUsb_FeedOver50Out_SV                   IS MEM903
-ExtUsb_FeedOver75Out_SV                   IS MEM903
+ExtUsb_FeedOver25Out_SV                   IS MEM903
+ExtUsb_FeedOver100Out_SV                  IS MEM903
+ExtUsb_FeedHoldOut_SV                     IS MEM903
+ExtUsb_FastSlowJogOut_SV                  IS MEM903
 ExtUsb_FeedOverCustomOut_SV               IS MEM903
-ExtUsb_FloodOut_SV                        IS MEM903
-ExtUsb_FeedrateVariationModeOut_SV        IS MEM903
-ExtUsb_IncrContOut_SV                     IS MEM903
-ExtUsb_JogDisableOut_SV                   IS MEM903
-ExtUsb_LimitDefeatOut_SV                  IS MEM903
-ExtUsb_MistOut_SV                         IS MEM903
-ExtUsb_MPGAxis1SelectOut_SV               IS MEM903
 ExtUsb_DryRunOut_SV                       IS MEM903
-ExtUsb_MPGAxis2SelectOut_SV               IS MEM903
-ExtUsb_MPGAxis4SelectOut_SV               IS MEM903
-ExtUsb_MPGAxis5SelectOut_SV               IS MEM903
-ExtUsb_MPGAxis6SelectOut_SV               IS MEM903
-ExtUsb_MPGOut_SV                          IS MEM903
-ExtUsb_Output1ToggleOut_SV                IS MEM903
-ExtUsb_Output2ToggleOut_SV                IS MEM903
-ExtUsb_Output3ToggleOut_SV                IS MEM903
-ExtUsb_Output4ToggleOut_SV                IS MEM903
-ExtUsb_Output5ToggleOut_SV                IS MEM903
+ExtUsb_CycleCancelOut_SV                  IS MEM903
+ExtUsb_LaserAlignOut_SV                   IS MEM903
+ExtUsb_CoolantAutoManualOut_SV            IS MEM903
+ExtUsb_ColletOpenCloseOut_SV              IS MEM903
+ExtUsb_ChuckOpenOut_SV                    IS MEM903
+ExtUsb_ChuckClosedOut_SV                  IS MEM903
+ExtUsb_CycleStartOut_SV                   IS MEM903
 ExtUsb_Output6ToggleOut_SV                IS MEM903
-ExtUsb_Output7ToggleOut_SV                IS MEM903
-ExtUsb_Output8ToggleOut_SV                IS MEM903
-ExtUsb_PopUpPinsOut_SV                    IS MEM903
+ExtUsb_FloodOut_SV                        IS MEM903
+ExtUsb_IncrContOut_SV                     IS MEM903
+ExtUsb_Output4ToggleOut_SV                IS MEM903
+ExtUsb_Output3ToggleOut_SV                IS MEM903
+ExtUsb_Output2ToggleOut_SV                IS MEM903
+ExtUsb_Output1ToggleOut_SV                IS MEM903
+ExtUsb_MPGOut_SV                          IS MEM903
+ExtUsb_MPGAxis6SelectOut_SV               IS MEM903
+ExtUsb_FeedrateVariationModeOut_SV        IS MEM903
+ExtUsb_MPGAxis5SelectOut_SV               IS MEM903
 ExtUsb_MPGAxis3SelectOut_SV               IS MEM903
+ExtUsb_MPGAxis2SelectOut_SV               IS MEM903
+ExtUsb_MPGAxis1SelectOut_SV               IS MEM903
+ExtUsb_MistOut_SV                         IS MEM903
+ExtUsb_LimitDefeatOut_SV                  IS MEM903
+ExtUsb_JogDisableOut_SV                   IS MEM903
+ExtUsb_MPGAxis4SelectOut_SV               IS MEM903
 ExtUsb_Aux11Out_SV                        IS MEM903
-M94M95126                                 IS MEM903
+LaserEnable_O                             IS MEM903
 ExtUsb_Aux1Out_SV                         IS MEM903
-OUTPUT5                                   IS MEM903
-OUTPUT6                                   IS MEM903
-OUTPUT7                                   IS MEM903
-OUTPUT8                                   IS MEM903
-OxygenSelect_O                            IS MEM903
-PartChute                                 IS MEM903
-M94M95113                                 IS MEM903
-PopUpPins                                 IS MEM903
-M94M95112                                 IS MEM903
-OUTPUT4                                   IS MEM903
-ChargePump                                IS MEM903
-M94M95111                                 IS MEM903
-PWMOutput                                 IS MEM903
-PWMSelect                                 IS MEM903
-ExtUsb_x10JogOut_SV                       IS MEM903
-Axis6BrakeRelease                         IS MEM903
-Axis5BrakeRelease                         IS MEM903
-Axis4BrakeRelease                         IS MEM903
-RedLight                                  IS MEM903
-ReverseToolTurret                         IS MEM903
-CAxisEnable                               IS MEM903
-ExtUsb_Aux10Out_SV                        IS MEM903
-OUTPUT3                                   IS MEM903
-OUTPUT1                                   IS MEM903
-DrawBarUp_O                               IS MEM903
-M94M95124                                 IS MEM903
-M94M95123                                 IS MEM903
 M94M95122                                 IS MEM903
-M94M95121                                 IS MEM903
-GasEnable_O                               IS MEM903
-M94M95120                                 IS MEM903
+M94M95123                                 IS MEM903
+M94M95124                                 IS MEM903
+M94M95125                                 IS MEM903
+M94M95126                                 IS MEM903
+DriveResetOut                             IS MEM903
+DrawBarUp_O                               IS MEM903
 NitrogenSelect_O                          IS MEM903
 NoFaultOut                                IS MEM903
-OUTPUT2                                   IS MEM903
+M94M95121                                 IS MEM903
 Ohmic_Enable                              IS MEM903
-OrientSpindle                             IS MEM903
 OscillationOn                             IS MEM903
-M94M95119                                 IS MEM903
-M94M95118                                 IS MEM903
-ColletOpenClose                           IS MEM903
-M94M95117                                 IS MEM903
-M94M95116                                 IS MEM903
-M94M95115                                 IS MEM903
-M94M95114                                 IS MEM903
+GasEnable_O                               IS MEM903
 CutOff                                    IS MEM903
-Axis3BrakeRelease                         IS MEM903
-RotateToolTurret                          IS MEM903
-Axis1BrakeRelease                         IS MEM903
+ColletOpenClose                           IS MEM903
+OUTPUT1                                   IS MEM903
+OUTPUT2                                   IS MEM903
+OUTPUT3                                   IS MEM903
+OUTPUT4                                   IS MEM903
+ExtUsb_Aux10Out_SV                        IS MEM903
+OrientSpindle                             IS MEM903
+OUTPUT6                                   IS MEM903
+M94M95120                                 IS MEM903
+M94M95118                                 IS MEM903
+FiberLaserReset_O                         IS MEM903
+LaserStandby_O                            IS MEM903
+G540SpinFwdOff                            IS MEM903
+G540SpinRevOff                            IS MEM903
+GreenLight                                IS MEM903
+DustCollectionOn                          IS MEM903
+LaserDeploy_O                             IS MEM903
+LaserHeadCalibrate_O                      IS MEM903
+LaserHeadReset_O                          IS MEM903
+M94M95119                                 IS MEM903
+LaserAlignActivate                        IS MEM903
+LaserReset                                IS MEM903
+LubePump                                  IS MEM903
+M94M95111                                 IS MEM903
+M94M95112                                 IS MEM903
+M94M95113                                 IS MEM903
+M94M95114                                 IS MEM903
+M94M95115                                 IS MEM903
+M94M95116                                 IS MEM903
+M94M95117                                 IS MEM903
+LaserCooling_Fan                          IS MEM903
+OUTPUT7                                   IS MEM903
+OUTPUT5                                   IS MEM903
+OxygenSelect_O                            IS MEM903
+SpinREV                                   IS MEM903
+TailStockInOut                            IS MEM903
+ToolRackIn_O                              IS MEM903
+ToolRackOut_O                             IS MEM903
 ToolTurretEnable                          IS MEM903
 AutoSquareRelayForHardPair                IS MEM903
 ATCAirBlowActivate                        IS MEM903
-ATC_CarouselReverse                       IS MEM903
 TorchOn                                   IS MEM903
 TorchTouchDisconnect                      IS MEM903
-M94M95125                                 IS MEM903
-ATC_CarouselOut                           IS MEM903
+ATC_CarouselReverse                       IS MEM903
 TurnClampOn                               IS MEM903
-Axis2BrakeRelease                         IS MEM903
-LaserEnable_O                             IS MEM903
-AlignmentLaserEnable_O                    IS MEM903
+ATC_CarouselOut                           IS MEM903
+VacuumOn                                  IS MEM903
 VFDDirection_O                            IS MEM903
 VFDEnable_O                               IS MEM903
 WorkLight                                 IS MEM903
@@ -1910,31 +1913,30 @@ ATC_CarouselForward                       IS MEM903
 AmberLight                                IS MEM903
 AirSelect_O                               IS MEM903
 ExtUsb_AirBlowNozzleOut_SV                IS MEM903
-VacuumOn                                  IS MEM903
-ToolRackOut_O                             IS MEM903
-FiberLaserReset_O                         IS MEM903
-LaserStandby_O                            IS MEM903
+AlignmentLaserEnable_O                    IS MEM903
+OUTPUT8                                   IS MEM903
+SpindleCooling_Fan                        IS MEM903
+ReverseToolTurret                         IS MEM903
+PartChute                                 IS MEM903
+PopUpPins                                 IS MEM903
+ChargePump                                IS MEM903
+PWMOutput                                 IS MEM903
+PWMSelect                                 IS MEM903
+ExtUsb_x10JogOut_SV                       IS MEM903
+CAxisEnable                               IS MEM903
+Axis6BrakeRelease                         IS MEM903
+RedLight                                  IS MEM903
+SpindleCooling                            IS MEM903
+ExtUsb_x1JogOut_SV                        IS MEM903
+RotateToolTurret                          IS MEM903
+Axis5BrakeRelease                         IS MEM903
+Axis4BrakeRelease                         IS MEM903
+Axis3BrakeRelease                         IS MEM903
 SafetyDoorLockOpen_O                      IS MEM903
 ScribeOn                                  IS MEM903
-LubePump                                  IS MEM903
-LaserReset                                IS MEM903
+Axis2BrakeRelease                         IS MEM903
+Axis1BrakeRelease                         IS MEM903
 SmartToolReleaseEnable_O                  IS MEM903
-LaserCooling_Fan                          IS MEM903
-LaserAlignActivate                        IS MEM903
-LaserHeadReset_O                          IS MEM903
-LaserHeadCalibrate_O                      IS MEM903
-LaserDeploy_O                             IS MEM903
-ToolRackIn_O                              IS MEM903
-DriveResetOut                             IS MEM903
-GreenLight                                IS MEM903
-G540SpinRevOff                            IS MEM903
-G540SpinFwdOff                            IS MEM903
-DustCollectionOn                          IS MEM903
-SpindleCooling                            IS MEM903
-SpindleCooling_Fan                        IS MEM903
-SpinREV                                   IS MEM903
-TailStockInOut                            IS MEM903
-ExtUsb_x1JogOut_SV                        IS MEM903
 Flood                                     IS MEM904
 Mist                                      IS MEM905
 OpenChuck                                 IS MEM906
@@ -2529,33 +2531,26 @@ LaserDeploy_SV                IS SV_M94_M95_47 ;(LaserDeploy_O)
 
 M51_SV                        IS SV_M94_M95_51 ;(C-Axis Enable)
 
-M61                           IS SV_M94_M95_61; OUTPUT1 (NOT the same as OUT1), M81 Off
-M62                           IS SV_M94_M95_62; OUTPUT2 (NOT the same as OUT2), M82 Off
-M63                           IS SV_M94_M95_63; OUTPUT3 (NOT the same as OUT3), M83 Off
-M64                           IS SV_M94_M95_64; OUTPUT4 (NOT the same as OUT4), M84 Off
-M65                           IS SV_M94_M95_65; OUTPUT5 (NOT the same as OUT5), M85 Off
-M66                           IS SV_M94_M95_66; OUTPUT6 (NOT the same as OUT6), M86 Off
-M67                           IS SV_M94_M95_67; OUTPUT7 (NOT the same as OUT7), M87 Off
 M68                           IS SV_M94_M95_68; OUTPUT8 (NOT the same as OUT8), M88 Off
 
-	; --- HavenCNC
-M101                          IS SV_M94_M95_101; 
-M102                          IS SV_M94_M95_102; 
-M103                          IS SV_M94_M95_103; 
-M104                          IS SV_M94_M95_104; 
-M105                          IS SV_M94_M95_105; 
-M106                          IS SV_M94_M95_106; 
-M107                          IS SV_M94_M95_107; 
-M108                          IS SV_M94_M95_108; 
-M109                          IS SV_M94_M95_109; 
-M110                          IS SV_M94_M95_110; 
-M111                          IS SV_M94_M95_111; 
-M112                          IS SV_M94_M95_112; 
-M113                          IS SV_M94_M95_113; 
-M114                          IS SV_M94_M95_114; 
-M115                          IS SV_M94_M95_115; 
-M116                          IS SV_M94_M95_116; 
-; --- HavenCNC		   
+ ; --- HavenCNC
+M52                           IS SV_M94_M95_52;
+M53                           IS SV_M94_M95_53;
+M54                           IS SV_M94_M95_54;
+M55                           IS SV_M94_M95_55;
+M56                           IS SV_M94_M95_56;
+M57                           IS SV_M94_M95_57;
+M58                           IS SV_M94_M95_58;
+M59                           IS SV_M94_M95_59;
+M60                           IS SV_M94_M95_60;
+M61                           IS SV_M94_M95_61;
+M62                           IS SV_M94_M95_62;
+M63                           IS SV_M94_M95_63;
+M64                           IS SV_M94_M95_64;
+M65                           IS SV_M94_M95_65;
+M66                           IS SV_M94_M95_66;
+M67                           IS SV_M94_M95_67;
+; --- HavenCNC       
 												 
 SpindleSpeedVariation_SV      IS SV_M94_M95_70; Spindle Speed Variation
 FeedrateVariation_SV          IS SV_M94_M95_71; Feedrate Variation
@@ -6019,19 +6014,19 @@ IF True_M THEN SET ProbeDetectDisabled_M
 IF True_M THEN SET TTDetectDisabled_M
 IF True_M THEN SET TorchArcOkDisabled_M
 IF True_M THEN SET TorchFloatSwitchDisabled_M
+IF True_M THEN SET CutOffIsDownIs_M
 IF True_M THEN SET ChuckIsClosedIs_M
 IF True_M THEN SET ChuckIsOpenIs_M
-IF True_M THEN SET CutOffIsDownIs_M
 IF True_M THEN SET BackGearDisabled_M
-IF True_M THEN SET EStopOk2Disabled_M
 IF True_M THEN SET DrawBarReleasedDisable_M
 IF True_M THEN SET DrawBarIsUpDisabled_M
-IF True_M THEN SET G540SpindleDisabled_M
-IF True_M THEN SET G540SpindleDisabled_M
+IF True_M THEN SET EStopOk2Disabled_M
+IF True_M THEN SET SmartToolReleaseDisabled_M
 IF True_M THEN SET WorkLightDisabled_M
 IF True_M THEN SET LaserHeadCalibrateDisabled_M
+IF True_M THEN SET G540SpindleDisabled_M
+IF True_M THEN SET G540SpindleDisabled_M
 IF True_M THEN SET ColletDisabled_M
-IF True_M THEN SET SmartToolReleaseDisabled_M
 IF True_M THEN RST OpenChuck
 IF True_M THEN RST CloseChuck
 IF True_M THEN SET SpindleBrakeDisabled_M
@@ -6044,53 +6039,53 @@ IF PLOT_SV THEN RST PLOT_SV
 
 ; -- Default output handling.
 ; -- HavenCNC
-IF M101 THEN SET OUT1
-IF !M101 THEN RST OUT1
+IF M52 THEN SET OUT1
+IF !M52 THEN RST OUT1
 
-IF M102 THEN SET OUT2
-IF !M102 THEN RST OUT2
+IF M53 THEN SET OUT2
+IF !M53 THEN RST OUT2
 
-IF M103 THEN SET OUT3
-IF !M103 THEN RST OUT3
+IF M54 THEN SET OUT3
+IF !M54 THEN RST OUT3
 
-IF M104 THEN SET OUT4
-IF !M104 THEN RST OUT4
+IF M55 THEN SET OUT4
+IF !M55 THEN RST OUT4
 
-IF M105 THEN SET OUT5
-IF !M105 THEN RST OUT5
+IF M56 THEN SET OUT5
+IF !M56 THEN RST OUT5
 
-IF M106 THEN SET OUT6
-IF !M106 THEN RST OUT6
+IF M57 THEN SET OUT6
+IF !M57 THEN RST OUT6
 
-IF M107 THEN SET OUT7
-IF !M107 THEN RST OUT7
+IF M58 THEN SET OUT7
+IF !M58 THEN RST OUT7
 
-IF M108 THEN SET OUT8
-IF !M108 THEN RST OUT8
+IF M59 THEN SET OUT8
+IF !M59 THEN RST OUT8
 
-IF M109 THEN SET OUT9
-IF !M109 THEN RST OUT9
+IF M60 THEN SET OUT9
+IF !M60 THEN RST OUT9
 
-IF M110 THEN SET OUT10
-IF !M110 THEN RST OUT10
+IF M61 THEN SET OUT10
+IF !M61 THEN RST OUT10
 
-IF M111 THEN SET OUT11
-IF !M111 THEN RST OUT11
+IF M62 THEN SET OUT11
+IF !M62 THEN RST OUT11
 
-IF M112 THEN SET OUT12
-IF !M112 THEN RST OUT12
+IF M63 THEN SET OUT12
+IF !M63 THEN RST OUT12
 
-IF M113 THEN SET OUT13
-IF !M113 THEN RST OUT13
+IF M64 THEN SET OUT13
+IF !M64 THEN RST OUT13
 
-IF M114 THEN SET OUT14
-IF !M114 THEN RST OUT14
+IF M65 THEN SET OUT14
+IF !M65 THEN RST OUT14
 
-IF M115 THEN SET OUT15
-IF !M115 THEN RST OUT15
+IF M66 THEN SET OUT15
+IF !M66 THEN RST OUT15
 
-IF M116 THEN SET OUT16
-IF !M116 THEN RST OUT16
+IF M67 THEN SET OUT16
+IF !M67 THEN RST OUT16
 ; -- HavenCNC
  
 ; -- input/output tracking

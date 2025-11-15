@@ -25,11 +25,29 @@ namespace HavenCNCServer.Controllers
         private static readonly object _jobsLock = new object();
 
         /// <summary>
-        /// Check if any job is currently running
+        /// Check if any job is currently running (calls Centroid API)
         /// </summary>
         /// <returns>True if a job is running</returns>
         public static bool IsJobRunning()
         {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe != null)
+                {
+                    var result = cncPipe.state.IsJobRunning(out bool jobRunning);
+                    if (result == CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        return jobRunning;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Error checking IsJobRunning from API: {ex.Message}", "CNCProgramController");
+            }
+
+            // Fallback to checking internal job state
             lock (_jobsLock)
             {
                 return _jobs.Any(j => j.IsRunning);
@@ -892,6 +910,16 @@ namespace HavenCNCServer.Controllers
             {
                 throw new InvalidOperationException($"Failed to get current line number: {ex.Message}", ex);
             }
+        }
+
+        /// <summary>
+        /// Check if a job is currently running (calls Centroid API)
+        /// </summary>
+        /// <returns>True if a job is running, false otherwise</returns>
+        [HttpGet("IsJobRunning")]
+        public bool GetIsJobRunning()
+        {
+            return IsJobRunning();
         }
 
         /// <summary>

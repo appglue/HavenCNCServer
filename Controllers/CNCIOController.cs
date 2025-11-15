@@ -3,6 +3,7 @@ using HavenCNCServer.Models;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Services;
 using System.Text.RegularExpressions;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
 {
@@ -13,6 +14,10 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCIOController : ControllerBase
     {
+        // Track forced outputs: Key = output number, Value = force state ("ForcedOn" or "ForcedOff")
+        private static readonly Dictionary<int, string> _forcedOutputs = new Dictionary<int, string>();
+        private static readonly object _forcedOutputsLock = new object();
+
         /// <summary>
         /// Constructor for CNC IO Controller
         /// </summary>
@@ -23,14 +28,21 @@ namespace HavenCNCServer.Controllers
         #region Basic IO Control
 
         /// <summary>
-        /// Get available input port numbers
+        /// Get available input port numbers from PLC source file
         /// </summary>
         [HttpGet("GetAvailableInputs")]
         public int[] GetAvailableInputs()
         {
             try
             {
-                return CNCUtils.GetAvailableInputPorts();
+                string sourcePath = @"C:\cncr\acorn_router_plc.src";
+                if (!System.IO.File.Exists(sourcePath))
+                {
+                    return Array.Empty<int>();
+                }
+
+                var definitions = ParseIODefinitions(sourcePath);
+                return definitions.Inputs.Select(i => i.Number).Distinct().OrderBy(n => n).ToArray();
             }
             catch (Exception ex)
             {
@@ -39,14 +51,21 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get available output port numbers
+        /// Get available output port numbers from PLC source file
         /// </summary>
         [HttpGet("GetAvailableOutputs")]
         public int[] GetAvailableOutputs()
         {
             try
             {
-                return CNCUtils.GetAvailableOutputPorts();
+                string sourcePath = @"C:\cncr\acorn_router_plc.src";
+                if (!System.IO.File.Exists(sourcePath))
+                {
+                    return Array.Empty<int>();
+                }
+
+                var definitions = ParseIODefinitions(sourcePath);
+                return definitions.Outputs.Select(o => o.Number).Distinct().OrderBy(n => n).ToArray();
             }
             catch (Exception ex)
             {
@@ -67,7 +86,7 @@ namespace HavenCNCServer.Controllers
                     throw new InvalidOperationException("CNC connection not available");
 
                 var inputStates = new Dictionary<int, bool>();
-                var availableInputs = CNCUtils.GetAvailableInputPorts();
+                var availableInputs = GetAvailableInputs();
 
                 foreach (var inputNumber in availableInputs)
                 {
@@ -99,7 +118,7 @@ namespace HavenCNCServer.Controllers
                     throw new InvalidOperationException("CNC connection not available");
 
                 var outputStates = new Dictionary<int, bool>();
-                var availableOutputs = CNCUtils.GetAvailableOutputPorts();
+                var availableOutputs = GetAvailableOutputs();
 
                 foreach (var outputNumber in availableOutputs)
                 {
@@ -173,7 +192,20 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Set output state
+        /// Get all outputs that are currently in a forced state
+        /// </summary>
+        /// <returns>Dictionary mapping output number to force state string ("ForcedOn" or "ForcedOff")</returns>
+        [HttpGet("GetForcedOutputs")]
+        public Dictionary<int, string> GetForcedOutputs()
+        {
+            lock (_forcedOutputsLock)
+            {
+                return new Dictionary<int, string>(_forcedOutputs);
+            }
+        }
+
+        /// <summary>
+        /// Set output state and broadcast the change via SignalR
         /// </summary>
         [HttpPost("SetOutputState")]
         public void SetOutputState([FromBody] SetOutputRequest request)
@@ -199,10 +231,110 @@ namespace HavenCNCServer.Controllers
 
                 if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                     throw new InvalidOperationException($"Failed to set output {request.Number}: {result}");
+
+                // Track the forced state
+                lock (_forcedOutputsLock)
+                {
+                    _forcedOutputs[request.Number] = forceState.ToString();
+                }
+
+                // Broadcast output state change via SignalR
+                _ = SignalRManager.BroadcastOutputStateChanged(request.Number, request.Value, forceState.ToString());
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to set output {request.Number} to {request.Value}: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Reset output to normal (remove forced state)
+        /// </summary>
+        [HttpPost("ResetOutput/{outputNumber}")]
+        public void ResetOutput(int outputNumber)
+        {
+            if (outputNumber <= 0)
+                throw new ArgumentException("Output number must be greater than 0");
+
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                // Reset to normal (remove forced state)
+                var result = cncPipe.plc.SetIoForceState(
+                    outputNumber,
+                    CentroidAPI.CNCPipe.Plc.BitType.Output,
+                    CentroidAPI.CNCPipe.Plc.ForceState.NotForced);
+
+                if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    throw new InvalidOperationException($"Failed to reset output {outputNumber}: {result}");
+
+                // Remove from tracking
+                lock (_forcedOutputsLock)
+                {
+                    _forcedOutputs.Remove(outputNumber);
+                }
+
+                // Broadcast the reset via SignalR
+                _ = SignalRManager.BroadcastOutputStateChanged(outputNumber, false, "NotForced");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to reset output {outputNumber}: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Reset all outputs to normal (remove all forced states)
+        /// </summary>
+        [HttpPost("ResetAllOutputs")]
+        public void ResetAllOutputs()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                var availableOutputs = GetAvailableOutputs();
+                var errors = new List<string>();
+
+                foreach (var outputNumber in availableOutputs)
+                {
+                    try
+                    {
+                        var result = cncPipe.plc.SetIoForceState(
+                            outputNumber,
+                            CentroidAPI.CNCPipe.Plc.BitType.Output,
+                            CentroidAPI.CNCPipe.Plc.ForceState.NotForced);
+
+                        if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            errors.Add($"Output {outputNumber}: {result}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"Output {outputNumber}: {ex.Message}");
+                    }
+                }
+
+                if (errors.Count > 0)
+                {
+                    throw new InvalidOperationException($"Failed to reset some outputs: {string.Join(", ", errors)}");
+                }
+
+                // Clear all tracked forced outputs
+                lock (_forcedOutputsLock)
+                {
+                    _forcedOutputs.Clear();
+                }
+            }
+            catch (Exception ex) when (ex is not InvalidOperationException)
+            {
+                throw new InvalidOperationException($"Failed to reset all outputs: {ex.Message}", ex);
             }
         }
 

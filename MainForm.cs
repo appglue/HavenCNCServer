@@ -856,45 +856,80 @@ namespace HavenCNCServer
                 if (File.Exists(plcSourceTemplate))
                 {
                     bool shouldCopy = false;
+                    bool needsConfirmation = false;
 
                     if (!File.Exists(plcSourceDest))
                     {
-                        // File doesn't exist, copy it
+                        // File doesn't exist, copy it without confirmation
                         shouldCopy = true;
                         LogInfo($"PLC source file not found at {plcSourceDest}, will copy template", "Startup");
                     }
                     else
                     {
-                        // Check if existing file has our custom logic
-                        LogInfo($"Checking existing PLC source at {plcSourceDest} for custom logic...", "Startup");
+                        // Check if existing file has our HavenCNC markup
+                        LogInfo($"Checking existing PLC source at {plcSourceDest} for HavenCNC markup...", "Startup");
                         string existingContent = File.ReadAllText(plcSourceDest);
-                        string searchPattern = "IF OUT10 && !OUT310 THEN InfoMsg_W = OUTPUT10_ON_MSG";
 
-                        if (!existingContent.Contains(searchPattern))
+                        // Look for the HavenCNC comment markers around the M52-M67 output handling
+                        string havenCncMarker = "; -- HavenCNC";
+
+                        if (!existingContent.Contains(havenCncMarker))
                         {
-                            shouldCopy = true;
-                            LogInfo($"PLC source file exists but doesn't contain our logic, will copy template", "Startup");
+                            // HavenCNC logic not found, ask user if they want to update
+                            needsConfirmation = true;
+                            LogWarning($"⚠️ PLC source file exists but doesn't contain HavenCNC markup (M52-M67 output handling)", "Startup");
+
+                            var result = MessageBox.Show(
+                                "The PLC source file at:\n" +
+                                $"{plcSourceDest}\n\n" +
+                                "does not contain the HavenCNC output control logic (M52-M67).\n\n" +
+                                "Would you like to update it with the HavenCNC version?\n\n" +
+                                "The existing file will be backed up before updating.",
+                                "Update PLC Source File?",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                shouldCopy = true;
+                                LogInfo($"User confirmed PLC source update", "Startup");
+                            }
+                            else
+                            {
+                                LogInfo($"User declined PLC source update", "Startup");
+                            }
                         }
                         else
                         {
-                            LogInfo($"PLC source file already contains our logic, skipping copy", "Startup");
+                            LogSuccess($"✓ PLC source file already contains HavenCNC markup, skipping copy", "Startup");
                         }
                     }
 
                     if (shouldCopy)
                     {
-                        // Backup existing file if it exists
+                        // Always backup existing file if it exists
                         if (File.Exists(plcSourceDest))
                         {
                             string backupPath = plcSourceDest + ".backup_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
                             LogInfo($"Backing up existing PLC source to: {backupPath}", "Startup");
                             File.Copy(plcSourceDest, backupPath, overwrite: true);
-                            LogSuccess($"✓ Backed up existing PLC source", "Startup");
+                            LogSuccess($"✓ Backed up existing PLC source to {backupPath}", "Startup");
                         }
 
                         LogInfo($"Copying PLC source template to: {plcSourceDest}", "Startup");
                         File.Copy(plcSourceTemplate, plcSourceDest, overwrite: true);
-                        LogSuccess($"✓ Copied PLC source template to {plcSourceDest}", "Startup");
+                        LogSuccess($"✓ Copied PLC source template with HavenCNC logic to {plcSourceDest}", "Startup");
+
+                        if (needsConfirmation)
+                        {
+                            MessageBox.Show(
+                                "PLC source file has been updated successfully.\n\n" +
+                                $"Backup saved to:\n{plcSourceDest}.backup_[timestamp]\n\n" +
+                                "The new file includes M52-M67 output control logic.",
+                                "Update Complete",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
                     }
                 }
                 else

@@ -198,6 +198,9 @@ namespace HavenCNCServer.Services
                                 // Give Centroid a moment to fully stabilize
                                 await Task.Delay(500);
                                 await RestoreLastFixturePointAsync();
+
+                                // Reset all outputs to clean state on startup
+                                await ResetAllOutputsAsync();
                             });
 
                             return _cncPipe;
@@ -496,6 +499,150 @@ namespace HavenCNCServer.Services
             catch (Exception)
             {
                 // Silently fail - fixture point restoration is not critical for connection
+            }
+        }
+
+        /// <summary>
+        /// Reset all outputs to normal (not forced) state on startup
+        /// </summary>
+        private static async Task ResetAllOutputsAsync()
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        var cncPipe = GetCNCPipe();
+                        if (cncPipe == null)
+                        {
+                            LogWarning("Cannot reset outputs - no CNC connection", "CNCConnectionManager");
+                            return;
+                        }
+
+                        // Get output definitions from PLC source file
+                        string sourcePath = @"C:\cncr\acorn_router_plc.src";
+                        if (!System.IO.File.Exists(sourcePath))
+                        {
+                            LogWarning($"Cannot reset outputs - PLC source file not found: {sourcePath}", "CNCConnectionManager");
+                            return;
+                        }
+
+                        var outputNumbers = GetOutputNumbersFromPLC(sourcePath);
+                        if (outputNumbers.Length == 0)
+                        {
+                            LogWarning("No outputs found in PLC source file", "CNCConnectionManager");
+                            return;
+                        }
+
+                        LogInfo($"Resetting {outputNumbers.Length} outputs to normal state...", "CNCConnectionManager");
+
+                        int successCount = 0;
+                        int errorCount = 0;
+
+                        foreach (var outputNumber in outputNumbers)
+                        {
+                            try
+                            {
+                                var result = cncPipe.plc.SetIoForceState(
+                                    outputNumber,
+                                    CentroidAPI.CNCPipe.Plc.BitType.Output,
+                                    CentroidAPI.CNCPipe.Plc.ForceState.NotForced);
+
+                                if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    successCount++;
+                                }
+                                else
+                                {
+                                    errorCount++;
+                                    LogWarning($"Failed to reset output {outputNumber}: {result}", "CNCConnectionManager");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                errorCount++;
+                                LogWarning($"Error resetting output {outputNumber}: {ex.Message}", "CNCConnectionManager");
+                            }
+                        }
+
+                        if (errorCount == 0)
+                        {
+                            LogInfo($"✓ Successfully reset all {successCount} outputs to normal state", "CNCConnectionManager");
+                        }
+                        else
+                        {
+                            LogWarning($"Reset outputs completed: {successCount} success, {errorCount} errors", "CNCConnectionManager");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Failed to reset outputs on startup: {ex.Message}", "CNCConnectionManager");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to start output reset task: {ex.Message}", "CNCConnectionManager");
+            }
+        }
+
+        /// <summary>
+        /// Get output numbers from PLC source file
+        /// </summary>
+        private static int[] GetOutputNumbersFromPLC(string filePath)
+        {
+            try
+            {
+                var outputNumbers = new List<int>();
+                var outputPattern = new System.Text.RegularExpressions.Regex(@"^([A-Za-z0-9_]+)\s+IS\s+OUT(\d+)", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+                var lines = System.IO.File.ReadAllLines(filePath);
+                bool inOutputSection = false;
+
+                foreach (var line in lines)
+                {
+                    var trimmedLine = line.Trim();
+
+                    // Detect output section start
+                    if (trimmedLine.Contains("Output Definitions") || trimmedLine.Contains("OUTPUT DEFINITIONS"))
+                    {
+                        inOutputSection = true;
+                        continue;
+                    }
+
+                    // Stop at #endregion
+                    if (trimmedLine == "; #endregion")
+                    {
+                        inOutputSection = false;
+                        continue;
+                    }
+
+                    // Skip comments and empty lines
+                    if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith(";"))
+                        continue;
+
+                    // Parse output definitions when in output section
+                    if (inOutputSection)
+                    {
+                        var outputMatch = outputPattern.Match(trimmedLine);
+                        if (outputMatch.Success)
+                        {
+                            int outputNumber = int.Parse(outputMatch.Groups[2].Value);
+                            if (!outputNumbers.Contains(outputNumber))
+                            {
+                                outputNumbers.Add(outputNumber);
+                            }
+                        }
+                    }
+                }
+
+                return outputNumbers.OrderBy(n => n).ToArray();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to parse output numbers from PLC file: {ex.Message}", "CNCConnectionManager");
+                return Array.Empty<int>();
             }
         }
     }
