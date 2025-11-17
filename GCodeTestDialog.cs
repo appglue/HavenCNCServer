@@ -16,12 +16,16 @@ namespace HavenCNCServer
     public partial class GCodeTestDialog : Form
     {
         private readonly MainForm? _mainForm;
-        
+
         // Step run mode fields
         private string _currentJobId = string.Empty;
         private bool _isStepRunActive = false;
         private int _currentStepLine = 0;
         private string[] _stepRunGCodeLines = Array.Empty<string>();
+
+        // Drag and drop fields
+        private bool _isDragging = false;
+        private Point _dragStartPoint;
 
         /// <summary>
         /// Initializes a new instance of the GCodeTestDialog
@@ -30,10 +34,15 @@ namespace HavenCNCServer
         {
             InitializeComponent();
             _mainForm = mainForm;
-            
+
             // Subscribe to G-code text changes to enable/disable single command button
             txtGCode.TextChanged += OnGCodeTextChanged;
-            
+
+            // Enable form dragging
+            this.MouseDown += GCodeTestDialog_MouseDown;
+            this.MouseMove += GCodeTestDialog_MouseMove;
+            this.MouseUp += GCodeTestDialog_MouseUp;
+
             // Update button states initially
             UpdateSingleCommandButtonState();
             UpdateStepRunControls();
@@ -57,7 +66,7 @@ namespace HavenCNCServer
             try
             {
                 var gCodeText = txtGCode.Text.Trim();
-                
+
                 if (string.IsNullOrWhiteSpace(gCodeText))
                 {
                     btnRunSingleCommand.Enabled = false;
@@ -67,8 +76,8 @@ namespace HavenCNCServer
 
                 // Count valid G-code lines (excluding comments and empty lines)
                 var validLines = gCodeText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(line => !string.IsNullOrWhiteSpace(line.Trim()) && 
-                                   !line.Trim().StartsWith(";") && 
+                    .Where(line => !string.IsNullOrWhiteSpace(line.Trim()) &&
+                                   !line.Trim().StartsWith(";") &&
                                    !line.Trim().StartsWith("("))
                     .Count();
 
@@ -106,17 +115,17 @@ namespace HavenCNCServer
             try
             {
                 btnRunGCode.Enabled = false;
-                
+
                 // Get the G-code lines from the editor
                 var gCodeLines = txtGCode.Lines.Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
-                
+
                 if (gCodeLines.Length == 0)
                 {
-                    MessageBox.Show("Please enter some G-code to execute.", "No G-Code", 
+                    MessageBox.Show("Please enter some G-code to execute.", "No G-Code",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                
+
                 // Create the controller and execute the G-code
                 // The controller and CNCJob system will handle all logging and notifications
                 var controller = new Controllers.CNCProgramController();
@@ -129,7 +138,7 @@ namespace HavenCNCServer
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error executing G-code:\n{ex.Message}", "Execution Error", 
+                MessageBox.Show($"Error executing G-code:\n{ex.Message}", "Execution Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -146,17 +155,17 @@ namespace HavenCNCServer
             try
             {
                 btnRunSingleCommand.Enabled = false;
-                
+
                 // Get the single G-code command from the editor
                 var gCodeText = txtGCode.Text.Trim();
-                
+
                 if (string.IsNullOrWhiteSpace(gCodeText))
                 {
-                    MessageBox.Show("Please enter a G-code command to execute.", "No G-Code", 
+                    MessageBox.Show("Please enter a G-code command to execute.", "No G-Code",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                
+
                 // Create the controller and execute the single command
                 // The controller and CNCJob system will handle all logging and notifications
                 var controller = new Controllers.CNCProgramController();
@@ -168,7 +177,7 @@ namespace HavenCNCServer
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error executing G-code command:\n{ex.Message}", "Execution Error", 
+                MessageBox.Show($"Error executing G-code command:\n{ex.Message}", "Execution Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -203,7 +212,7 @@ namespace HavenCNCServer
 
                 if (gCodeLines.Length == 0)
                 {
-                    MessageBox.Show("Please enter some G-code before starting step run.", "No G-Code", 
+                    MessageBox.Show("Please enter some G-code before starting step run.", "No G-Code",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -223,18 +232,18 @@ namespace HavenCNCServer
                     _mainForm?.LoadGCodeForDisplay(gCodeLines);
 
                     UpdateStepRunControls();
-                    MessageBox.Show($"Step run started successfully!\nJob ID: {_currentJobId}", "Step Run Started", 
+                    MessageBox.Show($"Step run started successfully!\nJob ID: {_currentJobId}", "Step Run Started",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to start step run:\n{response.Error}", "Step Run Error", 
+                    MessageBox.Show($"Failed to start step run:\n{response.Error}", "Step Run Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error starting step run:\n{ex.Message}", "Step Run Error", 
+                MessageBox.Show($"Error starting step run:\n{ex.Message}", "Step Run Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -254,7 +263,7 @@ namespace HavenCNCServer
 
                 if (!_isStepRunActive || string.IsNullOrEmpty(_currentJobId))
                 {
-                    MessageBox.Show("No step run is currently active.", "No Active Step Run", 
+                    MessageBox.Show("No step run is currently active.", "No Active Step Run",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -271,20 +280,20 @@ namespace HavenCNCServer
                     // Check if we've reached the end of the G-code
                     if (_currentStepLine > _stepRunGCodeLines.Length)
                     {
-                        MessageBox.Show("Step run completed successfully!", "Step Run Complete", 
+                        MessageBox.Show("Step run completed successfully!", "Step Run Complete",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         ResetStepRun();
                     }
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to execute next step:\n{response.Error}", "Step Execution Error", 
+                    MessageBox.Show($"Failed to execute next step:\n{response.Error}", "Step Execution Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error executing next step:\n{ex.Message}", "Step Execution Error", 
+                MessageBox.Show($"Error executing next step:\n{ex.Message}", "Step Execution Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -304,7 +313,7 @@ namespace HavenCNCServer
 
                 if (!_isStepRunActive || string.IsNullOrEmpty(_currentJobId))
                 {
-                    MessageBox.Show("No step run is currently active.", "No Active Step Run", 
+                    MessageBox.Show("No step run is currently active.", "No Active Step Run",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -315,19 +324,19 @@ namespace HavenCNCServer
 
                 if (response.Success)
                 {
-                    MessageBox.Show("Running from current step to completion...", "Running to Completion", 
+                    MessageBox.Show("Running from current step to completion...", "Running to Completion",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ResetStepRun();
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to run from current step:\n{response.Error}", "Run Error", 
+                    MessageBox.Show($"Failed to run from current step:\n{response.Error}", "Run Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error running from current step:\n{ex.Message}", "Run Error", 
+                MessageBox.Show($"Error running from current step:\n{ex.Message}", "Run Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -375,7 +384,7 @@ namespace HavenCNCServer
 
                 // Enable regular controls
                 btnRunGCode.Enabled = true;
-                
+
                 // Re-enable single command button based on G-code content
                 UpdateSingleCommandButtonState();
             }
@@ -385,7 +394,7 @@ namespace HavenCNCServer
             {
                 var totalLines = _stepRunGCodeLines.Length;
                 lblCurrentLine.Text = $"Step {_currentStepLine}/{totalLines}";
-                
+
                 if (_currentStepLine <= _stepRunGCodeLines.Length)
                 {
                     var currentLine = _stepRunGCodeLines[_currentStepLine - 1];
@@ -422,13 +431,13 @@ namespace HavenCNCServer
             {
                 // Unsubscribe from text change events
                 txtGCode.TextChanged -= OnGCodeTextChanged;
-                
+
                 // Clean up step run if active
                 if (_isStepRunActive)
                 {
                     ResetStepRun();
                 }
-                
+
                 // Note: We don't disconnect the CNC here since other parts of the application might be using it
                 // The CNCConnectionManager will handle connection lifecycle
             }
@@ -440,5 +449,43 @@ namespace HavenCNCServer
 
             base.OnFormClosing(e);
         }
+
+        #region Form Dragging
+
+        /// <summary>
+        /// Handle mouse down event to start dragging
+        /// </summary>
+        private void GCodeTestDialog_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _isDragging = true;
+                _dragStartPoint = e.Location;
+            }
+        }
+
+        /// <summary>
+        /// Handle mouse move event to drag the form
+        /// </summary>
+        private void GCodeTestDialog_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (_isDragging)
+            {
+                Point newLocation = this.Location;
+                newLocation.X += e.X - _dragStartPoint.X;
+                newLocation.Y += e.Y - _dragStartPoint.Y;
+                this.Location = newLocation;
+            }
+        }
+
+        /// <summary>
+        /// Handle mouse up event to stop dragging
+        /// </summary>
+        private void GCodeTestDialog_MouseUp(object? sender, MouseEventArgs e)
+        {
+            _isDragging = false;
+        }
+
+        #endregion
     }
 }

@@ -789,6 +789,38 @@ namespace HavenCNCServer
         }
 
         /// <summary>
+        /// Clear the logs display
+        /// </summary>
+        private void btnClearLogs_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                txtLog.Clear();
+                LogInfo("Logs cleared by user", "UI");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to clear logs: {ex.Message}", "UI");
+            }
+        }
+
+        /// <summary>
+        /// Clear the messages display
+        /// </summary>
+        private void btnClearMessages_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _messageDisplayComponent?.ClearMessages();
+                LogInfo("Messages cleared by user", "UI");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to clear messages: {ex.Message}", "UI");
+            }
+        }
+
+        /// <summary>
         /// Load settings into UI controls
         /// </summary>
         private void LoadSettingsIntoUI()

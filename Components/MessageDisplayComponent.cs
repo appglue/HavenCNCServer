@@ -313,6 +313,14 @@ namespace HavenCNCServer.Components
         /// </summary>
         private void BtnClear_Click(object? sender, EventArgs e)
         {
+            ClearMessages();
+        }
+
+        /// <summary>
+        /// Public method to clear all messages from display
+        /// </summary>
+        public void ClearMessages()
+        {
             try
             {
                 if (txtMessages.InvokeRequired)

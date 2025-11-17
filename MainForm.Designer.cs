@@ -32,6 +32,8 @@ namespace HavenCNCServer
             this.lblApiUrl = new System.Windows.Forms.Label();
             this.btnOpenSwagger = new System.Windows.Forms.Button();
             this.txtLog = new HavenCNCServer.Components.FlickerFreeLogViewer();
+            this.btnClearLogs = new System.Windows.Forms.Button();
+            this.btnClearMessages = new System.Windows.Forms.Button();
             this.btnGCodeTest = new System.Windows.Forms.Button();
             this.btnAlwaysOnTop = new System.Windows.Forms.Button();
             this.btnShowUI = new System.Windows.Forms.Button();
@@ -89,6 +91,17 @@ namespace HavenCNCServer
             this.btnOpenSwagger.Text = "Open Swagger UI";
             this.btnOpenSwagger.UseVisualStyleBackColor = true;
             this.btnOpenSwagger.Click += new System.EventHandler(this.btnOpenSwagger_Click);
+            // 
+            // btnClearLogs
+            // 
+            this.btnClearLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearLogs.Location = new System.Drawing.Point(1230, 6);
+            this.btnClearLogs.Name = "btnClearLogs";
+            this.btnClearLogs.Size = new System.Drawing.Size(110, 30);
+            this.btnClearLogs.TabIndex = 1;
+            this.btnClearLogs.Text = "Clear Logs";
+            this.btnClearLogs.UseVisualStyleBackColor = true;
+            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
             // 
             // txtLog
             // 
@@ -211,6 +224,7 @@ namespace HavenCNCServer
             // 
             // tabLogs
             // 
+            this.tabLogs.Controls.Add(this.btnClearLogs);
             this.tabLogs.Controls.Add(this.txtLog);
             this.tabLogs.Location = new System.Drawing.Point(4, 24);
             this.tabLogs.Name = "tabLogs";
@@ -222,6 +236,7 @@ namespace HavenCNCServer
             // 
             // tabMessages
             // 
+            this.tabMessages.Controls.Add(this.btnClearMessages);
             this.tabMessages.Location = new System.Drawing.Point(4, 24);
             this.tabMessages.Name = "tabMessages";
             this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
@@ -229,6 +244,17 @@ namespace HavenCNCServer
             this.tabMessages.TabIndex = 1;
             this.tabMessages.Text = "Messages";
             this.tabMessages.UseVisualStyleBackColor = true;
+            // 
+            // btnClearMessages
+            // 
+            this.btnClearMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearMessages.Location = new System.Drawing.Point(1230, 6);
+            this.btnClearMessages.Name = "btnClearMessages";
+            this.btnClearMessages.Size = new System.Drawing.Size(110, 30);
+            this.btnClearMessages.TabIndex = 1;
+            this.btnClearMessages.Text = "Clear Messages";
+            this.btnClearMessages.UseVisualStyleBackColor = true;
+            this.btnClearMessages.Click += new System.EventHandler(this.btnClearMessages_Click);
             // 
             // tabGCode
             // 
@@ -362,6 +388,8 @@ namespace HavenCNCServer
         private System.Windows.Forms.Button btnShowUI;
         private System.Windows.Forms.Button btnViewLogs;
         private System.Windows.Forms.Button btnOpenDataFolder;
+        private System.Windows.Forms.Button btnClearLogs;
+        private System.Windows.Forms.Button btnClearMessages;
         private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;

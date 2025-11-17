@@ -189,12 +189,6 @@ namespace HavenCNCServer.Models
                     }
                 }
 
-                // Ensure target directory exists
-                Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
-
-                // Write G-code to file
-                await IOFile.WriteAllLinesAsync(_filePath, _gCodeLines);
-
                 // Get CNC pipe
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
@@ -202,25 +196,41 @@ namespace HavenCNCServer.Models
                     throw new InvalidOperationException("Cannot start job: No CNC connection");
                 }
 
-                // Create the G65 command
-                string g65Command = string.IsNullOrEmpty(_gcodeParameterString)
-                    ? $"G65 \"{_filePath}\""
-                    : $"G65 \"{_filePath}\" {_gcodeParameterString}";
+                // For single-line commands, execute directly without writing to file
+                string commandToExecute;
+                if (TotalLines == 1 && string.IsNullOrEmpty(_gcodeParameterString))
+                {
+                    // Single line - execute directly
+                    commandToExecute = _gCodeLines[0].Trim();
+                    LoggingService.LogInfo($"Job {_jobId} executing single command directly: {commandToExecute}", "CNCJob");
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Single-line mode - executing directly: {commandToExecute}");
+                }
+                else
+                {
+                    // Multiple lines or has parameters - write to file and use G65
+                    // Ensure target directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+
+                    // Write G-code to file
+                    await IOFile.WriteAllLinesAsync(_filePath, _gCodeLines);
+
+                    // Create the G65 command
+                    commandToExecute = string.IsNullOrEmpty(_gcodeParameterString)
+                        ? $"G65 \"{_filePath}\""
+                        : $"G65 \"{_filePath}\" {_gcodeParameterString}";
+
+                    LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
+                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Starting job with command: {commandToExecute}");
+                    LoggingService.LogInfo($"Job {_jobId} executing G65 command: {commandToExecute}", "CNCJob");
+                }
 
                 // Start listening for job updates before executing the command
                 // This ensures we capture the program start event
                 StartListening();
 
-                // Log that we're about to start the job
-                LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
-
-                // Log the command to both debug and main UI
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Starting job with command: {g65Command}");
-                LoggingService.LogInfo($"Job {_jobId} executing G65 command: {g65Command}", "CNCJob");
-
                 // Create and execute the job
                 _cncJob = new CentroidAPI.CNCPipe.Job(cncPipe);
-                var executeResult = _cncJob.RunCommand(g65Command, false);
+                var executeResult = _cncJob.RunCommand(commandToExecute, false);
 
                 if (executeResult != CNCPipe.ReturnCode.SUCCESS)
                 {
@@ -261,6 +271,108 @@ namespace HavenCNCServer.Models
                 return false;
             }
         }
+
+        // Commented out old G65-only implementation - now using conditional logic based on UseG65Mode setting
+        // /// <summary>
+        // /// Start the job execution
+        // /// </summary>
+        // /// <returns>True if started successfully</returns>
+        // public async Task<bool> StartAsync()
+        // {
+        //     try
+        //     {
+        //         if (IsRunning)
+        //         {
+        //             throw new InvalidOperationException("Job is already running");
+        //         }
+
+        //         if (IsComplete)
+        //         {
+        //             throw new InvalidOperationException("Job has already completed");
+        //         }
+
+        //         // Ensure CNC connection is available
+        //         if (!CNCConnectionManager.IsConnected)
+        //         {
+        //             var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
+        //             if (pipe == null || !pipe.IsConstructed())
+        //             {
+        //                 throw new InvalidOperationException("Cannot start job: CNC connection failed");
+        //             }
+        //         }
+
+        //         // Ensure target directory exists
+        //         Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
+
+        //         // Write G-code to file
+        //         await IOFile.WriteAllLinesAsync(_filePath, _gCodeLines);
+
+        //         // Get CNC pipe
+        //         var cncPipe = CNCConnectionManager.GetCNCPipe();
+        //         if (cncPipe == null)
+        //         {
+        //             throw new InvalidOperationException("Cannot start job: No CNC connection");
+        //         }
+
+        //         // Create the G65 command
+        //         string g65Command = string.IsNullOrEmpty(_gcodeParameterString)
+        //             ? $"G65 \"{_filePath}\""
+        //             : $"G65 \"{_filePath}\" {_gcodeParameterString}";
+
+        //         // Start listening for job updates before executing the command
+        //         // This ensures we capture the program start event
+        //         StartListening();
+
+        //         // Log that we're about to start the job
+        //         LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
+
+        //         // Log the command to both debug and main UI
+        //         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Starting job with command: {g65Command}");
+        //         LoggingService.LogInfo($"Job {_jobId} executing G65 command: {g65Command}", "CNCJob");
+
+        //         // Create and execute the job
+        //         _cncJob = new CentroidAPI.CNCPipe.Job(cncPipe);
+        //         var executeResult = _cncJob.RunCommand(g65Command, false);
+
+        //         if (executeResult != CNCPipe.ReturnCode.SUCCESS)
+        //         {
+        //             LastError = $"Failed to start job with return code: {executeResult} (numeric: {(int)executeResult})";
+        //             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] ERROR: {LastError}");
+
+        //             // Log job start failure to main UI
+        //             LoggingService.LogError($"Job {_jobId} failed to start: {LastError}", "CNCJob");
+
+        //             // Stop listening since the job failed to start
+        //             StopListening();
+        //             return false;
+        //         }
+
+        //         // Don't set IsRunning = true here - wait for the job start indicator
+        //         // IsRunning will be set to true when we receive "API_COMMAND_RUNNING" on line 1 in OnJobInfoReceived
+        //         IsPaused = false;
+        //         // StartedAt will be set when we receive the actual start message
+
+        //         // Log that the job command was sent successfully
+        //         LoggingService.LogInfo($"Job {_jobId} command sent successfully - waiting for execution to begin", "CNCJob");
+
+        //         // Start background polling to monitor job completion via API
+        //         _monitorCancellation = new CancellationTokenSource();
+        //         _ = Task.Run(() => MonitorJobCompletion(_monitorCancellation.Token), _monitorCancellation.Token);
+
+        //         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job started successfully");
+        //         return true;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         LastError = ex.Message;
+        //         System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Start failed: {ex.Message}");
+
+        //         // Log job start exception to main UI
+        //         LoggingService.LogError($"Job {_jobId} start failed: {ex.Message}", "CNCJob");
+
+        //         return false;
+        //     }
+        // }
 
         /// <summary>
         /// Stop the job execution
