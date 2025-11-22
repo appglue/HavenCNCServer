@@ -25,117 +25,214 @@ namespace HavenCNCServer.Controllers
         {
         }
 
-        #region Basic IO Control
+        #region Board Configuration
 
         /// <summary>
-        /// Get available input port numbers from PLC source file
+        /// Get board configuration including type and expansion boards
+        /// </summary>
+        [HttpGet("GetBoardConfiguration")]
+        public ActionResult<BoardConfiguration> GetBoardConfiguration()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    return StatusCode(500, new { message = "CNC connection not available" });
+
+                // Try to determine board type from system info
+                var systemInfo = CNCUtils.GetSystemInfo();
+                var boardType = "Acorn"; // Default
+                var hasExtensionBoard = false;
+
+                // Check for Acorn6 indicators in system info
+                if (systemInfo.Contains("Acorn 6", StringComparison.OrdinalIgnoreCase) ||
+                    systemInfo.Contains("AcornSix", StringComparison.OrdinalIgnoreCase))
+                {
+                    boardType = "Acorn6";
+                }
+
+                // TODO: Detect extension board - could check parameter or I/O availability
+                // For now, assume no extension board unless we can detect it
+                // This could be enhanced by checking if inputs > 16 are accessible
+
+                var config = new BoardConfiguration
+                {
+                    BoardType = boardType,
+                    HasExtensionBoard = hasExtensionBoard,
+                    MaxInputs = boardType == "Acorn6" ? (hasExtensionBoard ? 32 : 24) : (hasExtensionBoard ? 24 : 16),
+                    MaxOutputs = boardType == "Acorn6" ? (hasExtensionBoard ? 32 : 24) : (hasExtensionBoard ? 24 : 16)
+                };
+
+                return Ok(config);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get board configuration: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get board configuration: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Get available input port numbers based on board hardware capabilities
         /// </summary>
         [HttpGet("GetAvailableInputs")]
-        public int[] GetAvailableInputs()
+        public ActionResult<int[]> GetAvailableInputs()
         {
             try
             {
-                string sourcePath = @"C:\cncr\acorn_router_plc.src";
-                if (!System.IO.File.Exists(sourcePath))
+                var boardConfigResult = GetBoardConfiguration();
+                if (boardConfigResult.Result is OkObjectResult okResult && okResult.Value is BoardConfiguration config)
                 {
-                    return Array.Empty<int>();
+                    // Generate array of available input numbers: 1 to MaxInputs
+                    var inputs = Enumerable.Range(1, config.MaxInputs).ToArray();
+                    return Ok(inputs);
                 }
 
-                var definitions = ParseIODefinitions(sourcePath);
-                return definitions.Inputs.Select(i => i.Number).Distinct().OrderBy(n => n).ToArray();
+                // Fallback to default Acorn (16 inputs)
+                LogWarning("Could not determine board configuration, using default Acorn (16 inputs)", "IO");
+                return Ok(Enumerable.Range(1, 16).ToArray());
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to get available inputs: {ex.Message}", ex);
+                LogError($"Failed to get available inputs: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get available inputs: {ex.Message}" });
             }
         }
 
         /// <summary>
-        /// Get available output port numbers from PLC source file
+        /// Get available output port numbers based on board hardware capabilities
         /// </summary>
         [HttpGet("GetAvailableOutputs")]
-        public int[] GetAvailableOutputs()
+        public ActionResult<int[]> GetAvailableOutputs()
         {
             try
             {
+                var boardConfigResult = GetBoardConfiguration();
+                if (boardConfigResult.Result is OkObjectResult okResult && okResult.Value is BoardConfiguration config)
+                {
+                    // Generate array of available output numbers: 1 to MaxOutputs
+                    var outputs = Enumerable.Range(1, config.MaxOutputs).ToArray();
+                    return Ok(outputs);
+                }
+
+                // Fallback to default Acorn (16 outputs)
+                LogWarning("Could not determine board configuration, using default Acorn (16 outputs)", "IO");
+                return Ok(Enumerable.Range(1, 16).ToArray());
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get available outputs: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get available outputs: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Get defined inputs from PLC source file with current states
+        /// Returns number, name, and current state for each defined input
+        /// </summary>
+        [HttpGet("GetDefinedInputs")]
+        [ProducesResponseType(typeof(DefinedIO[]), 200)]
+        public ActionResult<DefinedIO[]> GetDefinedInputs()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    LogError("CNC connection not available", "IO");
+                    return StatusCode(500, new { message = "CNC connection not available" });
+                }
+
                 string sourcePath = @"C:\cncr\acorn_router_plc.src";
                 if (!System.IO.File.Exists(sourcePath))
                 {
-                    return Array.Empty<int>();
+                    return Ok(Array.Empty<DefinedIO>());
                 }
 
                 var definitions = ParseIODefinitions(sourcePath);
-                return definitions.Outputs.Select(o => o.Number).Distinct().OrderBy(n => n).ToArray();
+                var result = new List<DefinedIO>();
+
+                foreach (var input in definitions.Inputs)
+                {
+                    bool state = false;
+                    var getStateResult = cncPipe.plc.GetInputState(input.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);
+                    if (getStateResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        state = (ioState == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                    }
+
+                    result.Add(new DefinedIO
+                    {
+                        Number = input.Number,
+                        Name = input.Name,
+                        State = state
+                    });
+                }
+
+                return Ok(result.OrderBy(x => x.Number).ToArray());
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to get available outputs: {ex.Message}", ex);
+                LogError($"Failed to get defined inputs: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get defined inputs: {ex.Message}" });
             }
         }
 
         /// <summary>
-        /// Get current input states for all available inputs
+        /// Get defined outputs from PLC source file with current states
+        /// Returns number, name, and current state for each defined output
         /// </summary>
-        [HttpGet("GetCurrentInputs")]
-        public Dictionary<int, bool> GetCurrentInputs()
+        [HttpGet("GetDefinedOutputs")]
+        [ProducesResponseType(typeof(DefinedIO[]), 200)]
+        public ActionResult<DefinedIO[]> GetDefinedOutputs()
         {
             try
             {
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
-                    throw new InvalidOperationException("CNC connection not available");
-
-                var inputStates = new Dictionary<int, bool>();
-                var availableInputs = GetAvailableInputs();
-
-                foreach (var inputNumber in availableInputs)
                 {
-                    var result = cncPipe.plc.GetInputState(inputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
-                    if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
-                    {
-                        inputStates[inputNumber] = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
-                    }
+                    LogError("CNC connection not available", "IO");
+                    return StatusCode(500, new { message = "CNC connection not available" });
                 }
 
-                return inputStates;
+                string sourcePath = @"C:\cncr\acorn_router_plc.src";
+                if (!System.IO.File.Exists(sourcePath))
+                {
+                    return Ok(Array.Empty<DefinedIO>());
+                }
+
+                var definitions = ParseIODefinitions(sourcePath);
+                var result = new List<DefinedIO>();
+
+                foreach (var output in definitions.Outputs)
+                {
+                    bool state = false;
+                    var getStateResult = cncPipe.plc.GetOutputState(output.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);
+                    if (getStateResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                    {
+                        state = (ioState == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                    }
+
+                    result.Add(new DefinedIO
+                    {
+                        Number = output.Number,
+                        Name = output.Name,
+                        State = state
+                    });
+                }
+
+                return Ok(result.OrderBy(x => x.Number).ToArray());
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to get input states: {ex.Message}", ex);
+                LogError($"Failed to get defined outputs: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get defined outputs: {ex.Message}" });
             }
         }
 
-        /// <summary>
-        /// Get current output states for all available outputs
-        /// </summary>
-        [HttpGet("GetCurrentOutputs")]
-        public Dictionary<int, bool> GetCurrentOutputs()
-        {
-            try
-            {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
-                    throw new InvalidOperationException("CNC connection not available");
+        #endregion
 
-                var outputStates = new Dictionary<int, bool>();
-                var availableOutputs = GetAvailableOutputs();
-
-                foreach (var outputNumber in availableOutputs)
-                {
-                    var result = cncPipe.plc.GetOutputState(outputNumber, out CentroidAPI.CNCPipe.Plc.IOState state);
-                    if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
-                    {
-                        outputStates[outputNumber] = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
-                    }
-                }
-
-                return outputStates;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to get output states: {ex.Message}", ex);
-            }
-        }
+        #region Basic IO Control
 
         /// <summary>
         /// Check if specific input is active
@@ -298,7 +395,19 @@ namespace HavenCNCServer.Controllers
                 if (cncPipe == null)
                     throw new InvalidOperationException("CNC connection not available");
 
-                var availableOutputs = GetAvailableOutputs();
+                var availableOutputsResult = GetAvailableOutputs();
+                int[] availableOutputs;
+
+                if (availableOutputsResult.Result is OkObjectResult okResult && okResult.Value is int[] outputs)
+                {
+                    availableOutputs = outputs;
+                }
+                else
+                {
+                    // Fallback to default range
+                    availableOutputs = Enumerable.Range(1, 16).ToArray();
+                }
+
                 var errors = new List<string>();
 
                 foreach (var outputNumber in availableOutputs)

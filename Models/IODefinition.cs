@@ -1,6 +1,32 @@
 namespace HavenCNCServer.Models;
 
 /// <summary>
+/// Board configuration information including type and I/O capabilities
+/// </summary>
+public class BoardConfiguration
+{
+    /// <summary>
+    /// Board type: "Acorn" or "Acorn6"
+    /// </summary>
+    public string BoardType { get; set; } = "Acorn";
+
+    /// <summary>
+    /// Whether an extension board is installed
+    /// </summary>
+    public bool HasExtensionBoard { get; set; }
+
+    /// <summary>
+    /// Maximum number of available input ports
+    /// </summary>
+    public int MaxInputs { get; set; }
+
+    /// <summary>
+    /// Maximum number of available output ports
+    /// </summary>
+    public int MaxOutputs { get; set; }
+}
+
+/// <summary>
 /// Represents an input or output definition from the PLC source file
 /// </summary>
 public class IODefinition
@@ -24,6 +50,27 @@ public class IODefinition
     /// The raw definition line from the PLC source
     /// </summary>
     public string RawDefinition { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents a defined I/O with its current state
+/// </summary>
+public class DefinedIO
+{
+    /// <summary>
+    /// The I/O number (e.g., 1, 2, 65, etc.)
+    /// </summary>
+    public int Number { get; set; }
+
+    /// <summary>
+    /// The symbolic name of the I/O (e.g., "EStopOk", "SpinFWD")
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Current state of the I/O (true = active/on, false = inactive/off)
+    /// </summary>
+    public bool State { get; set; }
 }
 
 /// <summary>
