@@ -487,15 +487,69 @@ namespace HavenCNCServer.Controllers
         /// Get system information
         /// </summary>
         [HttpGet("GetSystemInfo")]
-        public string GetSystemInfo()
+        [ProducesResponseType(typeof(SystemInfo), 200)]
+        public ActionResult<SystemInfo> GetSystemInfo()
         {
             try
             {
-                return CNCUtils.GetSystemInfo();
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    LogError("CNC connection not available", "IO");
+                    return StatusCode(500, new { message = "CNC connection not available" });
+                }
+
+                cncPipe.system.GetUnlockVersion(out CentroidAPI.CNCPipe.Sys.UnlockVersions unlockVersion);
+
+                var systemInfo = new SystemInfo
+                {
+                    UnlockVersion = unlockVersion.ToString()
+                };
+
+                bool isAcorn = unlockVersion.ToString().Contains("ACORN") && !unlockVersion.ToString().Contains("ACORN_SIX");
+                bool isAcornSix = unlockVersion.ToString().Contains("ACORN_SIX");
+                bool isHickory = unlockVersion.ToString().Contains("HICKORY");
+
+                if (isAcorn)
+                {
+                    systemInfo.SystemType = SystemType.Acorn;
+                    systemInfo.BaseInputs = 8;
+                    systemInfo.BaseOutputs = 8;
+                    cncPipe.system.GetEther1616DeviceInfo(out List<CentroidAPI.CNCPipe.Sys.Ether1616Device> devices);
+                    systemInfo.ExpansionBoardCount = devices?.Count ?? 0;
+                    systemInfo.ExpansionInputs = systemInfo.ExpansionBoardCount * 16;
+                    systemInfo.ExpansionOutputs = systemInfo.ExpansionBoardCount * 16;
+                }
+                else if (isAcornSix)
+                {
+                    systemInfo.SystemType = SystemType.AcornSix;
+                    systemInfo.BaseInputs = 16;
+                    systemInfo.BaseOutputs = 16;
+                    cncPipe.system.GetPLCEXP1616NumberofDevices(out int expansionCount);
+                    systemInfo.ExpansionBoardCount = expansionCount;
+                    systemInfo.ExpansionInputs = expansionCount * 16;
+                    systemInfo.ExpansionOutputs = expansionCount * 16;
+                }
+                else if (isHickory)
+                {
+                    systemInfo.SystemType = SystemType.Hickory;
+                    systemInfo.BaseInputs = 32;
+                    systemInfo.BaseOutputs = 32;
+                    cncPipe.system.GetECAT1616NumberOfDevices(out int expansionCount);
+                    systemInfo.ExpansionBoardCount = expansionCount;
+                    systemInfo.ExpansionInputs = expansionCount * 16;
+                    systemInfo.ExpansionOutputs = expansionCount * 16;
+                }
+
+                systemInfo.TotalInputs = systemInfo.BaseInputs + systemInfo.ExpansionInputs;
+                systemInfo.TotalOutputs = systemInfo.BaseOutputs + systemInfo.ExpansionOutputs;
+
+                return Ok(systemInfo);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to get system info: {ex.Message}", ex);
+                LogError($"Failed to get system info: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get system info: {ex.Message}" });
             }
         }
 

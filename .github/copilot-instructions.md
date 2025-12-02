@@ -15,6 +15,11 @@ This is a C# ASP.NET Core Web API project for HavenCNCServer with REST services 
 - Follow RESTful API conventions
 - Use proper dependency injection patterns
 
+## Important Scope Note
+- **This is BACKEND ONLY**: Do not make changes when user asks about React, frontend, or UI modifications
+- If user mentions frontend/React changes, acknowledge but explain no backend changes are needed
+- Only modify backend C# code for API endpoints, services, and data models
+
 ## Build and Run
 - Build: `dotnet build`
 - Run: `dotnet run`

@@ -1,6 +1,32 @@
 namespace HavenCNCServer.Models;
 
 /// <summary>
+/// CNC System types supported by Centroid
+/// </summary>
+public enum SystemType
+{
+    /// <summary>
+    /// Unknown or unrecognized system type
+    /// </summary>
+    Unknown = 0,
+
+    /// <summary>
+    /// Acorn CNC controller (8 base I/O)
+    /// </summary>
+    Acorn = 1,
+
+    /// <summary>
+    /// Acorn Six CNC controller (16 base I/O)
+    /// </summary>
+    AcornSix = 2,
+
+    /// <summary>
+    /// Hickory CNC controller (32 base I/O)
+    /// </summary>
+    Hickory = 3
+}
+
+/// <summary>
 /// Board configuration information including type and I/O capabilities
 /// </summary>
 public class BoardConfiguration
@@ -24,6 +50,57 @@ public class BoardConfiguration
     /// Maximum number of available output ports
     /// </summary>
     public int MaxOutputs { get; set; }
+}
+
+/// <summary>
+/// System information including board type and I/O capabilities
+/// </summary>
+public class SystemInfo
+{
+    /// <summary>
+    /// System type
+    /// </summary>
+    public SystemType SystemType { get; set; } = SystemType.Unknown;
+
+    /// <summary>
+    /// Total number of inputs available
+    /// </summary>
+    public int TotalInputs { get; set; }
+
+    /// <summary>
+    /// Total number of outputs available
+    /// </summary>
+    public int TotalOutputs { get; set; }
+
+    /// <summary>
+    /// Number of base inputs (built-in to controller)
+    /// </summary>
+    public int BaseInputs { get; set; }
+
+    /// <summary>
+    /// Number of base outputs (built-in to controller)
+    /// </summary>
+    public int BaseOutputs { get; set; }
+
+    /// <summary>
+    /// Number of expansion inputs
+    /// </summary>
+    public int ExpansionInputs { get; set; }
+
+    /// <summary>
+    /// Number of expansion outputs
+    /// </summary>
+    public int ExpansionOutputs { get; set; }
+
+    /// <summary>
+    /// Number of expansion boards connected
+    /// </summary>
+    public int ExpansionBoardCount { get; set; }
+
+    /// <summary>
+    /// Unlock version string from CNC12
+    /// </summary>
+    public string UnlockVersion { get; set; } = string.Empty;
 }
 
 /// <summary>

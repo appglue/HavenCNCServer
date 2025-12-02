@@ -29,7 +29,7 @@ namespace HavenCNCServer.Controllers
         {
             _configController = new CNCConfigurationController();
             _cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
-            _compilerPath = SysIO.Path.Combine(_cnc12Path, "compiler.cmd");
+            _compilerPath = SysIO.Path.Combine(_cnc12Path, "mpucomp.exe");
 
             LogInfo($"PLCController initialized. CNC12 path: {_cnc12Path}", "PLC");
         }
@@ -166,7 +166,12 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 LogError($"Failed to compile PLC: {ex.Message}", "PLC");
-                return StatusCode(500, new { message = $"Failed to compile PLC: {ex.Message}", success = false, issues = new string[] { ex.Message } });
+                return StatusCode(500, new PLCCompilationResult
+                {
+                    Success = false,
+                    Issues = new string[] { ex.Message },
+                    CompilerOutput = new string[] { $"Compilation error: {ex.Message}" }
+                });
             }
         }
 
@@ -296,11 +301,16 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 LogError($"Failed to compile and install PLC: {ex.Message}", "PLC");
-                return StatusCode(500, new
+                return StatusCode(500, new PLCInstallationResult
                 {
-                    message = $"Failed to compile and install PLC: {ex.Message}",
-                    compilationResult = new { success = false, issues = new string[] { ex.Message } },
-                    installationSuccess = false
+                    Message = $"Failed to compile and install PLC: {ex.Message}",
+                    CompilationResult = new PLCCompilationResult
+                    {
+                        Success = false,
+                        Issues = new string[] { ex.Message },
+                        CompilerOutput = new string[] { $"Installation error: {ex.Message}" }
+                    },
+                    InstallationSuccess = false
                 });
             }
         }
@@ -319,14 +329,17 @@ namespace HavenCNCServer.Controllers
             var result = new PLCCompilationResult
             {
                 Success = false,
-                Issues = new string[0]
+                Issues = new string[0],
+                CompilerOutput = new string[0]
             };
 
             try
             {
                 if (!SysIO.File.Exists(_compilerPath))
                 {
-                    result.Issues = new[] { $"PLC compiler not found at: {_compilerPath}" };
+                    var errorMsg = $"PLC compiler not found at: {_compilerPath}";
+                    result.Issues = new[] { errorMsg };
+                    result.CompilerOutput = new[] { errorMsg };
                     LogError($"Compiler not found: {_compilerPath}", "PLC");
                     return result;
                 }
@@ -336,8 +349,8 @@ namespace HavenCNCServer.Controllers
                 var processInfo = new ProcessStartInfo
                 {
                     FileName = _compilerPath,
-                    Arguments = $"\"{sourceFilePath}\"",
-                    WorkingDirectory = SysIO.Path.GetDirectoryName(sourceFilePath),
+                    Arguments = $"\"{sourceFilePath}\" mpu.plc",
+                    WorkingDirectory = _cnc12Path,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -345,49 +358,58 @@ namespace HavenCNCServer.Controllers
                 };
 
                 var issues = new List<string>();
-                var output = new StringBuilder();
-                var errors = new StringBuilder();
 
                 using (var process = new Process { StartInfo = processInfo })
                 {
-                    process.OutputDataReceived += (sender, e) =>
-                    {
-                        if (!string.IsNullOrEmpty(e.Data))
-                        {
-                            output.AppendLine(e.Data);
-                            LogInfo($"Compiler output: {e.Data}", "PLC");
-                        }
-                    };
-
-                    process.ErrorDataReceived += (sender, e) =>
-                    {
-                        if (!string.IsNullOrEmpty(e.Data))
-                        {
-                            errors.AppendLine(e.Data);
-                            LogWarning($"Compiler error: {e.Data}", "PLC");
-                        }
-                    };
-
                     process.Start();
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    process.WaitForExit();
+
+                    // Read output synchronously (more reliable than async events)
+                    string stdout = process.StandardOutput.ReadToEnd();
+                    string stderr = process.StandardError.ReadToEnd();
+
+                    // Wait for process to complete with 10 second timeout
+                    bool exited = process.WaitForExit(10000);
+
+                    if (!exited)
+                    {
+                        LogError("Compiler process timed out after 10 seconds", "PLC");
+                        try { process.Kill(); } catch { }
+                        result.Issues = new[] { "Compilation timed out after 10 seconds" };
+                        result.CompilerOutput = new[] { "Compilation process timed out after 10 seconds" };
+                        return result;
+                    }
 
                     var exitCode = process.ExitCode;
                     LogInfo($"Compiler exit code: {exitCode}", "PLC");
 
-                    // Parse compiler output for errors and warnings
-                    var allOutput = output.ToString() + errors.ToString();
+                    // Capture full compiler output
+                    var allOutput = stdout + stderr;
                     var lines = allOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
+                    // Log each line
                     foreach (var line in lines)
                     {
-                        // Look for common compiler error/warning patterns
-                        if (line.Contains("error", StringComparison.OrdinalIgnoreCase) ||
-                            line.Contains("warning", StringComparison.OrdinalIgnoreCase) ||
-                            line.Contains("failed", StringComparison.OrdinalIgnoreCase))
+                        LogInfo($"Compiler output: {line}", "PLC");
+                    }
+
+                    // Store full output for frontend display
+                    result.CompilerOutput = lines;
+
+                    // Parse for errors and warnings - capture structured error lines only
+                    foreach (var line in lines)
+                    {
+                        var trimmed = line.Trim();
+
+                        // Capture lines that start with "Error Line" or "Warning Line" (structured errors)
+                        if (trimmed.StartsWith("Error Line", StringComparison.OrdinalIgnoreCase) ||
+                            trimmed.StartsWith("Warning Line", StringComparison.OrdinalIgnoreCase))
                         {
-                            issues.Add(line.Trim());
+                            issues.Add(trimmed);
+                        }
+                        // Also capture general failure messages
+                        else if (trimmed.Equals("Compilation failed.", StringComparison.OrdinalIgnoreCase))
+                        {
+                            issues.Add(trimmed);
                         }
                     }
 
@@ -427,6 +449,7 @@ namespace HavenCNCServer.Controllers
             {
                 LogError($"Exception during PLC compilation: {ex.Message}", "PLC");
                 result.Issues = new[] { $"Compilation error: {ex.Message}" };
+                result.CompilerOutput = new[] { $"Compilation error: {ex.Message}" };
                 return result;
             }
         }
@@ -493,6 +516,11 @@ namespace HavenCNCServer.Controllers
         /// Array of compilation issues (errors/warnings)
         /// </summary>
         public string[] Issues { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Full compiler output log (all lines from stdout and stderr)
+        /// </summary>
+        public string[] CompilerOutput { get; set; } = Array.Empty<string>();
     }
 
     /// <summary>

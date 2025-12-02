@@ -1710,17 +1710,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/SystemInfo"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/SystemInfo"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/SystemInfo"
                 }
               }
             }
@@ -5196,6 +5196,14 @@
             },
             "description": "Array of compilation issues (errors/warnings)",
             "nullable": true
+          },
+          "compilerOutput": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Full compiler output log (all lines from stdout and stderr)",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -6281,6 +6289,56 @@
         "additionalProperties": false,
         "description": "Represents system hardware detection and capabilities"
       },
+      "SystemInfo": {
+        "type": "object",
+        "properties": {
+          "systemType": {
+            "$ref": "#/components/schemas/SystemType"
+          },
+          "totalInputs": {
+            "type": "integer",
+            "description": "Total number of inputs available",
+            "format": "int32"
+          },
+          "totalOutputs": {
+            "type": "integer",
+            "description": "Total number of outputs available",
+            "format": "int32"
+          },
+          "baseInputs": {
+            "type": "integer",
+            "description": "Number of base inputs (built-in to controller)",
+            "format": "int32"
+          },
+          "baseOutputs": {
+            "type": "integer",
+            "description": "Number of base outputs (built-in to controller)",
+            "format": "int32"
+          },
+          "expansionInputs": {
+            "type": "integer",
+            "description": "Number of expansion inputs",
+            "format": "int32"
+          },
+          "expansionOutputs": {
+            "type": "integer",
+            "description": "Number of expansion outputs",
+            "format": "int32"
+          },
+          "expansionBoardCount": {
+            "type": "integer",
+            "description": "Number of expansion boards connected",
+            "format": "int32"
+          },
+          "unlockVersion": {
+            "type": "string",
+            "description": "Unlock version string from CNC12",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "System information including board type and I/O capabilities"
+      },
       "SystemStatus": {
         "type": "object",
         "properties": {
@@ -6301,6 +6359,17 @@
         },
         "additionalProperties": false,
         "description": "System status information"
+      },
+      "SystemType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "description": "CNC System types supported by Centroid",
+        "format": "int32"
       },
       "ToolHeightMeasurementMethod": {
         "enum": [
