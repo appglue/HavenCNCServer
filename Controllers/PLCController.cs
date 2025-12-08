@@ -118,6 +118,132 @@ namespace HavenCNCServer.Controllers
 
         #endregion
 
+        #region Installed PLC Retrieval
+
+        /// <summary>
+        /// Get the currently installed PLC source code from the CNC directory
+        /// </summary>
+        /// <returns>PLC source code as string array (lines)</returns>
+        [HttpGet("GetInstalledPLC")]
+        [ProducesResponseType(typeof(string[]), 200)]
+        [ProducesResponseType(404)]
+        public ActionResult<string[]> GetInstalledPLC()
+        {
+            try
+            {
+                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.src");
+
+                if (!SysIO.File.Exists(plcSourcePath))
+                {
+                    LogWarning($"Installed PLC source not found at: {plcSourcePath}", "PLC");
+                    return NotFound(new { message = "Installed PLC source file not found" });
+                }
+
+                var lines = SysIO.File.ReadAllLines(plcSourcePath);
+                LogInfo($"📖 Retrieved installed PLC source: {lines.Length} lines", "PLC");
+                return Ok(lines);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get installed PLC: {ex.Message}", "PLC");
+                return StatusCode(500, new { message = $"Failed to get installed PLC: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Get the currently installed PLC message file from the CNC directory
+        /// </summary>
+        /// <returns>PLC messages as string array (lines)</returns>
+        [HttpGet("GetInstalledMessages")]
+        [ProducesResponseType(typeof(string[]), 200)]
+        [ProducesResponseType(404)]
+        public ActionResult<string[]> GetInstalledMessages()
+        {
+            try
+            {
+                var msgPath = SysIO.Path.Combine(_cnc12Path, "plcmsg.txt");
+
+                if (!SysIO.File.Exists(msgPath))
+                {
+                    LogWarning($"Installed PLC messages not found at: {msgPath}", "PLC");
+                    return NotFound(new { message = "Installed PLC message file not found" });
+                }
+
+                var lines = SysIO.File.ReadAllLines(msgPath);
+                LogInfo($"📖 Retrieved installed PLC messages: {lines.Length} lines", "PLC");
+                return Ok(lines);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get installed messages: {ex.Message}", "PLC");
+                return StatusCode(500, new { message = $"Failed to get installed messages: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Compare new PLC source with currently installed version (ignoring timestamp in first line)
+        /// </summary>
+        /// <param name="request">PLC source lines to compare</param>
+        /// <returns>Comparison result indicating if files are different</returns>
+        [HttpPost("ComparePLC")]
+        [ProducesResponseType(typeof(PLCComparisonResult), 200)]
+        [ProducesResponseType(400)]
+        public ActionResult<PLCComparisonResult> ComparePLC([FromBody] CompilePLCRequest request)
+        {
+            try
+            {
+                if (request.PlcLines == null || request.PlcLines.Length == 0)
+                {
+                    return BadRequest(new { message = "PlcLines array is required and cannot be empty" });
+                }
+
+                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.src");
+
+                var result = new PLCComparisonResult
+                {
+                    InstalledFileExists = SysIO.File.Exists(plcSourcePath),
+                    IsDifferent = true,
+                    Message = ""
+                };
+
+                if (!result.InstalledFileExists)
+                {
+                    result.Message = "No installed PLC found - this will be a new installation";
+                    LogInfo("No installed PLC to compare against", "PLC");
+                    return Ok(result);
+                }
+
+                var installedLines = SysIO.File.ReadAllLines(plcSourcePath);
+
+                // Skip first 5 lines (header with timestamp) in both arrays for comparison
+                var newContentLines = request.PlcLines.Skip(5).ToArray();
+                var installedContentLines = installedLines.Skip(5).ToArray();
+
+                // Compare line by line
+                result.IsDifferent = !newContentLines.SequenceEqual(installedContentLines);
+
+                if (result.IsDifferent)
+                {
+                    result.Message = "PLC source has changed - installation will update the CNC";
+                    LogInfo("PLC comparison: Files are different", "PLC");
+                }
+                else
+                {
+                    result.Message = "PLC source is identical to installed version (no changes needed)";
+                    LogInfo("PLC comparison: Files are identical", "PLC");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to compare PLC: {ex.Message}", "PLC");
+                return StatusCode(500, new { message = $"Failed to compare PLC: {ex.Message}" });
+            }
+        }
+
+        #endregion
+
         #region PLC Compilation
 
         /// <summary>
@@ -217,7 +343,7 @@ namespace HavenCNCServer.Controllers
 
                     // Step 2: Compile the PLC
                     LogInfo("Step 1: Compiling PLC...", "PLC");
-                    result.CompilationResult = CompilePLCFile(tempPlcFilePath);
+                    result.CompilationResult = CompilePLCFile(tempPlcFilePath, "mpu.plc");
 
                     if (!result.CompilationResult.Success)
                     {
@@ -323,8 +449,9 @@ namespace HavenCNCServer.Controllers
         /// Compile a PLC source file using the CNC12 compiler
         /// </summary>
         /// <param name="sourceFilePath">Path to the PLC source file</param>
+        /// <param name="outputFileName">Optional output file name (if null, no output file specified)</param>
         /// <returns>Compilation result</returns>
-        private PLCCompilationResult CompilePLCFile(string sourceFilePath)
+        private PLCCompilationResult CompilePLCFile(string sourceFilePath, string? outputFileName = null)
         {
             var result = new PLCCompilationResult
             {
@@ -346,10 +473,14 @@ namespace HavenCNCServer.Controllers
 
                 LogInfo($"Running compiler: {_compilerPath} with source: {sourceFilePath}", "PLC");
 
+                var arguments = outputFileName != null
+                    ? $"\"{sourceFilePath}\" {outputFileName}"
+                    : $"\"{sourceFilePath}\"";
+
                 var processInfo = new ProcessStartInfo
                 {
                     FileName = _compilerPath,
-                    Arguments = $"\"{sourceFilePath}\" mpu.plc",
+                    Arguments = arguments,
                     WorkingDirectory = _cnc12Path,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
@@ -540,6 +671,27 @@ namespace HavenCNCServer.Controllers
 
         /// <summary>
         /// Result message
+        /// </summary>
+        public string Message { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Result of PLC comparison
+    /// </summary>
+    public class PLCComparisonResult
+    {
+        /// <summary>
+        /// Whether an installed PLC file exists
+        /// </summary>
+        public bool InstalledFileExists { get; set; }
+
+        /// <summary>
+        /// Whether the new PLC is different from installed version (ignoring timestamp)
+        /// </summary>
+        public bool IsDifferent { get; set; }
+
+        /// <summary>
+        /// Comparison result message
         /// </summary>
         public string Message { get; set; } = string.Empty;
     }

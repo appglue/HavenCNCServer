@@ -4161,6 +4161,194 @@
         }
       }
     },
+    "/api/PLC/GetInstalledPLC": {
+      "get": {
+        "tags": [
+          "PLC"
+        ],
+        "summary": "Get the currently installed PLC source code from the CNC directory",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/PLC/GetInstalledMessages": {
+      "get": {
+        "tags": [
+          "PLC"
+        ],
+        "summary": "Get the currently installed PLC message file from the CNC directory",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/PLC/ComparePLC": {
+      "post": {
+        "tags": [
+          "PLC"
+        ],
+        "summary": "Compare new PLC source with currently installed version (ignoring timestamp in first line)",
+        "requestBody": {
+          "description": "PLC source lines to compare",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompilePLCRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompilePLCRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompilePLCRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PLCComparisonResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PLCComparisonResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PLCComparisonResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/PLC/CompilePLC": {
       "post": {
         "tags": [
@@ -5181,6 +5369,26 @@
         "type": "integer",
         "description": "Types of movement commands",
         "format": "int32"
+      },
+      "PLCComparisonResult": {
+        "type": "object",
+        "properties": {
+          "installedFileExists": {
+            "type": "boolean",
+            "description": "Whether an installed PLC file exists"
+          },
+          "isDifferent": {
+            "type": "boolean",
+            "description": "Whether the new PLC is different from installed version (ignoring timestamp)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Comparison result message",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Result of PLC comparison"
       },
       "PLCCompilationResult": {
         "type": "object",
