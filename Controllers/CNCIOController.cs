@@ -553,42 +553,6 @@ namespace HavenCNCServer.Controllers
             }
         }
 
-        /// <summary>
-        /// Invert input polarity
-        /// </summary>
-        [HttpPost("InvertInput/{inputNumber}")]
-        public bool InvertInput(int inputNumber, [FromQuery] bool invert = true)
-        {
-            try
-            {
-                // TODO: Fix reference to CentroidConfigUtil
-                // return CentroidConfigUtil.InvertInput(inputNumber, invert);
-                return true; // Placeholder
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to invert input: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Invert multiple inputs
-        /// </summary>
-        [HttpPost("InvertInputs")]
-        public bool InvertInputs([FromBody] Dictionary<int, bool> inputSettings)
-        {
-            try
-            {
-                // TODO: Fix reference to CentroidConfigUtil
-                // return CentroidConfigUtil.InvertInputs(inputSettings);
-                return true; // Placeholder
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to invert inputs: {ex.Message}", ex);
-            }
-        }
-
         #endregion
 
         #region I/O Definitions

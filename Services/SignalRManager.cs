@@ -19,6 +19,7 @@ namespace HavenCNCServer.Services
         private static bool _listenersSetup = false;
         private static readonly object _lock = new object();
         private static System.Threading.Timer? _heartbeatTimer;
+        private static string? _cachedPlcVersion = null;
 
         /// <summary>
         /// Set up event listeners to forward CNC events to SignalR clients
@@ -380,6 +381,9 @@ namespace HavenCNCServer.Services
                         }
                     }
 
+                    // Get PLC version from cache (populated on startup and after installation)
+                    string plcVersion = _cachedPlcVersion ?? LoadPlcVersion();
+
                     var serverStatus = new
                     {
                         Timestamp = DateTime.UtcNow,
@@ -391,7 +395,8 @@ namespace HavenCNCServer.Services
                         IsApiRestricted = isApiRestricted,
                         IsJobRunning = isJobRunning,
                         IsIncrementalJogMode = isIncrementalJogMode,
-                        IsFastJogging = isFastJogging
+                        IsFastJogging = isFastJogging,
+                        PlcVersion = plcVersion
                     };
 
                     // Send server status as a regular SignalR message via ReceiveCNCMessage
@@ -420,6 +425,61 @@ namespace HavenCNCServer.Services
                 _heartbeatTimer = null;
                 LogInfo("Heartbeat timer stopped", "SignalR");
             }
+        }
+
+        /// <summary>
+        /// Load and cache the version number from the currently installed PLC source file
+        /// </summary>
+        /// <returns>PLC version string or empty if not found</returns>
+        private static string LoadPlcVersion()
+        {
+            try
+            {
+                var cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
+                var plcSourcePath = System.IO.Path.Combine(cnc12Path, "havencncplc.src");
+
+                if (!System.IO.File.Exists(plcSourcePath))
+                {
+                    _cachedPlcVersion = "Not Installed";
+                    return _cachedPlcVersion;
+                }
+
+                // Read first few lines to find version
+                var lines = System.IO.File.ReadLines(plcSourcePath).Take(10).ToArray();
+
+                // Look for line containing "Version:"
+                foreach (var line in lines)
+                {
+                    if (line.Contains("Version:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Extract version number after "Version:"
+                        var versionIndex = line.IndexOf("Version:", StringComparison.OrdinalIgnoreCase);
+                        if (versionIndex >= 0)
+                        {
+                            var version = line.Substring(versionIndex + 8).Trim();
+                            _cachedPlcVersion = version;
+                            return _cachedPlcVersion;
+                        }
+                    }
+                }
+
+                _cachedPlcVersion = "Unknown";
+                return _cachedPlcVersion;
+            }
+            catch
+            {
+                _cachedPlcVersion = "Unknown";
+                return _cachedPlcVersion;
+            }
+        }
+
+        /// <summary>
+        /// Refresh the cached PLC version (call this after installing a new PLC)
+        /// </summary>
+        public static void RefreshPlcVersion()
+        {
+            LoadPlcVersion();
+            LogInfo($"PLC version refreshed: {_cachedPlcVersion}", "SignalR");
         }
     }
 

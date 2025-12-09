@@ -131,14 +131,13 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.src");
+                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "havencncplc.src");
 
                 if (!SysIO.File.Exists(plcSourcePath))
                 {
                     LogWarning($"Installed PLC source not found at: {plcSourcePath}", "PLC");
                     return NotFound(new { message = "Installed PLC source file not found" });
                 }
-
                 var lines = SysIO.File.ReadAllLines(plcSourcePath);
                 LogInfo($"📖 Retrieved installed PLC source: {lines.Length} lines", "PLC");
                 return Ok(lines);
@@ -197,7 +196,7 @@ namespace HavenCNCServer.Controllers
                     return BadRequest(new { message = "PlcLines array is required and cannot be empty" });
                 }
 
-                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.src");
+                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "havencncplc.src");
 
                 var result = new PLCComparisonResult
                 {
@@ -332,18 +331,27 @@ namespace HavenCNCServer.Controllers
                     Message = ""
                 };
 
-                // Create temporary files
-                var tempPlcFileName = $"temp_plc_{Guid.NewGuid():N}.src";
-                var tempPlcFilePath = SysIO.Path.Combine(SysIO.Path.GetTempPath(), tempPlcFileName);
+                // Use havencncplc.src in c:\cncr directory
+                var plcSourcePath = SysIO.Path.Combine(_cnc12Path, "havencncplc.src");
 
                 try
                 {
-                    // Step 1: Write PLC source to temp file
-                    SysIO.File.WriteAllLines(tempPlcFilePath, request.PlcLines);
+                    // Step 1: Write PLC source to havencncplc.src in c:\cncr
+                    LogInfo($"Writing PLC source to: {plcSourcePath}", "PLC");
 
-                    // Step 2: Compile the PLC
+                    // Backup existing file if it exists
+                    if (SysIO.File.Exists(plcSourcePath))
+                    {
+                        var backupPath = plcSourcePath + $".backup_{DateTime.Now:yyyyMMdd_HHmmss}";
+                        SysIO.File.Copy(plcSourcePath, backupPath, true);
+                        LogInfo($"Backed up existing source to: {backupPath}", "PLC");
+                    }
+
+                    SysIO.File.WriteAllLines(plcSourcePath, request.PlcLines);
+
+                    // Step 2: Compile the PLC from havencncplc.src
                     LogInfo("Step 1: Compiling PLC...", "PLC");
-                    result.CompilationResult = CompilePLCFile(tempPlcFilePath, "mpu.plc");
+                    result.CompilationResult = CompilePLCFile(plcSourcePath, "mpu.plc");
 
                     if (!result.CompilationResult.Success)
                     {
@@ -354,41 +362,22 @@ namespace HavenCNCServer.Controllers
 
                     LogSuccess("✓ PLC compiled successfully", "PLC");
 
-                    // Step 3: Copy compiled PLC file to CNC directory
-                    LogInfo("Step 2: Installing compiled PLC...", "PLC");
-                    var compiledPlcPath = SysIO.Path.ChangeExtension(tempPlcFilePath, ".plc");
-                    var targetPlcPath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.plc"); // Using standard name
+                    // Step 3: Verify compiled PLC file exists
+                    LogInfo("Step 2: Verifying compiled PLC...", "PLC");
+
+                    // mpu.plc is the final compiled output file that should remain in the CNC directory
+                    var compiledPlcPath = SysIO.Path.Combine(_cnc12Path, "mpu.plc");
 
                     if (!SysIO.File.Exists(compiledPlcPath))
                     {
                         result.Message = "Compiled PLC file not found. Compilation may have failed silently.";
-                        LogError("Compiled .plc file not found after compilation", "PLC");
+                        LogError($"Compiled .plc file not found at: {compiledPlcPath}", "PLC");
                         return Ok(result);
                     }
 
-                    // Backup existing PLC if it exists
-                    if (SysIO.File.Exists(targetPlcPath))
-                    {
-                        var backupPath = targetPlcPath + $".backup_{DateTime.Now:yyyyMMdd_HHmmss}";
-                        SysIO.File.Copy(targetPlcPath, backupPath, true);
-                        LogInfo($"Backed up existing PLC to: {backupPath}", "PLC");
-                    }
+                    LogSuccess($"✓ Compiled PLC file ready at: {compiledPlcPath}", "PLC");
 
-                    SysIO.File.Copy(compiledPlcPath, targetPlcPath, true);
-                    LogSuccess($"✓ Copied compiled PLC to: {targetPlcPath}", "PLC");
-
-                    // Step 4: Copy PLC source file
-                    var targetSrcPath = SysIO.Path.Combine(_cnc12Path, "acorn_router_plc.src");
-                    if (SysIO.File.Exists(targetSrcPath))
-                    {
-                        var backupSrcPath = targetSrcPath + $".backup_{DateTime.Now:yyyyMMdd_HHmmss}";
-                        SysIO.File.Copy(targetSrcPath, backupSrcPath, true);
-                        LogInfo($"Backed up existing source to: {backupSrcPath}", "PLC");
-                    }
-                    SysIO.File.WriteAllLines(targetSrcPath, request.PlcLines);
-                    LogSuccess($"✓ Saved PLC source to: {targetSrcPath}", "PLC");
-
-                    // Step 5: Copy plcmsg.txt
+                    // Step 4: Install PLC messages
                     LogInfo("Step 3: Installing PLC messages...", "PLC");
                     var targetMsgPath = SysIO.Path.Combine(_cnc12Path, "plcmsg.txt");
 
@@ -402,6 +391,9 @@ namespace HavenCNCServer.Controllers
                     SysIO.File.WriteAllLines(targetMsgPath, request.MessageLines);
                     LogSuccess($"✓ Saved PLC messages to: {targetMsgPath}", "PLC");
 
+                    // Step 6: Refresh cached PLC version in SignalR
+                    SignalRManager.RefreshPlcVersion();
+
                     // Success!
                     result.InstallationSuccess = true;
                     result.Message = "PLC compiled and installed successfully. Please restart CNC12 for changes to take effect.";
@@ -411,17 +403,8 @@ namespace HavenCNCServer.Controllers
                 }
                 finally
                 {
-                    // Clean up temp files
-                    if (SysIO.File.Exists(tempPlcFilePath))
-                    {
-                        try { SysIO.File.Delete(tempPlcFilePath); } catch { }
-                    }
-
-                    var compiledTempPlc = SysIO.Path.ChangeExtension(tempPlcFilePath, ".plc");
-                    if (SysIO.File.Exists(compiledTempPlc))
-                    {
-                        try { SysIO.File.Delete(compiledTempPlc); } catch { }
-                    }
+                    // Note: We keep both havencncplc.src and mpu.plc in the CNC directory
+                    // These are the working source and compiled files
                 }
             }
             catch (Exception ex)
@@ -544,33 +527,67 @@ namespace HavenCNCServer.Controllers
                         }
                     }
 
-                    // Check if compiled file was created
-                    var compiledFile = SysIO.Path.ChangeExtension(sourceFilePath, ".plc");
-                    var compilationSucceeded = SysIO.File.Exists(compiledFile) && exitCode == 0;
+                    // Determine success based on compiler output message
+                    bool compilerReportedSuccess = allOutput.Contains("Compilation successful", StringComparison.OrdinalIgnoreCase);
 
-                    if (!compilationSucceeded && issues.Count == 0)
+                    // For compile-only (no output file specified), trust the compiler's success message
+                    if (outputFileName == null)
                     {
-                        // Compilation failed but no specific issues found
-                        if (exitCode != 0)
-                        {
-                            issues.Add($"Compilation failed with exit code: {exitCode}");
-                        }
-                        if (!SysIO.File.Exists(compiledFile))
-                        {
-                            issues.Add("Compiled output file was not created");
-                        }
-                    }
+                        result.Success = compilerReportedSuccess && exitCode == 0;
+                        result.Issues = issues.ToArray();
 
-                    result.Success = compilationSucceeded;
-                    result.Issues = issues.ToArray();
-
-                    if (result.Success)
-                    {
-                        LogSuccess($"✓ PLC compilation successful", "PLC");
+                        if (result.Success)
+                        {
+                            LogSuccess($"✓ PLC compilation successful (compile-only mode)", "PLC");
+                        }
+                        else
+                        {
+                            LogError($"PLC compilation failed with {issues.Count} issues", "PLC");
+                            if (exitCode != 0 && issues.Count == 0)
+                            {
+                                result.Issues = new[] { $"Compilation failed with exit code: {exitCode}" };
+                            }
+                        }
                     }
                     else
                     {
-                        LogError($"PLC compilation failed with {issues.Count} issues", "PLC");
+                        // For compile-and-install, we need the output file to exist
+                        string compiledFile = SysIO.Path.Combine(_cnc12Path, outputFileName);
+
+                        LogInfo($"Looking for compiled file at: {compiledFile}", "PLC");
+
+                        // Check for plc.out which is the default output name
+                        var plcOutPath = SysIO.Path.Combine(_cnc12Path, "plc.out");
+
+                        // If plc.out exists, rename it to the desired output name
+                        if (!SysIO.File.Exists(compiledFile) && SysIO.File.Exists(plcOutPath))
+                        {
+                            LogInfo($"Compiler created plc.out, renaming to {outputFileName}...", "PLC");
+                            SysIO.File.Move(plcOutPath, compiledFile, true);
+                        }
+
+                        bool fileExists = SysIO.File.Exists(compiledFile);
+                        LogInfo($"Compiled file exists: {fileExists}", "PLC");
+
+                        result.Success = fileExists && compilerReportedSuccess && exitCode == 0;
+                        result.Issues = issues.ToArray();
+
+                        if (result.Success)
+                        {
+                            LogSuccess($"✓ PLC compilation successful with output file", "PLC");
+                        }
+                        else
+                        {
+                            LogError($"PLC compilation failed", "PLC");
+                            if (!fileExists && compilerReportedSuccess)
+                            {
+                                result.Issues = result.Issues.Append("Compiled output file was not created").ToArray();
+                            }
+                            else if (exitCode != 0 && issues.Count == 0)
+                            {
+                                result.Issues = new[] { $"Compilation failed with exit code: {exitCode}" };
+                            }
+                        }
                     }
                 }
 

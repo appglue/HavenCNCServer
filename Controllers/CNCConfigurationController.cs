@@ -351,8 +351,6 @@ namespace HavenCNCServer.Controllers
             try
             {
                 return CentroidConfigUtil.ConfigureCompleteMachine(
-                    config.Inputs ?? new List<IOFunction>(),
-                    config.Outputs ?? new List<IOFunction>(),
                     config.Axes ?? new List<AxisConfiguration>(),
                     config.Spindle,
                     config.Probe,
@@ -363,27 +361,6 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to configure machine: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Configure only inputs and outputs in PLC file
-        /// </summary>
-        /// <param name="config">I/O configuration</param>
-        /// <returns>Configuration result</returns>
-        [HttpPost("ConfigureInputsOutputs")]
-        public bool ConfigureInputsOutputs([FromBody] IOConfiguration config)
-        {
-            try
-            {
-                return CentroidConfigUtil.ConfigureInputsOutputs(
-                    config.Inputs ?? new List<IOFunction>(),
-                    config.Outputs ?? new List<IOFunction>()
-                );
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to configure I/O: {ex.Message}", ex);
             }
         }
 
@@ -539,35 +516,6 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to configure tool touch off: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Validate I/O configuration for conflicts and issues
-        /// </summary>
-        /// <param name="config">I/O configuration to validate</param>
-        /// <returns>Validation results</returns>
-        [HttpPost("ValidateIOConfiguration")]
-        public ValidationResult ValidateIOConfiguration([FromBody] IOConfiguration config)
-        {
-            try
-            {
-                var issues = CentroidConfigUtil.ValidateIOConfiguration(
-                    config.Inputs ?? new List<IOFunction>(),
-                    config.Outputs ?? new List<IOFunction>()
-                );
-
-                return new ValidationResult
-                {
-                    Valid = issues.Count == 0,
-                    Issues = issues.ToArray(),
-                    InputCount = config.Inputs?.Count ?? 0,
-                    OutputCount = config.Outputs?.Count ?? 0
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to validate I/O configuration: {ex.Message}", ex);
             }
         }
 

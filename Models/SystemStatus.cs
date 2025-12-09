@@ -21,5 +21,10 @@ namespace HavenCNCServer.Models
         /// Additional status message
         /// </summary>
         public string Status { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Currently installed PLC version (from PLC source file header)
+        /// </summary>
+        public string PlcVersion { get; set; } = string.Empty;
     }
 }

@@ -1365,29 +1365,6 @@ namespace HavenCNCServer.Centroid
         #region Configuration Methods
 
         /// <summary>
-        /// Configures a complete machine setup with all systems
-        /// </summary>
-        /// <param name="inputs">Input I/O functions</param>
-        /// <param name="outputs">Output I/O functions</param>
-        /// <param name="axes">Axis configurations</param>
-        /// <param name="spindle">Spindle configuration</param>
-        /// <param name="probe">Probe configuration (optional)</param>
-        /// <param name="pwmOutputs">PWM output configurations (optional)</param>
-        /// <param name="atc">ATC configuration (optional)</param>
-        /// <returns>True if successful</returns>
-        public static bool ConfigureCompleteMachine(
-            List<IOFunction> inputs,
-            List<IOFunction> outputs,
-            List<AxisConfiguration> axes,
-            SpindleConfiguration spindle,
-            ProbeConfiguration? probe = null,
-            List<PWMConfiguration>? pwmOutputs = null,
-            ATCConfiguration? atc = null)
-        {
-            return ConfigureCompleteMachine(inputs, outputs, axes, spindle, probe, pwmOutputs, atc, null, null, null, null);
-        }
-
-        /// <summary>
         /// Configures a complete machine setup with all systems including enhanced features
         /// </summary>
         /// <param name="inputs">Input I/O functions</param>
@@ -1403,8 +1380,6 @@ namespace HavenCNCServer.Centroid
         /// <param name="rotary">Rotary axis configuration (optional)</param>
         /// <returns>True if successful</returns>
         public static bool ConfigureCompleteMachine(
-            List<IOFunction> inputs,
-            List<IOFunction> outputs,
             List<AxisConfiguration> axes,
             SpindleConfiguration spindle,
             ProbeConfiguration? probe = null,
@@ -1423,13 +1398,7 @@ namespace HavenCNCServer.Centroid
                     return false;
                 }
 
-                // Step 2: Configure I/O in PLC file
-                if (!ConfigureInputsOutputs(inputs, outputs))
-                {
-                    return false;
-                }
-
-                // Step 3: Configure all axes
+                // Step 2: Configure all axes
                 foreach (var axis in axes)
                 {
                     if (!ConfigureAxis(axis))
@@ -1438,31 +1407,31 @@ namespace HavenCNCServer.Centroid
                     }
                 }
 
-                // Step 4: Configure spindle
+                // Step 3: Configure spindle
                 if (!ConfigureSpindle(spindle))
                 {
                     return false;
                 }
 
-                // Step 5: Configure second spindle if provided
+                // Step 4: Configure second spindle if provided
                 if (secondSpindle != null && !ConfigureSecondSpindle(secondSpindle))
                 {
                     return false;
                 }
 
-                // Step 6: Configure probe if provided
+                // Step 5: Configure probe if provided
                 if (probe != null && !ConfigureProbe(probe))
                 {
                     return false;
                 }
 
-                // Step 7: Configure touch plate if provided
+                // Step 6: Configure touch plate if provided
                 if (touchPlate != null && !ConfigureTouchPlate(touchPlate))
                 {
                     return false;
                 }
 
-                // Step 8: Configure PWM outputs if provided
+                // Step 7: Configure PWM outputs if provided
                 if (pwmOutputs != null)
                 {
                     foreach (var pwm in pwmOutputs)
@@ -1474,13 +1443,13 @@ namespace HavenCNCServer.Centroid
                     }
                 }
 
-                // Step 9: Configure ATC if provided
+                // Step 8: Configure ATC if provided
                 if (atc != null && !ConfigureATC(atc))
                 {
                     return false;
                 }
 
-                // Step 10: Configure rotary settings if provided
+                // Step 9: Configure rotary settings if provided
                 if (rotary != null && !ConfigureRotary(rotary))
                 {
                     return false;

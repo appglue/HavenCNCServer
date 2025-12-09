@@ -1,0 +1,77 @@
+{
+  "name": "System PLC Program",
+  "description": "",
+  "version": "1.0",
+  "author": "",
+  "isSystem": true,
+  "majorVersion": 1,
+  "minorVersion": 26,
+  "type": 1,
+  "lastModified": "2025-12-09T15:16:41.395Z",
+  "stages": [
+    {
+      "name": "WATCHDOG_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 0,
+      "blocks": []
+    },
+    {
+      "name": "INITONETIME_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 1,
+      "blocks": []
+    },
+    {
+      "name": "INITEVERYTIME_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 2,
+      "blocks": []
+    },
+    {
+      "name": "MAIN_S",
+      "type": "Main",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 0,
+      "blocks": []
+    },
+    {
+      "name": "MESSAGE_S",
+      "type": "Final",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 0,
+      "blocks": []
+    }
+  ],
+  "inputs": [
+    {
+      "centroidName": "ESTOPOK_I",
+      "name": "Emergency Stop OK",
+      "activeText": "EStop Released",
+      "inactiveText": "EStop Pressed",
+      "isInverted": true,
+      "number": 8
+    }
+  ],
+  "outputs": [],
+  "keybindings": [],
+  "timers": [],
+  "m94m95Triggers": []
+}

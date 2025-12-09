@@ -1,0 +1,354 @@
+{
+  "fixtures": [
+    {
+      "name": "G28",
+      "fixtureNumber": "G28",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Default",
+      "fixtureNumber": "G54",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 5,
+        "y": 5,
+        "z": -3,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G55",
+      "fixtureNumber": "G55",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 6,
+        "y": 6,
+        "z": -4,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G56",
+      "fixtureNumber": "G56",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 7,
+        "y": 7,
+        "z": -1,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G57",
+      "fixtureNumber": "G57",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 8,
+        "y": 8,
+        "z": -5,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G58",
+      "fixtureNumber": "G58",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 9,
+        "y": 9,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Turning Center",
+      "fixtureNumber": "G59",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 15,
+        "y": 6,
+        "z": -5,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P001",
+      "fixtureNumber": "G54.1 P001",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P002",
+      "fixtureNumber": "G54.1 P002",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P003",
+      "fixtureNumber": "G54.1 P003",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P004",
+      "fixtureNumber": "G54.1 P004",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P005",
+      "fixtureNumber": "G54.1 P005",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P006",
+      "fixtureNumber": "G54.1 P006",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P007",
+      "fixtureNumber": "G54.1 P007",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P008",
+      "fixtureNumber": "G54.1 P008",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P009",
+      "fixtureNumber": "G54.1 P009",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P010",
+      "fixtureNumber": "G54.1 P010",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P011",
+      "fixtureNumber": "G54.1 P011",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "G54.1 P012",
+      "fixtureNumber": "G54.1 P012",
+      "used": false,
+      "fixtureType": 4,
+      "userDefined": false,
+      "isComputed": false,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Machine Zero",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Machine Home",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Current Fixture Home",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Spoilboard Corner (Top, Front, Left)",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Bed Corner (Top, Front, Left)",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Manual Tool Change Location",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    }
+  ]
+}

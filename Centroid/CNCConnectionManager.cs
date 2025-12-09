@@ -16,6 +16,7 @@ namespace HavenCNCServer.Services
         private static bool _isConnected = false;
         private static bool _isConnecting = false;
         private static DateTime _lastConnectionAttempt = DateTime.MinValue;
+        private static DateTime _lastConnectionCheck = DateTime.MinValue;
         private static readonly object _lock = new object();
 
         /// <summary>
@@ -32,6 +33,33 @@ namespace HavenCNCServer.Services
             {
                 lock (_lock)
                 {
+                    // Only verify connection health every 5 seconds to avoid spamming checks
+                    var timeSinceLastCheck = (DateTime.Now - _lastConnectionCheck).TotalSeconds;
+
+                    if (_isConnected && _cncPipe != null && timeSinceLastCheck > 5)
+                    {
+                        _lastConnectionCheck = DateTime.Now;
+                        try
+                        {
+                            if (!_cncPipe.IsConstructed())
+                            {
+                                // CNC pipe is no longer valid - update status
+                                _isConnected = false;
+                                _cncPipe = null;
+                                NotifyStatusChanged(false, "CNC connection lost");
+                                return false;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // IsConstructed() threw an exception - CNC12 probably crashed
+                            LogError($"Exception checking connection status: {ex.Message}", "CNCConnectionManager");
+                            _isConnected = false;
+                            _cncPipe = null;
+                            NotifyStatusChanged(false, $"CNC connection error: {ex.Message}");
+                            return false;
+                        }
+                    }
                     return _isConnected;
                 }
             }
@@ -46,7 +74,22 @@ namespace HavenCNCServer.Services
         {
             lock (_lock)
             {
-                return _isConnected && _cncPipe != null && _cncPipe.IsConstructed();
+                if (!_isConnected || _cncPipe == null)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    return _cncPipe.IsConstructed();
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Exception in CheckIsConnected: {ex.Message}", "CNCConnectionManager");
+                    _isConnected = false;
+                    _cncPipe = null;
+                    return false;
+                }
             }
         }
 
@@ -195,12 +238,19 @@ namespace HavenCNCServer.Services
                             // Restore last fixture point asynchronously after successful connection
                             _ = Task.Run(async () =>
                             {
-                                // Give Centroid a moment to fully stabilize
-                                await Task.Delay(500);
-                                await RestoreLastFixturePointAsync();
+                                try
+                                {
+                                    // Give Centroid a moment to fully stabilize
+                                    await Task.Delay(500);
+                                    await RestoreLastFixturePointAsync();
 
-                                // Reset all outputs to clean state on startup
-                                await ResetAllOutputsAsync();
+                                    // Reset all outputs to clean state on startup
+                                    await ResetAllOutputsAsync();
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogError($"Error during post-connection initialization: {ex.Message}", "CNCConnectionManager");
+                                }
                             });
 
                             return _cncPipe;

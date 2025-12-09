@@ -64,7 +64,7 @@ namespace HavenCNCServer
                 else
                 {
                     // GUI mode - show message box
-                    MessageBox.Show($"Application startup error: {ex.Message}\n\nDetails: {ex}", 
+                    MessageBox.Show($"Application startup error: {ex.Message}\n\nDetails: {ex}",
                         "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -76,9 +76,9 @@ namespace HavenCNCServer
         private static bool IsConsoleMode(string[] args)
         {
             if (args.Length == 0) return false;
-            
+
             var firstArg = args[0].ToLowerInvariant();
-            return firstArg == "--generate-openapi" || firstArg == "-g" || 
+            return firstArg == "--generate-openapi" || firstArg == "-g" ||
                    firstArg == "--help" || firstArg == "-h" || firstArg == "/?";
         }
 
@@ -89,12 +89,24 @@ namespace HavenCNCServer
         {
             // Handle unhandled exceptions in the main UI thread
             Application.ThreadException += Application_ThreadException;
-            
+
             // Set the unhandled exception mode to force all Windows Forms errors to go through our handler
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            
+
             // Handle unhandled exceptions in other threads
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+            // Handle unobserved task exceptions (from async/await code)
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        /// <summary>
+        /// Handle unobserved task exceptions (from async/await code)
+        /// </summary>
+        private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            HandleException(e.Exception, "Unobserved Task Exception", false);
+            e.SetObserved(); // Prevent the process from terminating
         }
 
         /// <summary>
@@ -131,6 +143,22 @@ namespace HavenCNCServer
                                  $"Message: {ex.Message}\n" +
                                  $"Stack Trace:\n{ex.StackTrace}";
 
+                // ALWAYS write to a crash log file first (most reliable)
+                try
+                {
+                    var crashLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log");
+                    var crashEntry = $"\n\n{'=' * 80}\n" +
+                                   $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CRASH DETECTED\n" +
+                                   $"Is Terminating: {isTerminating}\n" +
+                                   $"{fullDetails}\n" +
+                                   $"{'=' * 80}\n";
+                    File.AppendAllText(crashLogPath, crashEntry);
+                }
+                catch
+                {
+                    // If even file writing fails, nothing we can do
+                }
+
                 // Try to log using the application's logging system if available
                 try
                 {
@@ -144,15 +172,22 @@ namespace HavenCNCServer
                     System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {fullDetails}");
                 }
 
-                // Show user-friendly message
-                var userMessage = isTerminating 
-                    ? $"A critical error occurred and the application must close:\n\n{ex.Message}\n\nPlease restart the application."
-                    : $"An error occurred but the application can continue:\n\n{ex.Message}\n\nThe error has been logged. If this problem persists, please restart the application.";
+                // Try to show user-friendly message (might fail if UI is dead)
+                try
+                {
+                    var userMessage = isTerminating
+                        ? $"A critical error occurred and the application must close:\n\n{ex.Message}\n\nCheck crash.log for details.\n\nPlease restart the application."
+                        : $"An error occurred but the application can continue:\n\n{ex.Message}\n\nThe error has been logged. If this problem persists, please restart the application.";
 
-                var messageType = isTerminating ? MessageBoxIcon.Error : MessageBoxIcon.Warning;
-                var messageTitle = isTerminating ? "Critical Error" : "Application Error";
+                    var messageType = isTerminating ? MessageBoxIcon.Error : MessageBoxIcon.Warning;
+                    var messageTitle = isTerminating ? "Critical Error" : "Application Error";
 
-                MessageBox.Show(userMessage, messageTitle, MessageBoxButtons.OK, messageType);
+                    MessageBox.Show(userMessage, messageTitle, MessageBoxButtons.OK, messageType);
+                }
+                catch
+                {
+                    // MessageBox failed, but we already logged to file
+                }
 
                 // If this is a terminating exception, exit gracefully
                 if (isTerminating)
@@ -163,6 +198,14 @@ namespace HavenCNCServer
             catch (Exception handlerEx)
             {
                 // Last resort: even our exception handler failed
+                try
+                {
+                    var crashLogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "crash.log");
+                    File.AppendAllText(crashLogPath,
+                        $"\n[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] EXCEPTION HANDLER FAILED: {handlerEx.Message}\nOriginal: {ex?.Message}\n");
+                }
+                catch { }
+
                 try
                 {
                     MessageBox.Show($"A critical error occurred in the error handler:\n{handlerEx.Message}\n\nOriginal error: {ex?.Message ?? "Unknown"}\n\nThe application will now close.",
@@ -202,13 +245,13 @@ namespace HavenCNCServer
             Console.WriteLine();
 
             var outputFile = "openapi.json";
-            
+
             // Create backup of existing file if it exists
             if (File.Exists(outputFile))
             {
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 var backupFile = $"openapi.backup.{timestamp}.json";
-                
+
                 Console.WriteLine($"Creating backup of existing file...");
                 File.Copy(outputFile, backupFile);
                 Console.WriteLine($"✓ Backup created: {backupFile}");
@@ -216,24 +259,24 @@ namespace HavenCNCServer
             }
 
             var host = CreateApiHost();
-            
+
             try
             {
                 Console.WriteLine("Starting API server...");
                 await host.StartAsync();
-                
+
                 // Wait a moment for the server to fully initialize
                 await Task.Delay(2000);
-                
+
                 Console.WriteLine("Downloading OpenAPI specification...");
-                
+
                 using var client = new HttpClient();
                 client.Timeout = TimeSpan.FromSeconds(30);
-                
+
                 var openApiJson = await client.GetStringAsync("http://localhost:5000/swagger/v1/swagger.json");
-                
+
                 await File.WriteAllTextAsync(outputFile, openApiJson);
-                
+
                 Console.WriteLine($"✓ OpenAPI specification saved to: {outputFile}");
                 Console.WriteLine($"✓ File size: {new FileInfo(outputFile).Length} bytes");
                 Console.WriteLine();

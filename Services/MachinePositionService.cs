@@ -63,7 +63,7 @@ namespace HavenCNCServer.Services
                     // Fallback to cached position if API unavailable
                     if (_lastPosition != null)
                     {
-                        LogWarning("CNC connection not available, returning last known position", "MachinePositionService");
+                        // Reduced logging to avoid spam when disconnected
                         return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                     }
                     throw new InvalidOperationException("CNC connection not available and no position data");
@@ -76,12 +76,9 @@ namespace HavenCNCServer.Services
 
                     if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                     {
-                        LogWarning($"API returned error code for DRO position: {result}", "MachinePositionService");
-
-                        // Fallback to cached position
+                        // Fallback to cached position silently to avoid log spam
                         if (_lastPosition != null)
                         {
-                            LogWarning("Using last known position due to API error response", "MachinePositionService");
                             return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                         }
                         throw new InvalidOperationException($"Failed to get DRO position: {result}");
@@ -90,12 +87,9 @@ namespace HavenCNCServer.Services
                     // Check if we got valid data back
                     if (droStrings == null || droStrings.Length == 0)
                     {
-                        LogWarning("API returned no DRO data", "MachinePositionService");
-
-                        // Fallback to cached position
+                        // Fallback to cached position silently to avoid log spam
                         if (_lastPosition != null)
                         {
-                            LogWarning("Using last known position due to empty API response", "MachinePositionService");
                             return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                         }
                         throw new InvalidOperationException("API returned no DRO data");
@@ -139,15 +133,13 @@ namespace HavenCNCServer.Services
                 }
                 catch (Exception ex)
                 {
-                    LogError($"Failed to get machine position from API: {ex.Message}", "MachinePositionService");
-
-                    // Fallback to cached position if API call fails
+                    // Fallback to cached position if API call fails (reduced logging to avoid spam)
                     if (_lastPosition != null)
                     {
-                        LogWarning("Using last known position due to API exception", "MachinePositionService");
                         return new MachinePoint(_lastPosition.X, _lastPosition.Y, _lastPosition.Z, _lastPosition.A);
                     }
-                    throw;
+                    // Only throw if we have no fallback position
+                    throw new InvalidOperationException($"Failed to get machine position: {ex.Message}", ex);
                 }
             }
         }

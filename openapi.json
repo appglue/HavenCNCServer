@@ -386,56 +386,6 @@
         }
       }
     },
-    "/api/CNCConfiguration/ConfigureInputsOutputs": {
-      "post": {
-        "tags": [
-          "CNCConfiguration"
-        ],
-        "summary": "Configure only inputs and outputs in PLC file",
-        "requestBody": {
-          "description": "I/O configuration",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/CNCConfiguration/ConfigureAxis": {
       "post": {
         "tags": [
@@ -759,56 +709,6 @@
               "text/json": {
                 "schema": {
                   "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCConfiguration/ValidateIOConfiguration": {
-      "post": {
-        "tags": [
-          "CNCConfiguration"
-        ],
-        "summary": "Validate I/O configuration for conflicts and issues",
-        "requestBody": {
-          "description": "I/O configuration to validate",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/IOConfiguration"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationResult"
                 }
               }
             }
@@ -1721,113 +1621,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SystemInfo"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCIO/InvertInput/{inputNumber}": {
-      "post": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Invert input polarity",
-        "parameters": [
-          {
-            "name": "inputNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "invert",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCIO/InvertInputs": {
-      "post": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Invert multiple inputs",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
                 }
               }
             }
@@ -4991,22 +4784,6 @@
       "CompleteMachineConfiguration": {
         "type": "object",
         "properties": {
-          "inputs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IOFunction"
-            },
-            "description": "Input I/O function assignments",
-            "nullable": true
-          },
-          "outputs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IOFunction"
-            },
-            "description": "Output I/O function assignments",
-            "nullable": true
-          },
           "axes": {
             "type": "array",
             "items": {
@@ -5127,29 +4904,6 @@
         "additionalProperties": false,
         "description": "Represents global system configuration settings"
       },
-      "IOConfiguration": {
-        "type": "object",
-        "properties": {
-          "inputs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IOFunction"
-            },
-            "description": "Input I/O function assignments",
-            "nullable": true
-          },
-          "outputs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IOFunction"
-            },
-            "description": "Output I/O function assignments",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "I/O configuration DTO for API"
-      },
       "IODefinition": {
         "type": "object",
         "properties": {
@@ -5209,29 +4963,6 @@
         },
         "additionalProperties": false,
         "description": "Response containing all I/O definitions from the PLC source file"
-      },
-      "IOFunction": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Function name (e.g., \"EStopOk\", \"SpindleEnable\")",
-            "nullable": true
-          },
-          "number": {
-            "type": "integer",
-            "description": "I/O number (1-64 for standard I/O)",
-            "format": "int32",
-            "nullable": true
-          },
-          "isInverted": {
-            "type": "boolean",
-            "description": "Whether the input/output is inverted",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Represents an I/O function assignment"
       },
       "JobDetails": {
         "type": "object",
@@ -6563,6 +6294,11 @@
             "type": "string",
             "description": "Additional status message",
             "nullable": true
+          },
+          "plcVersion": {
+            "type": "string",
+            "description": "Currently installed PLC version (from PLC source file header)",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -6781,35 +6517,6 @@
         },
         "additionalProperties": false,
         "description": "Travel limits for all configured axes"
-      },
-      "ValidationResult": {
-        "type": "object",
-        "properties": {
-          "valid": {
-            "type": "boolean",
-            "description": "Whether the configuration is valid"
-          },
-          "issues": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of validation issues found",
-            "nullable": true
-          },
-          "inputCount": {
-            "type": "integer",
-            "description": "Input count",
-            "format": "int32"
-          },
-          "outputCount": {
-            "type": "integer",
-            "description": "Output count",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Validation result DTO for configuration validation"
       }
     }
   }

@@ -1,0 +1,728 @@
+{
+  "name": "System Default PLC Program",
+  "description": "",
+  "version": "1.0",
+  "author": "",
+  "isSystemDefault": true,
+  "type": 0,
+  "lastModified": "2025-12-09T02:56:30.055Z",
+  "stages": [
+    {
+      "name": "WATCHDOG_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": false,
+      "ordinal": 0,
+      "blocks": [
+        {
+          "name": "PLC Check",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "!=",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "0",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "SV_PLC_FAULT_STATUS",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "fault",
+                  "mode": "async",
+                  "messageText": "PLC Error"
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_STOP",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "MESSAGE_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "MESSAGE_S"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Input Mapping/EStop",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": false,
+          "ordinal": 1,
+          "actions": [
+            {
+              "type": "SendMessageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "SendMessagePredicate",
+                "comment": "",
+                "enabled": true,
+                "level": "info",
+                "mode": "async",
+                "messageText": "test"
+              }
+            },
+            {
+              "type": "InputMappingStatement",
+              "comment": "",
+              "enabled": true
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "ESTOPOK_I",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_ESTOP_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_STOP",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_ESTOP_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_STOP",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "INITONETIME_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 1,
+      "blocks": [
+        {
+          "name": "System Default Block 1",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "MAIN_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "MAIN_S"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "INITEVERYTIME_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 2,
+      "blocks": []
+    },
+    {
+      "name": "MAIN_S",
+      "type": "Main",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 3,
+      "blocks": []
+    },
+    {
+      "name": "MESSAGE_S",
+      "type": "Final",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 0,
+      "blocks": [
+        {
+          "name": "System Default Block 1",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1765248264089_9ph3fg0d6",
+                  "type": "Text",
+                  "text": "if "
+                },
+                {
+                  "id": "piece_1765248264089_795ma11t4",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_FAULT_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248269089_937r3y4w0",
+                  "type": "Text",
+                  "text": " != 0 then "
+                },
+                {
+                  "id": "piece_1765248269089_v5ahqm2fy",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1765248276323_4hqnv9qwm",
+                  "type": "Text",
+                  "text": "   MSG "
+                },
+                {
+                  "id": "piece_1765248276323_yh49s0cjh",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_FAULT_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248312738_5wfr6xnw7",
+                  "type": "Text",
+                  "text": ", SET "
+                },
+                {
+                  "id": "piece_1765248312738_a1p515nv1",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "allowNew": true,
+                    "needsWrite": false,
+                    "declaration": {
+                      "name": "MESSAGE_SENT_M",
+                      "description": "",
+                      "dataType": "Memory Bit",
+                      "category": [
+                        "* User Defined"
+                      ],
+                      "visibility": "Visible",
+                      "readOnly": false,
+                      "isSystem": false,
+                      "isConstant": false,
+                      "isSetText": "Set",
+                      "isResetText": "Reset"
+                    }
+                  }
+                },
+                {
+                  "id": "piece_1765248314147_wp2759376",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1765248314147_2wn87nkvh",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1765248318777_ij724xpgv",
+                  "type": "Text",
+                  "text": "if "
+                },
+                {
+                  "id": "piece_1765248318777_ajcc3474s",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_FAULT_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248329045_r5hu6v1j6",
+                  "type": "Text",
+                  "text": " ==0 && "
+                },
+                {
+                  "id": "piece_1765248329045_2ikc38iqp",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_ERROR_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248332241_pz3cqi8sj",
+                  "type": "Text",
+                  "text": " != 0 then"
+                },
+                {
+                  "id": "piece_1765248332241_ijs8r2iab",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1765248335621_kqp9tirco",
+                  "type": "Text",
+                  "text": "   MSG "
+                },
+                {
+                  "id": "piece_1765248335621_2aohzkj9e",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_ERROR_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248340245_egwj9f6kp",
+                  "type": "Text",
+                  "text": ", set "
+                },
+                {
+                  "id": "piece_1765248340245_2q0q88zmm",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MESSAGE_SENT_M",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248341527_ti2iwcwb3",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1765248341527_xppcgbzm8",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1765248348087_flniw2qul",
+                  "type": "Text",
+                  "text": "if ("
+                },
+                {
+                  "id": "piece_1765248348087_izu2sbv3j",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_FAULT_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248351103_l5imfvbk5",
+                  "type": "Text",
+                  "text": " == 0 && "
+                },
+                {
+                  "id": "piece_1765248351103_a0x0uptke",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_ERROR_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248356593_vf29kcpb1",
+                  "type": "Text",
+                  "text": " == 0) && "
+                },
+                {
+                  "id": "piece_1765248356593_6g3cuz2zp",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_INFO_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248360027_0owjd2yo1",
+                  "type": "Text",
+                  "text": " != 0 then"
+                },
+                {
+                  "id": "piece_1765248360027_ahxni8u4k",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1765248364073_6xn8z3iua",
+                  "type": "Text",
+                  "text": "   MSG "
+                },
+                {
+                  "id": "piece_1765248364073_rbzzzeaqp",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MSG_INFO_W",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248366345_oa38uy0dl",
+                  "type": "Text",
+                  "text": ", set "
+                },
+                {
+                  "id": "piece_1765248366345_p1kvd3wsb",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "MESSAGE_SENT_M",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1765248367677_jm89avszd",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1765248371346_taa3vsh2r",
+                  "type": "Text",
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "MESSAGE_SENT_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "MESSAGE_SENT_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "StartResetTimerPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "action": "Start",
+                  "timerElement": {
+                    "declarationName": "MESSAGE_SENT_T",
+                    "allowNew": false,
+                    "requiresType": "Timer",
+                    "needsWrite": true
+                  },
+                  "timerName": "MESSAGE_SENT_T"
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "MESSAGE_SENT_T",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "StartResetTimerPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "action": "Reset",
+                  "timerElement": {
+                    "declarationName": "MESSAGE_SENT_T",
+                    "allowNew": false,
+                    "requiresType": "Timer",
+                    "needsWrite": true
+                  },
+                  "timerName": "MESSAGE_SENT_T"
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Value",
+                  "sourceValue": "0",
+                  "targetElement": {
+                    "declarationName": "MSG_FAULT_W",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Value",
+                  "sourceValue": "0",
+                  "targetElement": {
+                    "declarationName": "MSG_ERROR_W",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Value",
+                  "sourceValue": "0",
+                  "targetElement": {
+                    "declarationName": "MSG_INFO_W",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "inputs": [],
+  "outputs": [],
+  "keybindings": [],
+  "timers": [
+    {
+      "name": "MESSAGE_SENT_T",
+      "description": "",
+      "timerLength": 100
+    }
+  ],
+  "m94m95Triggers": [
+    {
+      "name": "M3",
+      "description": "",
+      "number": 3,
+      "outputs": [
+        "Spindle Forward"
+      ]
+    }
+  ]
+}

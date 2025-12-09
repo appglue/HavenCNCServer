@@ -25,7 +25,8 @@ namespace HavenCNCServer.Controllers
                 {
                     CurrentDateTime = DateTime.Now,
                     IsCNCConnected = CNCConnectionManager.IsConnected,
-                    Status = CNCConnectionManager.IsConnected ? "CNC Connected" : "CNC Disconnected"
+                    Status = CNCConnectionManager.IsConnected ? "CNC Connected" : "CNC Disconnected",
+                    PlcVersion = GetInstalledPlcVersion()
                 };
 
                 return status;
@@ -33,6 +34,48 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to get system status: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Get the version number from the currently installed PLC source file
+        /// </summary>
+        /// <returns>PLC version string or empty if not found</returns>
+        private string GetInstalledPlcVersion()
+        {
+            try
+            {
+                var cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
+                var plcSourcePath = System.IO.Path.Combine(cnc12Path, "havencncplc.src");
+
+                if (!System.IO.File.Exists(plcSourcePath))
+                {
+                    return "Not Installed";
+                }
+
+                // Read first few lines to find version
+                var lines = System.IO.File.ReadLines(plcSourcePath).Take(10).ToArray();
+
+                // Look for line containing "Version:"
+                foreach (var line in lines)
+                {
+                    if (line.Contains("Version:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Extract version number after "Version:"
+                        var versionIndex = line.IndexOf("Version:", StringComparison.OrdinalIgnoreCase);
+                        if (versionIndex >= 0)
+                        {
+                            var version = line.Substring(versionIndex + 8).Trim();
+                            return version;
+                        }
+                    }
+                }
+
+                return "Unknown";
+            }
+            catch
+            {
+                return "Unknown";
             }
         }
 
