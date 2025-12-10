@@ -279,6 +279,18 @@ namespace HavenCNCServer
                 return;
             }
 
+            // Update retry count display (lock-free read)
+            int retryCount = CNCConnectionManager.ConnectionRetryCount;
+            if (retryCount > 0)
+            {
+                lblConnectionRetries.Text = $"Connection Retries: {retryCount}";
+                lblConnectionRetries.ForeColor = Color.Orange;
+            }
+            else
+            {
+                lblConnectionRetries.Text = "";
+            }
+
             if (connected)
             {
                 LogSuccess(message, "CNC");

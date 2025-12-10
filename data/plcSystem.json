@@ -5,9 +5,9 @@
   "author": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 26,
+  "minorVersion": 0,
   "type": 1,
-  "lastModified": "2025-12-09T15:16:41.395Z",
+  "lastModified": "2025-12-10T20:12:13.179Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -15,7 +15,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 0,
       "blocks": []
     },
@@ -25,7 +25,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 1,
       "blocks": []
     },
@@ -35,7 +35,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 2,
       "blocks": []
     },
@@ -45,7 +45,17 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
+      "ordinal": 0,
+      "blocks": []
+    },
+    {
+      "name": "FINAL_S",
+      "type": "Final",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": false,
       "ordinal": 0,
       "blocks": []
     },
@@ -55,21 +65,12 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
-      "ordinal": 0,
+      "collapsed": false,
+      "ordinal": 1,
       "blocks": []
     }
   ],
-  "inputs": [
-    {
-      "centroidName": "ESTOPOK_I",
-      "name": "Emergency Stop OK",
-      "activeText": "EStop Released",
-      "inactiveText": "EStop Pressed",
-      "isInverted": true,
-      "number": 8
-    }
-  ],
+  "inputs": [],
   "outputs": [],
   "keybindings": [],
   "timers": [],

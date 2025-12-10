@@ -5,7 +5,7 @@
   "author": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-09T02:56:30.055Z",
+  "lastModified": "2025-12-10T20:05:16.255Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -13,7 +13,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 0,
       "blocks": [
         {
@@ -129,7 +129,7 @@
             {
               "type": "LogicStatement",
               "comment": "",
-              "enabled": true,
+              "enabled": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -222,6 +222,60 @@
                   }
                 }
               ]
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "INITONETIME_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "INITONETIME_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "INITEVERYTIME_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "INITEVERYTIME_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "FINAL_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "FINAL_S"
+              }
             }
           ]
         }
@@ -233,15 +287,15 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 1,
       "blocks": [
         {
-          "name": "System Default Block 1",
+          "name": "Turn On Main Stage",
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 0,
           "actions": [
             {
@@ -274,7 +328,88 @@
       "fast": false,
       "collapsed": true,
       "ordinal": 2,
-      "blocks": []
+      "blocks": [
+        {
+          "name": "Set Defaults",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": false,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "RESET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "HV_STOP_M",
+                    "displayName": "HV_STOP_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* Control"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Stop Triggered",
+                    "isResetText": "Stop Not Triggered"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "RESET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "HV_ESTOP_PRESSED_M",
+                    "displayName": "HV_ESTOP_PRESSED_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* Control"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Estop Pressed",
+                    "isResetText": "EStop Not Pressed"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "MAIN_S",
@@ -293,14 +428,14 @@
       "enabled": true,
       "fast": false,
       "collapsed": true,
-      "ordinal": 0,
+      "ordinal": 1,
       "blocks": [
         {
-          "name": "System Default Block 1",
+          "name": "Message Handling",
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 0,
           "actions": [
             {
@@ -699,6 +834,189 @@
               ],
               "hasElse": false,
               "elsePredicates": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FINAL_S",
+      "type": "Final",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "collapsed": true,
+      "ordinal": 0,
+      "blocks": [
+        {
+          "name": "Stop Handling",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": false,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_ESTOP_PRESSED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_ESTOP_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_ESTOP_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_STOP_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_STOP",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_STOP",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
             }
           ]
         }

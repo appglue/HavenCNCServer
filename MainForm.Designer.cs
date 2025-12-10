@@ -29,6 +29,7 @@ namespace HavenCNCServer
         private void InitializeComponent()
         {
             this.lblStatus = new System.Windows.Forms.Label();
+            this.lblConnectionRetries = new System.Windows.Forms.Label();
             this.lblApiUrl = new System.Windows.Forms.Label();
             this.btnOpenSwagger = new System.Windows.Forms.Button();
             this.txtLog = new HavenCNCServer.Components.FlickerFreeLogViewer();
@@ -72,6 +73,16 @@ namespace HavenCNCServer
             this.lblStatus.Size = new System.Drawing.Size(232, 20);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "API Server Status: Starting...";
+            // 
+            // lblConnectionRetries
+            // 
+            this.lblConnectionRetries.AutoSize = true;
+            this.lblConnectionRetries.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblConnectionRetries.Location = new System.Drawing.Point(250, 12);
+            this.lblConnectionRetries.Name = "lblConnectionRetries";
+            this.lblConnectionRetries.Size = new System.Drawing.Size(120, 17);
+            this.lblConnectionRetries.TabIndex = 20;
+            this.lblConnectionRetries.Text = "";
             // 
             // lblApiUrl
             // 
@@ -195,6 +206,7 @@ namespace HavenCNCServer
             this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlControls.Controls.Add(this.lblStatus);
+            this.pnlControls.Controls.Add(this.lblConnectionRetries);
             this.pnlControls.Controls.Add(this.lblApiUrl);
             this.pnlControls.Controls.Add(this.btnOpenSwagger);
             this.pnlControls.Controls.Add(this.btnGCodeTest);
@@ -380,6 +392,7 @@ namespace HavenCNCServer
         #endregion
 
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label lblConnectionRetries;
         private System.Windows.Forms.Label lblApiUrl;
         private System.Windows.Forms.Button btnOpenSwagger;
         private HavenCNCServer.Components.FlickerFreeLogViewer txtLog;

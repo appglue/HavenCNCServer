@@ -35,18 +35,18 @@
     "workZeroConfirmed": false,
     "runStatistics": [
       {
-        "startTime": "2025-12-09T15:08:14.867Z",
-        "endTime": "2025-12-09T15:10:14.867Z",
+        "startTime": "2025-12-10T20:08:42.407Z",
+        "endTime": "2025-12-10T20:10:42.407Z",
         "durationMs": 120000
       },
       {
-        "startTime": "2025-12-09T15:07:14.867Z",
-        "endTime": "2025-12-09T15:08:14.867Z",
+        "startTime": "2025-12-10T20:07:42.407Z",
+        "endTime": "2025-12-10T20:08:42.407Z",
         "durationMs": 60000
       },
       {
-        "startTime": "2025-12-09T15:05:14.867Z",
-        "endTime": "2025-12-09T15:07:14.867Z",
+        "startTime": "2025-12-10T20:05:42.407Z",
+        "endTime": "2025-12-10T20:07:42.407Z",
         "durationMs": 120000
       }
     ],
@@ -84,7 +84,7 @@
     },
     "clamps": [
       {
-        "id": "clamp_5igorgty7_miypvvmj",
+        "id": "clamp_dtjd2f96e_mj0g24fj",
         "clampname": "Front Left Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -98,7 +98,7 @@
         }
       },
       {
-        "id": "clamp_alhmim23x_miypvvmj",
+        "id": "clamp_brs43u8my_mj0g24fj",
         "clampname": "Front Right Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -112,7 +112,7 @@
         }
       },
       {
-        "id": "clamp_e0b267rzt_miypvvmj",
+        "id": "clamp_fmae6r17t_mj0g24fj",
         "clampname": "Back Left Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -126,7 +126,7 @@
         }
       },
       {
-        "id": "clamp_syc8zwm5l_miypvvmj",
+        "id": "clamp_70fn01ebe_mj0g24fj",
         "clampname": "Back Right Clamp",
         "clampXWidth": 3,
         "clampYWidth": 1,
@@ -147,9 +147,9 @@
       "cameraTargetMode": "MachineCenter",
       "perspectiveView": {
         "name": "default",
-        "cameraDistance": 164.99999999999812,
-        "cameraPolarAngle": 0.7853981633974513,
-        "cameraAzimuthalAngle": 0.7853981633974575,
+        "cameraDistance": 164.99999999999991,
+        "cameraPolarAngle": 0.7853981633974487,
+        "cameraAzimuthalAngle": 0.7853981633974487,
         "zoomFactor": 1,
         "workHome": true,
         "toolpaths": true,

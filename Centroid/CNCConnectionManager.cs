@@ -17,12 +17,25 @@ namespace HavenCNCServer.Services
         private static bool _isConnecting = false;
         private static DateTime _lastConnectionAttempt = DateTime.MinValue;
         private static DateTime _lastConnectionCheck = DateTime.MinValue;
+        private static int _connectionRetryCount = 0;
         private static readonly object _lock = new object();
 
         /// <summary>
         /// Event fired when connection status changes
         /// </summary>
         public static event Action<bool, string>? ConnectionStatusChanged;
+
+        /// <summary>
+        /// Gets the number of connection retry attempts since last disconnect
+        /// </summary>
+        public static int ConnectionRetryCount
+        {
+            get
+            {
+                // Lock-free read using Interlocked
+                return Interlocked.CompareExchange(ref _connectionRetryCount, 0, 0);
+            }
+        }
 
         /// <summary>
         /// Gets whether the CNC is currently connected
@@ -210,6 +223,7 @@ namespace HavenCNCServer.Services
 
                     try
                     {
+                        Interlocked.Increment(ref _connectionRetryCount);
                         NotifyStatusChanged(false, $"Connection attempt {attempt}/{maxRetries}...");
 
                         // Clean up any existing failed instance
@@ -230,6 +244,7 @@ namespace HavenCNCServer.Services
                         {
                             Log($"CNCPipe constructed successfully on attempt {attempt}", LogLevel.Info, "CNCConnectionManager");
                             _isConnected = true;
+                            Interlocked.Exchange(ref _connectionRetryCount, 0); // Reset counter on success
                             NotifyStatusChanged(true, "Connected to CNC successfully");
 
                             // Connection is established - no additional tests needed
