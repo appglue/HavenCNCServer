@@ -21,7 +21,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 0,
           "actions": [
             {
@@ -144,38 +144,6 @@
                 "mode": "async",
                 "messageText": "xdfsfsd"
               }
-            },
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "SET",
-                "sourceValue": "",
-                "targetElement": {
-                  "allowNew": true,
-                  "needsWrite": true
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            },
-            {
-              "type": "ScriptStatement",
-              "comment": "",
-              "enabled": true,
-              "pieces": [
-                {
-                  "id": "piece_1765400948945_33x9e1y0q",
-                  "type": "Text",
-                  "text": ""
-                }
-              ]
             }
           ]
         },
@@ -184,7 +152,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 1,
           "actions": [
             {
@@ -204,103 +172,6 @@
               "type": "InputMappingStatement",
               "comment": "",
               "enabled": true
-            },
-            {
-              "type": "LogicStatement",
-              "comment": "",
-              "enabled": false,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "ESTOPOK_I",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "predicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SV_ESTOP_PRESSED",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SV_STOP",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasElse": true,
-              "elsePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SV_ESTOP_PRESSED",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SV_STOP",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ]
             },
             {
               "type": "ToggleStageStatement",
@@ -355,6 +226,54 @@
                 },
                 "stageName": "FINAL_S"
               }
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "ESTOPOK2_I",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_ESTOP_PRESSED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
             }
           ]
         }

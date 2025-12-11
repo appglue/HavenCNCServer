@@ -5,7 +5,8 @@
   "author": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 3,
+  "minorVersion": 6,
+  "updateVersion": 1,
   "type": 1,
   "lastModified": "2025-12-10T20:12:13.179Z",
   "stages": [
@@ -25,7 +26,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 1,
       "blocks": []
     },
@@ -35,7 +36,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 2,
       "blocks": []
     },
@@ -45,7 +46,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 0,
       "blocks": []
     },
@@ -55,7 +56,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 0,
       "blocks": []
     },
@@ -65,7 +66,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 1,
       "blocks": []
     }

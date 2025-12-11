@@ -175,3 +175,40 @@ public class IODefinitionsResponse
     /// </summary>
     public DateTime ParsedAt { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>
+/// Represents the state of a single I/O point (input or output)
+/// </summary>
+public class IOState
+{
+    /// <summary>
+    /// The I/O number (1-100)
+    /// </summary>
+    public int Number { get; set; }
+
+    /// <summary>
+    /// Current state (true = on/active, false = off/inactive)
+    /// </summary>
+    public bool IsOn { get; set; }
+}
+
+/// <summary>
+/// Response containing bulk I/O states for inputs and outputs
+/// </summary>
+public class BulkIOStatesResponse
+{
+    /// <summary>
+    /// List of input states (1-100)
+    /// </summary>
+    public List<IOState> Inputs { get; set; } = new();
+
+    /// <summary>
+    /// List of output states (1-100)
+    /// </summary>
+    public List<IOState> Outputs { get; set; } = new();
+
+    /// <summary>
+    /// Timestamp when the states were read
+    /// </summary>
+    public DateTime ReadAt { get; set; } = DateTime.UtcNow;
+}

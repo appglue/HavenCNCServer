@@ -230,6 +230,89 @@ namespace HavenCNCServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Get the state of the first 100 inputs and 100 outputs
+        /// Returns number and on/off state for each I/O point
+        /// </summary>
+        [HttpGet("GetBulkIOStates")]
+        [ProducesResponseType(typeof(BulkIOStatesResponse), 200)]
+        public ActionResult<BulkIOStatesResponse> GetBulkIOStates()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    LogError("CNC connection not available", "IO");
+                    return StatusCode(500, new { message = "CNC connection not available" });
+                }
+
+                var response = new BulkIOStatesResponse
+                {
+                    ReadAt = DateTime.UtcNow
+                };
+
+                // Read first 100 inputs
+                for (int i = 1; i <= 100; i++)
+                {
+                    try
+                    {
+                        var result = cncPipe.plc.GetInputState(i, out CentroidAPI.CNCPipe.Plc.IOState state);
+                        bool isOn = false;
+
+                        if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            isOn = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                        }
+
+                        response.Inputs.Add(new Models.IOState
+                        {
+                            Number = i,
+                            IsOn = isOn
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWarning($"Failed to read input {i}: {ex.Message}", "IO");
+                        response.Inputs.Add(new Models.IOState { Number = i, IsOn = false });
+                    }
+                }
+
+                // Read first 100 outputs
+                for (int i = 1; i <= 100; i++)
+                {
+                    try
+                    {
+                        var result = cncPipe.plc.GetOutputState(i, out CentroidAPI.CNCPipe.Plc.IOState state);
+                        bool isOn = false;
+
+                        if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                        {
+                            isOn = (state == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                        }
+
+                        response.Outputs.Add(new Models.IOState
+                        {
+                            Number = i,
+                            IsOn = isOn
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWarning($"Failed to read output {i}: {ex.Message}", "IO");
+                        response.Outputs.Add(new Models.IOState { Number = i, IsOn = false });
+                    }
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get bulk I/O states: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get bulk I/O states: {ex.Message}" });
+            }
+        }
+
         #endregion
 
         #region Basic IO Control

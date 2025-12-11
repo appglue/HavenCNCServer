@@ -1326,6 +1326,36 @@
         }
       }
     },
+    "/api/CNCIO/GetBulkIOStates": {
+      "get": {
+        "tags": [
+          "CNCIO"
+        ],
+        "summary": "Get the state of the first 100 inputs and 100 outputs\r\nReturns number and on/off state for each I/O point",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkIOStatesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkIOStatesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkIOStatesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCIO/IsInputActive/{inputNumber}": {
       "get": {
         "tags": [
@@ -4644,6 +4674,34 @@
         "additionalProperties": false,
         "description": "Board configuration information including type and I/O capabilities"
       },
+      "BulkIOStatesResponse": {
+        "type": "object",
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IOState"
+            },
+            "description": "List of input states (1-100)",
+            "nullable": true
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IOState"
+            },
+            "description": "List of output states (1-100)",
+            "nullable": true
+          },
+          "readAt": {
+            "type": "string",
+            "description": "Timestamp when the states were read",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response containing bulk I/O states for inputs and outputs"
+      },
       "CNCReadyResponse": {
         "type": "object",
         "properties": {
@@ -4989,6 +5047,22 @@
         },
         "additionalProperties": false,
         "description": "Response containing all I/O definitions from the PLC source file"
+      },
+      "IOState": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "description": "The I/O number (1-100)",
+            "format": "int32"
+          },
+          "isOn": {
+            "type": "boolean",
+            "description": "Current state (true = on/active, false = off/inactive)"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the state of a single I/O point (input or output)"
       },
       "JobDetails": {
         "type": "object",
