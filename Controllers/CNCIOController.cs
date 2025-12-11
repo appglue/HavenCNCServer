@@ -127,8 +127,8 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get defined inputs from PLC source file with current states
-        /// Returns number, name, and current state for each defined input
+        /// Get defined inputs with current states from monitored I/O configuration
+        /// Returns number, name, and current state for each monitored input
         /// </summary>
         [HttpGet("GetDefinedInputs")]
         [ProducesResponseType(typeof(DefinedIO[]), 200)]
@@ -143,16 +143,16 @@ namespace HavenCNCServer.Controllers
                     return StatusCode(500, new { message = "CNC connection not available" });
                 }
 
-                string sourcePath = @"C:\cncr\acorn_router_plc.src";
-                if (!System.IO.File.Exists(sourcePath))
+                // Load monitored I/O configuration from stored file
+                var config = PLCController.LoadMonitoredIOConfiguration();
+                if (config == null || config.Inputs.Count == 0)
                 {
                     return Ok(Array.Empty<DefinedIO>());
                 }
 
-                var definitions = ParseIODefinitions(sourcePath);
                 var result = new List<DefinedIO>();
 
-                foreach (var input in definitions.Inputs)
+                foreach (var input in config.Inputs)
                 {
                     bool state = false;
                     var getStateResult = cncPipe.plc.GetInputState(input.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);
@@ -179,8 +179,8 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get defined outputs from PLC source file with current states
-        /// Returns number, name, and current state for each defined output
+        /// Get defined outputs with current states from monitored I/O configuration
+        /// Returns number, name, and current state for each monitored output
         /// </summary>
         [HttpGet("GetDefinedOutputs")]
         [ProducesResponseType(typeof(DefinedIO[]), 200)]
@@ -195,16 +195,16 @@ namespace HavenCNCServer.Controllers
                     return StatusCode(500, new { message = "CNC connection not available" });
                 }
 
-                string sourcePath = @"C:\cncr\acorn_router_plc.src";
-                if (!System.IO.File.Exists(sourcePath))
+                // Load monitored I/O configuration from stored file
+                var config = PLCController.LoadMonitoredIOConfiguration();
+                if (config == null || config.Outputs.Count == 0)
                 {
                     return Ok(Array.Empty<DefinedIO>());
                 }
 
-                var definitions = ParseIODefinitions(sourcePath);
                 var result = new List<DefinedIO>();
 
-                foreach (var output in definitions.Outputs)
+                foreach (var output in config.Outputs)
                 {
                     bool state = false;
                     var getStateResult = cncPipe.plc.GetOutputState(output.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);

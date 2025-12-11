@@ -414,7 +414,24 @@ namespace HavenCNCServer.Controllers
                         }
                     }
 
-                    // Step 6: Refresh cached PLC version in SignalR
+                    // Step 6: Save monitored I/O configuration
+                    if (request.InputsToMonitor.Length > 0 || request.OutputsToMonitor.Length > 0)
+                    {
+                        LogInfo("Step 5: Saving monitored I/O configuration...", "PLC");
+                        try
+                        {
+                            SaveMonitoredIOConfiguration(request.InputsToMonitor, request.OutputsToMonitor);
+                            result.MonitoredIOSaved = true;
+                            LogSuccess($"✓ Saved monitored I/O configuration ({request.InputsToMonitor.Length} inputs, {request.OutputsToMonitor.Length} outputs)", "PLC");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Failed to save monitored I/O configuration: {ex.Message}", "PLC");
+                            result.MonitoredIOSaved = false;
+                        }
+                    }
+
+                    // Step 7: Refresh cached PLC version in SignalR
                     SignalRManager.RefreshPlcVersion();
 
                     // Success!
@@ -450,6 +467,62 @@ namespace HavenCNCServer.Controllers
         #endregion
 
         #region Private Helper Methods
+
+        /// <summary>
+        /// Path to the monitored I/O configuration file
+        /// </summary>
+        private static readonly string MonitoredIOConfigPath = SysIO.Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "data",
+            "monitored_io.json"
+        );
+
+        /// <summary>
+        /// Save monitored I/O configuration to file
+        /// </summary>
+        private void SaveMonitoredIOConfiguration(MonitoredIODefinition[] inputs, MonitoredIODefinition[] outputs)
+        {
+            var config = new MonitoredIOConfiguration
+            {
+                Inputs = inputs.ToList(),
+                Outputs = outputs.ToList(),
+                LastUpdated = DateTime.UtcNow
+            };
+
+            var directory = SysIO.Path.GetDirectoryName(MonitoredIOConfigPath);
+            if (!string.IsNullOrEmpty(directory) && !SysIO.Directory.Exists(directory))
+            {
+                SysIO.Directory.CreateDirectory(directory);
+            }
+
+            var json = System.Text.Json.JsonSerializer.Serialize(config, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            SysIO.File.WriteAllText(MonitoredIOConfigPath, json);
+        }
+
+        /// <summary>
+        /// Load monitored I/O configuration from file
+        /// </summary>
+        public static MonitoredIOConfiguration? LoadMonitoredIOConfiguration()
+        {
+            if (!SysIO.File.Exists(MonitoredIOConfigPath))
+            {
+                return null;
+            }
+
+            try
+            {
+                var json = SysIO.File.ReadAllText(MonitoredIOConfigPath);
+                return System.Text.Json.JsonSerializer.Deserialize<MonitoredIOConfiguration>(json);
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Compile a PLC source file using the CNC12 compiler
@@ -681,6 +754,16 @@ namespace HavenCNCServer.Controllers
         /// Whether to invert the E-stop input (true = +number, false = -number)
         /// </summary>
         public bool InvertEstopInput { get; set; }
+
+        /// <summary>
+        /// List of input definitions to monitor (number and name)
+        /// </summary>
+        public MonitoredIODefinition[] InputsToMonitor { get; set; } = Array.Empty<MonitoredIODefinition>();
+
+        /// <summary>
+        /// List of output definitions to monitor (number and name)
+        /// </summary>
+        public MonitoredIODefinition[] OutputsToMonitor { get; set; } = Array.Empty<MonitoredIODefinition>();
     }
 
     /// <summary>
@@ -705,6 +788,43 @@ namespace HavenCNCServer.Controllers
     }
 
     /// <summary>
+    /// Monitored I/O definition with number and name
+    /// </summary>
+    public class MonitoredIODefinition
+    {
+        /// <summary>
+        /// I/O number
+        /// </summary>
+        public int Number { get; set; }
+
+        /// <summary>
+        /// I/O symbolic name
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Configuration file for monitored I/O
+    /// </summary>
+    public class MonitoredIOConfiguration
+    {
+        /// <summary>
+        /// List of inputs to monitor
+        /// </summary>
+        public List<MonitoredIODefinition> Inputs { get; set; } = new();
+
+        /// <summary>
+        /// List of outputs to monitor
+        /// </summary>
+        public List<MonitoredIODefinition> Outputs { get; set; } = new();
+
+        /// <summary>
+        /// When this configuration was last updated
+        /// </summary>
+        public DateTime LastUpdated { get; set; }
+    }
+
+    /// <summary>
     /// Result of PLC compilation and installation
     /// </summary>
     public class PLCInstallationResult
@@ -723,6 +843,11 @@ namespace HavenCNCServer.Controllers
         /// Result message
         /// </summary>
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Whether monitored I/O configuration was saved successfully
+        /// </summary>
+        public bool MonitoredIOSaved { get; set; }
     }
 
     /// <summary>
