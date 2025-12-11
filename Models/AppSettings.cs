@@ -109,6 +109,12 @@ namespace HavenCNCServer.Models
         public string Cnc12Path { get; set; } = @"C:\cncr";
 
         /// <summary>
+        /// CNC12 process name to monitor (without .exe extension)
+        /// Default: cncr
+        /// </summary>
+        public string Cnc12ProcessName { get; set; } = "cncr";
+
+        /// <summary>
         /// User name for the CNC machine operator
         /// </summary>
         public string UserName { get; set; } = string.Empty;

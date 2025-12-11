@@ -13,7 +13,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 0,
       "blocks": [
         {
@@ -21,7 +21,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 0,
           "actions": [
             {
@@ -97,6 +97,85 @@
                 },
                 "stageName": "MESSAGE_S"
               }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "RESET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "AAA_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "SendMessageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "SendMessagePredicate",
+                "comment": "",
+                "enabled": true,
+                "level": "info",
+                "mode": "async",
+                "messageText": "xdfsfsd"
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1765400948945_33x9e1y0q",
+                  "type": "Text",
+                  "text": ""
+                }
+              ]
             }
           ]
         },
@@ -105,7 +184,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 1,
           "actions": [
             {
@@ -287,7 +366,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 1,
       "blocks": [
         {
@@ -295,7 +374,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 0,
           "actions": [
             {
@@ -334,7 +413,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 0,
           "actions": [
             {
@@ -435,7 +514,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 0,
           "actions": [
             {
@@ -853,7 +932,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 0,
           "actions": [
             {

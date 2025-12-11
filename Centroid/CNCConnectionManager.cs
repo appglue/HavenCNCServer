@@ -1,5 +1,6 @@
 using CentroidAPI;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using static HavenCNCServer.Services.LoggingService;
@@ -52,6 +53,18 @@ namespace HavenCNCServer.Services
                     if (_isConnected && _cncPipe != null && timeSinceLastCheck > 5)
                     {
                         _lastConnectionCheck = DateTime.Now;
+                        
+                        // CRITICAL: Check if process is running BEFORE calling IsConstructed()
+                        // to avoid native COM crash when CNC12 has terminated
+                        if (!IsCNC12ProcessRunning())
+                        {
+                            Log("CNC12 process no longer running - marking disconnected", LogLevel.Warning, "CNCConnectionManager");
+                            _isConnected = false;
+                            _cncPipe = null;
+                            NotifyStatusChanged(false, "CNC12 process terminated");
+                            return false;
+                        }
+                        
                         try
                         {
                             if (!_cncPipe.IsConstructed())
@@ -89,6 +102,14 @@ namespace HavenCNCServer.Services
             {
                 if (!_isConnected || _cncPipe == null)
                 {
+                    return false;
+                }
+
+                // CRITICAL: Check if process is running BEFORE calling IsConstructed()
+                if (!IsCNC12ProcessRunning())
+                {
+                    _isConnected = false;
+                    _cncPipe = null;
                     return false;
                 }
 
@@ -197,10 +218,57 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Internal connection method - must be called with lock held
         /// </summary>
+        /// <summary>
+        /// Checks if the CNC12 process is currently running
+        /// </summary>
+        /// <returns>True if the process is running, false otherwise</returns>
+        private static bool IsCNC12ProcessRunning()
+        {
+            try
+            {
+                // Check if settings are initialized
+                if (SettingsManager.Settings?.Cnc == null)
+                {
+                    return true; // If settings not loaded yet, assume running
+                }
+
+                var processName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                if (string.IsNullOrWhiteSpace(processName))
+                {
+                    return true; // If not configured, assume it's running
+                }
+
+                var processes = Process.GetProcessesByName(processName);
+                bool isRunning = processes.Length > 0;
+                
+                // Clean up process handles
+                foreach (var p in processes)
+                {
+                    p.Dispose();
+                }
+                
+                return isRunning;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error checking CNC12 process: {ex.Message}", "CNCConnectionManager");
+                return true; // On error, assume running to avoid blocking
+            }
+        }
+
         private static CNCPipe? ConnectInternal(int timeoutMs)
         {
             try
             {
+                // Check if CNC12 process is running before attempting connection
+                if (!IsCNC12ProcessRunning())
+                {
+                    var processName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                    NotifyStatusChanged(false, $"CNC12 process '{processName}' is not running");
+                    Log($"Cannot connect - CNC12 process '{processName}' is not running", LogLevel.Warning, "CNCConnectionManager");
+                    return null;
+                }
+
                 _isConnecting = true;
                 _lastConnectionAttempt = DateTime.Now;
 
@@ -214,6 +282,15 @@ namespace HavenCNCServer.Services
 
                 for (int attempt = 1; attempt <= maxRetries; attempt++)
                 {
+                    // Check if CNC12 process is still running before each attempt
+                    if (!IsCNC12ProcessRunning())
+                    {
+                        var processName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                        NotifyStatusChanged(false, $"CNC12 process '{processName}' stopped - aborting connection attempts");
+                        Log($"CNC12 process '{processName}' no longer running - stopping retry attempts", LogLevel.Warning, "CNCConnectionManager");
+                        break;
+                    }
+
                     // Check timeout
                     if ((DateTime.Now - startTime).TotalMilliseconds > timeoutMs)
                     {
@@ -358,10 +435,29 @@ namespace HavenCNCServer.Services
                     return false;
                 }
 
-                // Check if the pipe is still constructed
-                if (!_cncPipe.IsConstructed())
+                // CRITICAL: Check if process is running BEFORE calling IsConstructed()
+                if (!IsCNC12ProcessRunning())
                 {
-                    NotifyStatusChanged(false, "Connection health check failed: CNCPipe not constructed");
+                    NotifyStatusChanged(false, "Connection health check failed: CNC12 process not running");
+                    _isConnected = false;
+                    _cncPipe = null;
+                    return false;
+                }
+
+                // Check if the pipe is still constructed
+                try
+                {
+                    if (!_cncPipe.IsConstructed())
+                    {
+                        NotifyStatusChanged(false, "Connection health check failed: CNCPipe not constructed");
+                        _isConnected = false;
+                        _cncPipe = null;
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Exception in HealthCheck IsConstructed: {ex.Message}", "CNCConnectionManager");
                     _isConnected = false;
                     _cncPipe = null;
                     return false;
@@ -457,12 +553,25 @@ namespace HavenCNCServer.Services
         {
             lock (_lock)
             {
+                bool isConstructed = false;
+                if (_cncPipe != null && IsCNC12ProcessRunning())
+                {
+                    try
+                    {
+                        isConstructed = _cncPipe.IsConstructed();
+                    }
+                    catch
+                    {
+                        isConstructed = false;
+                    }
+                }
+
                 return new CNCConnectionStatus
                 {
                     IsConnected = _isConnected,
                     IsConnecting = _isConnecting,
                     HasCNCPipe = _cncPipe != null,
-                    IsConstructed = _cncPipe?.IsConstructed() ?? false,
+                    IsConstructed = isConstructed,
                     LastConnectionAttempt = _lastConnectionAttempt,
                     ConnectionSettings = new CNCConnectionSettings
                     {

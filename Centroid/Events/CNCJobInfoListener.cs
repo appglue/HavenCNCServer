@@ -99,8 +99,9 @@ namespace HavenCNCServer.Centroid.Events
                                     try
                                     {
                                         var pipe = CNCConnectionManager.GetOrCreateCNCPipe();
-                                        if (pipe != null && pipe.IsConstructed())
+                                        if (pipe != null)
                                         {
+                                            // IsConstructed check is handled internally by CNCConnectionManager
                                             LogSuccess("CNC pipe reconnected", "JobInfo");
                                         }
                                     }

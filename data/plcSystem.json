@@ -5,7 +5,7 @@
   "author": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 0,
+  "minorVersion": 3,
   "type": 1,
   "lastModified": "2025-12-10T20:12:13.179Z",
   "stages": [
@@ -70,7 +70,16 @@
       "blocks": []
     }
   ],
-  "inputs": [],
+  "inputs": [
+    {
+      "centroidName": "ESTOPOK_I",
+      "name": "Emergency Stop OK",
+      "activeText": "EStop Released",
+      "inactiveText": "EStop Pressed",
+      "isInverted": true,
+      "number": 8
+    }
+  ],
   "outputs": [],
   "keybindings": [],
   "timers": [],
