@@ -4761,6 +4761,16 @@
             },
             "description": "PLC message file content as array of lines",
             "nullable": true
+          },
+          "estopInputNumber": {
+            "type": "integer",
+            "description": "E-stop input number (optional - if provided, will set parameter 0)",
+            "format": "int32",
+            "nullable": true
+          },
+          "invertEstopInput": {
+            "type": "boolean",
+            "description": "Whether to invert the E-stop input (true = +number, false = -number)"
           }
         },
         "additionalProperties": false,

@@ -384,6 +384,87 @@ namespace HavenCNCServer.Services
                     // Get PLC version from cache (populated on startup and after installation)
                     string plcVersion = _cachedPlcVersion ?? LoadPlcVersion();
 
+                    // Parse version into major.minor.update
+                    int? versionMajor = null;
+                    int? versionMinor = null;
+                    int versionUpdate = 0;
+
+                    if (!string.IsNullOrEmpty(plcVersion) &&
+                        plcVersion != "Not Installed" &&
+                        plcVersion != "Unknown")
+                    {
+                        var versionParts = plcVersion.Split('.');
+                        if (versionParts.Length >= 1 && int.TryParse(versionParts[0], out int major))
+                            versionMajor = major;
+                        if (versionParts.Length >= 2 && int.TryParse(versionParts[1], out int minor))
+                            versionMinor = minor;
+                        if (versionParts.Length >= 3 && int.TryParse(versionParts[2], out int update))
+                            versionUpdate = update;
+                    }
+
+                    // Get system board type and expansion board count
+                    string boardType = "Unknown";
+                    int expansionBoardCount = 0;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                var unlockResult = cncPipe.system.GetUnlockVersion(out CentroidAPI.CNCPipe.Sys.UnlockVersions unlockVersion);
+                                if (unlockResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    string unlockVersionStr = unlockVersion.ToString();
+
+                                    // Detect board type from unlock version
+                                    if (unlockVersionStr.Contains("Acorn", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        if (unlockVersionStr.Contains("Six", StringComparison.OrdinalIgnoreCase) ||
+                                            unlockVersionStr.Contains("6", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            boardType = "AcornSix";
+                                        }
+                                        else
+                                        {
+                                            boardType = "Acorn";
+                                        }
+                                    }
+                                    else if (unlockVersionStr.Contains("Hickory", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        boardType = "Hickory";
+                                    }
+                                }
+
+                                // Count expansion boards
+                                // Check for Ethernet expansion boards
+                                var etherResult = cncPipe.system.GetEther1616DeviceInfo(out List<CentroidAPI.CNCPipe.Sys.Ether1616Device> etherDevices);
+                                if (etherResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    expansionBoardCount += etherDevices?.Count ?? 0;
+                                }
+
+                                // Check for PLC expansion boards
+                                var plcExpResult = cncPipe.system.GetPLCEXP1616NumberofDevices(out int plcExpCount);
+                                if (plcExpResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    expansionBoardCount += plcExpCount;
+                                }
+
+                                // Check for EtherCAT expansion boards
+                                var ecatResult = cncPipe.system.GetECAT1616NumberOfDevices(out int ecatCount);
+                                if (ecatResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    expansionBoardCount += ecatCount;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Could not get board type: {ex.Message}", "SignalR");
+                        }
+                    }
+
                     var serverStatus = new
                     {
                         Timestamp = DateTime.UtcNow,
@@ -396,7 +477,14 @@ namespace HavenCNCServer.Services
                         IsJobRunning = isJobRunning,
                         IsIncrementalJogMode = isIncrementalJogMode,
                         IsFastJogging = isFastJogging,
-                        PlcVersion = plcVersion
+                        PlcVersion = new
+                        {
+                            Major = versionMajor,
+                            Minor = versionMinor,
+                            Update = versionUpdate
+                        },
+                        BoardType = boardType,
+                        ExpansionBoardCount = expansionBoardCount
                     };
 
                     // Send server status as a regular SignalR message via ReceiveCNCMessage

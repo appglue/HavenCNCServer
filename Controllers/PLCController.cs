@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using HavenCNCServer.Models;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centroid;
+using HavenCNCServer.Centroid.Data;
 using static HavenCNCServer.Services.LoggingService;
 using SysIO = System.IO;
 
@@ -391,6 +393,27 @@ namespace HavenCNCServer.Controllers
                     SysIO.File.WriteAllLines(targetMsgPath, request.MessageLines);
                     LogSuccess($"✓ Saved PLC messages to: {targetMsgPath}", "PLC");
 
+                    // Step 5: Set parameter 0 (E-stop input) if provided
+                    if (request.EstopInputNumber.HasValue)
+                    {
+                        LogInfo("Step 4: Setting E-stop input parameter...", "PLC");
+
+                        try
+                        {
+                            // Format: +number if inverted, -number if not inverted
+                            double paramValue = request.InvertEstopInput
+                                ? request.EstopInputNumber.Value
+                                : -request.EstopInputNumber.Value;
+
+                            CNCUtils.SetParameterValue(CentroidParameters.ESTOP_INPUT_PARM, paramValue);
+                            LogSuccess($"✓ Set parameter 0 to {paramValue:+0;-0} (E-stop input {request.EstopInputNumber.Value}, inverted={request.InvertEstopInput})", "PLC");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Failed to set parameter 0: {ex.Message}", "PLC");
+                        }
+                    }
+
                     // Step 6: Refresh cached PLC version in SignalR
                     SignalRManager.RefreshPlcVersion();
 
@@ -648,6 +671,16 @@ namespace HavenCNCServer.Controllers
         /// PLC message file content as array of lines
         /// </summary>
         public string[] MessageLines { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// E-stop input number (optional - if provided, will set parameter 0)
+        /// </summary>
+        public int? EstopInputNumber { get; set; }
+
+        /// <summary>
+        /// Whether to invert the E-stop input (true = +number, false = -number)
+        /// </summary>
+        public bool InvertEstopInput { get; set; }
     }
 
     /// <summary>
