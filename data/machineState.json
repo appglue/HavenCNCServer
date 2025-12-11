@@ -147,9 +147,9 @@
       "cameraTargetMode": "MachineCenter",
       "perspectiveView": {
         "name": "default",
-        "cameraDistance": 164.9999999999995,
-        "cameraPolarAngle": 0.7853981633974491,
-        "cameraAzimuthalAngle": 0.78539816339745,
+        "cameraDistance": 164.999999999999,
+        "cameraPolarAngle": 0.7853981633974495,
+        "cameraAzimuthalAngle": 0.7853981633974526,
         "zoomFactor": 1,
         "workHome": true,
         "toolpaths": true,

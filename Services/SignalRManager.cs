@@ -381,6 +381,35 @@ namespace HavenCNCServer.Services
                         }
                     }
 
+                    // Get homed status
+                    bool isHomed = false;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                // Check each axis home status using GetPcSystemVariableBit
+                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_1);
+                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_2);
+                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_3);
+
+                                if (state_axis_1 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
+                                    state_axis_2 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
+                                    state_axis_3 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1)
+                                {
+                                    cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_PC_HOME_SET, out var state_home);
+                                    isHomed = (state_home == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Could not get homed status: {ex.Message}", "SignalR");
+                        }
+                    }
+
                     // Get PLC version from cache (populated on startup and after installation)
                     string plcVersion = _cachedPlcVersion ?? LoadPlcVersion();
 
@@ -477,6 +506,7 @@ namespace HavenCNCServer.Services
                         IsJobRunning = isJobRunning,
                         IsIncrementalJogMode = isIncrementalJogMode,
                         IsFastJogging = isFastJogging,
+                        IsHomed = isHomed,
                         PlcVersion = new
                         {
                             Major = versionMajor,

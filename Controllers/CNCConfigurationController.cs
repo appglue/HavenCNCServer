@@ -6,6 +6,7 @@ using System.Linq;
 using HavenCNCServer.Models;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Centroid.Data;
+using HavenCNCServer.Services;
 
 namespace HavenCNCServer.Controllers
 {
@@ -350,16 +351,32 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                return CentroidConfigUtil.ConfigureCompleteMachine(
+                LoggingService.Log("=== ConfigureCompleteMachine API called ===");
+                LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, ATC: {config.ATC != null}");
+
+                var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     config.Axes ?? new List<AxisConfiguration>(),
                     config.Spindle,
                     config.Probe,
                     config.PWMOutputs,
                     config.ATC
                 );
+
+                if (result)
+                {
+                    LoggingService.Log("=== ConfigureCompleteMachine API completed successfully ===");
+                }
+                else
+                {
+                    LoggingService.Log("=== ConfigureCompleteMachine API failed - check detailed logs above ===", LoggingService.LogLevel.Error);
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
+                LoggingService.Log($"EXCEPTION in ConfigureCompleteMachine API: {ex.Message}", LoggingService.LogLevel.Error);
+                LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 throw new InvalidOperationException($"Failed to configure machine: {ex.Message}", ex);
             }
         }

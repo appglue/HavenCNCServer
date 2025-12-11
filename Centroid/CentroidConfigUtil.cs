@@ -181,32 +181,51 @@ namespace HavenCNCServer.Centroid
         {
             try
             {
+                LoggingService.Log($"Configuring Axis {config.AxisNumber} ({config.Label ?? "unnamed"})");
+
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
 
                 // CNCConnectionManager ensures the pipe is already constructed
                 if (cncPipe == null)
                 {
+                    LoggingService.Log($"ERROR: CNC Pipe is null for axis {config.AxisNumber}", LoggingService.LogLevel.Error);
                     return false;
                 }
 
                 // Convert axis number to enum (1-based to 0-based)
                 var axisEnum = (CNCPipe.Axes)(config.AxisNumber - 1);
+                LoggingService.Log($"  Setting axis parameters for {config.Label ?? "Axis " + config.AxisNumber}...");
 
                 // Set basic axis parameters only if provided
                 if (config.StepsPerRevolution.HasValue)
+                {
+                    LoggingService.Log($"    CountsPerTurn: {config.StepsPerRevolution.Value}");
                     cncPipe.axis.SetCountsPerTurn(axisEnum, config.StepsPerRevolution.Value);
+                }
 
                 if (config.TurnRatio.HasValue)
+                {
+                    LoggingService.Log($"    ScrewPitch: {config.TurnRatio.Value}");
                     cncPipe.axis.SetScrewPitch(axisEnum, config.TurnRatio.Value);
+                }
 
                 if (config.PlusTravelLimit.HasValue)
+                {
+                    LoggingService.Log($"    Plus Travel Limit: {config.PlusTravelLimit.Value}");
                     cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PlusTravelLimit.Value);
+                }
 
                 if (config.MinusTravelLimit.HasValue)
+                {
+                    LoggingService.Log($"    Minus Travel Limit: {config.MinusTravelLimit.Value}");
                     cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.MinusTravelLimit.Value);
+                }
 
                 if (config.BacklashCompensation.HasValue)
+                {
+                    LoggingService.Log($"    Backlash Compensation: {config.BacklashCompensation.Value}");
                     cncPipe.axis.SetLashComp(axisEnum, config.BacklashCompensation.Value);
+                }
 
                 if (config.SlowJogRate.HasValue)
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.SLOW_JOG, config.SlowJogRate.Value);
@@ -215,7 +234,10 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG, config.FastJogRate.Value);
 
                 if (config.MaxRate.HasValue)
+                {
+                    LoggingService.Log($"    Max Rate: {config.MaxRate.Value}");
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.MAX, config.MaxRate.Value);
+                }
 
                 if (config.FastJogPlusDirection.HasValue)
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS, config.FastJogPlusDirection.Value);
@@ -224,10 +246,16 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS, config.FastJogMinusDirection.Value);
 
                 if (config.AccelerationTime.HasValue)
+                {
+                    LoggingService.Log($"    Acceleration Time: {config.AccelerationTime.Value}");
                     cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime.Value);
+                }
 
                 if (config.HomingFeedrate.HasValue)
+                {
+                    LoggingService.Log($"    Homing Feedrate: {config.HomingFeedrate.Value}");
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.HOME_JOG, config.HomingFeedrate.Value);
+                }
 
                 // Note: DriveEnableDelay may be a global parameter rather than per-axis
                 // This would need to be set via parameter if it's per-axis specific
@@ -235,24 +263,32 @@ namespace HavenCNCServer.Centroid
                 {
                     // This might be a parameter-based setting rather than API call
                     // Implementation depends on actual parameter structure
-                    System.Diagnostics.Debug.WriteLine($"DriveEnableDelay for Axis {config.AxisNumber}: {config.DriveEnableDelay.Value}ms - parameter implementation needed");
+                    LoggingService.Log($"    DriveEnableDelay: {config.DriveEnableDelay.Value}ms (parameter implementation needed)");
                 }
 
                 if (!string.IsNullOrEmpty(config.Label))
+                {
+                    LoggingService.Log($"    Setting label: {config.Label}");
                     cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
+                }
 
                 if (config.IsReversed.HasValue)
+                {
+                    LoggingService.Log($"    Reversed: {config.IsReversed.Value}");
                     cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
+                }
 
                 // Configure axis properties (rotary, signal inversions, etc.) via parameters
+                LoggingService.Log($"  Configuring axis properties for {config.Label ?? "Axis " + config.AxisNumber}...");
                 ConfigureAxisProperties(config);
 
-                System.Diagnostics.Debug.WriteLine($"Configuring Axis {config.AxisNumber} ({config.Label ?? "unknown"}): {config.StepsPerRevolution?.ToString() ?? "not set"} steps/rev");
-
+                LoggingService.Log($"Axis {config.AxisNumber} ({config.Label ?? "unnamed"}) configured successfully");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LoggingService.Log($"EXCEPTION in ConfigureAxis for Axis {config.AxisNumber}: {ex.Message}", LoggingService.LogLevel.Error);
+                LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 return false;
             }
         }
@@ -452,41 +488,73 @@ namespace HavenCNCServer.Centroid
         {
             try
             {
+                LoggingService.Log("Configuring primary spindle...");
+
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
 
                 // CNCConnectionManager ensures the pipe is already constructed
                 if (cncPipe == null)
                 {
+                    LoggingService.Log("ERROR: CNC Pipe is null for spindle configuration", LoggingService.LogLevel.Error);
                     return false;
                 }
 
+                LoggingService.Log("  Setting spindle parameters...");
+
                 // Core parameters via CNCUtils.SetParameterValue() - only set if provided
                 if (config.EncoderCounts.HasValue)
+                {
+                    LoggingService.Log($"    Encoder Counts: {config.EncoderCounts.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                }
 
                 if (config.SpindleAxis.HasValue)
+                {
+                    LoggingService.Log($"    Spindle Axis: {config.SpindleAxis.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                }
 
                 if (config.LowGearRatio.HasValue)
+                {
+                    LoggingService.Log($"    Low Gear Ratio: {config.LowGearRatio.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
+                }
 
                 if (config.MediumGearRatio.HasValue)
+                {
+                    LoggingService.Log($"    Medium Gear Ratio: {config.MediumGearRatio.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
+                }
 
                 if (config.HighGearRatio.HasValue)
+                {
+                    LoggingService.Log($"    High Gear Ratio: {config.HighGearRatio.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
+                }
 
                 if (config.AnalogRange.HasValue)
+                {
+                    LoggingService.Log($"    Analog Range: {config.AnalogRange.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
+                }
 
                 if (config.RTGDisplay.HasValue)
+                {
+                    LoggingService.Log($"    RTG Display: {config.RTGDisplay.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RTGDisplay.Value ? 1 : 0);
+                }
 
                 if (config.OkDelay.HasValue)
+                {
+                    LoggingService.Log($"    OK Delay: {config.OkDelay.Value}s");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_OK_DELAY_PARM, (int)(config.OkDelay.Value * 1000));
+                }
 
                 if (config.FanDelay.HasValue)
+                {
+                    LoggingService.Log($"    Fan Delay: {config.FanDelay.Value}s");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
+                }
 
                 // Speed configuration via API calls (commented out as it depends on MainWindow)
                 // if (config.MaxSpeed.HasValue)
@@ -501,12 +569,14 @@ namespace HavenCNCServer.Centroid
                     if (config.EncoderEnabled == true) spindleControl |= 1;          // Bit 0: Primary Encoder Enable
                     if (config.SecondSpindleEnabled == true) spindleControl |= 8;     // Bit 3: Second Spindle Encoder
                     if (config.SpindleScalingEnabled == true) spindleControl |= 16;   // Bit 4: Spindle Scaling Enable
+                    LoggingService.Log($"    Spindle Control Flags: EncoderEnabled={config.EncoderEnabled}, SecondSpindle={config.SecondSpindleEnabled}, Scaling={config.SpindleScalingEnabled}");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
                 }
 
                 // Configure deceleration time
                 if (config.DecelTime.HasValue)
                 {
+                    LoggingService.Log($"    Decel Time: {config.DecelTime.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
                 }
 
@@ -514,22 +584,26 @@ namespace HavenCNCServer.Centroid
                 if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue)
                 {
                     double rpmValue = config.MinimumRigidTappingRPM ?? config.RigidTappingSlowSpeed ?? 0;
+                    LoggingService.Log($"    Rigid Tapping Slow Speed: {rpmValue} RPM");
                     CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, rpmValue);
                 }
 
                 if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue)
                 {
                     double timeValue = config.DurationForMinRigidTappingRPM ?? config.RigidTappingSlowTime ?? 0;
+                    LoggingService.Log($"    Rigid Tapping Slow Time: {timeValue}s");
                     CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, timeValue);
                 }
 
                 if (config.SpindleDrift.HasValue)
                 {
+                    LoggingService.Log($"    Spindle Drift: {config.SpindleDrift.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
                 }
 
                 if (config.RigidTappingZAxisSyncDistance.HasValue)
                 {
+                    LoggingService.Log($"    Rigid Tapping Z-Axis Sync Distance: {config.RigidTappingZAxisSyncDistance.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
                 }
 
@@ -540,38 +614,44 @@ namespace HavenCNCServer.Centroid
                     if (config.RigidTappingEnabled == true) rigidTappingControl |= 1;           // Enable rigid tapping
                     if (config.DoNotWaitForIndexPulse == true) rigidTappingControl |= 2;       // Bit 1: Do Not Wait For Index Pulse
                     if (config.AllowSpindleOverride == true) rigidTappingControl |= 4;         // Bit 2: Allow Spindle Override
+                    LoggingService.Log($"    Rigid Tapping Control: Enabled={config.RigidTappingEnabled}, NoIndexWait={config.DoNotWaitForIndexPulse}, AllowOverride={config.AllowSpindleOverride}");
                     CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, rigidTappingControl);
                 }
 
                 // Configure threading/tapping acceleration/deceleration distance
                 if (config.ThreadingTappingAccelDecelDistance.HasValue)
                 {
+                    LoggingService.Log($"    Threading/Tapping Accel/Decel Distance: {config.ThreadingTappingAccelDecelDistance.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
                 }
 
                 // Configure SSV parameters
                 if (config.SSVCycleTime.HasValue)
                 {
+                    LoggingService.Log($"    SSV Cycle Time: {config.SSVCycleTime.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SSVCycleTime.Value);
                 }
 
                 if (config.SSVAmount.HasValue)
                 {
+                    LoggingService.Log($"    SSV Amount: {config.SSVAmount.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SSVAmount.Value);
                 }
 
                 // Configure FRV parameters
                 if (config.FRVCycleTime.HasValue)
                 {
+                    LoggingService.Log($"    FRV Cycle Time: {config.FRVCycleTime.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FRVCycleTime.Value);
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Configuring Spindle: {config.EncoderCounts?.ToString() ?? "not set"} counts, Max: {config.MaxSpeed?.ToString() ?? "not set"}, Min: {config.MinSpeed?.ToString() ?? "not set"}");
-
+                LoggingService.Log("Primary spindle configured successfully");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LoggingService.Log($"EXCEPTION in ConfigureSpindle: {ex.Message}", LoggingService.LogLevel.Error);
+                LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 return false;
             }
         }
@@ -589,17 +669,30 @@ namespace HavenCNCServer.Centroid
         {
             try
             {
+                // TEMPORARY: Override output number to 2 for testing
+                int outputNumber = 2;
+                LoggingService.Log($"Configuring PWM Output {outputNumber} (Original: {config.OutputNumber})...");
+
+                // Validate PWM output number
+                if (outputNumber < 1 || outputNumber > 3)
+                {
+                    LoggingService.Log($"ERROR: Invalid PWM output number {outputNumber}. Valid range is 1-3. Skipping PWM configuration.", LoggingService.LogLevel.Error);
+                    return false;
+                }
+
                 bool parametersSet = false;
 
                 if (config.Frequency.HasValue)
                 {
-                    CNCUtils.SetPWMFrequency(config.OutputNumber, config.Frequency.Value);
+                    LoggingService.Log($"  Setting PWM frequency: {config.Frequency.Value} Hz");
+                    CNCUtils.SetPWMFrequency(outputNumber, config.Frequency.Value);
                     parametersSet = true;
                 }
 
                 if (config.Floor.HasValue)
                 {
-                    CNCUtils.SetPWMFloor(config.OutputNumber, (int)(config.Floor.Value * 100));
+                    LoggingService.Log($"  Setting PWM floor: {config.Floor.Value}%");
+                    CNCUtils.SetPWMFloor(outputNumber, (int)(config.Floor.Value * 100));
                     parametersSet = true;
                 }
 
@@ -608,49 +701,61 @@ namespace HavenCNCServer.Centroid
                     config.SCommandRange1000.HasValue || config.Velocity100.HasValue ||
                     config.OnlyApplyFloorDuringVelocityMoves.HasValue || config.Floor.HasValue)
                 {
-                    int pwmOptions = (int)CNCUtils.GetPWMOptions(config.OutputNumber);
+                    LoggingService.Log($"  Configuring PWM options...");
+                    int pwmOptions = (int)CNCUtils.GetPWMOptions(outputNumber);
 
                     // Bit 0: Inverse Output
                     bool inverseValue = config.InverseOutput ?? config.InverseEnabled ?? false;
                     if (config.InverseOutput.HasValue || config.InverseEnabled.HasValue)
+                    {
+                        LoggingService.Log($"    Inverse Output: {inverseValue}");
                         pwmOptions = CNCUtils.ModifyBit(pwmOptions, 0, inverseValue);
+                    }
 
                     // Bit 1: S Command Range (true = 0-1000, false = 0-100)  
                     bool sRange1000 = config.SCommandRange1000 ?? config.Velocity100 ?? false;
                     if (config.SCommandRange1000.HasValue || config.Velocity100.HasValue)
+                    {
+                        LoggingService.Log($"    S Command Range: {(sRange1000 ? "0-1000" : "0-100")}");
                         pwmOptions = CNCUtils.ModifyBit(pwmOptions, 1, sRange1000);
+                    }
 
                     // Bit 2: Only Apply Floor During Velocity Moves
                     if (config.OnlyApplyFloorDuringVelocityMoves.HasValue)
+                    {
+                        LoggingService.Log($"    Only Apply Floor During Velocity Moves: {config.OnlyApplyFloorDuringVelocityMoves.Value}");
                         pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.OnlyApplyFloorDuringVelocityMoves.Value);
+                    }
                     else if (config.Floor.HasValue && !config.OnlyApplyFloorDuringVelocityMoves.HasValue)
+                    {
+                        LoggingService.Log($"    Auto-setting floor velocity mode: {config.Floor.Value > 0}");
                         pwmOptions = CNCUtils.ModifyBit(pwmOptions, 2, config.Floor.Value > 0);
+                    }
 
-                    CNCUtils.SetPWMOptions(config.OutputNumber, pwmOptions);
+                    CNCUtils.SetPWMOptions(outputNumber, pwmOptions);
                     parametersSet = true;
                 }
 
                 // Configure laser cooling fan delay timer
                 if (config.LaserCoolingFanDelayTimer.HasValue)
                 {
+                    LoggingService.Log($"  Laser Cooling Fan Delay: {config.LaserCoolingFanDelayTimer.Value}s");
                     CNCUtils.SetParameterValue(CentroidParameters.LASER_COOLING_FAN_DELAY_TIMER, config.LaserCoolingFanDelayTimer.Value);
                     parametersSet = true;
                 }
 
-                if (parametersSet)
+                if (!parametersSet)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Configuring PWM Output {config.OutputNumber}: " +
-                        $"Freq: {config.Frequency?.ToString() ?? "not set"}Hz, " +
-                        $"Floor: {config.Floor?.ToString() ?? "not set"}%, " +
-                        $"S Range: {(config.SCommandRange1000 == true ? "0-1000" : config.SCommandRange1000 == false ? "0-100" : "not set")}, " +
-                        $"Inverse: {config.InverseOutput?.ToString() ?? "not set"}, " +
-                        $"Fan Delay: {config.LaserCoolingFanDelayTimer?.ToString() ?? "not set"}s");
+                    LoggingService.Log($"  No PWM parameters provided for output {outputNumber}");
                 }
 
+                LoggingService.Log($"PWM Output {outputNumber} configured successfully");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LoggingService.Log($"EXCEPTION in ConfigurePWM for Output {config.OutputNumber}: {ex.Message}", LoggingService.LogLevel.Error);
+                LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 return false;
             }
         }
@@ -1392,73 +1497,157 @@ namespace HavenCNCServer.Centroid
         {
             try
             {
+                LoggingService.Log("=== Starting Complete Machine Configuration ===");
+
                 // Step 1: Configure global system settings first if provided
-                if (globalSystem != null && !ConfigureGlobalSystem(globalSystem))
+                if (globalSystem != null)
                 {
-                    return false;
+                    LoggingService.Log("Step 1/9: Configuring global system settings...");
+                    if (!ConfigureGlobalSystem(globalSystem))
+                    {
+                        LoggingService.Log("ERROR: Global system configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 1/9: Global system configuration completed successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 1/9: Skipping global system configuration (not provided)");
                 }
 
                 // Step 2: Configure all axes
-                foreach (var axis in axes)
+                LoggingService.Log($"Step 2/9: Configuring {axes.Count} axes...");
+                for (int i = 0; i < axes.Count; i++)
                 {
+                    var axis = axes[i];
+                    LoggingService.Log($"  Configuring axis {i + 1}/{axes.Count}: {axis.Label} (Axis {axis.AxisNumber})...");
                     if (!ConfigureAxis(axis))
                     {
+                        LoggingService.Log($"ERROR: Failed to configure axis {axis.Label} (Axis {axis.AxisNumber})", LoggingService.LogLevel.Error);
                         return false;
                     }
+                    LoggingService.Log($"  Axis {axis.Label} configured successfully");
                 }
+                LoggingService.Log($"Step 2/9: All {axes.Count} axes configured successfully");
 
                 // Step 3: Configure spindle
+                LoggingService.Log("Step 3/9: Configuring primary spindle...");
                 if (!ConfigureSpindle(spindle))
                 {
+                    LoggingService.Log("ERROR: Primary spindle configuration failed", LoggingService.LogLevel.Error);
                     return false;
                 }
+                LoggingService.Log("Step 3/9: Primary spindle configured successfully");
 
                 // Step 4: Configure second spindle if provided
-                if (secondSpindle != null && !ConfigureSecondSpindle(secondSpindle))
+                if (secondSpindle != null)
                 {
-                    return false;
+                    LoggingService.Log("Step 4/9: Configuring second spindle...");
+                    if (!ConfigureSecondSpindle(secondSpindle))
+                    {
+                        LoggingService.Log("ERROR: Second spindle configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 4/9: Second spindle configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 4/9: Skipping second spindle configuration (not provided)");
                 }
 
                 // Step 5: Configure probe if provided
-                if (probe != null && !ConfigureProbe(probe))
+                if (probe != null)
                 {
-                    return false;
+                    LoggingService.Log("Step 5/9: Configuring probe...");
+                    if (!ConfigureProbe(probe))
+                    {
+                        LoggingService.Log("ERROR: Probe configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 5/9: Probe configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 5/9: Skipping probe configuration (not provided)");
                 }
 
                 // Step 6: Configure touch plate if provided
-                if (touchPlate != null && !ConfigureTouchPlate(touchPlate))
+                if (touchPlate != null)
                 {
-                    return false;
+                    LoggingService.Log("Step 6/9: Configuring touch plate...");
+                    if (!ConfigureTouchPlate(touchPlate))
+                    {
+                        LoggingService.Log("ERROR: Touch plate configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 6/9: Touch plate configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 6/9: Skipping touch plate configuration (not provided)");
                 }
 
                 // Step 7: Configure PWM outputs if provided
-                if (pwmOutputs != null)
+                if (pwmOutputs != null && pwmOutputs.Count > 0)
                 {
-                    foreach (var pwm in pwmOutputs)
+                    LoggingService.Log($"Step 7/9: Configuring {pwmOutputs.Count} PWM outputs...");
+                    for (int i = 0; i < pwmOutputs.Count; i++)
                     {
+                        var pwm = pwmOutputs[i];
+                        LoggingService.Log($"  Configuring PWM output {i + 1}/{pwmOutputs.Count}...");
                         if (!ConfigurePWM(pwm))
                         {
+                            LoggingService.Log($"ERROR: Failed to configure PWM output {i + 1}", LoggingService.LogLevel.Error);
                             return false;
                         }
+                        LoggingService.Log($"  PWM output {i + 1} configured successfully");
                     }
+                    LoggingService.Log($"Step 7/9: All {pwmOutputs.Count} PWM outputs configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 7/9: Skipping PWM configuration (not provided)");
                 }
 
                 // Step 8: Configure ATC if provided
-                if (atc != null && !ConfigureATC(atc))
+                if (atc != null)
                 {
-                    return false;
+                    LoggingService.Log($"Step 8/9: Configuring ATC (Type: {atc.Type})...");
+                    if (!ConfigureATC(atc))
+                    {
+                        LoggingService.Log($"ERROR: ATC configuration failed (Type: {atc.Type})", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 8/9: ATC configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 8/9: Skipping ATC configuration (not provided)");
                 }
 
                 // Step 9: Configure rotary settings if provided
-                if (rotary != null && !ConfigureRotary(rotary))
+                if (rotary != null)
                 {
-                    return false;
+                    LoggingService.Log("Step 9/9: Configuring rotary settings...");
+                    if (!ConfigureRotary(rotary))
+                    {
+                        LoggingService.Log("ERROR: Rotary configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 9/9: Rotary settings configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 9/9: Skipping rotary configuration (not provided)");
                 }
 
+                LoggingService.Log("=== Complete Machine Configuration Finished Successfully ===");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LoggingService.Log($"CRITICAL ERROR in ConfigureCompleteMachine: {ex.Message}", LoggingService.LogLevel.Error);
+                LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 return false;
             }
         }

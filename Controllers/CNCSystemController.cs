@@ -176,9 +176,30 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                // TODO: Implement is homed check functionality using CentroidAPI
-                // return CNCUtils.IsHomed();
-                throw new NotImplementedException("Is homed check functionality not yet implemented");
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                // Check each axis home status using GetPcSystemVariableBit
+                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_1);
+                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_2);
+                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_3);
+
+                if (state_axis_1 != CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 || state_axis_2 != CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 || state_axis_3 != CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1)
+                {
+                    //Machine not homed
+                    return false;
+                }
+
+                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_PC_HOME_SET, out var state_home);
+
+                if (state_home != CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1)
+                {
+                    //Machine not homed
+                    return false;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {

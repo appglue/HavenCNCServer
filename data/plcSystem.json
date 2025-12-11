@@ -5,8 +5,8 @@
   "author": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 6,
-  "updateVersion": 1,
+  "minorVersion": 11,
+  "updateVersion": 2,
   "type": 1,
   "lastModified": "2025-12-10T20:12:13.179Z",
   "stages": [
@@ -16,7 +16,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 0,
       "blocks": []
     },
