@@ -84,6 +84,12 @@ namespace HavenCNCServer
             // Subscribe to status change events
             ApiManager.StatusChanged += OnApiStatusChanged;
 
+            // Set up timer to check CNC12 process status
+            var cnc12StatusTimer = new System.Windows.Forms.Timer();
+            cnc12StatusTimer.Interval = 2000; // Check every 2 seconds
+            cnc12StatusTimer.Tick += Cnc12StatusTimer_Tick;
+            cnc12StatusTimer.Start();
+
             // Start the API server automatically when the form loads
             this.Load += MainForm_Load;
             this.Resize += MainForm_Resize;
@@ -298,6 +304,25 @@ namespace HavenCNCServer
             else
             {
                 LogWarning(message, "CNC");
+            }
+        }
+
+        /// <summary>
+        /// Timer tick to check CNC12 process status
+        /// </summary>
+        private void Cnc12StatusTimer_Tick(object? sender, EventArgs e)
+        {
+            // Lock-free read of process status
+            bool isProcessRunning = CNCConnectionManager.IsCnc12ProcessRunning;
+
+            if (!isProcessRunning)
+            {
+                lblCnc12Status.Text = "CNC12 Process Not Running";
+                lblCnc12Status.ForeColor = Color.Red;
+            }
+            else
+            {
+                lblCnc12Status.Text = "";
             }
         }
 

@@ -25,11 +25,24 @@ namespace HavenCNCServer.Services
         private static bool _cachedProcessRunning = true;
         private static DateTime _lastProcessCheck = DateTime.MinValue;
         private static readonly double ProcessCheckIntervalSeconds = 2.0; // Check every 2 seconds
+        private static int _isCnc12ProcessRunningFlag = 1; // 1 = true, 0 = false, for Interlocked
 
         /// <summary>
         /// Event fired when connection status changes
         /// </summary>
         public static event Action<bool, string>? ConnectionStatusChanged;
+
+        /// <summary>
+        /// Gets whether the CNC12 process is currently running (cached, lock-free)
+        /// </summary>
+        public static bool IsCnc12ProcessRunning
+        {
+            get
+            {
+                // Lock-free read using Interlocked
+                return Interlocked.CompareExchange(ref _isCnc12ProcessRunningFlag, 0, 0) == 1;
+            }
+        }
 
         /// <summary>
         /// Gets the number of connection retry attempts since last disconnect
@@ -312,6 +325,7 @@ namespace HavenCNCServer.Services
                 }
 
                 _cachedProcessRunning = isRunning;
+                Interlocked.Exchange(ref _isCnc12ProcessRunningFlag, isRunning ? 1 : 0);
                 return _cachedProcessRunning;
             }
             catch (Exception ex)
@@ -319,6 +333,7 @@ namespace HavenCNCServer.Services
                 LogError($"Error checking CNC12 process: {ex.Message}", "CNCConnectionManager");
                 // On error, be conservative - assume NOT running to avoid potential crash
                 _cachedProcessRunning = false;
+                Interlocked.Exchange(ref _isCnc12ProcessRunningFlag, 0);
                 return false;
             }
         }
