@@ -230,7 +230,7 @@
             {
               "type": "LogicStatement",
               "comment": "",
-              "enabled": false,
+              "enabled": true,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,

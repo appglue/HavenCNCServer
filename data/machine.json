@@ -1,0 +1,594 @@
+{
+  "machineName": "Default Machine",
+  "xDirection": "Across",
+  "zLocation": "Top",
+  "unitOfMeasure": "Inches",
+  "rotaryAxis": "Fixed",
+  "rotaryDiameter": 2,
+  "rotaryLength": 36,
+  "rotaryAxisDirection": "Y",
+  "rotaryHeadDiameter": 2,
+  "rotaryHeadLength": 3,
+  "rotaryTailDiameter": 1.5,
+  "rotaryTailLength": 2,
+  "rotaryMotorDiameter": 3,
+  "rotaryMotorLength": 4,
+  "rotaryPostHeight": 4,
+  "rotaryPostWidth": 2,
+  "rotaryPostLength": 2,
+  "rotaryBedWidth": 6,
+  "rotaryBedHeight": 0.5,
+  "bedWidth": 48,
+  "bedLength": 96,
+  "bedHeight": 3,
+  "baseHeight": 24,
+  "baseWidth": 60,
+  "baseLength": 110,
+  "gantryHeight": 10,
+  "gantryBarHeight": 6,
+  "gantryBarWidth": 4,
+  "railingWidth": 2,
+  "railingHeight": 4,
+  "railingOutsideBed": true,
+  "gantrySupportWidth": 5,
+  "spindleDiameter": 3,
+  "spindleLength": 12,
+  "spindleOffset": 2,
+  "toolHolderDiameter": 1.25,
+  "toolHolderLength": 2,
+  "touchPadHolderWidth": 3,
+  "touchPadHolderDepth": 4,
+  "touchPadDiameter": 3,
+  "touchPadHeight": 0.75,
+  "hasVerticalTable": true,
+  "verticalTableWidth": 48,
+  "verticalTableHeight": 12,
+  "verticalTableThickness": 1,
+  "verticalTableAngle": 90,
+  "verticalTableOffset": {
+    "_x": 2,
+    "_y": 0,
+    "_z": -1,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-VerticalTableOffset",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "hasLaser": false,
+  "laserOffset": {
+    "_x": -6,
+    "_y": 0,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-LaserOffset",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "laserWidth": 3,
+  "laserLength": 3,
+  "laserHeight": 5,
+  "hasLaserPointer": false,
+  "laserPointerOffset": {
+    "_x": -2,
+    "_y": -2,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-LaserPointerOffset",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "laserPointerDiameter": 1,
+  "laserPointerHeight": 3,
+  "hasDrillHead": false,
+  "drillHeadOffset": {
+    "_x": 4,
+    "_y": 0,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-DrillHeadOffset",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "drillHeadWidth": 6,
+  "drillHeadLength": 4,
+  "drillHeadHeight": 8,
+  "drillHeadNumberOfBits": 9,
+  "hasATC": true,
+  "atcNumberOfTools": 8,
+  "atcToolClamps": [
+    {
+      "clampNumber": 1,
+      "offset": {
+        "x": 7,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 2,
+      "offset": {
+        "x": 13,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 3,
+      "offset": {
+        "x": 19,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 4,
+      "offset": {
+        "x": 25,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 5,
+      "offset": {
+        "x": 31,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 6,
+      "offset": {
+        "x": 37,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 7,
+      "offset": {
+        "x": 43,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 8,
+      "offset": {
+        "x": 49,
+        "y": 105,
+        "z": -4
+      }
+    }
+  ],
+  "atcAutoCalculateBarLocation": true,
+  "xyMoveToATC": 200,
+  "zMoveToATC": 100,
+  "xyApproachSpeed": 200,
+  "zApproachSpeed": 100,
+  "xyDockSpeed": 30,
+  "zDockSpeed": 30,
+  "atcClampDwellTime": 2,
+  "atcVerticalClearance": 3,
+  "atcHorizontalClearance": -4,
+  "atcApproachAxis": "Y",
+  "atcShareHorizontalCoordinate": true,
+  "atcShareZCoordinate": false,
+  "atcSharedHorizontalValue": 105,
+  "atcSharedZValue": -4,
+  "hasFixedTouchPlate": true,
+  "fixedTouchPlateFastSpeed": 10,
+  "fixedTouchPlateSlowSpeed": 10,
+  "fixedTouchPlateTrigger": 1,
+  "hasMovableTouchPlate": false,
+  "movableTouchPlateFastSpeed": 100,
+  "movableTouchPlateSlowSpeed": 10,
+  "movableTouchPlateHeight": 3,
+  "movableTouchPlateTrigger": 1,
+  "xHomingDirection": "Positive",
+  "yHomingDirection": "Negative",
+  "zHomingDirection": "Positive",
+  "homingOrder": "Z,X,Y",
+  "xyHomingSpeed": 100,
+  "zHomingSpeed": 50,
+  "enableAutoSquare": true,
+  "autoSquareMasterAxis": "Y",
+  "autoSquareDistance": 0.5,
+  "stepFrequency": 240000,
+  "driveFaultDelay": 500,
+  "secondSpindleEnabled": false,
+  "zUpperSoftLimitFromMachineZero": 0,
+  "zLowerSoftLimitFromMachineZero": -8,
+  "xLowerSoftLimitFromMachineZero": 3,
+  "xUpperSoftLimitFromMachineZero": 36,
+  "yLowerSoftLimitFromMachineZero": -1,
+  "yUpperSoftLimitFromMachineZero": 40,
+  "crosshairSize": 12,
+  "crosshairLineWidth": 1,
+  "_stepFrequency": 240000,
+  "_driveFaultDelay": 500,
+  "_atcLocation": {
+    "offset": {
+      "x": 1,
+      "y": 106,
+      "z": -4
+    }
+  },
+  "_atcStructure": {
+    "postWidth": 2,
+    "postLength": 2,
+    "barHeight": 2,
+    "barWidth": 3,
+    "barLength": 54,
+    "postOffsetFromRails": 2
+  },
+  "_atcToolClamps": [
+    {
+      "clampNumber": 1,
+      "offset": {
+        "x": 7,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 2,
+      "offset": {
+        "x": 13,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 3,
+      "offset": {
+        "x": 19,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 4,
+      "offset": {
+        "x": 25,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 5,
+      "offset": {
+        "x": 31,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 6,
+      "offset": {
+        "x": 37,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 7,
+      "offset": {
+        "x": 43,
+        "y": 105,
+        "z": -4
+      }
+    },
+    {
+      "clampNumber": 8,
+      "offset": {
+        "x": 49,
+        "y": 105,
+        "z": -4
+      }
+    }
+  ],
+  "_axisConfigurations": [
+    {
+      "axisType": "X",
+      "axisNumber": 1,
+      "stepsPerRevolution": 3200,
+      "overallTurnsRatio": 5.1,
+      "lashCompensation": 1,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": true,
+      "slowJogRate": 101,
+      "fastJogRate": 501,
+      "fastJogPlusDirection": 501,
+      "fastJogMinusDirection": 501,
+      "stepSignalInverted": true,
+      "directionSignalInverted": true,
+      "enableSignalInverted": true
+    },
+    {
+      "axisType": "Y",
+      "axisNumber": 2,
+      "stepsPerRevolution": 1600,
+      "overallTurnsRatio": 5,
+      "lashCompensation": 6,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": false,
+      "slowJogRate": 100,
+      "fastJogRate": 500,
+      "fastJogPlusDirection": 500,
+      "fastJogMinusDirection": 500,
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
+    },
+    {
+      "axisType": "Z",
+      "axisNumber": 3,
+      "stepsPerRevolution": 1600,
+      "overallTurnsRatio": 5,
+      "lashCompensation": 1,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": true,
+      "slowJogRate": 100,
+      "fastJogRate": 500,
+      "fastJogPlusDirection": 500,
+      "fastJogMinusDirection": 500,
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
+    },
+    {
+      "axisType": "Unset",
+      "axisNumber": 4,
+      "stepsPerRevolution": 1600,
+      "overallTurnsRatio": 5,
+      "lashCompensation": 0,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": false,
+      "slowJogRate": 100,
+      "fastJogRate": 500,
+      "fastJogPlusDirection": 500,
+      "fastJogMinusDirection": 500,
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
+    },
+    {
+      "axisType": "Unset",
+      "axisNumber": 5,
+      "stepsPerRevolution": 1600,
+      "overallTurnsRatio": 5,
+      "lashCompensation": 0,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": false,
+      "slowJogRate": 100,
+      "fastJogRate": 500,
+      "fastJogPlusDirection": 500,
+      "fastJogMinusDirection": 500,
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
+    },
+    {
+      "axisType": "Unset",
+      "axisNumber": 6,
+      "stepsPerRevolution": 1600,
+      "overallTurnsRatio": 5,
+      "lashCompensation": 0,
+      "maxRate": 2000,
+      "accelDecel": 0.5,
+      "directionReversal": false,
+      "slowJogRate": 100,
+      "fastJogRate": 500,
+      "fastJogPlusDirection": 500,
+      "fastJogMinusDirection": 500,
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
+    }
+  ],
+  "_spindleConfig": {
+    "encoderCounts": 8000,
+    "spindleAxis": null,
+    "lowGearRatio": 1,
+    "mediumGearRatio": 1,
+    "highGearRatio": null,
+    "maxSpeed": 24000,
+    "minSpeed": 3000,
+    "analogRange": null,
+    "okDelay": 0,
+    "fanDelay": 0,
+    "encoderEnabled": false,
+    "rigidTappingEnabled": null,
+    "rtgDisplay": null,
+    "spindleScalingEnabled": false,
+    "decelTime": null,
+    "rigidTappingSlowSpeed": null,
+    "rigidTappingSlowTime": null,
+    "threadingTappingAccelDecelDistance": null,
+    "minimumRigidTappingRPM": null,
+    "durationForMinRigidTappingRPM": null,
+    "spindleDrift": null,
+    "spindleAccelDecelTime": null,
+    "rigidTappingZAxisSyncDistance": null,
+    "allowSpindleOverride": null,
+    "doNotWaitForIndexPulse": null,
+    "ssvCycleTime": 0,
+    "ssvAmount": 0,
+    "frvCycleTime": 0,
+    "mFuncBottomHoleG84": null,
+    "mFuncTopHoleG74Counter": null,
+    "mFuncBottomHoleG74LeftHand": null,
+    "mFuncTopHoleG84Counter": null
+  },
+  "_secondSpindleConfig": {
+    "encoderCounts": 8000,
+    "spindleAxis": null,
+    "lowGearRatio": 1,
+    "mediumGearRatio": 1,
+    "highGearRatio": null,
+    "maxSpeed": 24000,
+    "minSpeed": 3000,
+    "analogRange": null,
+    "okDelay": 0,
+    "fanDelay": 0,
+    "encoderEnabled": false,
+    "rigidTappingEnabled": null,
+    "rtgDisplay": null,
+    "spindleScalingEnabled": false,
+    "decelTime": null,
+    "rigidTappingSlowSpeed": null,
+    "rigidTappingSlowTime": null,
+    "threadingTappingAccelDecelDistance": null,
+    "minimumRigidTappingRPM": null,
+    "durationForMinRigidTappingRPM": null,
+    "spindleDrift": null,
+    "spindleAccelDecelTime": null,
+    "rigidTappingZAxisSyncDistance": null,
+    "allowSpindleOverride": null,
+    "doNotWaitForIndexPulse": null,
+    "ssvCycleTime": 0,
+    "ssvAmount": 0,
+    "frvCycleTime": 0,
+    "mFuncBottomHoleG84": null,
+    "mFuncTopHoleG74Counter": null,
+    "mFuncBottomHoleG74LeftHand": null,
+    "mFuncTopHoleG84Counter": null
+  },
+  "_laserPWMConfig": {
+    "outputNumber": null,
+    "pwmEnabled": false,
+    "frequency": 1000,
+    "sCommandRange1000": true,
+    "floor": 0,
+    "onlyApplyFloorDuringVelocityMoves": false,
+    "inverseOutput": false,
+    "laserCoolingFanDelayTimer": 0,
+    "velocityScaling": null
+  },
+  "_touchPadLocationFromMZ": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "_manualToolChangeLocationFromMZ": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "_fixedTouchPlate": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "_rotaryZeroLocation": {
+    "x": 55,
+    "y": 6,
+    "z": 4.5
+  },
+  "_machineZeroCoordinatesFromMachineHome": {
+    "x": -36,
+    "y": -40,
+    "z": 0
+  },
+  "_machineBaseTopCornerFromMachineZero": {
+    "x": 0,
+    "y": 0,
+    "z": -11
+  },
+  "_bedOffset": {
+    "x": 3,
+    "y": 1,
+    "z": 0
+  },
+  "_drillBitOffsets": [
+    {
+      "offset": {
+        "x": 1,
+        "y": 1,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 3,
+        "y": 1,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 5,
+        "y": 1,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 1,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 3,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 5,
+        "y": 2,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 1,
+        "y": 3,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 3,
+        "y": 3,
+        "z": 0
+      }
+    },
+    {
+      "offset": {
+        "x": 5,
+        "y": 3,
+        "z": 0
+      }
+    }
+  ]
+}

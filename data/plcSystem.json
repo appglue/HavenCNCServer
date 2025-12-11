@@ -5,7 +5,7 @@
   "author": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 11,
+  "minorVersion": 14,
   "updateVersion": 2,
   "type": 1,
   "lastModified": "2025-12-10T20:12:13.179Z",
@@ -16,7 +16,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 0,
       "blocks": []
     },

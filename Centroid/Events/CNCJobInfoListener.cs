@@ -898,6 +898,13 @@ namespace HavenCNCServer.Centroid.Events
         {
             try
             {
+                // CRITICAL: Guard against callbacks during shutdown
+                // Check shutdown flag first to prevent processing events on disposed COM objects
+                if (_isShuttingDown)
+                {
+                    return; // Silently ignore all events during shutdown
+                }
+
                 // Early exit: Ignore all messages when CNC12 is not connected to prevent event flood
                 if (!CNCConnectionManager.IsConnected)
                 {

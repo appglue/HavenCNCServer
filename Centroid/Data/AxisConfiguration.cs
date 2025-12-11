@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HavenCNCServer.Centroid.Data
 {
     /// <summary>
@@ -13,6 +15,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Axis label (X, Y, Z, A, B, C, U, V, W)
         /// </summary>
+        [JsonPropertyName("axisType")]
         public string? Label { get; set; }
 
         /// <summary>
@@ -23,6 +26,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)
         /// </summary>
+        [JsonPropertyName("overallTurnsRatio")]
         public double? TurnRatio { get; set; }
 
         /// <summary>
@@ -38,6 +42,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Backlash compensation amount
         /// </summary>
+        [JsonPropertyName("lashCompensation")]
         public double? BacklashCompensation { get; set; }
 
         /// <summary>
@@ -68,6 +73,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Acceleration time in seconds
         /// </summary>
+        [JsonPropertyName("accelDecel")]
         public double? AccelerationTime { get; set; }
 
         /// <summary>
@@ -83,6 +89,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Whether axis direction is reversed
         /// </summary>
+        [JsonPropertyName("directionReversal")]
         public bool? IsReversed { get; set; }
 
         /// <summary>

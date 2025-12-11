@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HavenCNCServer.Centroid.Data
 {
     /// <summary>
@@ -68,6 +70,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Enable RTG (Real Time Graphics) display
         /// </summary>
+        [JsonPropertyName("rtgDisplay")]
         public bool? RTGDisplay { get; set; }
 
         /// <summary>
@@ -158,16 +161,19 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// SSV (Spindle Speed Variation) cycle time
         /// </summary>
+        [JsonPropertyName("ssvCycleTime")]
         public double? SSVCycleTime { get; set; }
 
         /// <summary>
         /// SSV (Spindle Speed Variation) amount percentage
         /// </summary>
+        [JsonPropertyName("ssvAmount")]
         public double? SSVAmount { get; set; }
 
         /// <summary>
         /// FRV (Feed Rate Variation) cycle time
         /// </summary>
+        [JsonPropertyName("frvCycleTime")]
         public double? FRVCycleTime { get; set; }
     }
 }

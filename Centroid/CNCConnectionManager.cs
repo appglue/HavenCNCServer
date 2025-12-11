@@ -600,6 +600,22 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
+                    // CRITICAL: Stop event listeners BEFORE disposing COM objects
+                    // This prevents callbacks from firing on disposed COM objects which causes 0xc0000005 crashes
+                    try
+                    {
+                        if (HavenCNCServer.Centroid.Events.CNCJobInfoListener.IsListening)
+                        {
+                            Log("Stopping event listener before disconnect...", LogLevel.Info, "CNCConnectionManager");
+                            HavenCNCServer.Centroid.Events.CNCJobInfoListener.StopListening();
+                            Log("Event listener stopped", LogLevel.Success, "CNCConnectionManager");
+                        }
+                    }
+                    catch (Exception listenerEx)
+                    {
+                        Log($"Error stopping event listener: {listenerEx.Message}", LogLevel.Error, "CNCConnectionManager");
+                    }
+
                     if (_cncPipe != null)
                     {
                         _cncPipe = null;
