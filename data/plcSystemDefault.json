@@ -1,11 +1,9 @@
 {
   "name": "System Default PLC Program",
   "description": "",
-  "version": "1.0",
-  "author": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-10T20:05:16.255Z",
+  "lastModified": "2025-12-12T16:27:58.757Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -13,7 +11,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 0,
       "blocks": [
         {
@@ -152,7 +150,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 1,
           "actions": [
             {
@@ -324,7 +322,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 2,
       "blocks": [
         {
@@ -404,6 +402,21 @@
                   "needsWrite": false
                 }
               }
+            }
+          ]
+        },
+        {
+          "name": "System Default Block 2",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": false,
+          "ordinal": 1,
+          "actions": [
+            {
+              "type": "SystemKeybindingsStatement",
+              "comment": "",
+              "enabled": true
             }
           ]
         }
@@ -1023,7 +1036,16 @@
   ],
   "inputs": [],
   "outputs": [],
-  "keybindings": [],
+  "keybindings": [
+    {
+      "name": "KEY_CTRL_S_KB",
+      "description": "",
+      "key": "s",
+      "shiftKey": false,
+      "ctrlKey": true,
+      "altKey": false
+    }
+  ],
   "timers": [
     {
       "name": "MESSAGE_SENT_T",

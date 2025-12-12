@@ -384,6 +384,8 @@ namespace HavenCNCServer.Centroid.Events
             if (!_isListening)
             {
                 LogInfo("CNC JOB_INFO listener is not running", "JobInfo");
+                // Even if not listening, ensure pipe reference is cleared
+                _currentCNCPipe = null;
                 return;
             }
 
@@ -391,19 +393,32 @@ namespace HavenCNCServer.Centroid.Events
             {
                 LogInfo("🔌 Stopping CNC pipe message listening...", "JobInfo");
 
-                // Unsubscribe from MessageReceived event
+                // Unsubscribe from MessageReceived event and stop listening
                 if (_currentCNCPipe != null)
                 {
-                    var unsubStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                    _currentCNCPipe.MessageReceived -= OnMessageReceived;
-                    LogInfo($"📤 Event unsubscribed ({unsubStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    try
+                    {
+                        var unsubStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                        _currentCNCPipe.MessageReceived -= OnMessageReceived;
+                        LogInfo($"📤 Event unsubscribed ({unsubStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    }
+                    catch (Exception unsubEx)
+                    {
+                        LogWarning($"Error unsubscribing from MessageReceived: {unsubEx.Message}", "JobInfo");
+                    }
 
-                    var stopStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                    _currentCNCPipe.StopListening();
-                    LogInfo($"⏹️ CNCPipe.StopListening() completed ({stopStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    try
+                    {
+                        var stopStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                        _currentCNCPipe.StopListening();
+                        LogInfo($"⏹️ CNCPipe.StopListening() completed ({stopStopwatch.ElapsedMilliseconds}ms)", "JobInfo");
+                    }
+                    catch (Exception stopEx)
+                    {
+                        LogWarning($"Error calling StopListening: {stopEx.Message}", "JobInfo");
+                    }
 
                     LogSuccess($"Stopped CNC12 event-driven message listening (total: {stopwatch.ElapsedMilliseconds}ms)", "JobInfo");
-                    _currentCNCPipe = null;
                 }
 
                 _isListening = false;
@@ -416,17 +431,28 @@ namespace HavenCNCServer.Centroid.Events
             }
             finally
             {
-                // Clean up resources
+                // CRITICAL: Always clear the pipe reference, even on error
+                // This ensures we don't keep a reference to a stale/dead pipe
                 _currentCNCPipe = null;
 
                 // Close file logging
                 if (_logWriter != null)
                 {
-                    _logWriter.WriteLine($"=== Job Listener Session Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
-                    _logWriter.WriteLine($"Total messages processed: {_messageCount}");
-                    _logWriter.WriteLine("");
-                    _logWriter.Close();
-                    _logWriter = null;
+                    try
+                    {
+                        _logWriter.WriteLine($"=== Job Listener Session Ended: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
+                        _logWriter.WriteLine($"Total messages processed: {_messageCount}");
+                        _logWriter.WriteLine("");
+                        _logWriter.Close();
+                    }
+                    catch (Exception logEx)
+                    {
+                        LogWarning($"Error closing log writer: {logEx.Message}", "JobInfo");
+                    }
+                    finally
+                    {
+                        _logWriter = null;
+                    }
                 }
 
                 // Clear duplicate tracking
@@ -434,8 +460,15 @@ namespace HavenCNCServer.Centroid.Events
                 _duplicateCounters.Clear();
 
                 // Reset event-specific tracking
-                DROEvent.ResetTracking();
-                JobInfoEvent.ResetTracking();
+                try
+                {
+                    DROEvent.ResetTracking();
+                    JobInfoEvent.ResetTracking();
+                }
+                catch (Exception resetEx)
+                {
+                    LogWarning($"Error resetting event tracking: {resetEx.Message}", "JobInfo");
+                }
 
                 // Clear stored messages
                 lock (_storedMessagesLock)
@@ -443,6 +476,19 @@ namespace HavenCNCServer.Centroid.Events
                     _storedMessages.Clear();
                     LogToFile("Cleared stored messages on listener stop");
                 }
+
+                // Clear all event listeners to prevent holding stale references
+                lock (_listenersLock)
+                {
+                    if (_eventListeners.Count > 0)
+                    {
+                        LogInfo($"Clearing {_eventListeners.Count} event listeners", "JobInfo");
+                        _eventListeners.Clear();
+                    }
+                }
+
+                // Reset the disconnected state flag
+                _hasLoggedDisconnectedState = false;
             }
         }
 
