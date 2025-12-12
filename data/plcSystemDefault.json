@@ -11,7 +11,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
+      "collapsed": false,
       "ordinal": 0,
       "blocks": [
         {
@@ -19,7 +19,7 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 0,
           "actions": [
             {
@@ -94,53 +94,6 @@
                   "needsWrite": true
                 },
                 "stageName": "MESSAGE_S"
-              }
-            },
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "RESET",
-                "sourceValue": "",
-                "targetElement": {
-                  "allowNew": true,
-                  "needsWrite": true,
-                  "declaration": {
-                    "name": "AAA_M",
-                    "description": "",
-                    "dataType": "Memory Bit",
-                    "category": [
-                      "* User Defined"
-                    ],
-                    "visibility": "Visible",
-                    "readOnly": false,
-                    "isSystem": false,
-                    "isConstant": false,
-                    "isSetText": "Set",
-                    "isResetText": "Reset"
-                  }
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            },
-            {
-              "type": "SendMessageStatement",
-              "comment": "",
-              "enabled": true,
-              "predicate": {
-                "type": "SendMessagePredicate",
-                "comment": "",
-                "enabled": true,
-                "level": "info",
-                "mode": "async",
-                "messageText": "xdfsfsd"
               }
             }
           ]
@@ -226,6 +179,74 @@
               }
             },
             {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "HV_STOP_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* Control"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Stop Triggered",
+                    "isResetText": "Stop Not Triggered"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "HV_ESTOP_PRESSED_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Estop Pressed",
+                    "isResetText": "EStop Not Pressed"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
@@ -246,6 +267,54 @@
                     "conditionType": "DataCondition",
                     "dataElement": {
                       "declarationName": "ESTOPOK2_I",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_ESTOP_PRESSED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "ESTOPOK_I",
                       "allowNew": false,
                       "needsWrite": false
                     }
@@ -322,7 +391,7 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": false,
+      "collapsed": true,
       "ordinal": 2,
       "blocks": [
         {
@@ -330,87 +399,16 @@
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": true,
+          "collapsed": false,
           "ordinal": 0,
-          "actions": [
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "RESET",
-                "sourceValue": "",
-                "targetElement": {
-                  "allowNew": true,
-                  "needsWrite": true,
-                  "declaration": {
-                    "name": "HV_STOP_M",
-                    "displayName": "HV_STOP_M",
-                    "description": "",
-                    "dataType": "Memory Bit",
-                    "category": [
-                      "* Control"
-                    ],
-                    "visibility": "Visible",
-                    "readOnly": false,
-                    "isSystem": false,
-                    "isConstant": false,
-                    "isSetText": "Stop Triggered",
-                    "isResetText": "Stop Not Triggered"
-                  }
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            },
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "RESET",
-                "sourceValue": "",
-                "targetElement": {
-                  "allowNew": true,
-                  "needsWrite": true,
-                  "declaration": {
-                    "name": "HV_ESTOP_PRESSED_M",
-                    "displayName": "HV_ESTOP_PRESSED_M",
-                    "description": "",
-                    "dataType": "Memory Bit",
-                    "category": [
-                      "* Control"
-                    ],
-                    "visibility": "Visible",
-                    "readOnly": false,
-                    "isSystem": false,
-                    "isConstant": false,
-                    "isSetText": "Estop Pressed",
-                    "isResetText": "EStop Not Pressed"
-                  }
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            }
-          ]
+          "actions": []
         },
         {
           "name": "System Default Block 2",
           "type": "Rung",
           "comment": "",
           "enabled": true,
-          "collapsed": false,
+          "collapsed": true,
           "ordinal": 1,
           "actions": [
             {
@@ -430,7 +428,58 @@
       "fast": false,
       "collapsed": true,
       "ordinal": 3,
-      "blocks": []
+      "blocks": [
+        {
+          "name": "System Default Block 1",
+          "type": "Rung",
+          "comment": "",
+          "enabled": true,
+          "collapsed": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "KEY_CTRL_S_KB",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "s pressed"
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "MESSAGE_S",

@@ -26,6 +26,7 @@ namespace HavenCNCServer.Services
         private static DateTime _lastProcessCheck = DateTime.MinValue;
         private static readonly double ProcessCheckIntervalSeconds = 2.0; // Check every 2 seconds
         private static int _isCnc12ProcessRunningFlag = 1; // 1 = true, 0 = false, for Interlocked
+        private static bool _lastNotifiedConnectedState = false; // Track last notified state to prevent duplicate notifications
 
         /// <summary>
         /// Event fired when connection status changes
@@ -73,8 +74,7 @@ namespace HavenCNCServer.Services
                         {
                             Log("CNC12 process not running - clearing connection and stopping listeners", LogLevel.Warning, "CNCConnectionManager");
                             // Stop event listeners FIRST before clearing pipe
-                            CleanupConnectionState();
-                            NotifyStatusChanged(false, "CNC12 process terminated");
+                            CleanupConnectionState("CNC12 process terminated", notifyChange: true);
                         }
                         return false;
                     }                    // Only verify connection health every 5 seconds to avoid spamming checks
@@ -90,8 +90,7 @@ namespace HavenCNCServer.Services
                             {
                                 // CNC pipe is no longer valid - update status
                                 Log("CNC pipe is not constructed - clearing connection and stopping listeners", LogLevel.Warning, "CNCConnectionManager");
-                                CleanupConnectionState();
-                                NotifyStatusChanged(false, "CNC connection lost");
+                                CleanupConnectionState("CNC connection lost", notifyChange: true);
                                 return false;
                             }
                         }
@@ -99,8 +98,7 @@ namespace HavenCNCServer.Services
                         {
                             // IsConstructed() threw an exception - CNC12 probably crashed
                             LogError($"Exception checking connection status: {ex.Message}", "CNCConnectionManager");
-                            CleanupConnectionState();
-                            NotifyStatusChanged(false, $"CNC connection error: {ex.Message}");
+                            CleanupConnectionState($"CNC connection error: {ex.Message}", notifyChange: true);
                             return false;
                         }
                     }
@@ -127,7 +125,7 @@ namespace HavenCNCServer.Services
                 if (!IsCNC12ProcessRunning())
                 {
                     Log("Process check failed in CheckIsConnected - clearing connection and stopping listeners", LogLevel.Warning, "CNCConnectionManager");
-                    CleanupConnectionState();
+                    CleanupConnectionState("CNC12 process not running", notifyChange: true);
                     return false;
                 }
 
@@ -138,7 +136,7 @@ namespace HavenCNCServer.Services
                 catch (Exception ex)
                 {
                     LogError($"Exception in CheckIsConnected: {ex.Message}", "CNCConnectionManager");
-                    CleanupConnectionState();
+                    CleanupConnectionState($"CheckIsConnected error: {ex.Message}", notifyChange: true);
                     return false;
                 }
             }
@@ -171,8 +169,7 @@ namespace HavenCNCServer.Services
                     if (_isConnected || _cncPipe != null)
                     {
                         Log("Process not running in GetCNCPipe - clearing connection and stopping listeners", LogLevel.Warning, "CNCConnectionManager");
-                        CleanupConnectionState();
-                        NotifyStatusChanged(false, "CNC12 process terminated");
+                        CleanupConnectionState("CNC12 process terminated", notifyChange: true);
                     }
                     return null;
                 }
@@ -203,8 +200,7 @@ namespace HavenCNCServer.Services
                     // Clear any existing connection state and stop listeners
                     if (_isConnected || _cncPipe != null)
                     {
-                        CleanupConnectionState();
-                        NotifyStatusChanged(false, $"CNC12 process '{processName}' not running");
+                        CleanupConnectionState($"CNC12 process '{processName}' not running", notifyChange: true);
                     }
 
                     return null;
@@ -396,6 +392,7 @@ namespace HavenCNCServer.Services
                         {
                             Log($"CNCPipe constructed successfully on attempt {attempt}", LogLevel.Info, "CNCConnectionManager");
                             _isConnected = true;
+                            _lastNotifiedConnectedState = true;
                             Interlocked.Exchange(ref _connectionRetryCount, 0); // Reset counter on success
                             NotifyStatusChanged(true, "Connected to CNC successfully");
 
@@ -509,8 +506,7 @@ namespace HavenCNCServer.Services
                 {
                     if (_isConnected || _cncPipe != null)
                     {
-                        NotifyStatusChanged(false, "Connection health check failed: CNC12 process not running");
-                        CleanupConnectionState();
+                        CleanupConnectionState("Connection health check failed: CNC12 process not running", notifyChange: true);
                     }
                     return false;
                 }
@@ -526,15 +522,14 @@ namespace HavenCNCServer.Services
                 {
                     if (!_cncPipe.IsConstructed())
                     {
-                        NotifyStatusChanged(false, "Connection health check failed: CNCPipe not constructed");
-                        CleanupConnectionState();
+                        CleanupConnectionState("Connection health check failed: CNCPipe not constructed", notifyChange: true);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
                     LogError($"Exception in HealthCheck IsConstructed: {ex.Message}", "CNCConnectionManager");
-                    CleanupConnectionState();
+                    CleanupConnectionState($"Health check error: {ex.Message}", notifyChange: true);
                     return false;
                 }
 
@@ -544,15 +539,13 @@ namespace HavenCNCServer.Services
                     var powerOffResult = _cncPipe.state.IsPCPoweringOff(out bool isPoweringOff);
                     if (powerOffResult == CNCPipe.ReturnCode.SUCCESS && isPoweringOff)
                     {
-                        NotifyStatusChanged(false, "Connection health check failed: CNC12 is powering off");
-                        CleanupConnectionState();
+                        CleanupConnectionState("Connection health check failed: CNC12 is powering off", notifyChange: true);
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    NotifyStatusChanged(false, $"Connection health check failed: Error checking power state - {ex.Message}");
-                    CleanupConnectionState();
+                    CleanupConnectionState($"Connection health check failed: Error checking power state - {ex.Message}", notifyChange: true);
                     return false;
                 }
 
@@ -562,16 +555,14 @@ namespace HavenCNCServer.Services
                     var result = _cncPipe.parameter.GetMachineParameterValue(1, out double _);
                     if (result != CNCPipe.ReturnCode.SUCCESS)
                     {
-                        NotifyStatusChanged(false, $"Connection health check failed: Cannot read parameters (ReturnCode: {result})");
-                        CleanupConnectionState();
+                        CleanupConnectionState($"Connection health check failed: Cannot read parameters (ReturnCode: {result})", notifyChange: true);
                         return false;
                     }
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    NotifyStatusChanged(false, $"Connection health check failed: {ex.Message}");
-                    CleanupConnectionState();
+                    CleanupConnectionState($"Connection health check failed: {ex.Message}", notifyChange: true);
                     return false;
                 }
             }
@@ -581,7 +572,9 @@ namespace HavenCNCServer.Services
         /// Cleanup all connection state - stops listeners, clears pipes, and resets flags
         /// This ensures that reconnection is like starting fresh
         /// </summary>
-        private static void CleanupConnectionState()
+        /// <param name="reason">Reason for cleanup to include in notification</param>
+        /// <param name="notifyChange">Whether to fire the status change notification</param>
+        private static void CleanupConnectionState(string? reason = null, bool notifyChange = true)
         {
             try
             {
@@ -616,6 +609,13 @@ namespace HavenCNCServer.Services
             {
                 _isConnected = false;
                 _isConnecting = false;
+
+                // Fire notification if requested and state has changed
+                if (notifyChange && _lastNotifiedConnectedState != false)
+                {
+                    _lastNotifiedConnectedState = false;
+                    NotifyStatusChanged(false, reason ?? "CNC disconnected");
+                }
             }
         }
 
@@ -628,15 +628,16 @@ namespace HavenCNCServer.Services
             {
                 try
                 {
-                    CleanupConnectionState();
+                    CleanupConnectionState("Disconnected from CNC", notifyChange: true);
                 }
                 catch (Exception ex)
                 {
-                    NotifyStatusChanged(false, $"Error during disconnect: {ex.Message}");
-                }
-                finally
-                {
-                    NotifyStatusChanged(false, "Disconnected from CNC");
+                    // If cleanup failed, still try to notify
+                    if (_lastNotifiedConnectedState != false)
+                    {
+                        _lastNotifiedConnectedState = false;
+                        NotifyStatusChanged(false, $"Error during disconnect: {ex.Message}");
+                    }
                 }
             }
         }
