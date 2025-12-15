@@ -1,12 +1,13 @@
 {
   "name": "System PLC Program",
   "description": "",
+  "nextStatementNumber": 2,
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 17,
-  "updateVersion": 1,
+  "minorVersion": 1,
+  "updateVersion": 7,
   "type": 1,
-  "lastModified": "2025-12-12T16:36:31.741Z",
+  "lastModified": "2025-12-15T17:00:11.831Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -14,7 +15,6 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 0,
       "blocks": []
     },
@@ -24,7 +24,6 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 1,
       "blocks": []
     },
@@ -34,7 +33,6 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 2,
       "blocks": []
     },
@@ -44,9 +42,48 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 0,
-      "blocks": []
+      "blocks": [
+        {
+          "name": "Block 1",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 1,
+              "skipInitial": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [],
+              "fallingEdgePredicates": []
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "FINAL_S",
@@ -54,7 +91,6 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 0,
       "blocks": []
     },
@@ -64,7 +100,6 @@
       "description": "",
       "enabled": true,
       "fast": false,
-      "collapsed": true,
       "ordinal": 1,
       "blocks": []
     }
@@ -75,29 +110,11 @@
       "name": "Emergency Stop OK",
       "activeText": "EStop Released",
       "inactiveText": "EStop Pressed",
-      "isInverted": true,
+      "isInverted": false,
       "number": 8
     }
   ],
   "outputs": [],
-  "keybindings": [
-    {
-      "name": "KEY_SPACE_KB",
-      "description": "",
-      "key": "Space",
-      "shiftKey": false,
-      "ctrlKey": false,
-      "altKey": false
-    },
-    {
-      "name": "KEY_CTRL_P_KB",
-      "description": "",
-      "key": "p",
-      "shiftKey": false,
-      "ctrlKey": true,
-      "altKey": false
-    }
-  ],
-  "timers": [],
+  "uiTriggers": [],
   "m94m95Triggers": []
 }
