@@ -356,7 +356,7 @@ namespace HavenCNCServer.Controllers
 
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     config.Axes ?? new List<AxisConfiguration>(),
-                    config.Spindle,
+                    config.Spindle!,
                     config.Probe,
                     config.PWMOutputs,
                     config.ATC

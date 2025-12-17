@@ -29,9 +29,13 @@ namespace HavenCNCServer
         private readonly object _startupLock = new object();
 
         // Component instances
-        private MessageDisplayComponent? _messageDisplayComponent;
-        private GCodeViewerComponent? _gCodeViewerComponent;
         private CoordinateDisplayComponent? _coordinateDisplayComponent;
+
+        // Separate forms for different views
+        private Forms.LogsForm? _logsForm;
+        private Forms.MessagesForm? _messagesForm;
+        private Forms.GCodeForm? _gCodeForm;
+        private Forms.SettingsForm? _settingsForm;
 
         private const string ApiUrl = "http://localhost:5000";
         private const string SwaggerUrl = "http://localhost:5000/swagger";
@@ -124,14 +128,11 @@ namespace HavenCNCServer
         /// </summary>
         private void SetupLogging()
         {
-            // Create and register a log target for the main form's flicker-free log viewer
-            var logTarget = new LoggingService.FlickerFreeLogTarget(txtLog, this);
-            LoggingService.AddTarget(logTarget);
-
+            // Logging is now set up in the separate LogsForm
             // Set maximum log entries from settings or default
             LoggingService.MaxLogEntries = 10000;
 
-            LogInfo("Logging system initialized with flicker-free log viewer", "System");
+            LogInfo("Logging system initialized", "System");
         }
 
         /// <summary>
@@ -141,19 +142,15 @@ namespace HavenCNCServer
         {
             try
             {
-                // Create the message display component and add to Messages tab
-                _messageDisplayComponent = new MessageDisplayComponent();
-                _messageDisplayComponent.Dock = DockStyle.Fill;
-                tabMessages.Controls.Add(_messageDisplayComponent);
-
-                // Create the G-code viewer component and add to G-Code tab
-                _gCodeViewerComponent = new GCodeViewerComponent();
-                _gCodeViewerComponent.Dock = DockStyle.Fill;
-                tabGCode.Controls.Add(_gCodeViewerComponent);
-
                 // Create the coordinate display component and position it properly on the right
                 _coordinateDisplayComponent = new CoordinateDisplayComponent();
                 PositionCoordinateDisplay();
+
+                // Initialize the separate forms (but don't show them yet)
+                _logsForm = new Forms.LogsForm();
+                _messagesForm = new Forms.MessagesForm();
+                _gCodeForm = new Forms.GCodeForm();
+                _settingsForm = new Forms.SettingsForm();
 
                 LogInfo("UI components initialized successfully", "Components");
             }
@@ -212,7 +209,7 @@ namespace HavenCNCServer
         {
             try
             {
-                _gCodeViewerComponent?.LoadGCodeForDisplay(gcode);
+                _gCodeForm?.LoadGCodeForDisplay(gcode);
                 LogInfo($"Loaded {gcode?.Length ?? 0} lines of G-code for display", "GCodeDisplay");
             }
             catch (Exception ex)
@@ -228,7 +225,7 @@ namespace HavenCNCServer
         {
             try
             {
-                _gCodeViewerComponent?.ClearGCode();
+                _gCodeForm?.ClearGCodeDisplay();
                 LogInfo("G-code display cleared", "GCodeDisplay");
             }
             catch (Exception ex)
@@ -442,8 +439,10 @@ namespace HavenCNCServer
                 CNCJobInfoListener.Stop(shutdownToken);
 
                 // Clean up UI components
-                _messageDisplayComponent?.Dispose();
-                _gCodeViewerComponent?.Dispose();
+                _logsForm?.Dispose();
+                _messagesForm?.Dispose();
+                _gCodeForm?.Dispose();
+                _settingsForm?.Dispose();
                 _coordinateDisplayComponent?.Dispose();
 
                 // Clear all event listeners to prevent callbacks during shutdown
@@ -603,131 +602,12 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Show dropdown menu with available log files
+        /// Show dropdown menu with available log files (now opens logs form instead)
         /// </summary>
         private void btnViewLogs_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // Clear existing items
-                contextMenuLogs.Items.Clear();
-
-                // Get log directories
-                var mainLogDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp");
-                var jobListenerLogDir = SettingsManager.Settings.Files.JobListenerLogsDirectory;
-
-                // Make job listener log dir absolute if relative
-                if (!Path.IsPathRooted(jobListenerLogDir))
-                {
-                    jobListenerLogDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, jobListenerLogDir);
-                }
-
-                // Create directories if they don't exist
-                Directory.CreateDirectory(mainLogDir);
-                Directory.CreateDirectory(jobListenerLogDir);
-
-                var hasFiles = false;
-
-                // Add Job Listener logs
-                if (Directory.Exists(jobListenerLogDir))
-                {
-                    var jobListenerFiles = Directory.GetFiles(jobListenerLogDir, "JobListener_*.log")
-                        .OrderByDescending(f => new FileInfo(f).LastWriteTime)
-                        .Take(10)
-                        .ToArray();
-
-                    if (jobListenerFiles.Length > 0)
-                    {
-                        var headerItem = new ToolStripMenuItem("📋 Job Listener Logs") { Enabled = false };
-                        contextMenuLogs.Items.Add(headerItem);
-
-                        foreach (var logFile in jobListenerFiles)
-                        {
-                            var fileInfo = new FileInfo(logFile);
-                            var fileName = fileInfo.Name;
-                            var fileSize = fileInfo.Length / 1024; // KB
-                            var lastModified = fileInfo.LastWriteTime;
-
-                            var menuItem = new ToolStripMenuItem($"  {fileName} ({fileSize:N0} KB) - {lastModified:HH:mm:ss}");
-                            menuItem.Tag = logFile;
-                            menuItem.Click += LogFileMenuItem_Click;
-                            contextMenuLogs.Items.Add(menuItem);
-                        }
-
-                        hasFiles = true;
-                    }
-                }
-
-                // Add separator if we have job listener logs
-                if (hasFiles)
-                {
-                    contextMenuLogs.Items.Add(new ToolStripSeparator());
-                }
-
-                // Add other log files from temp directory
-                if (Directory.Exists(mainLogDir))
-                {
-                    var otherLogFiles = Directory.GetFiles(mainLogDir, "*.log")
-                        .Where(f => !f.Contains("JobListener_"))
-                        .OrderByDescending(f => new FileInfo(f).LastWriteTime)
-                        .Take(10)
-                        .ToArray();
-
-                    if (otherLogFiles.Length > 0)
-                    {
-                        var headerItem = new ToolStripMenuItem("📄 Other Logs") { Enabled = false };
-                        contextMenuLogs.Items.Add(headerItem);
-
-                        foreach (var logFile in otherLogFiles)
-                        {
-                            var fileInfo = new FileInfo(logFile);
-                            var fileName = fileInfo.Name;
-                            var fileSize = fileInfo.Length / 1024; // KB
-                            var lastModified = fileInfo.LastWriteTime;
-
-                            var menuItem = new ToolStripMenuItem($"  {fileName} ({fileSize:N0} KB) - {lastModified:HH:mm:ss}");
-                            menuItem.Tag = logFile;
-                            menuItem.Click += LogFileMenuItem_Click;
-                            contextMenuLogs.Items.Add(menuItem);
-                        }
-
-                        hasFiles = true;
-                    }
-                }
-
-                // Add "Open Log Folder" option
-                if (hasFiles)
-                {
-                    contextMenuLogs.Items.Add(new ToolStripSeparator());
-                }
-
-                var openFolderItem = new ToolStripMenuItem("📁 Open Log Folder");
-                openFolderItem.Click += (s, ev) =>
-                {
-                    try
-                    {
-                        Process.Start("explorer.exe", jobListenerLogDir);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Failed to open folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                };
-                contextMenuLogs.Items.Add(openFolderItem);
-
-                if (!hasFiles)
-                {
-                    contextMenuLogs.Items.Add(new ToolStripMenuItem("No log files found") { Enabled = false });
-                }
-
-                // Show the menu below the button
-                contextMenuLogs.Show(btnViewLogs, new Point(0, btnViewLogs.Height));
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error showing log files menu: {ex.Message}", "UI");
-                MessageBox.Show($"Failed to show log files: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            // This method is no longer used - logs are shown via btnShowLogs_Click
+            btnShowLogs_Click(sender, e);
         }
 
         /// <summary>
@@ -784,94 +664,87 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Browse for CNC12 installation path
+        /// Show the logs form
         /// </summary>
-        private void btnBrowseCnc12Path_Click(object sender, EventArgs e)
+        private void btnShowLogs_Click(object? sender, EventArgs e)
         {
-            using (var folderDialog = new FolderBrowserDialog())
+            try
             {
-                folderDialog.Description = "Select CNC12 Installation Directory";
-                folderDialog.SelectedPath = txtCnc12Path.Text;
-
-                if (folderDialog.ShowDialog() == DialogResult.OK)
+                if (_logsForm != null)
                 {
-                    txtCnc12Path.Text = folderDialog.SelectedPath;
+                    _logsForm.Show();
+                    _logsForm.BringToFront();
                 }
             }
+            catch (Exception ex)
+            {
+                LogError($"Failed to show logs form: {ex.Message}", "UI");
+            }
         }
 
         /// <summary>
-        /// Save settings to file
+        /// Show the messages form
         /// </summary>
-        private void btnSaveSettings_Click(object sender, EventArgs e)
+        private void btnShowMessages_Click(object? sender, EventArgs e)
         {
             try
             {
-                // Update settings from UI
-                SettingsManager.Settings.Cnc.Cnc12Path = txtCnc12Path.Text;
-                SettingsManager.Settings.Cnc.UserName = txtUserName.Text;
-                SettingsManager.Settings.Cnc.MachineName = txtMachineName.Text;
-
-                // Save to file
-                SettingsManager.SaveSettings();
-
-                LogSuccess("Settings saved successfully", "Settings");
-                MessageBox.Show("Settings saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (_messagesForm != null)
+                {
+                    _messagesForm.Show();
+                    _messagesForm.BringToFront();
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Failed to save settings: {ex.Message}", "Settings");
-                MessageBox.Show($"Failed to save settings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError($"Failed to show messages form: {ex.Message}", "UI");
             }
         }
 
         /// <summary>
-        /// Clear the logs display
+        /// Show the G-Code form
         /// </summary>
-        private void btnClearLogs_Click(object sender, EventArgs e)
+        private void btnShowGCode_Click(object? sender, EventArgs e)
         {
             try
             {
-                txtLog.Clear();
-                LogInfo("Logs cleared by user", "UI");
+                if (_gCodeForm != null)
+                {
+                    _gCodeForm.Show();
+                    _gCodeForm.BringToFront();
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Failed to clear logs: {ex.Message}", "UI");
+                LogError($"Failed to show G-Code form: {ex.Message}", "UI");
             }
         }
 
         /// <summary>
-        /// Clear the messages display
+        /// Show the settings form
         /// </summary>
-        private void btnClearMessages_Click(object sender, EventArgs e)
+        private void btnShowSettings_Click(object? sender, EventArgs e)
         {
             try
             {
-                _messageDisplayComponent?.ClearMessages();
-                LogInfo("Messages cleared by user", "UI");
+                if (_settingsForm != null)
+                {
+                    _settingsForm.Show();
+                    _settingsForm.BringToFront();
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Failed to clear messages: {ex.Message}", "UI");
+                LogError($"Failed to show settings form: {ex.Message}", "UI");
             }
         }
 
         /// <summary>
-        /// Load settings into UI controls
+        /// Load settings into UI controls (no longer needed with separate forms)
         /// </summary>
         private void LoadSettingsIntoUI()
         {
-            try
-            {
-                txtCnc12Path.Text = SettingsManager.Settings.Cnc.Cnc12Path;
-                txtUserName.Text = SettingsManager.Settings.Cnc.UserName;
-                txtMachineName.Text = SettingsManager.Settings.Cnc.MachineName;
-            }
-            catch (Exception ex)
-            {
-                LogWarning($"Failed to load settings into UI: {ex.Message}", "Settings");
-            }
+            // Settings are now loaded directly in SettingsForm
         }
 
         /// <summary>

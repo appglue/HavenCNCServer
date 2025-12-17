@@ -1472,8 +1472,6 @@ namespace HavenCNCServer.Centroid
         /// <summary>
         /// Configures a complete machine setup with all systems including enhanced features
         /// </summary>
-        /// <param name="inputs">Input I/O functions</param>
-        /// <param name="outputs">Output I/O functions</param>
         /// <param name="axes">Axis configurations</param>
         /// <param name="spindle">Spindle configuration</param>
         /// <param name="probe">Probe configuration (optional)</param>
