@@ -119,7 +119,7 @@ namespace HavenCNCServer
             // Keep coordinate display positioned on the right side
             if (_coordinateDisplayComponent != null)
             {
-                _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 340, 12);
+                _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 160, 30);
             }
         }
 
@@ -192,9 +192,9 @@ namespace HavenCNCServer
         {
             if (_coordinateDisplayComponent == null) return;
 
-            // Position coordinate display on the right side, inline with buttons
+            // Position coordinate display on the right side with vertical stacking
             _coordinateDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 340, 12);
+            _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 160, 30);
             _coordinateDisplayComponent.Name = "coordinateDisplayComponent";
 
             // Add to the form (not the control panel)
@@ -507,8 +507,7 @@ namespace HavenCNCServer
         public void SetAlwaysOnTop(bool alwaysOnTop)
         {
             this.TopMost = alwaysOnTop;
-            btnAlwaysOnTop.Text = this.TopMost ? "Always on Top: ON" : "Always on Top: OFF";
-            btnAlwaysOnTop.BackColor = this.TopMost ? Color.LightGreen : SystemColors.Control;
+            alwaysOnTopToolStripMenuItem.Text = this.TopMost ? "Always on Top: ON" : "Always on Top: OFF";
 
             // Update any owned forms (child windows) to match the TopMost state
             foreach (Form ownedForm in this.OwnedForms)
@@ -554,6 +553,11 @@ namespace HavenCNCServer
                 LogError($"Failed to open browser UI: {ex.Message}", "UI");
                 MessageBox.Show($"Failed to open browser UI: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnAdmin_Click(object sender, EventArgs e)
+        {
+            adminContextMenu.Show(btnAdmin, new Point(0, btnAdmin.Height));
         }
 
         private void btnOpenSwagger_Click(object sender, EventArgs e)

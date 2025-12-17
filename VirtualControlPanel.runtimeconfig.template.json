@@ -1,0 +1,10 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "./HavenCNC/bin"
+    ],
+    "configProperties": {
+      "System.Runtime.TieredCompilation": false
+    }
+  }
+}

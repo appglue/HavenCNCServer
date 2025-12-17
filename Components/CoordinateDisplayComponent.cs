@@ -54,10 +54,10 @@ namespace HavenCNCServer.Components
             this.grpCoordinates.ForeColor = Color.DarkBlue;
             this.grpCoordinates.Location = new Point(0, 0);
             this.grpCoordinates.Name = "grpCoordinates";
-            this.grpCoordinates.Size = new Size(320, 50);
+            this.grpCoordinates.Size = new Size(150, 110);
             this.grpCoordinates.TabIndex = 0;
             this.grpCoordinates.TabStop = false;
-            this.grpCoordinates.Text = "Machine Coordinates";
+            this.grpCoordinates.Text = "Coordinates";
 
             // lblXPos
             this.lblXPos.AutoSize = true;
@@ -71,7 +71,7 @@ namespace HavenCNCServer.Components
             // lblYPos
             this.lblYPos.AutoSize = true;
             this.lblYPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblYPos.Location = new Point(108, 22);
+            this.lblYPos.Location = new Point(8, 48);
             this.lblYPos.Name = "lblYPos";
             this.lblYPos.Size = new Size(19, 17);
             this.lblYPos.TabIndex = 1;
@@ -80,7 +80,7 @@ namespace HavenCNCServer.Components
             // lblZPos
             this.lblZPos.AutoSize = true;
             this.lblZPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblZPos.Location = new Point(208, 22);
+            this.lblZPos.Location = new Point(8, 74);
             this.lblZPos.Name = "lblZPos";
             this.lblZPos.Size = new Size(19, 17);
             this.lblZPos.TabIndex = 2;
@@ -90,7 +90,7 @@ namespace HavenCNCServer.Components
             this.lblXValue.AutoSize = true;
             this.lblXValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblXValue.ForeColor = Color.Blue;
-            this.lblXValue.Location = new Point(30, 22);
+            this.lblXValue.Location = new Point(35, 22);
             this.lblXValue.Name = "lblXValue";
             this.lblXValue.Size = new Size(78, 18);
             this.lblXValue.TabIndex = 3;
@@ -100,7 +100,7 @@ namespace HavenCNCServer.Components
             this.lblYValue.AutoSize = true;
             this.lblYValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblYValue.ForeColor = Color.Blue;
-            this.lblYValue.Location = new Point(130, 22);
+            this.lblYValue.Location = new Point(35, 48);
             this.lblYValue.Name = "lblYValue";
             this.lblYValue.Size = new Size(78, 18);
             this.lblYValue.TabIndex = 4;
@@ -110,7 +110,7 @@ namespace HavenCNCServer.Components
             this.lblZValue.AutoSize = true;
             this.lblZValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblZValue.ForeColor = Color.Blue;
-            this.lblZValue.Location = new Point(230, 22);
+            this.lblZValue.Location = new Point(35, 74);
             this.lblZValue.Name = "lblZValue";
             this.lblZValue.Size = new Size(78, 18);
             this.lblZValue.TabIndex = 5;
@@ -119,7 +119,7 @@ namespace HavenCNCServer.Components
             // CoordinateDisplayComponent
             this.Controls.Add(this.grpCoordinates);
             this.Name = "CoordinateDisplayComponent";
-            this.Size = new Size(320, 50);
+            this.Size = new Size(150, 110);
             this.grpCoordinates.ResumeLayout(false);
             this.grpCoordinates.PerformLayout();
             this.ResumeLayout(false);

@@ -32,18 +32,22 @@ namespace HavenCNCServer
             this.lblConnectionRetries = new System.Windows.Forms.Label();
             this.lblCnc12Status = new System.Windows.Forms.Label();
             this.lblApiUrl = new System.Windows.Forms.Label();
-            this.btnOpenSwagger = new System.Windows.Forms.Button();
-            this.btnGCodeTest = new System.Windows.Forms.Button();
-            this.btnAlwaysOnTop = new System.Windows.Forms.Button();
+            this.btnAdmin = new System.Windows.Forms.Button();
+            this.adminContextMenu = new System.Windows.Forms.ContextMenuStrip();
+            this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showGCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.openSwaggerUIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gCodeTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDataFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowUI = new System.Windows.Forms.Button();
-            this.btnOpenDataFolder = new System.Windows.Forms.Button();
-            this.btnShowLogs = new System.Windows.Forms.Button();
-            this.btnShowMessages = new System.Windows.Forms.Button();
-            this.btnShowGCode = new System.Windows.Forms.Button();
-            this.btnShowSettings = new System.Windows.Forms.Button();
             this.contextMenuLogs = new System.Windows.Forms.ContextMenuStrip();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.pnlControls = new System.Windows.Forms.Panel();
+            this.adminContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.pnlControls.SuspendLayout();
             this.SuspendLayout();
@@ -89,95 +93,101 @@ namespace HavenCNCServer
             this.lblApiUrl.TabIndex = 1;
             this.lblApiUrl.Text = "API URL: http://localhost:5000";
             // 
-            // btnShowLogs
+            // btnAdmin
             // 
-            this.btnShowLogs.Location = new System.Drawing.Point(12, 70);
-            this.btnShowLogs.Name = "btnShowLogs";
-            this.btnShowLogs.Size = new System.Drawing.Size(90, 30);
-            this.btnShowLogs.TabIndex = 2;
-            this.btnShowLogs.Text = "Show Logs";
-            this.btnShowLogs.UseVisualStyleBackColor = true;
-            this.btnShowLogs.Click += new System.EventHandler(this.btnShowLogs_Click);
+            this.btnAdmin.Location = new System.Drawing.Point(120, 70);
+            this.btnAdmin.Name = "btnAdmin";
+            this.btnAdmin.Size = new System.Drawing.Size(100, 30);
+            this.btnAdmin.TabIndex = 10;
+            this.btnAdmin.Text = "Admin ▼";
+            this.btnAdmin.UseVisualStyleBackColor = true;
+            this.btnAdmin.Click += new System.EventHandler(this.btnAdmin_Click);
             // 
-            // btnShowMessages
+            // adminContextMenu
             // 
-            this.btnShowMessages.Location = new System.Drawing.Point(110, 70);
-            this.btnShowMessages.Name = "btnShowMessages";
-            this.btnShowMessages.Size = new System.Drawing.Size(110, 30);
-            this.btnShowMessages.TabIndex = 3;
-            this.btnShowMessages.Text = "Show Messages";
-            this.btnShowMessages.UseVisualStyleBackColor = true;
-            this.btnShowMessages.Click += new System.EventHandler(this.btnShowMessages_Click);
+            this.adminContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showLogsToolStripMenuItem,
+            this.showMessagesToolStripMenuItem,
+            this.showGCodeToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.openSwaggerUIToolStripMenuItem,
+            this.gCodeTestToolStripMenuItem,
+            this.alwaysOnTopToolStripMenuItem,
+            this.openDataFolderToolStripMenuItem});
+            this.adminContextMenu.Name = "adminContextMenu";
+            this.adminContextMenu.Size = new System.Drawing.Size(181, 186);
             // 
-            // btnShowGCode
+            // showLogsToolStripMenuItem
             // 
-            this.btnShowGCode.Location = new System.Drawing.Point(230, 70);
-            this.btnShowGCode.Name = "btnShowGCode";
-            this.btnShowGCode.Size = new System.Drawing.Size(100, 30);
-            this.btnShowGCode.TabIndex = 4;
-            this.btnShowGCode.Text = "Show G-Code";
-            this.btnShowGCode.UseVisualStyleBackColor = true;
-            this.btnShowGCode.Click += new System.EventHandler(this.btnShowGCode_Click);
+            this.showLogsToolStripMenuItem.Name = "showLogsToolStripMenuItem";
+            this.showLogsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showLogsToolStripMenuItem.Text = "Show Logs";
+            this.showLogsToolStripMenuItem.Click += new System.EventHandler(this.btnShowLogs_Click);
             // 
-            // btnShowSettings
+            // showMessagesToolStripMenuItem
             // 
-            this.btnShowSettings.Location = new System.Drawing.Point(340, 70);
-            this.btnShowSettings.Name = "btnShowSettings";
-            this.btnShowSettings.Size = new System.Drawing.Size(100, 30);
-            this.btnShowSettings.TabIndex = 5;
-            this.btnShowSettings.Text = "Settings";
-            this.btnShowSettings.UseVisualStyleBackColor = true;
-            this.btnShowSettings.Click += new System.EventHandler(this.btnShowSettings_Click);
+            this.showMessagesToolStripMenuItem.Name = "showMessagesToolStripMenuItem";
+            this.showMessagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showMessagesToolStripMenuItem.Text = "Show Messages";
+            this.showMessagesToolStripMenuItem.Click += new System.EventHandler(this.btnShowMessages_Click);
             // 
-            // btnOpenSwagger
+            // showGCodeToolStripMenuItem
             // 
-            this.btnOpenSwagger.Location = new System.Drawing.Point(450, 70);
-            this.btnOpenSwagger.Name = "btnOpenSwagger";
-            this.btnOpenSwagger.Size = new System.Drawing.Size(120, 30);
-            this.btnOpenSwagger.TabIndex = 6;
-            this.btnOpenSwagger.Text = "Open Swagger UI";
-            this.btnOpenSwagger.UseVisualStyleBackColor = true;
-            this.btnOpenSwagger.Click += new System.EventHandler(this.btnOpenSwagger_Click);
+            this.showGCodeToolStripMenuItem.Name = "showGCodeToolStripMenuItem";
+            this.showGCodeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showGCodeToolStripMenuItem.Text = "Show G-Code";
+            this.showGCodeToolStripMenuItem.Click += new System.EventHandler(this.btnShowGCode_Click);
             // 
-            // btnGCodeTest
+            // settingsToolStripMenuItem
             // 
-            this.btnGCodeTest.Location = new System.Drawing.Point(580, 70);
-            this.btnGCodeTest.Name = "btnGCodeTest";
-            this.btnGCodeTest.Size = new System.Drawing.Size(100, 30);
-            this.btnGCodeTest.TabIndex = 7;
-            this.btnGCodeTest.Text = "G-Code Test";
-            this.btnGCodeTest.UseVisualStyleBackColor = true;
-            this.btnGCodeTest.Click += new System.EventHandler(this.btnGCodeTest_Click);
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.btnShowSettings_Click);
             // 
-            // btnAlwaysOnTop
+            // toolStripSeparator1
             // 
-            this.btnAlwaysOnTop.Location = new System.Drawing.Point(690, 70);
-            this.btnAlwaysOnTop.Name = "btnAlwaysOnTop";
-            this.btnAlwaysOnTop.Size = new System.Drawing.Size(120, 30);
-            this.btnAlwaysOnTop.TabIndex = 8;
-            this.btnAlwaysOnTop.Text = "Always on Top: OFF";
-            this.btnAlwaysOnTop.UseVisualStyleBackColor = true;
-            this.btnAlwaysOnTop.Click += new System.EventHandler(this.btnAlwaysOnTop_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // openSwaggerUIToolStripMenuItem
+            // 
+            this.openSwaggerUIToolStripMenuItem.Name = "openSwaggerUIToolStripMenuItem";
+            this.openSwaggerUIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openSwaggerUIToolStripMenuItem.Text = "Open Swagger UI";
+            this.openSwaggerUIToolStripMenuItem.Click += new System.EventHandler(this.btnOpenSwagger_Click);
+            // 
+            // gCodeTestToolStripMenuItem
+            // 
+            this.gCodeTestToolStripMenuItem.Name = "gCodeTestToolStripMenuItem";
+            this.gCodeTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gCodeTestToolStripMenuItem.Text = "G-Code Test";
+            this.gCodeTestToolStripMenuItem.Click += new System.EventHandler(this.btnGCodeTest_Click);
+            // 
+            // alwaysOnTopToolStripMenuItem
+            // 
+            this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.alwaysOnTopToolStripMenuItem.Text = "Always on Top: OFF";
+            this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.btnAlwaysOnTop_Click);
+            // 
+            // openDataFolderToolStripMenuItem
+            // 
+            this.openDataFolderToolStripMenuItem.Name = "openDataFolderToolStripMenuItem";
+            this.openDataFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openDataFolderToolStripMenuItem.Text = "Open Data Folder";
+            this.openDataFolderToolStripMenuItem.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
             // 
             // btnShowUI
             // 
-            this.btnShowUI.Location = new System.Drawing.Point(820, 70);
+            this.btnShowUI.Location = new System.Drawing.Point(12, 70);
             this.btnShowUI.Name = "btnShowUI";
             this.btnShowUI.Size = new System.Drawing.Size(100, 30);
             this.btnShowUI.TabIndex = 9;
             this.btnShowUI.Text = "Show UI";
             this.btnShowUI.UseVisualStyleBackColor = true;
             this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
-            // 
-            // btnOpenDataFolder
-            // 
-            this.btnOpenDataFolder.Location = new System.Drawing.Point(930, 70);
-            this.btnOpenDataFolder.Name = "btnOpenDataFolder";
-            this.btnOpenDataFolder.Size = new System.Drawing.Size(120, 30);
-            this.btnOpenDataFolder.TabIndex = 10;
-            this.btnOpenDataFolder.Text = "Open Data Folder";
-            this.btnOpenDataFolder.UseVisualStyleBackColor = true;
-            this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
             // 
             // contextMenuLogs
             // 
@@ -207,16 +217,9 @@ namespace HavenCNCServer
             this.pnlControls.Controls.Add(this.lblConnectionRetries);
             this.pnlControls.Controls.Add(this.lblCnc12Status);
             this.pnlControls.Controls.Add(this.lblApiUrl);
-            this.pnlControls.Controls.Add(this.btnShowLogs);
-            this.pnlControls.Controls.Add(this.btnShowMessages);
-            this.pnlControls.Controls.Add(this.btnShowGCode);
-            this.pnlControls.Controls.Add(this.btnShowSettings);
-            this.pnlControls.Controls.Add(this.btnOpenSwagger);
-            this.pnlControls.Controls.Add(this.btnGCodeTest);
-            this.pnlControls.Controls.Add(this.btnAlwaysOnTop);
             this.pnlControls.Controls.Add(this.btnShowUI);
-            this.pnlControls.Controls.Add(this.btnOpenDataFolder);
-            this.pnlControls.Location = new System.Drawing.Point(0, 0);
+            this.pnlControls.Controls.Add(this.btnAdmin);
+            this.pnlControls.Location = new System.Drawing.Point(0, 24);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1380, 120);
             this.pnlControls.TabIndex = 10;
@@ -226,8 +229,8 @@ namespace HavenCNCServer
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(650, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height);
-            this.Controls.Add(this.pnlControls);
             this.Controls.Add(this.webView);
+            this.Controls.Add(this.pnlControls);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
@@ -235,10 +238,12 @@ namespace HavenCNCServer
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Location = new System.Drawing.Point(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width - 650, 0);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            this.adminContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         #endregion
@@ -247,15 +252,18 @@ namespace HavenCNCServer
         private System.Windows.Forms.Label lblConnectionRetries;
         private System.Windows.Forms.Label lblCnc12Status;
         private System.Windows.Forms.Label lblApiUrl;
-        private System.Windows.Forms.Button btnOpenSwagger;
-        private System.Windows.Forms.Button btnGCodeTest;
-        private System.Windows.Forms.Button btnAlwaysOnTop;
+        private System.Windows.Forms.Button btnAdmin;
+        private System.Windows.Forms.ContextMenuStrip adminContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem showLogsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showGCodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem openSwaggerUIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gCodeTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openDataFolderToolStripMenuItem;
         private System.Windows.Forms.Button btnShowUI;
-        private System.Windows.Forms.Button btnOpenDataFolder;
-        private System.Windows.Forms.Button btnShowLogs;
-        private System.Windows.Forms.Button btnShowMessages;
-        private System.Windows.Forms.Button btnShowGCode;
-        private System.Windows.Forms.Button btnShowSettings;
         private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.Panel pnlControls;
