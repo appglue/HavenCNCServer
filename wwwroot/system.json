@@ -1,0 +1,116 @@
+{
+    "name": "System PLC Program",
+    "description": "",
+    "version": "1.0",
+    "author": "",
+    "isSystem": true,
+    "type": 1,
+    "lastModified": "2025-12-07T14:42:44.417Z",
+    "stages": [
+        {
+            "name": "WATCHDOG_S",
+            "type": "Initial",
+            "description": "",
+            "enabled": true,
+            "fast": false,
+            "collapsed": true,
+            "ordinal": 0,
+            "blocks": []
+        },
+        {
+            "name": "INITONETIME_S",
+            "type": "Initial",
+            "description": "",
+            "enabled": true,
+            "fast": false,
+            "collapsed": true,
+            "ordinal": 1,
+            "blocks": []
+        },
+        {
+            "name": "INITEVERYTIME_S",
+            "type": "Initial",
+            "description": "",
+            "enabled": true,
+            "fast": false,
+            "collapsed": true,
+            "ordinal": 2,
+            "blocks": []
+        },
+        {
+            "name": "MAIN_S",
+            "type": "Main",
+            "description": "",
+            "enabled": true,
+            "fast": false,
+            "collapsed": true,
+            "ordinal": 0,
+            "blocks": []
+        },
+        {
+            "name": "MESSAGE_S",
+            "type": "Final",
+            "description": "",
+            "enabled": true,
+            "fast": false,
+            "collapsed": true,
+            "ordinal": 0,
+            "blocks": []
+        }
+    ],
+    "inputs": [
+        {
+            "centroidName": "AXIS2DRIVEOK_I",
+            "name": "Y-Axis Drive OK",
+            "activeText": "Y Drive OK",
+            "inactiveText": "Y Drive Fault",
+            "isInverted": false,
+            "number": 2
+        }
+    ],
+    "outputs": [
+        {
+            "centroidName": "DriveResetOut",
+            "name": "Drive Reset Output",
+            "activeText": "Drive Reset Active",
+            "inactiveText": "Drive Reset Inactive",
+            "onGCode": "",
+            "offGCode": "",
+            "number": 2
+        },
+        {
+            "centroidName": "DustFootActivate",
+            "name": "Dust Foot Activate",
+            "activeText": "Dust Foot On",
+            "inactiveText": "Dust Foot Off",
+            "onGCode": "M94/28",
+            "offGCode": "M95/28",
+            "number": 5
+        }
+    ],
+    "keybindings": [
+        {
+            "name": "key_ctrl_o",
+            "description": "",
+            "key": "o",
+            "shiftKey": false,
+            "ctrlKey": true,
+            "altKey": false
+        }
+    ],
+    "timers": [
+        {
+            "name": "aa",
+            "description": "",
+            "timerLength": 1000
+        }
+    ],
+    "m94m95Triggers": [
+        {
+            "name": "M10",
+            "description": "",
+            "number": 10,
+            "outputs": []
+        }
+    ]
+}
