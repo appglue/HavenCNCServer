@@ -28,11 +28,19 @@ namespace HavenCNCServer
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.lblConnectionRetries = new System.Windows.Forms.Label();
-            this.lblCnc12Status = new System.Windows.Forms.Label();
-            this.lblApiUrl = new System.Windows.Forms.Label();
-            this.btnAdmin = new System.Windows.Forms.Button();
+            this.pnlTop = new Krypton.Toolkit.KryptonPanel();
+            this.pnlTopLeft = new Krypton.Toolkit.KryptonPanel();
+            this.lblStatus = new Krypton.Toolkit.KryptonLabel();
+            this.lblConnectionRetries = new Krypton.Toolkit.KryptonLabel();
+            this.lblCnc12Status = new Krypton.Toolkit.KryptonLabel();
+            this.lblApiUrl = new Krypton.Toolkit.KryptonLabel();
+            this.lblAdmin = new Krypton.Toolkit.KryptonLinkLabel();
+            this.pnlTopRight = new Krypton.Toolkit.KryptonPanel();
+            this.pnlBottom = new Krypton.Toolkit.KryptonPanel();
+            this.btnReset = new Krypton.Toolkit.KryptonButton();
+            this.btnStop = new Krypton.Toolkit.KryptonButton();
+            this.btnStart = new Krypton.Toolkit.KryptonButton();
+            this.btnShowUI = new Krypton.Toolkit.KryptonButton();
             this.adminContextMenu = new System.Windows.Forms.ContextMenuStrip();
             this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,65 +51,72 @@ namespace HavenCNCServer
             this.gCodeTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDataFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnShowUI = new System.Windows.Forms.Button();
             this.contextMenuLogs = new System.Windows.Forms.ContextMenuStrip();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
-            this.pnlControls = new System.Windows.Forms.Panel();
+            this.pnlTop.SuspendLayout();
+            this.pnlTopLeft.SuspendLayout();
+            this.pnlBottom.SuspendLayout();
             this.adminContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
-            this.pnlControls.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
             // 
-            this.lblStatus.AutoSize = true;
+            this.lblStatus.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblStatus.ForeColor = System.Drawing.Color.Green;
-            this.lblStatus.Location = new System.Drawing.Point(12, 9);
+            this.lblStatus.Location = new System.Drawing.Point(0, 0);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(232, 20);
+            this.lblStatus.Padding = new System.Windows.Forms.Padding(12, 9, 0, 0);
+            this.lblStatus.Size = new System.Drawing.Size(400, 29);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "API Server Status: Starting...";
             // 
             // lblConnectionRetries
             // 
-            this.lblConnectionRetries.AutoSize = true;
+            this.lblConnectionRetries.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblConnectionRetries.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblConnectionRetries.Location = new System.Drawing.Point(250, 12);
+            this.lblConnectionRetries.Location = new System.Drawing.Point(0, 29);
             this.lblConnectionRetries.Name = "lblConnectionRetries";
-            this.lblConnectionRetries.Size = new System.Drawing.Size(120, 17);
+            this.lblConnectionRetries.Padding = new System.Windows.Forms.Padding(12, 3, 0, 0);
+            this.lblConnectionRetries.Size = new System.Drawing.Size(400, 20);
             this.lblConnectionRetries.TabIndex = 20;
             this.lblConnectionRetries.Text = "";
             // 
             // lblCnc12Status
             // 
-            this.lblCnc12Status.AutoSize = true;
+            this.lblCnc12Status.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblCnc12Status.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblCnc12Status.ForeColor = System.Drawing.Color.Red;
-            this.lblCnc12Status.Location = new System.Drawing.Point(450, 12);
+            this.lblCnc12Status.Location = new System.Drawing.Point(0, 66);
             this.lblCnc12Status.Name = "lblCnc12Status";
-            this.lblCnc12Status.Size = new System.Drawing.Size(180, 17);
+            this.lblCnc12Status.Padding = new System.Windows.Forms.Padding(12, 4, 0, 0);
+            this.lblCnc12Status.Size = new System.Drawing.Size(400, 21);
             this.lblCnc12Status.TabIndex = 21;
             this.lblCnc12Status.Text = "";
             // 
             // lblApiUrl
             // 
-            this.lblApiUrl.AutoSize = true;
-            this.lblApiUrl.Location = new System.Drawing.Point(12, 40);
+            this.lblApiUrl.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblApiUrl.Location = new System.Drawing.Point(0, 49);
             this.lblApiUrl.Name = "lblApiUrl";
-            this.lblApiUrl.Size = new System.Drawing.Size(159, 15);
+            this.lblApiUrl.Padding = new System.Windows.Forms.Padding(12, 2, 0, 0);
+            this.lblApiUrl.Size = new System.Drawing.Size(400, 17);
             this.lblApiUrl.TabIndex = 1;
             this.lblApiUrl.Text = "API URL: http://localhost:5000";
             // 
-            // btnAdmin
+            // lblAdmin
             // 
-            this.btnAdmin.Location = new System.Drawing.Point(120, 70);
-            this.btnAdmin.Name = "btnAdmin";
-            this.btnAdmin.Size = new System.Drawing.Size(100, 30);
-            this.btnAdmin.TabIndex = 10;
-            this.btnAdmin.Text = "Admin ▼";
-            this.btnAdmin.UseVisualStyleBackColor = true;
-            this.btnAdmin.Click += new System.EventHandler(this.btnAdmin_Click);
+            this.lblAdmin.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblAdmin.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular);
+            this.lblAdmin.Location = new System.Drawing.Point(0, 140);
+            this.lblAdmin.Name = "lblAdmin";
+            this.lblAdmin.Padding = new System.Windows.Forms.Padding(0, 0, 12, 3);
+            this.lblAdmin.Size = new System.Drawing.Size(250, 20);
+            this.lblAdmin.TabIndex = 30;
+            this.lblAdmin.TabStop = true;
+            this.lblAdmin.Text = "Admin ▼";
+            this.lblAdmin.Click += new System.EventHandler(this.lblAdmin_LinkClicked);
             // 
             // adminContextMenu
             // 
@@ -181,12 +196,13 @@ namespace HavenCNCServer
             // 
             // btnShowUI
             // 
-            this.btnShowUI.Location = new System.Drawing.Point(12, 70);
+            this.btnShowUI.BackColor = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold);
+            this.btnShowUI.Location = new System.Drawing.Point(12, 90);
             this.btnShowUI.Name = "btnShowUI";
-            this.btnShowUI.Size = new System.Drawing.Size(100, 30);
+            this.btnShowUI.Size = new System.Drawing.Size(380, 290);
             this.btnShowUI.TabIndex = 9;
             this.btnShowUI.Text = "Show UI";
-            this.btnShowUI.UseVisualStyleBackColor = true;
             this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
             // 
             // contextMenuLogs
@@ -209,50 +225,143 @@ namespace HavenCNCServer
             this.webView.Visible = false;
             this.webView.ZoomFactor = 1D;
             // 
-            // pnlControls
+            // pnlTop
             // 
-            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlControls.Controls.Add(this.lblStatus);
-            this.pnlControls.Controls.Add(this.lblConnectionRetries);
-            this.pnlControls.Controls.Add(this.lblCnc12Status);
-            this.pnlControls.Controls.Add(this.lblApiUrl);
-            this.pnlControls.Controls.Add(this.btnShowUI);
-            this.pnlControls.Controls.Add(this.btnAdmin);
-            this.pnlControls.Location = new System.Drawing.Point(0, 24);
-            this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(1380, 120);
-            this.pnlControls.TabIndex = 10;
+            this.pnlTop.Controls.Add(this.pnlTopRight);
+            this.pnlTop.Controls.Add(this.pnlTopLeft);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(650, 160);
+            this.pnlTop.TabIndex = 0;
+            // 
+            // pnlTopLeft
+            // 
+            this.pnlTopLeft.Controls.Add(this.btnShowUI);
+            this.pnlTopLeft.Controls.Add(this.lblCnc12Status);
+            this.pnlTopLeft.Controls.Add(this.lblApiUrl);
+            this.pnlTopLeft.Controls.Add(this.lblConnectionRetries);
+            this.pnlTopLeft.Controls.Add(this.lblStatus);
+            this.pnlTopLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlTopLeft.Location = new System.Drawing.Point(0, 0);
+            this.pnlTopLeft.Name = "pnlTopLeft";
+            this.pnlTopLeft.Size = new System.Drawing.Size(400, 160);
+            this.pnlTopLeft.TabIndex = 0;
+            // 
+            // pnlTopRight
+            // 
+            this.pnlTopRight.Controls.Add(this.lblAdmin);
+            this.pnlTopRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTopRight.Location = new System.Drawing.Point(400, 0);
+            this.pnlTopRight.Name = "pnlTopRight";
+            this.pnlTopRight.Size = new System.Drawing.Size(250, 160);
+            this.pnlTopRight.TabIndex = 1;
+            // 
+            // pnlBottom
+            // 
+            this.pnlBottom.Controls.Add(this.btnStart);
+            this.pnlBottom.Controls.Add(this.btnStop);
+            this.pnlBottom.Controls.Add(this.btnReset);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.Location = new System.Drawing.Point(0, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height - 140);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(650, 140);
+            this.pnlBottom.TabIndex = 2;
+            // 
+            // btnReset
+            // 
+            this.btnReset.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnReset.Location = new System.Drawing.Point(0, 0);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(210, 140);
+            this.btnReset.TabIndex = 20;
+            this.btnReset.Values.Text = "RESET";
+            this.btnReset.StateCommon.Back.Color1 = System.Drawing.Color.Orange;
+            this.btnReset.StateCommon.Back.Color2 = System.Drawing.Color.Orange;
+            this.btnReset.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // btnStop
+            // 
+            this.btnStop.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnStop.Location = new System.Drawing.Point(210, 0);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(220, 140);
+            this.btnStop.TabIndex = 21;
+            this.btnStop.Values.Text = "STOP";
+            this.btnStop.StateCommon.Back.Color1 = System.Drawing.Color.Red;
+            this.btnStop.StateCommon.Back.Color2 = System.Drawing.Color.Red;
+            this.btnStop.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnStop.StateCommon.Content.ShortText.Color1 = System.Drawing.Color.White;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // btnStart
+            // 
+            this.btnStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStart.Location = new System.Drawing.Point(430, 0);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(220, 140);
+            this.btnStart.TabIndex = 22;
+            this.btnStart.Values.Text = "START";
+            this.btnStart.StateCommon.Back.Color1 = System.Drawing.Color.LimeGreen;
+            this.btnStart.StateCommon.Back.Color2 = System.Drawing.Color.LimeGreen;
+            this.btnStart.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            // 
+            // 
+            // btnShowUI
+            // 
+            this.btnShowUI.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowUI.Location = new System.Drawing.Point(0, 87);
+            this.btnShowUI.Name = "btnShowUI";
+            this.btnShowUI.Padding = new System.Windows.Forms.Padding(10);
+            this.btnShowUI.Size = new System.Drawing.Size(400, 50);
+            this.btnShowUI.TabIndex = 9;
+            this.btnShowUI.Values.Text = "Show UI";
+            this.btnShowUI.StateCommon.Back.Color1 = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.StateCommon.Back.Color2 = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(650, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height);
+            this.Controls.Add(this.pnlBottom);
+            this.Controls.Add(this.pnlTop);
             this.Controls.Add(this.webView);
-            this.Controls.Add(this.pnlControls);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
-            this.TopMost = false;  // Default to false, controlled by checkbox
+            this.TopMost = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Location = new System.Drawing.Point(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width - 650, 0);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            this.pnlTop.ResumeLayout(false);
+            this.pnlTopLeft.ResumeLayout(false);
+            this.pnlTopLeft.PerformLayout();
+            this.pnlBottom.ResumeLayout(false);
             this.adminContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
-            this.pnlControls.ResumeLayout(false);
-            this.pnlControls.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
         }
 
         #endregion
 
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Label lblConnectionRetries;
-        private System.Windows.Forms.Label lblCnc12Status;
-        private System.Windows.Forms.Label lblApiUrl;
-        private System.Windows.Forms.Button btnAdmin;
+        private Krypton.Toolkit.KryptonPanel pnlTop;
+        private Krypton.Toolkit.KryptonPanel pnlTopLeft;
+        private Krypton.Toolkit.KryptonPanel pnlTopRight;
+        private Krypton.Toolkit.KryptonPanel pnlBottom;
+        private Krypton.Toolkit.KryptonLabel lblStatus;
+        private Krypton.Toolkit.KryptonLabel lblConnectionRetries;
+        private Krypton.Toolkit.KryptonLabel lblCnc12Status;
+        private Krypton.Toolkit.KryptonLabel lblApiUrl;
+        private Krypton.Toolkit.KryptonLinkLabel lblAdmin;
+        private Krypton.Toolkit.KryptonButton btnShowUI;
+        private Krypton.Toolkit.KryptonButton btnReset;
+        private Krypton.Toolkit.KryptonButton btnStop;
+        private Krypton.Toolkit.KryptonButton btnStart;
         private System.Windows.Forms.ContextMenuStrip adminContextMenu;
         private System.Windows.Forms.ToolStripMenuItem showLogsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showMessagesToolStripMenuItem;
@@ -263,9 +372,7 @@ namespace HavenCNCServer
         private System.Windows.Forms.ToolStripMenuItem gCodeTestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openDataFolderToolStripMenuItem;
-        private System.Windows.Forms.Button btnShowUI;
         private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
-        private System.Windows.Forms.Panel pnlControls;
     }
 }

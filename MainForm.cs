@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Krypton.Toolkit;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Components;
@@ -22,7 +23,7 @@ namespace HavenCNCServer
     /// <summary>
     /// Main Windows Forms application that hosts the ASP.NET Core Web API server
     /// </summary>
-    public partial class MainForm : Form
+    public partial class MainForm : KryptonForm
     {
         private CancellationTokenSource? _cancellationTokenSource;
         private bool _startupComplete = false;
@@ -47,6 +48,10 @@ namespace HavenCNCServer
         public MainForm()
         {
             InitializeComponent();
+
+            // Set Krypton palette for professional look
+            var manager = new KryptonManager();
+            manager.GlobalPaletteMode = Krypton.Toolkit.PaletteMode.Office2010Blue;
 
             // Initialize cancellation token source for coordinated shutdown
             _cancellationTokenSource = new CancellationTokenSource();
@@ -112,15 +117,11 @@ namespace HavenCNCServer
         }
 
         /// <summary>
-        /// Handle form resize to position coordinate display
+        /// Handle form resize
         /// </summary>
         private void MainForm_Resize(object? sender, EventArgs e)
         {
-            // Keep coordinate display positioned on the right side
-            if (_coordinateDisplayComponent != null)
-            {
-                _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 160, 30);
-            }
+            // Coordinate display is docked in pnlTopRight - no manual positioning needed
         }
 
         /// <summary>
@@ -192,14 +193,12 @@ namespace HavenCNCServer
         {
             if (_coordinateDisplayComponent == null) return;
 
-            // Position coordinate display on the right side with vertical stacking
-            _coordinateDisplayComponent.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _coordinateDisplayComponent.Location = new Point(this.ClientSize.Width - 160, 30);
+            // Add coordinate display to the top-right panel with docking
+            _coordinateDisplayComponent.Dock = DockStyle.Fill;
             _coordinateDisplayComponent.Name = "coordinateDisplayComponent";
 
-            // Add to the form (not the control panel)
-            this.Controls.Add(_coordinateDisplayComponent);
-            _coordinateDisplayComponent.BringToFront();
+            // Add to the top-right panel (not the form)
+            pnlTopRight.Controls.Add(_coordinateDisplayComponent);
         }
 
         /// <summary>
@@ -555,9 +554,9 @@ namespace HavenCNCServer
             }
         }
 
-        private void btnAdmin_Click(object sender, EventArgs e)
+        private void lblAdmin_LinkClicked(object sender, EventArgs e)
         {
-            adminContextMenu.Show(btnAdmin, new Point(0, btnAdmin.Height));
+            adminContextMenu.Show(lblAdmin, new Point(0, lblAdmin.Height));
         }
 
         private void btnOpenSwagger_Click(object sender, EventArgs e)
@@ -664,6 +663,51 @@ namespace HavenCNCServer
             {
                 LogError($"Failed to open data folder: {ex.Message}", "UI");
                 MessageBox.Show($"Failed to open data folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogInfo("Reset button clicked", "UI");
+                // TODO: Implement reset logic
+                MessageBox.Show("Reset functionality not yet implemented", "Reset", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Reset error: {ex.Message}", "UI");
+                MessageBox.Show($"Reset error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogInfo("Stop button clicked", "UI");
+                // TODO: Implement stop logic
+                MessageBox.Show("Stop functionality not yet implemented", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Stop error: {ex.Message}", "UI");
+                MessageBox.Show($"Stop error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                LogInfo("Start button clicked", "UI");
+                // TODO: Implement start logic
+                MessageBox.Show("Start functionality not yet implemented", "Start", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Start error: {ex.Message}", "UI");
+                MessageBox.Show($"Start error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

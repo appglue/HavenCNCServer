@@ -54,72 +54,72 @@ namespace HavenCNCServer.Components
             this.grpCoordinates.ForeColor = Color.DarkBlue;
             this.grpCoordinates.Location = new Point(0, 0);
             this.grpCoordinates.Name = "grpCoordinates";
-            this.grpCoordinates.Size = new Size(150, 110);
+            this.grpCoordinates.Size = new Size(250, 170);
             this.grpCoordinates.TabIndex = 0;
             this.grpCoordinates.TabStop = false;
             this.grpCoordinates.Text = "Coordinates";
 
             // lblXPos
             this.lblXPos.AutoSize = true;
-            this.lblXPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblXPos.Font = new Font("Microsoft Sans Serif", 20F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblXPos.Location = new Point(8, 22);
             this.lblXPos.Name = "lblXPos";
-            this.lblXPos.Size = new Size(19, 17);
+            this.lblXPos.Size = new Size(38, 31);
             this.lblXPos.TabIndex = 0;
             this.lblXPos.Text = "X:";
 
             // lblYPos
             this.lblYPos.AutoSize = true;
-            this.lblYPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblYPos.Location = new Point(8, 48);
+            this.lblYPos.Font = new Font("Microsoft Sans Serif", 20F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblYPos.Location = new Point(8, 65);
             this.lblYPos.Name = "lblYPos";
-            this.lblYPos.Size = new Size(19, 17);
+            this.lblYPos.Size = new Size(38, 31);
             this.lblYPos.TabIndex = 1;
             this.lblYPos.Text = "Y:";
 
             // lblZPos
             this.lblZPos.AutoSize = true;
-            this.lblZPos.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            this.lblZPos.Location = new Point(8, 74);
+            this.lblZPos.Font = new Font("Microsoft Sans Serif", 20F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblZPos.Location = new Point(8, 108);
             this.lblZPos.Name = "lblZPos";
-            this.lblZPos.Size = new Size(19, 17);
+            this.lblZPos.Size = new Size(38, 31);
             this.lblZPos.TabIndex = 2;
             this.lblZPos.Text = "Z:";
 
             // lblXValue
             this.lblXValue.AutoSize = true;
-            this.lblXValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblXValue.Font = new Font("Courier New", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblXValue.ForeColor = Color.Blue;
-            this.lblXValue.Location = new Point(35, 22);
+            this.lblXValue.Location = new Point(55, 22);
             this.lblXValue.Name = "lblXValue";
-            this.lblXValue.Size = new Size(78, 18);
+            this.lblXValue.Size = new Size(152, 36);
             this.lblXValue.TabIndex = 3;
             this.lblXValue.Text = "0.0000";
 
             // lblYValue
             this.lblYValue.AutoSize = true;
-            this.lblYValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblYValue.Font = new Font("Courier New", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblYValue.ForeColor = Color.Blue;
-            this.lblYValue.Location = new Point(35, 48);
+            this.lblYValue.Location = new Point(55, 65);
             this.lblYValue.Name = "lblYValue";
-            this.lblYValue.Size = new Size(78, 18);
+            this.lblYValue.Size = new Size(152, 36);
             this.lblYValue.TabIndex = 4;
             this.lblYValue.Text = "0.0000";
 
             // lblZValue
             this.lblZValue.AutoSize = true;
-            this.lblZValue.Font = new Font("Courier New", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            this.lblZValue.Font = new Font("Courier New", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
             this.lblZValue.ForeColor = Color.Blue;
-            this.lblZValue.Location = new Point(35, 74);
+            this.lblZValue.Location = new Point(55, 108);
             this.lblZValue.Name = "lblZValue";
-            this.lblZValue.Size = new Size(78, 18);
+            this.lblZValue.Size = new Size(152, 36);
             this.lblZValue.TabIndex = 5;
             this.lblZValue.Text = "0.0000";
 
             // CoordinateDisplayComponent
             this.Controls.Add(this.grpCoordinates);
             this.Name = "CoordinateDisplayComponent";
-            this.Size = new Size(150, 110);
+            this.Size = new Size(250, 170);
             this.grpCoordinates.ResumeLayout(false);
             this.grpCoordinates.PerformLayout();
             this.ResumeLayout(false);
