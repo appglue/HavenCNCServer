@@ -1,7 +1,7 @@
 {
   "name": "System Default PLC Program",
   "description": "",
-  "nextStatementNumber": 4,
+  "nextStatementNumber": 9,
   "isSystemDefault": true,
   "type": 0,
   "lastModified": "2025-12-15T17:06:56.615Z",
@@ -105,24 +105,51 @@
           "ordinal": 1,
           "actions": [
             {
-              "type": "SendMessageStatement",
-              "comment": "",
-              "enabled": true,
-              "statementNumber": 0,
-              "predicate": {
-                "type": "SendMessagePredicate",
-                "comment": "",
-                "enabled": true,
-                "level": "info",
-                "mode": "async",
-                "messageText": "test"
-              }
-            },
-            {
               "type": "InputMappingStatement",
               "comment": "",
               "enabled": true,
               "statementNumber": 0
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 8,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_AFTER_FIRST_RUN_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Haven CNC Startup"
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
             },
             {
               "type": "ToggleStageStatement",
@@ -409,6 +436,18 @@
               "comment": "",
               "enabled": true,
               "statementNumber": 3
+            },
+            {
+              "type": "StandardM9495HandlingStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 5
+            },
+            {
+              "type": "IOStateChangesStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 6
             }
           ]
         }
@@ -685,7 +724,7 @@
               "type": "TimerStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
+              "statementNumber": 7,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -709,7 +748,7 @@
                   }
                 ]
               },
-              "predicates": [
+              "timerCompletePredicates": [
                 {
                   "type": "AssignmentPredicate",
                   "comment": "",
@@ -759,7 +798,7 @@
                   }
                 }
               ],
-              "timerLengthMs": 1000
+              "timerLengthMs": 100
             },
             {
               "type": "LogicStatement",
