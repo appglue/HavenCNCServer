@@ -4,7 +4,7 @@
   "nextStatementNumber": 9,
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-15T17:06:56.615Z",
+  "lastModified": "2025-12-23T21:47:50.524Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -1079,6 +1079,44 @@
       "notPressedText": "Not Triggered",
       "addAction": 0,
       "keybindings": []
+    },
+    {
+      "eventName": "STARTCYCLE_UI",
+      "eventNumber": 50,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": [
+        {
+          "key": "Enter",
+          "shiftKey": false,
+          "ctrlKey": false,
+          "altKey": false
+        }
+      ]
+    },
+    {
+      "eventName": "CANCELCYCLE_UI",
+      "eventNumber": 46,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": [
+        {
+          "key": "Space",
+          "shiftKey": false,
+          "ctrlKey": false,
+          "altKey": false
+        },
+        {
+          "key": "Escape",
+          "shiftKey": false,
+          "ctrlKey": false,
+          "altKey": false
+        }
+      ]
     }
   ],
   "m94m95Triggers": [

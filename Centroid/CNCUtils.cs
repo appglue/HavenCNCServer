@@ -39,13 +39,16 @@ namespace HavenCNCServer.Centroid
 
                 if (returnCode != CNCPipe.ReturnCode.SUCCESS)
                 {
+                    LogError($"Failed to get parameter {parameter} (#{(int)parameter}): Return code {returnCode}", "CNCUtils");
                     throw new InvalidOperationException($"Failed to get parameter {parameter}: Return code {returnCode}");
                 }
 
+                LogInfo($"GetParameter: {parameter} (#{(int)parameter}) = {value}", "CNCUtils");
                 return value;
             }
             catch (Exception ex)
             {
+                LogError($"Exception getting parameter {parameter} (#{(int)parameter}): {ex.Message}", "CNCUtils");
                 throw new InvalidOperationException($"Failed to get parameter {parameter}: {ex.Message}", ex);
             }
         }
@@ -65,19 +68,25 @@ namespace HavenCNCServer.Centroid
 
             try
             {
+                LogInfo($"SetParameter: {parameter} (#{(int)parameter}) = {value}", "CNCUtils");
                 CNCPipe.ReturnCode returnCode = cncPipe.parameter.SetMachineParameter((int)parameter, value);
 
                 if (returnCode == CNCPipe.ReturnCode.STATUS_UNKNOWN)
                 {
+                    LogError($"Failed to set parameter {parameter} (#{(int)parameter}) to {value}: Status unknown - parameter may be read-only or invalid", "CNCUtils");
                     throw new InvalidOperationException($"Failed to set parameter {parameter}: Status unknown - parameter may be read-only or invalid");
                 }
                 else if (returnCode != CNCPipe.ReturnCode.SUCCESS)
                 {
+                    LogError($"Failed to set parameter {parameter} (#{(int)parameter}) to {value}: Return code {returnCode}", "CNCUtils");
                     throw new InvalidOperationException($"Failed to set parameter {parameter} to {value}: Return code {returnCode}");
                 }
+
+                LogInfo($"✓ SetParameter: {parameter} (#{(int)parameter}) = {value} [SUCCESS]", "CNCUtils");
             }
             catch (Exception ex)
             {
+                LogError($"Exception setting parameter {parameter} (#{(int)parameter}) to {value}: {ex.Message}", "CNCUtils");
                 throw new InvalidOperationException($"Failed to set parameter {parameter} to {value}: {ex.Message}", ex);
             }
         }

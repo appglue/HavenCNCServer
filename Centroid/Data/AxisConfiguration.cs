@@ -15,8 +15,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Axis label (X, Y, Z, A, B, C, U, V, W)
         /// </summary>
-        [JsonPropertyName("axisType")]
-        public string? Label { get; set; }
+        public string? AxisType { get; set; }
 
         /// <summary>
         /// Steps per revolution (motor/drive steps)
@@ -26,8 +25,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)
         /// </summary>
-        [JsonPropertyName("overallTurnsRatio")]
-        public double? TurnRatio { get; set; }
+        public double? OverallTurnsRatio { get; set; }
 
         /// <summary>
         /// Plus travel limit
@@ -42,8 +40,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Backlash compensation amount
         /// </summary>
-        [JsonPropertyName("lashCompensation")]
-        public double? BacklashCompensation { get; set; }
+        public double? LashCompensation { get; set; }
 
         /// <summary>
         /// Slow jog rate
@@ -73,8 +70,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Acceleration time in seconds
         /// </summary>
-        [JsonPropertyName("accelDecel")]
-        public double? AccelerationTime { get; set; }
+        public double? AccelDecel { get; set; }
 
         /// <summary>
         /// Homing feedrate - the feedrate that the machine will run at to home each axis
@@ -89,8 +85,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Whether axis direction is reversed
         /// </summary>
-        [JsonPropertyName("directionReversal")]
-        public bool? IsReversed { get; set; }
+        public bool? DirectionReversal { get; set; }
 
         /// <summary>
         /// Master axis for pairing (0 = none, 1-8 = master axis number)

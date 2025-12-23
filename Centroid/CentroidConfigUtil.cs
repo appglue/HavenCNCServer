@@ -181,7 +181,8 @@ namespace HavenCNCServer.Centroid
         {
             try
             {
-                LoggingService.Log($"Configuring Axis {config.AxisNumber} ({config.Label ?? "unnamed"})");
+                LoggingService.Log($"Configuring Axis {config.AxisNumber} ({config.AxisType ?? "unnamed"})");
+                LoggingService.Log($"  DEBUG: OverallTurnsRatio.HasValue = {config.OverallTurnsRatio.HasValue}, OverallTurnsRatio = {(config.OverallTurnsRatio.HasValue ? config.OverallTurnsRatio.Value.ToString() : "null")}");
 
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
 
@@ -194,7 +195,7 @@ namespace HavenCNCServer.Centroid
 
                 // Convert axis number to enum (1-based to 0-based)
                 var axisEnum = (CNCPipe.Axes)(config.AxisNumber - 1);
-                LoggingService.Log($"  Setting axis parameters for {config.Label ?? "Axis " + config.AxisNumber}...");
+                LoggingService.Log($"  Setting axis parameters for {config.AxisType ?? "Axis " + config.AxisNumber}...");
 
                 // Set basic axis parameters only if provided
                 if (config.StepsPerRevolution.HasValue)
@@ -203,10 +204,10 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetCountsPerTurn(axisEnum, config.StepsPerRevolution.Value);
                 }
 
-                if (config.TurnRatio.HasValue)
+                if (config.OverallTurnsRatio.HasValue)
                 {
-                    LoggingService.Log($"    ScrewPitch: {config.TurnRatio.Value}");
-                    cncPipe.axis.SetScrewPitch(axisEnum, config.TurnRatio.Value);
+                    LoggingService.Log($"    ScrewPitch: {config.OverallTurnsRatio.Value}");
+                    cncPipe.axis.SetScrewPitch(axisEnum, config.OverallTurnsRatio.Value);
                 }
 
                 if (config.PlusTravelLimit.HasValue)
@@ -221,10 +222,10 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetTravelLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.MinusTravelLimit.Value);
                 }
 
-                if (config.BacklashCompensation.HasValue)
+                if (config.LashCompensation.HasValue)
                 {
-                    LoggingService.Log($"    Backlash Compensation: {config.BacklashCompensation.Value}");
-                    cncPipe.axis.SetLashComp(axisEnum, config.BacklashCompensation.Value);
+                    LoggingService.Log($"    Backlash Compensation: {config.LashCompensation.Value}");
+                    cncPipe.axis.SetLashComp(axisEnum, config.LashCompensation.Value);
                 }
 
                 if (config.SlowJogRate.HasValue)
@@ -245,10 +246,10 @@ namespace HavenCNCServer.Centroid
                 if (config.FastJogMinusDirection.HasValue)
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS, config.FastJogMinusDirection.Value);
 
-                if (config.AccelerationTime.HasValue)
+                if (config.AccelDecel.HasValue)
                 {
-                    LoggingService.Log($"    Acceleration Time: {config.AccelerationTime.Value}");
-                    cncPipe.axis.SetAccelTime(axisEnum, config.AccelerationTime.Value);
+                    LoggingService.Log($"    Acceleration Time: {config.AccelDecel.Value}");
+                    cncPipe.axis.SetAccelTime(axisEnum, config.AccelDecel.Value);
                 }
 
                 if (config.HomingFeedrate.HasValue)
@@ -259,10 +260,10 @@ namespace HavenCNCServer.Centroid
 
                 // IMPORTANT: Set axis reversal BEFORE ConfigureAxisProperties
                 // This ensures the reversal is properly applied to the CNC system
-                if (config.IsReversed.HasValue)
+                if (config.DirectionReversal.HasValue)
                 {
-                    LoggingService.Log($"    Reversed: {config.IsReversed.Value}");
-                    cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
+                    LoggingService.Log($"    Reversed: {config.DirectionReversal.Value}");
+                    cncPipe.axis.SetAxisReversal(axisEnum, config.DirectionReversal.Value);
                 }
 
                 if (!string.IsNullOrEmpty(config.Label))
@@ -541,10 +542,10 @@ namespace HavenCNCServer.Centroid
                     CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
                 }
 
-                if (config.RTGDisplay.HasValue)
+                if (config.RtgDisplay.HasValue)
                 {
-                    LoggingService.Log($"    RTG Display: {config.RTGDisplay.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RTGDisplay.Value ? 1 : 0);
+                    LoggingService.Log($"    RTG Display: {config.RtgDisplay.Value}");
+                    CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RtgDisplay.Value ? 1 : 0);
                 }
 
                 if (config.OkDelay.HasValue)
@@ -629,23 +630,23 @@ namespace HavenCNCServer.Centroid
                 }
 
                 // Configure SSV parameters
-                if (config.SSVCycleTime.HasValue)
+                if (config.SsvCycleTime.HasValue)
                 {
-                    LoggingService.Log($"    SSV Cycle Time: {config.SSVCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SSVCycleTime.Value);
+                    LoggingService.Log($"    SSV Cycle Time: {config.SsvCycleTime.Value}");
+                    CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SsvCycleTime.Value);
                 }
 
-                if (config.SSVAmount.HasValue)
+                if (config.SsvAmount.HasValue)
                 {
-                    LoggingService.Log($"    SSV Amount: {config.SSVAmount.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SSVAmount.Value);
+                    LoggingService.Log($"    SSV Amount: {config.SsvAmount.Value}");
+                    CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SsvAmount.Value);
                 }
 
                 // Configure FRV parameters
-                if (config.FRVCycleTime.HasValue)
+                if (config.FrvCycleTime.HasValue)
                 {
-                    LoggingService.Log($"    FRV Cycle Time: {config.FRVCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FRVCycleTime.Value);
+                    LoggingService.Log($"    FRV Cycle Time: {config.FrvCycleTime.Value}");
+                    CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FrvCycleTime.Value);
                 }
 
                 LoggingService.Log("Primary spindle configured successfully");
