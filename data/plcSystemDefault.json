@@ -798,7 +798,9 @@
                   }
                 }
               ],
-              "timerLengthMs": 100
+              "timerLengthMs": 100,
+              "cancelConditionGroup": null,
+              "cancelEnabled": false
             },
             {
               "type": "LogicStatement",
@@ -1075,6 +1077,7 @@
       "description": "",
       "pressedText": "Triggered",
       "notPressedText": "Not Triggered",
+      "addAction": 0,
       "keybindings": []
     }
   ],
@@ -1085,7 +1088,9 @@
       "number": 3,
       "outputs": [
         "Spindle Forward"
-      ]
+      ],
+      "activeText": "Is Active",
+      "inactiveText": "Is Inactive"
     }
   ]
 }
