@@ -356,7 +356,7 @@ namespace HavenCNCServer.Controllers
 
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     config.Axes ?? new List<AxisConfiguration>(),
-                    config.Spindle,
+                    config.Spindle!,
                     config.Probe,
                     config.PWMOutputs,
                     config.ATC
@@ -397,52 +397,6 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to configure axis: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Get travel limits for all configured axes
-        /// </summary>
-        /// <returns>Travel limits for each axis with plus and minus limits</returns>
-        [HttpGet("GetTravelLimits")]
-        public TravelLimitsResponse GetTravelLimits()
-        {
-            try
-            {
-                var response = new TravelLimitsResponse();
-                var axisLimits = new List<AxisTravelLimits>();
-
-                // Get number of axes configured (typically check parameters or iterate through common axes)
-                // For now, we'll check axes 1-8 and include those that have valid data
-                for (int axisNumber = 1; axisNumber <= 8; axisNumber++)
-                {
-                    if (CNCUtils.GetAxisTravelLimits(axisNumber, out double plusLimit, out double minusLimit))
-                    {
-                        // Get the axis label (X, Y, Z, A, etc.)
-                        string axisLabel = CNCUtils.GetAxisLabel(axisNumber);
-
-                        // Only include axes that have a valid label (configured axes)
-                        if (!string.IsNullOrEmpty(axisLabel))
-                        {
-                            axisLimits.Add(new AxisTravelLimits
-                            {
-                                AxisNumber = axisNumber,
-                                AxisLabel = axisLabel,
-                                PlusLimit = plusLimit,
-                                MinusLimit = minusLimit
-                            });
-                        }
-                    }
-                }
-
-                response.Axes = axisLimits;
-                response.Message = $"Retrieved travel limits for {axisLimits.Count} configured axes";
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to get travel limits: {ex.Message}", ex);
             }
         }
 

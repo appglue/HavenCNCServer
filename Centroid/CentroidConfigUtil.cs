@@ -257,6 +257,20 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetRate(axisEnum, CNCPipe.Axis.Rate.HOME_JOG, config.HomingFeedrate.Value);
                 }
 
+                // IMPORTANT: Set axis reversal BEFORE ConfigureAxisProperties
+                // This ensures the reversal is properly applied to the CNC system
+                if (config.IsReversed.HasValue)
+                {
+                    LoggingService.Log($"    Reversed: {config.IsReversed.Value}");
+                    cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
+                }
+
+                if (!string.IsNullOrEmpty(config.Label))
+                {
+                    LoggingService.Log($"    Setting label: {config.Label}");
+                    cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
+                }
+
                 // Note: DriveEnableDelay may be a global parameter rather than per-axis
                 // This would need to be set via parameter if it's per-axis specific
                 if (config.DriveEnableDelay.HasValue)
@@ -266,19 +280,8 @@ namespace HavenCNCServer.Centroid
                     LoggingService.Log($"    DriveEnableDelay: {config.DriveEnableDelay.Value}ms (parameter implementation needed)");
                 }
 
-                if (!string.IsNullOrEmpty(config.Label))
-                {
-                    LoggingService.Log($"    Setting label: {config.Label}");
-                    cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
-                }
-
-                if (config.IsReversed.HasValue)
-                {
-                    LoggingService.Log($"    Reversed: {config.IsReversed.Value}");
-                    cncPipe.axis.SetAxisReversal(axisEnum, config.IsReversed.Value);
-                }
-
                 // Configure axis properties (rotary, signal inversions, etc.) via parameters
+                // This must come AFTER SetAxisReversal to ensure proper configuration
                 LoggingService.Log($"  Configuring axis properties for {config.Label ?? "Axis " + config.AxisNumber}...");
                 ConfigureAxisProperties(config);
 
@@ -1472,8 +1475,6 @@ namespace HavenCNCServer.Centroid
         /// <summary>
         /// Configures a complete machine setup with all systems including enhanced features
         /// </summary>
-        /// <param name="inputs">Input I/O functions</param>
-        /// <param name="outputs">Output I/O functions</param>
         /// <param name="axes">Axis configurations</param>
         /// <param name="spindle">Spindle configuration</param>
         /// <param name="probe">Probe configuration (optional)</param>

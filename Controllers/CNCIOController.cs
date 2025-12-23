@@ -127,15 +127,21 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get defined inputs with current states from monitored I/O configuration
-        /// Returns number, name, and current state for each monitored input
+        /// Get input states for specified input numbers
         /// </summary>
-        [HttpGet("GetDefinedInputs")]
-        [ProducesResponseType(typeof(DefinedIO[]), 200)]
-        public ActionResult<DefinedIO[]> GetDefinedInputs()
+        /// <param name="inputNumbers">Array of input numbers to query</param>
+        /// <returns>Dictionary mapping input number to its state (true = on, false = off)</returns>
+        [HttpPost("GetInputState")]
+        [ProducesResponseType(typeof(Dictionary<int, bool>), 200)]
+        public ActionResult<Dictionary<int, bool>> GetInputState([FromBody] int[] inputNumbers)
         {
             try
             {
+                if (inputNumbers == null || inputNumbers.Length == 0)
+                {
+                    return Ok(new Dictionary<int, bool>());
+                }
+
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
                 {
@@ -143,51 +149,45 @@ namespace HavenCNCServer.Controllers
                     return StatusCode(500, new { message = "CNC connection not available" });
                 }
 
-                // Load monitored I/O configuration from stored file
-                var config = PLCController.LoadMonitoredIOConfiguration();
-                if (config == null || config.Inputs.Count == 0)
-                {
-                    return Ok(Array.Empty<DefinedIO>());
-                }
+                var result = new Dictionary<int, bool>();
 
-                var result = new List<DefinedIO>();
-
-                foreach (var input in config.Inputs)
+                foreach (var inputNumber in inputNumbers)
                 {
                     bool state = false;
-                    var getStateResult = cncPipe.plc.GetInputState(input.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);
+                    var getStateResult = cncPipe.plc.GetInputState(inputNumber, out CentroidAPI.CNCPipe.Plc.IOState ioState);
                     if (getStateResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                     {
                         state = (ioState == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
                     }
 
-                    result.Add(new DefinedIO
-                    {
-                        Number = input.Number,
-                        Name = input.Name,
-                        State = state
-                    });
+                    result[inputNumber] = state;
                 }
 
-                return Ok(result.OrderBy(x => x.Number).ToArray());
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                LogError($"Failed to get defined inputs: {ex.Message}", "IO");
-                return StatusCode(500, new { message = $"Failed to get defined inputs: {ex.Message}" });
+                LogError($"Failed to get input states: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get input states: {ex.Message}" });
             }
         }
 
         /// <summary>
-        /// Get defined outputs with current states from monitored I/O configuration
-        /// Returns number, name, and current state for each monitored output
+        /// Get output states for specified output numbers
         /// </summary>
-        [HttpGet("GetDefinedOutputs")]
-        [ProducesResponseType(typeof(DefinedIO[]), 200)]
-        public ActionResult<DefinedIO[]> GetDefinedOutputs()
+        /// <param name="outputNumbers">Array of output numbers to query</param>
+        /// <returns>Dictionary mapping output number to its state (true = on, false = off)</returns>
+        [HttpPost("GetOutputState")]
+        [ProducesResponseType(typeof(Dictionary<int, bool>), 200)]
+        public ActionResult<Dictionary<int, bool>> GetOutputState([FromBody] int[] outputNumbers)
         {
             try
             {
+                if (outputNumbers == null || outputNumbers.Length == 0)
+                {
+                    return Ok(new Dictionary<int, bool>());
+                }
+
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
                 {
@@ -195,38 +195,26 @@ namespace HavenCNCServer.Controllers
                     return StatusCode(500, new { message = "CNC connection not available" });
                 }
 
-                // Load monitored I/O configuration from stored file
-                var config = PLCController.LoadMonitoredIOConfiguration();
-                if (config == null || config.Outputs.Count == 0)
-                {
-                    return Ok(Array.Empty<DefinedIO>());
-                }
+                var result = new Dictionary<int, bool>();
 
-                var result = new List<DefinedIO>();
-
-                foreach (var output in config.Outputs)
+                foreach (var outputNumber in outputNumbers)
                 {
                     bool state = false;
-                    var getStateResult = cncPipe.plc.GetOutputState(output.Number, out CentroidAPI.CNCPipe.Plc.IOState ioState);
+                    var getStateResult = cncPipe.plc.GetOutputState(outputNumber, out CentroidAPI.CNCPipe.Plc.IOState ioState);
                     if (getStateResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                     {
                         state = (ioState == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
                     }
 
-                    result.Add(new DefinedIO
-                    {
-                        Number = output.Number,
-                        Name = output.Name,
-                        State = state
-                    });
+                    result[outputNumber] = state;
                 }
 
-                return Ok(result.OrderBy(x => x.Number).ToArray());
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                LogError($"Failed to get defined outputs: {ex.Message}", "IO");
-                return StatusCode(500, new { message = $"Failed to get defined outputs: {ex.Message}" });
+                LogError($"Failed to get output states: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to get output states: {ex.Message}" });
             }
         }
 
@@ -372,15 +360,32 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get all outputs that are currently in a forced state
+        /// Get forced outputs from a list of output numbers
         /// </summary>
+        /// <param name="outputNumbers">Array of output numbers to check for forced state</param>
         /// <returns>Dictionary mapping output number to force state string ("ForcedOn" or "ForcedOff")</returns>
-        [HttpGet("GetForcedOutputs")]
-        public Dictionary<int, string> GetForcedOutputs()
+        [HttpPost("GetForcedOutputs")]
+        [ProducesResponseType(typeof(Dictionary<int, string>), 200)]
+        public ActionResult<Dictionary<int, string>> GetForcedOutputs([FromBody] int[] outputNumbers)
         {
+            if (outputNumbers == null)
+            {
+                return BadRequest(new { message = "Output numbers array is required" });
+            }
+
             lock (_forcedOutputsLock)
             {
-                return new Dictionary<int, string>(_forcedOutputs);
+                // Filter forced outputs to only those in the requested list
+                var result = new Dictionary<int, string>();
+                foreach (var outputNumber in outputNumbers)
+                {
+                    if (_forcedOutputs.TryGetValue(outputNumber, out var forceState))
+                    {
+                        result[outputNumber] = forceState;
+                    }
+                }
+
+                return Ok(result);
             }
         }
 

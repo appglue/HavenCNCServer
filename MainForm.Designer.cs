@@ -28,170 +28,182 @@ namespace HavenCNCServer
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.lblConnectionRetries = new System.Windows.Forms.Label();
-            this.lblCnc12Status = new System.Windows.Forms.Label();
-            this.lblApiUrl = new System.Windows.Forms.Label();
-            this.btnOpenSwagger = new System.Windows.Forms.Button();
-            this.txtLog = new HavenCNCServer.Components.FlickerFreeLogViewer();
-            this.btnClearLogs = new System.Windows.Forms.Button();
-            this.btnClearMessages = new System.Windows.Forms.Button();
-            this.btnGCodeTest = new System.Windows.Forms.Button();
-            this.btnAlwaysOnTop = new System.Windows.Forms.Button();
-            this.btnShowUI = new System.Windows.Forms.Button();
-            this.btnViewLogs = new System.Windows.Forms.Button();
-            this.btnOpenDataFolder = new System.Windows.Forms.Button();
+            this.pnlTop = new Krypton.Toolkit.KryptonPanel();
+            this.pnlTopLeft = new Krypton.Toolkit.KryptonPanel();
+            this.lblStatus = new Krypton.Toolkit.KryptonLabel();
+            this.lblConnectionRetries = new Krypton.Toolkit.KryptonLabel();
+            this.lblCnc12Status = new Krypton.Toolkit.KryptonLabel();
+            this.lblApiUrl = new Krypton.Toolkit.KryptonLabel();
+            this.lblAdmin = new Krypton.Toolkit.KryptonLinkLabel();
+            this.pnlTopRight = new Krypton.Toolkit.KryptonPanel();
+            this.pnlBottom = new Krypton.Toolkit.KryptonPanel();
+            this.btnReset = new Krypton.Toolkit.KryptonButton();
+            this.btnStop = new Krypton.Toolkit.KryptonButton();
+            this.btnStart = new Krypton.Toolkit.KryptonButton();
+            this.btnShowUI = new Krypton.Toolkit.KryptonButton();
+            this.adminContextMenu = new System.Windows.Forms.ContextMenuStrip();
+            this.showLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showGCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.openSwaggerUIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gCodeTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDataFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuLogs = new System.Windows.Forms.ContextMenuStrip();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
-            this.pnlControls = new System.Windows.Forms.Panel();
-            this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabLogs = new System.Windows.Forms.TabPage();
-            this.tabMessages = new System.Windows.Forms.TabPage();
-            this.tabGCode = new System.Windows.Forms.TabPage();
-            this.tabSettings = new System.Windows.Forms.TabPage();
-            this.lblCnc12Path = new System.Windows.Forms.Label();
-            this.txtCnc12Path = new System.Windows.Forms.TextBox();
-            this.btnBrowseCnc12Path = new System.Windows.Forms.Button();
-            this.lblUserName = new System.Windows.Forms.Label();
-            this.txtUserName = new System.Windows.Forms.TextBox();
-            this.lblMachineName = new System.Windows.Forms.Label();
-            this.txtMachineName = new System.Windows.Forms.TextBox();
-            this.btnSaveSettings = new System.Windows.Forms.Button();
+            this.pnlTop.SuspendLayout();
+            this.pnlTopLeft.SuspendLayout();
+            this.pnlBottom.SuspendLayout();
+            this.adminContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
-            this.pnlControls.SuspendLayout();
-            this.tabControl.SuspendLayout();
-            this.tabLogs.SuspendLayout();
-            this.tabSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblStatus
             // 
-            this.lblStatus.AutoSize = true;
+            this.lblStatus.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblStatus.ForeColor = System.Drawing.Color.Green;
-            this.lblStatus.Location = new System.Drawing.Point(12, 9);
+            this.lblStatus.Location = new System.Drawing.Point(0, 0);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(232, 20);
+            this.lblStatus.Padding = new System.Windows.Forms.Padding(12, 9, 0, 0);
+            this.lblStatus.Size = new System.Drawing.Size(400, 29);
             this.lblStatus.TabIndex = 0;
             this.lblStatus.Text = "API Server Status: Starting...";
             // 
             // lblConnectionRetries
             // 
-            this.lblConnectionRetries.AutoSize = true;
+            this.lblConnectionRetries.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblConnectionRetries.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblConnectionRetries.Location = new System.Drawing.Point(250, 12);
+            this.lblConnectionRetries.Location = new System.Drawing.Point(0, 29);
             this.lblConnectionRetries.Name = "lblConnectionRetries";
-            this.lblConnectionRetries.Size = new System.Drawing.Size(120, 17);
+            this.lblConnectionRetries.Padding = new System.Windows.Forms.Padding(12, 3, 0, 0);
+            this.lblConnectionRetries.Size = new System.Drawing.Size(400, 20);
             this.lblConnectionRetries.TabIndex = 20;
             this.lblConnectionRetries.Text = "";
             // 
             // lblCnc12Status
             // 
-            this.lblCnc12Status.AutoSize = true;
+            this.lblCnc12Status.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblCnc12Status.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblCnc12Status.ForeColor = System.Drawing.Color.Red;
-            this.lblCnc12Status.Location = new System.Drawing.Point(450, 12);
+            this.lblCnc12Status.Location = new System.Drawing.Point(0, 66);
             this.lblCnc12Status.Name = "lblCnc12Status";
-            this.lblCnc12Status.Size = new System.Drawing.Size(180, 17);
+            this.lblCnc12Status.Padding = new System.Windows.Forms.Padding(12, 4, 0, 0);
+            this.lblCnc12Status.Size = new System.Drawing.Size(400, 21);
             this.lblCnc12Status.TabIndex = 21;
             this.lblCnc12Status.Text = "";
             // 
             // lblApiUrl
             // 
-            this.lblApiUrl.AutoSize = true;
-            this.lblApiUrl.Location = new System.Drawing.Point(12, 40);
+            this.lblApiUrl.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblApiUrl.Location = new System.Drawing.Point(0, 49);
             this.lblApiUrl.Name = "lblApiUrl";
-            this.lblApiUrl.Size = new System.Drawing.Size(159, 15);
+            this.lblApiUrl.Padding = new System.Windows.Forms.Padding(12, 2, 0, 0);
+            this.lblApiUrl.Size = new System.Drawing.Size(400, 17);
             this.lblApiUrl.TabIndex = 1;
             this.lblApiUrl.Text = "API URL: http://localhost:5000";
             // 
-            // btnOpenSwagger
+            // lblAdmin
             // 
-            this.btnOpenSwagger.Location = new System.Drawing.Point(12, 70);
-            this.btnOpenSwagger.Name = "btnOpenSwagger";
-            this.btnOpenSwagger.Size = new System.Drawing.Size(120, 30);
-            this.btnOpenSwagger.TabIndex = 2;
-            this.btnOpenSwagger.Text = "Open Swagger UI";
-            this.btnOpenSwagger.UseVisualStyleBackColor = true;
-            this.btnOpenSwagger.Click += new System.EventHandler(this.btnOpenSwagger_Click);
+            this.lblAdmin.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblAdmin.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular);
+            this.lblAdmin.Location = new System.Drawing.Point(0, 140);
+            this.lblAdmin.Name = "lblAdmin";
+            this.lblAdmin.Padding = new System.Windows.Forms.Padding(0, 0, 12, 3);
+            this.lblAdmin.Size = new System.Drawing.Size(250, 20);
+            this.lblAdmin.TabIndex = 30;
+            this.lblAdmin.TabStop = true;
+            this.lblAdmin.Text = "Admin ▼";
+            this.lblAdmin.Click += new System.EventHandler(this.lblAdmin_LinkClicked);
             // 
-            // btnClearLogs
+            // adminContextMenu
             // 
-            this.btnClearLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearLogs.Location = new System.Drawing.Point(1230, 6);
-            this.btnClearLogs.Name = "btnClearLogs";
-            this.btnClearLogs.Size = new System.Drawing.Size(110, 30);
-            this.btnClearLogs.TabIndex = 1;
-            this.btnClearLogs.Text = "Clear Logs";
-            this.btnClearLogs.UseVisualStyleBackColor = true;
-            this.btnClearLogs.Click += new System.EventHandler(this.btnClearLogs_Click);
+            this.adminContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showLogsToolStripMenuItem,
+            this.showMessagesToolStripMenuItem,
+            this.showGCodeToolStripMenuItem,
+            this.settingsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.openSwaggerUIToolStripMenuItem,
+            this.gCodeTestToolStripMenuItem,
+            this.alwaysOnTopToolStripMenuItem,
+            this.openDataFolderToolStripMenuItem});
+            this.adminContextMenu.Name = "adminContextMenu";
+            this.adminContextMenu.Size = new System.Drawing.Size(181, 186);
             // 
-            // txtLog
+            // showLogsToolStripMenuItem
             // 
-            this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtLog.Location = new System.Drawing.Point(3, 3);
-            this.txtLog.Multiline = true;
-            this.txtLog.Name = "txtLog";
-            this.txtLog.ReadOnly = true;
-            this.txtLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(1340, 486);
-            this.txtLog.TabIndex = 3;
-            this.txtLog.WordWrap = true;
-
-
-
-
-
+            this.showLogsToolStripMenuItem.Name = "showLogsToolStripMenuItem";
+            this.showLogsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showLogsToolStripMenuItem.Text = "Show Logs";
+            this.showLogsToolStripMenuItem.Click += new System.EventHandler(this.btnShowLogs_Click);
             // 
-            // btnGCodeTest
+            // showMessagesToolStripMenuItem
             // 
-            this.btnGCodeTest.Location = new System.Drawing.Point(150, 70);
-            this.btnGCodeTest.Name = "btnGCodeTest";
-            this.btnGCodeTest.Size = new System.Drawing.Size(100, 30);
-            this.btnGCodeTest.TabIndex = 9;
-            this.btnGCodeTest.Text = "G-Code Test";
-            this.btnGCodeTest.UseVisualStyleBackColor = true;
-            this.btnGCodeTest.Click += new System.EventHandler(this.btnGCodeTest_Click);
+            this.showMessagesToolStripMenuItem.Name = "showMessagesToolStripMenuItem";
+            this.showMessagesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showMessagesToolStripMenuItem.Text = "Show Messages";
+            this.showMessagesToolStripMenuItem.Click += new System.EventHandler(this.btnShowMessages_Click);
             // 
-            // btnAlwaysOnTop
+            // showGCodeToolStripMenuItem
             // 
-            this.btnAlwaysOnTop.Location = new System.Drawing.Point(270, 70);
-            this.btnAlwaysOnTop.Name = "btnAlwaysOnTop";
-            this.btnAlwaysOnTop.Size = new System.Drawing.Size(120, 30);
-            this.btnAlwaysOnTop.TabIndex = 11;
-            this.btnAlwaysOnTop.Text = "Always on Top: OFF";
-            this.btnAlwaysOnTop.UseVisualStyleBackColor = true;
-            this.btnAlwaysOnTop.Click += new System.EventHandler(this.btnAlwaysOnTop_Click);
+            this.showGCodeToolStripMenuItem.Name = "showGCodeToolStripMenuItem";
+            this.showGCodeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showGCodeToolStripMenuItem.Text = "Show G-Code";
+            this.showGCodeToolStripMenuItem.Click += new System.EventHandler(this.btnShowGCode_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.btnShowSettings_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // openSwaggerUIToolStripMenuItem
+            // 
+            this.openSwaggerUIToolStripMenuItem.Name = "openSwaggerUIToolStripMenuItem";
+            this.openSwaggerUIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openSwaggerUIToolStripMenuItem.Text = "Open Swagger UI";
+            this.openSwaggerUIToolStripMenuItem.Click += new System.EventHandler(this.btnOpenSwagger_Click);
+            // 
+            // gCodeTestToolStripMenuItem
+            // 
+            this.gCodeTestToolStripMenuItem.Name = "gCodeTestToolStripMenuItem";
+            this.gCodeTestToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gCodeTestToolStripMenuItem.Text = "G-Code Test";
+            this.gCodeTestToolStripMenuItem.Click += new System.EventHandler(this.btnGCodeTest_Click);
+            // 
+            // alwaysOnTopToolStripMenuItem
+            // 
+            this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.alwaysOnTopToolStripMenuItem.Text = "Always on Top: OFF";
+            this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.btnAlwaysOnTop_Click);
+            // 
+            // openDataFolderToolStripMenuItem
+            // 
+            this.openDataFolderToolStripMenuItem.Name = "openDataFolderToolStripMenuItem";
+            this.openDataFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openDataFolderToolStripMenuItem.Text = "Open Data Folder";
+            this.openDataFolderToolStripMenuItem.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
             // 
             // btnShowUI
             // 
-            this.btnShowUI.Location = new System.Drawing.Point(410, 70);
+            this.btnShowUI.BackColor = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold);
+            this.btnShowUI.Location = new System.Drawing.Point(12, 90);
             this.btnShowUI.Name = "btnShowUI";
-            this.btnShowUI.Size = new System.Drawing.Size(100, 30);
-            this.btnShowUI.TabIndex = 12;
+            this.btnShowUI.Size = new System.Drawing.Size(380, 290);
+            this.btnShowUI.TabIndex = 9;
             this.btnShowUI.Text = "Show UI";
-            this.btnShowUI.UseVisualStyleBackColor = true;
             this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
-            // 
-            // btnViewLogs
-            // 
-            this.btnViewLogs.Location = new System.Drawing.Point(530, 70);
-            this.btnViewLogs.Name = "btnViewLogs";
-            this.btnViewLogs.Size = new System.Drawing.Size(100, 30);
-            this.btnViewLogs.TabIndex = 13;
-            this.btnViewLogs.Text = "View Logs ▼";
-            this.btnViewLogs.UseVisualStyleBackColor = true;
-            this.btnViewLogs.Click += new System.EventHandler(this.btnViewLogs_Click);
-            // 
-            // btnOpenDataFolder
-            // 
-            this.btnOpenDataFolder.Location = new System.Drawing.Point(650, 70);
-            this.btnOpenDataFolder.Name = "btnOpenDataFolder";
-            this.btnOpenDataFolder.Size = new System.Drawing.Size(120, 30);
-            this.btnOpenDataFolder.TabIndex = 14;
-            this.btnOpenDataFolder.Text = "Open Data Folder";
-            this.btnOpenDataFolder.UseVisualStyleBackColor = true;
-            this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
             // 
             // contextMenuLogs
             // 
@@ -213,225 +225,154 @@ namespace HavenCNCServer
             this.webView.Visible = false;
             this.webView.ZoomFactor = 1D;
             // 
-            // pnlControls
+            // pnlTop
             // 
-            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlControls.Controls.Add(this.lblStatus);
-            this.pnlControls.Controls.Add(this.lblConnectionRetries);
-            this.pnlControls.Controls.Add(this.lblCnc12Status);
-            this.pnlControls.Controls.Add(this.lblApiUrl);
-            this.pnlControls.Controls.Add(this.btnOpenSwagger);
-            this.pnlControls.Controls.Add(this.btnGCodeTest);
-            this.pnlControls.Controls.Add(this.btnAlwaysOnTop);
-            this.pnlControls.Controls.Add(this.btnShowUI);
-            this.pnlControls.Controls.Add(this.btnViewLogs);
-            this.pnlControls.Controls.Add(this.btnOpenDataFolder);
-            this.pnlControls.Location = new System.Drawing.Point(0, 0);
-            this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(1380, 120);
-            this.pnlControls.TabIndex = 10;
+            this.pnlTop.Controls.Add(this.pnlTopRight);
+            this.pnlTop.Controls.Add(this.pnlTopLeft);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(650, 160);
+            this.pnlTop.TabIndex = 0;
             // 
-            // tabControl
+            // pnlTopLeft
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl.Controls.Add(this.tabLogs);
-            this.tabControl.Controls.Add(this.tabMessages);
-            this.tabControl.Controls.Add(this.tabGCode);
-            this.tabControl.Controls.Add(this.tabSettings);
-            this.tabControl.Location = new System.Drawing.Point(12, 130);
-            this.tabControl.Name = "tabControl";
-            this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1356, 938);
-            this.tabControl.TabIndex = 11;
+            this.pnlTopLeft.Controls.Add(this.btnShowUI);
+            this.pnlTopLeft.Controls.Add(this.lblCnc12Status);
+            this.pnlTopLeft.Controls.Add(this.lblApiUrl);
+            this.pnlTopLeft.Controls.Add(this.lblConnectionRetries);
+            this.pnlTopLeft.Controls.Add(this.lblStatus);
+            this.pnlTopLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlTopLeft.Location = new System.Drawing.Point(0, 0);
+            this.pnlTopLeft.Name = "pnlTopLeft";
+            this.pnlTopLeft.Size = new System.Drawing.Size(400, 160);
+            this.pnlTopLeft.TabIndex = 0;
             // 
-            // tabLogs
+            // pnlTopRight
             // 
-            this.tabLogs.Controls.Add(this.btnClearLogs);
-            this.tabLogs.Controls.Add(this.txtLog);
-            this.tabLogs.Location = new System.Drawing.Point(4, 24);
-            this.tabLogs.Name = "tabLogs";
-            this.tabLogs.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLogs.Size = new System.Drawing.Size(1348, 910);
-            this.tabLogs.TabIndex = 0;
-            this.tabLogs.Text = "Logs";
-            this.tabLogs.UseVisualStyleBackColor = true;
+            this.pnlTopRight.Controls.Add(this.lblAdmin);
+            this.pnlTopRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTopRight.Location = new System.Drawing.Point(400, 0);
+            this.pnlTopRight.Name = "pnlTopRight";
+            this.pnlTopRight.Size = new System.Drawing.Size(250, 160);
+            this.pnlTopRight.TabIndex = 1;
             // 
-            // tabMessages
+            // pnlBottom
             // 
-            this.tabMessages.Controls.Add(this.btnClearMessages);
-            this.tabMessages.Location = new System.Drawing.Point(4, 24);
-            this.tabMessages.Name = "tabMessages";
-            this.tabMessages.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMessages.Size = new System.Drawing.Size(1348, 910);
-            this.tabMessages.TabIndex = 1;
-            this.tabMessages.Text = "Messages";
-            this.tabMessages.UseVisualStyleBackColor = true;
+            this.pnlBottom.Controls.Add(this.btnStart);
+            this.pnlBottom.Controls.Add(this.btnStop);
+            this.pnlBottom.Controls.Add(this.btnReset);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.Location = new System.Drawing.Point(0, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height - 140);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(650, 140);
+            this.pnlBottom.TabIndex = 2;
             // 
-            // btnClearMessages
+            // btnReset
             // 
-            this.btnClearMessages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearMessages.Location = new System.Drawing.Point(1230, 6);
-            this.btnClearMessages.Name = "btnClearMessages";
-            this.btnClearMessages.Size = new System.Drawing.Size(110, 30);
-            this.btnClearMessages.TabIndex = 1;
-            this.btnClearMessages.Text = "Clear Messages";
-            this.btnClearMessages.UseVisualStyleBackColor = true;
-            this.btnClearMessages.Click += new System.EventHandler(this.btnClearMessages_Click);
+            this.btnReset.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnReset.Location = new System.Drawing.Point(0, 0);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(210, 140);
+            this.btnReset.TabIndex = 20;
+            this.btnReset.Values.Text = "RESET";
+            this.btnReset.StateCommon.Back.Color1 = System.Drawing.Color.Orange;
+            this.btnReset.StateCommon.Back.Color2 = System.Drawing.Color.Orange;
+            this.btnReset.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
-            // tabGCode
+            // btnStop
             // 
-            this.tabGCode.Location = new System.Drawing.Point(4, 24);
-            this.tabGCode.Name = "tabGCode";
-            this.tabGCode.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGCode.Size = new System.Drawing.Size(1348, 910);
-            this.tabGCode.TabIndex = 2;
-            this.tabGCode.Text = "G-Code";
-            this.tabGCode.UseVisualStyleBackColor = true;
+            this.btnStop.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnStop.Location = new System.Drawing.Point(210, 0);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(220, 140);
+            this.btnStop.TabIndex = 21;
+            this.btnStop.Values.Text = "STOP";
+            this.btnStop.StateCommon.Back.Color1 = System.Drawing.Color.Red;
+            this.btnStop.StateCommon.Back.Color2 = System.Drawing.Color.Red;
+            this.btnStop.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnStop.StateCommon.Content.ShortText.Color1 = System.Drawing.Color.White;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // tabSettings
+            // btnStart
             // 
-            this.tabSettings.Controls.Add(this.btnSaveSettings);
-            this.tabSettings.Controls.Add(this.lblMachineName);
-            this.tabSettings.Controls.Add(this.txtMachineName);
-            this.tabSettings.Controls.Add(this.lblUserName);
-            this.tabSettings.Controls.Add(this.txtUserName);
-            this.tabSettings.Controls.Add(this.lblCnc12Path);
-            this.tabSettings.Controls.Add(this.txtCnc12Path);
-            this.tabSettings.Controls.Add(this.btnBrowseCnc12Path);
-            this.tabSettings.Location = new System.Drawing.Point(4, 24);
-            this.tabSettings.Name = "tabSettings";
-            this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSettings.Size = new System.Drawing.Size(1348, 522);
-            this.tabSettings.TabIndex = 3;
-            this.tabSettings.Text = "Settings";
-            this.tabSettings.UseVisualStyleBackColor = true;
+            this.btnStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStart.Location = new System.Drawing.Point(430, 0);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(220, 140);
+            this.btnStart.TabIndex = 22;
+            this.btnStart.Values.Text = "START";
+            this.btnStart.StateCommon.Back.Color1 = System.Drawing.Color.LimeGreen;
+            this.btnStart.StateCommon.Back.Color2 = System.Drawing.Color.LimeGreen;
+            this.btnStart.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // lblCnc12Path
             // 
-            this.lblCnc12Path.AutoSize = true;
-            this.lblCnc12Path.Location = new System.Drawing.Point(20, 20);
-            this.lblCnc12Path.Name = "lblCnc12Path";
-            this.lblCnc12Path.Size = new System.Drawing.Size(122, 15);
-            this.lblCnc12Path.TabIndex = 0;
-            this.lblCnc12Path.Text = "CNC12 Installation Path:";
+            // btnShowUI
             // 
-            // txtCnc12Path
-            // 
-            this.txtCnc12Path.Location = new System.Drawing.Point(20, 40);
-            this.txtCnc12Path.Name = "txtCnc12Path";
-            this.txtCnc12Path.Size = new System.Drawing.Size(400, 23);
-            this.txtCnc12Path.TabIndex = 1;
-            // 
-            // btnBrowseCnc12Path
-            // 
-            this.btnBrowseCnc12Path.Location = new System.Drawing.Point(430, 38);
-            this.btnBrowseCnc12Path.Name = "btnBrowseCnc12Path";
-            this.btnBrowseCnc12Path.Size = new System.Drawing.Size(80, 27);
-            this.btnBrowseCnc12Path.TabIndex = 2;
-            this.btnBrowseCnc12Path.Text = "Browse...";
-            this.btnBrowseCnc12Path.UseVisualStyleBackColor = true;
-            this.btnBrowseCnc12Path.Click += new System.EventHandler(this.btnBrowseCnc12Path_Click);
-            // 
-            // lblUserName
-            // 
-            this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(20, 80);
-            this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(68, 15);
-            this.lblUserName.TabIndex = 3;
-            this.lblUserName.Text = "User Name:";
-            // 
-            // txtUserName
-            // 
-            this.txtUserName.Location = new System.Drawing.Point(20, 100);
-            this.txtUserName.Name = "txtUserName";
-            this.txtUserName.Size = new System.Drawing.Size(300, 23);
-            this.txtUserName.TabIndex = 4;
-            // 
-            // lblMachineName
-            // 
-            this.lblMachineName.AutoSize = true;
-            this.lblMachineName.Location = new System.Drawing.Point(20, 140);
-            this.lblMachineName.Name = "lblMachineName";
-            this.lblMachineName.Size = new System.Drawing.Size(90, 15);
-            this.lblMachineName.TabIndex = 5;
-            this.lblMachineName.Text = "Machine Name:";
-            // 
-            // txtMachineName
-            // 
-            this.txtMachineName.Location = new System.Drawing.Point(20, 160);
-            this.txtMachineName.Name = "txtMachineName";
-            this.txtMachineName.Size = new System.Drawing.Size(300, 23);
-            this.txtMachineName.TabIndex = 6;
-            // 
-            // btnSaveSettings
-            // 
-            this.btnSaveSettings.Location = new System.Drawing.Point(20, 200);
-            this.btnSaveSettings.Name = "btnSaveSettings";
-            this.btnSaveSettings.Size = new System.Drawing.Size(150, 30);
-            this.btnSaveSettings.TabIndex = 7;
-            this.btnSaveSettings.Text = "Save Settings";
-            this.btnSaveSettings.UseVisualStyleBackColor = true;
-            this.btnSaveSettings.Click += new System.EventHandler(this.btnSaveSettings_Click);
+            this.btnShowUI.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowUI.Location = new System.Drawing.Point(0, 87);
+            this.btnShowUI.Name = "btnShowUI";
+            this.btnShowUI.Padding = new System.Windows.Forms.Padding(10);
+            this.btnShowUI.Size = new System.Drawing.Size(400, 50);
+            this.btnShowUI.TabIndex = 9;
+            this.btnShowUI.Values.Text = "Show UI";
+            this.btnShowUI.StateCommon.Back.Color1 = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.StateCommon.Back.Color2 = System.Drawing.Color.LimeGreen;
+            this.btnShowUI.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.btnShowUI.Click += new System.EventHandler(this.btnShowUI_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1380, 1080);
-            this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.pnlControls);
+            this.ClientSize = new System.Drawing.Size(650, System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height);
+            this.Controls.Add(this.pnlBottom);
+            this.Controls.Add(this.pnlTop);
             this.Controls.Add(this.webView);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "HavenCNC Server";
-            this.TopMost = false;  // Default to false, controlled by checkbox
+            this.TopMost = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Location = new System.Drawing.Point(0, 0);
+            this.Location = new System.Drawing.Point(System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width - 650, 0);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            this.pnlTop.ResumeLayout(false);
+            this.pnlTopLeft.ResumeLayout(false);
+            this.pnlTopLeft.PerformLayout();
+            this.pnlBottom.ResumeLayout(false);
+            this.adminContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
-            this.pnlControls.ResumeLayout(false);
-            this.pnlControls.PerformLayout();
-            this.tabControl.ResumeLayout(false);
-            this.tabLogs.ResumeLayout(false);
-            this.tabSettings.ResumeLayout(false);
-            this.tabSettings.PerformLayout();
             this.ResumeLayout(false);
         }
 
         #endregion
 
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Label lblConnectionRetries;
-        private System.Windows.Forms.Label lblCnc12Status;
-        private System.Windows.Forms.Label lblApiUrl;
-        private System.Windows.Forms.Button btnOpenSwagger;
-        private HavenCNCServer.Components.FlickerFreeLogViewer txtLog;
-        private System.Windows.Forms.Button btnGCodeTest;
-        private System.Windows.Forms.Button btnAlwaysOnTop;
-        private System.Windows.Forms.Button btnShowUI;
-        private System.Windows.Forms.Button btnViewLogs;
-        private System.Windows.Forms.Button btnOpenDataFolder;
-        private System.Windows.Forms.Button btnClearLogs;
-        private System.Windows.Forms.Button btnClearMessages;
+        private Krypton.Toolkit.KryptonPanel pnlTop;
+        private Krypton.Toolkit.KryptonPanel pnlTopLeft;
+        private Krypton.Toolkit.KryptonPanel pnlTopRight;
+        private Krypton.Toolkit.KryptonPanel pnlBottom;
+        private Krypton.Toolkit.KryptonLabel lblStatus;
+        private Krypton.Toolkit.KryptonLabel lblConnectionRetries;
+        private Krypton.Toolkit.KryptonLabel lblCnc12Status;
+        private Krypton.Toolkit.KryptonLabel lblApiUrl;
+        private Krypton.Toolkit.KryptonLinkLabel lblAdmin;
+        private Krypton.Toolkit.KryptonButton btnShowUI;
+        private Krypton.Toolkit.KryptonButton btnReset;
+        private Krypton.Toolkit.KryptonButton btnStop;
+        private Krypton.Toolkit.KryptonButton btnStart;
+        private System.Windows.Forms.ContextMenuStrip adminContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem showLogsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showMessagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showGCodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem openSwaggerUIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gCodeTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openDataFolderToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuLogs;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
-        private System.Windows.Forms.Panel pnlControls;
-        private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabLogs;
-        private System.Windows.Forms.TabPage tabMessages;
-        private System.Windows.Forms.TabPage tabGCode;
-        private System.Windows.Forms.TabPage tabSettings;
-        private System.Windows.Forms.Label lblCnc12Path;
-        private System.Windows.Forms.TextBox txtCnc12Path;
-        private System.Windows.Forms.Button btnBrowseCnc12Path;
-        private System.Windows.Forms.Label lblUserName;
-        private System.Windows.Forms.TextBox txtUserName;
-        private System.Windows.Forms.Label lblMachineName;
-        private System.Windows.Forms.TextBox txtMachineName;
-        private System.Windows.Forms.Button btnSaveSettings;
     }
 }

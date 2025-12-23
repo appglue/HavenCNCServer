@@ -436,36 +436,6 @@
         }
       }
     },
-    "/api/CNCConfiguration/GetTravelLimits": {
-      "get": {
-        "tags": [
-          "CNCConfiguration"
-        ],
-        "summary": "Get travel limits for all configured axes",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/TravelLimitsResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TravelLimitsResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TravelLimitsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/CNCConfiguration/ConfigureSpindle": {
       "post": {
         "tags": [
@@ -1248,37 +1218,69 @@
         }
       }
     },
-    "/api/CNCIO/GetDefinedInputs": {
-      "get": {
+    "/api/CNCIO/GetInputState": {
+      "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get defined inputs with current states from monitored I/O configuration\r\nReturns number, name, and current state for each monitored input",
+        "summary": "Get input states for specified input numbers",
+        "requestBody": {
+          "description": "Array of input numbers to query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -1287,37 +1289,69 @@
         }
       }
     },
-    "/api/CNCIO/GetDefinedOutputs": {
-      "get": {
+    "/api/CNCIO/GetOutputState": {
+      "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get defined outputs with current states from monitored I/O configuration\r\nReturns number, name, and current state for each monitored output",
+        "summary": "Get output states for specified output numbers",
+        "requestBody": {
+          "description": "Array of output numbers to query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefinedIO"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -1439,11 +1473,43 @@
       }
     },
     "/api/CNCIO/GetForcedOutputs": {
-      "get": {
+      "post": {
         "tags": [
           "CNCIO"
         ],
-        "summary": "Get all outputs that are currently in a forced state",
+        "summary": "Get forced outputs from a list of output numbers",
+        "requestBody": {
+          "description": "Array of output numbers to check for forced state",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
@@ -4473,7 +4539,7 @@
             "description": "Axis number (1-8) - Required",
             "format": "int32"
           },
-          "label": {
+          "axisType": {
             "type": "string",
             "description": "Axis label (X, Y, Z, A, B, C, U, V, W)",
             "nullable": true
@@ -4484,7 +4550,7 @@
             "format": "int32",
             "nullable": true
           },
-          "turnRatio": {
+          "overallTurnsRatio": {
             "type": "number",
             "description": "Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)",
             "format": "double",
@@ -4502,7 +4568,7 @@
             "format": "double",
             "nullable": true
           },
-          "backlashCompensation": {
+          "lashCompensation": {
             "type": "number",
             "description": "Backlash compensation amount",
             "format": "double",
@@ -4538,7 +4604,7 @@
             "format": "double",
             "nullable": true
           },
-          "accelerationTime": {
+          "accelDecel": {
             "type": "number",
             "description": "Acceleration time in seconds",
             "format": "double",
@@ -4556,7 +4622,7 @@
             "format": "int32",
             "nullable": true
           },
-          "isReversed": {
+          "directionReversal": {
             "type": "boolean",
             "description": "Whether axis direction is reversed",
             "nullable": true
@@ -4620,33 +4686,6 @@
         },
         "additionalProperties": false,
         "description": "Represents axis configuration parameters"
-      },
-      "AxisTravelLimits": {
-        "type": "object",
-        "properties": {
-          "axisNumber": {
-            "type": "integer",
-            "description": "Axis number (1-8)",
-            "format": "int32"
-          },
-          "axisLabel": {
-            "type": "string",
-            "description": "Axis label (X, Y, Z, A, B, C, U, V, W)",
-            "nullable": true
-          },
-          "plusLimit": {
-            "type": "number",
-            "description": "Plus travel limit (maximum position)",
-            "format": "double"
-          },
-          "minusLimit": {
-            "type": "number",
-            "description": "Minus travel limit (minimum position)",
-            "format": "double"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Travel limits for a single axis"
       },
       "BoardConfiguration": {
         "type": "object",
@@ -4930,27 +4969,6 @@
         },
         "additionalProperties": false,
         "description": "Data item information"
-      },
-      "DefinedIO": {
-        "type": "object",
-        "properties": {
-          "number": {
-            "type": "integer",
-            "description": "The I/O number (e.g., 1, 2, 65, etc.)",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "description": "The symbolic name of the I/O (e.g., \"EStopOk\", \"SpinFWD\")",
-            "nullable": true
-          },
-          "state": {
-            "type": "boolean",
-            "description": "Current state of the I/O (true = active/on, false = inactive/off)"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Represents a defined I/O with its current state"
       },
       "GlobalSystemConfiguration": {
         "type": "object",
@@ -6618,26 +6636,6 @@
         },
         "additionalProperties": false,
         "description": "Represents touch plate configuration system"
-      },
-      "TravelLimitsResponse": {
-        "type": "object",
-        "properties": {
-          "axes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AxisTravelLimits"
-            },
-            "description": "Travel limits for each axis",
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "description": "Descriptive message",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Travel limits for all configured axes"
       }
     }
   }
