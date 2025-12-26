@@ -288,13 +288,10 @@ namespace HavenCNCServer.Services
                     // Check if a job is running
                     bool isJobRunning = Controllers.CNCProgramController.IsJobRunning();
 
-                    // Check if API is restricted
-                    // When a job is running, API is considered NOT restricted (false)
-                    // Otherwise, check the actual API restriction status
+                    // Check if API is restricted - always check when connected, independent of job status
                     bool isApiRestricted = false;
-                    if (isConnected && !isJobRunning)
+                    if (isConnected)
                     {
-                        // No job running - check API restriction status via CNC API
                         try
                         {
                             var cncPipe = CNCConnectionManager.GetCNCPipe();
@@ -312,7 +309,6 @@ namespace HavenCNCServer.Services
                             LogWarning($"Error checking API restriction: {ex.Message}", "SignalR");
                         }
                     }
-                    // If job is running (isJobRunning == true), isApiRestricted stays false
 
                     // Only try to get current position if connected
                     object? position = null;
@@ -410,6 +406,29 @@ namespace HavenCNCServer.Services
                         }
                     }
 
+                    // Check if machine requires reset (SV_STOP state)
+                    bool requiresReset = false;
+                    if (isConnected)
+                    {
+                        try
+                        {
+                            var cncPipe = CNCConnectionManager.GetCNCPipe();
+                            if (cncPipe != null)
+                            {
+                                // SV_STOP indicates the machine is in a stopped/fault state requiring reset
+                                var result = cncPipe.plc.GetPlcSystemVariableBit(CentroidAPI.MpuToPcSysVarBit.SV_STOP, out CentroidAPI.CNCPipe.Plc.IOState svStopState);
+                                if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    requiresReset = (svStopState == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"Could not get requires reset status: {ex.Message}", "SignalR");
+                        }
+                    }
+
                     // Get PLC version from cache (populated on startup and after installation)
                     string plcVersion = _cachedPlcVersion ?? LoadPlcVersion();
 
@@ -504,6 +523,7 @@ namespace HavenCNCServer.Services
                         Position = position,
                         IsApiRestricted = isApiRestricted,
                         IsJobRunning = isJobRunning,
+                        RequiresReset = requiresReset,
                         IsIncrementalJogMode = isIncrementalJogMode,
                         IsFastJogging = isFastJogging,
                         IsHomed = isHomed,
