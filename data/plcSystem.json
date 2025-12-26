@@ -1,11 +1,11 @@
 {
   "name": "System PLC Program",
   "description": "",
-  "nextStatementNumber": 2,
+  "nextStatementNumber": 3,
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 1,
-  "updateVersion": 7,
+  "minorVersion": 17,
+  "updateVersion": 0,
   "type": 1,
   "lastModified": "2025-12-15T17:00:11.831Z",
   "stages": [
@@ -43,47 +43,7 @@
       "enabled": true,
       "fast": false,
       "ordinal": 0,
-      "blocks": [
-        {
-          "name": "Block 1",
-          "comment": "",
-          "enabled": true,
-          "ordinal": 0,
-          "actions": [
-            {
-              "type": "IsChangedStatement",
-              "comment": "",
-              "enabled": true,
-              "statementNumber": 1,
-              "skipInitial": false,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "risingEdgePredicates": [],
-              "fallingEdgePredicates": []
-            }
-          ]
-        }
-      ]
+      "blocks": []
     },
     {
       "name": "FINAL_S",
@@ -110,8 +70,8 @@
       "name": "Emergency Stop OK",
       "activeText": "EStop Released",
       "inactiveText": "EStop Pressed",
-      "isInverted": false,
-      "number": 8
+      "isInverted": true,
+      "number": 1
     }
   ],
   "outputs": [],

@@ -5222,6 +5222,16 @@
             "type": "string",
             "description": "I/O symbolic name",
             "nullable": true
+          },
+          "activeText": {
+            "type": "string",
+            "description": "Text to display when I/O is active/on",
+            "nullable": true
+          },
+          "inactiveText": {
+            "type": "string",
+            "description": "Text to display when I/O is inactive/off",
+            "nullable": true
           }
         },
         "additionalProperties": false,

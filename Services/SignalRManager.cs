@@ -146,6 +146,23 @@ namespace HavenCNCServer.Services
 
             try
             {
+                // Try to get monitored IO configuration to get name
+                string outputName = $"OUT{outputNumber}";
+
+                var monitoredConfig = Controllers.PLCController.LoadMonitoredIOConfiguration();
+                if (monitoredConfig != null)
+                {
+                    var monitoredOutput = monitoredConfig.Outputs.FirstOrDefault(o => o.Number == outputNumber);
+                    if (monitoredOutput != null)
+                    {
+                        outputName = monitoredOutput.Name;
+                    }
+                }
+
+                // Format message as: "[name] is on/off"
+                string onOff = state ? "on" : "off";
+                string message = $"[{outputName}] is {onOff}";
+
                 await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", new
                 {
                     EventType = "OutputStateChanged",
@@ -155,11 +172,13 @@ namespace HavenCNCServer.Services
                         OutputNumber = outputNumber,
                         State = state,
                         ForceState = forceState,
-                        IsForced = forceState != "NotForced"
+                        IsForced = forceState != "NotForced",
+                        Name = outputName,
+                        Message = message
                     }
                 });
 
-                LogInfo($"Broadcasted output state change: OUT{outputNumber} = {state} ({forceState})", "SignalR");
+                LogInfo($"Broadcasted output state change: {message} ({forceState})", "SignalR");
             }
             catch (Exception ex)
             {

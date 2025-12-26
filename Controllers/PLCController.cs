@@ -801,6 +801,16 @@ namespace HavenCNCServer.Controllers
         /// I/O symbolic name
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Text to display when I/O is active/on
+        /// </summary>
+        public string ActiveText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Text to display when I/O is inactive/off
+        /// </summary>
+        public string InactiveText { get; set; } = string.Empty;
     }
 
     /// <summary>

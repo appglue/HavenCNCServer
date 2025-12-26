@@ -70,8 +70,7 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Enable RTG (Real Time Graphics) display
         /// </summary>
-        [JsonPropertyName("rtgDisplay")]
-        public bool? RTGDisplay { get; set; }
+        public bool? RtgDisplay { get; set; }
 
         /// <summary>
         /// Enable spindle speed scaling (Parameter 78 bit 4)
@@ -161,19 +160,16 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// SSV (Spindle Speed Variation) cycle time
         /// </summary>
-        [JsonPropertyName("ssvCycleTime")]
-        public double? SSVCycleTime { get; set; }
+        public double? SsvCycleTime { get; set; }
 
         /// <summary>
         /// SSV (Spindle Speed Variation) amount percentage
         /// </summary>
-        [JsonPropertyName("ssvAmount")]
-        public double? SSVAmount { get; set; }
+        public double? SsvAmount { get; set; }
 
         /// <summary>
         /// FRV (Feed Rate Variation) cycle time
         /// </summary>
-        [JsonPropertyName("frvCycleTime")]
-        public double? FRVCycleTime { get; set; }
+        public double? FrvCycleTime { get; set; }
     }
 }
