@@ -792,6 +792,7 @@ namespace HavenCNCServer.Models
                         if (messageEvent.EventCode == 306)
                         {
                             LoggingService.LogSuccess($"✓ Job {_jobId} received completion event (code 306): {messageEvent.Message}", "CNCJob");
+                            LoggingService.LogInfo($"[DEBUG] Job completion triggered - IsRunning={IsRunning}, IsComplete={IsComplete}, IsStepRunMode={IsStepRunMode}, OnJobCompleted callback={(OnJobCompleted != null ? "SET" : "NULL")}", "CNCJob");
 
                             IsRunning = false;
                             IsComplete = true;
@@ -804,7 +805,15 @@ namespace HavenCNCServer.Models
                             System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - received code 306: {messageEvent.Message}");
 
                             // Notify completion callback
-                            OnJobCompleted?.Invoke(this);
+                            if (OnJobCompleted != null)
+                            {
+                                LoggingService.LogInfo($"[DEBUG] Invoking OnJobCompleted callback for job {_jobId}", "CNCJob");
+                                OnJobCompleted?.Invoke(this);
+                            }
+                            else
+                            {
+                                LoggingService.LogWarning($"[DEBUG] OnJobCompleted callback is NULL - job completion will not be sent to client!", "CNCJob");
+                            }
                         }
                     }
 

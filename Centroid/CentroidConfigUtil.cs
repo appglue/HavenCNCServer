@@ -266,10 +266,10 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetAxisReversal(axisEnum, config.DirectionReversal.Value);
                 }
 
-                if (!string.IsNullOrEmpty(config.Label))
+                if (!string.IsNullOrEmpty(config.AxisType))
                 {
-                    LoggingService.Log($"    Setting label: {config.Label}");
-                    cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
+                    LoggingService.Log($"    Setting label: {config.AxisType}");
+                    cncPipe.axis.SetLabel(axisEnum, config.AxisType[0]); // SetLabel expects a char
                 }
 
                 // Note: DriveEnableDelay may be a global parameter rather than per-axis
@@ -283,10 +283,10 @@ namespace HavenCNCServer.Centroid
 
                 // Configure axis properties (rotary, signal inversions, etc.) via parameters
                 // This must come AFTER SetAxisReversal to ensure proper configuration
-                LoggingService.Log($"  Configuring axis properties for {config.Label ?? "Axis " + config.AxisNumber}...");
+                LoggingService.Log($"  Configuring axis properties for {config.AxisType ?? "Axis " + config.AxisNumber}...");
                 ConfigureAxisProperties(config);
 
-                LoggingService.Log($"Axis {config.AxisNumber} ({config.Label ?? "unnamed"}) configured successfully");
+                LoggingService.Log($"Axis {config.AxisNumber} ({config.AxisType ?? "unnamed"}) configured successfully");
                 return true;
             }
             catch (Exception ex)
@@ -1522,13 +1522,13 @@ namespace HavenCNCServer.Centroid
                 for (int i = 0; i < axes.Count; i++)
                 {
                     var axis = axes[i];
-                    LoggingService.Log($"  Configuring axis {i + 1}/{axes.Count}: {axis.Label} (Axis {axis.AxisNumber})...");
+                    LoggingService.Log($"  Configuring axis {i + 1}/{axes.Count}: {axis.AxisType} (Axis {axis.AxisNumber})...");
                     if (!ConfigureAxis(axis))
                     {
-                        LoggingService.Log($"ERROR: Failed to configure axis {axis.Label} (Axis {axis.AxisNumber})", LoggingService.LogLevel.Error);
+                        LoggingService.Log($"ERROR: Failed to configure axis {axis.AxisType} (Axis {axis.AxisNumber})", LoggingService.LogLevel.Error);
                         return false;
                     }
-                    LoggingService.Log($"  Axis {axis.Label} configured successfully");
+                    LoggingService.Log($"  Axis {axis.AxisType} configured successfully");
                 }
                 LoggingService.Log($"Step 2/9: All {axes.Count} axes configured successfully");
 

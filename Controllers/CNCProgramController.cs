@@ -236,7 +236,10 @@ namespace HavenCNCServer.Controllers
                     LinesExecuted = completedJob.LineNumber,
                     FilePath = completedJob.FilePath
                 };
+
+                LoggingService.LogInfo($"[DEBUG] Pushing JobCompletedEvent to SignalR - JobId={jobCompletedEvent.JobId}, Success={jobCompletedEvent.Success}, Duration={jobCompletedEvent.Duration}, Lines={jobCompletedEvent.LinesExecuted}", "CNCProgramController");
                 CNCJobInfoListener.PushCustomEvent(jobCompletedEvent);
+                LoggingService.LogInfo($"[DEBUG] JobCompletedEvent pushed successfully", "CNCProgramController");
 
                 lock (_jobsLock)
                 {
