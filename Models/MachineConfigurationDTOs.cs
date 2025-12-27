@@ -30,30 +30,10 @@ namespace HavenCNCServer.Models
         public List<PWMConfiguration>? PWMOutputs { get; set; }
 
         /// <summary>
-        /// ATC configuration (optional)
+        /// Global system configuration (optional)
+        /// Includes step frequency, drive fault delay, and other global settings
         /// </summary>
-        public ATCConfiguration? ATC { get; set; }
-    }
-
-    /// <summary>
-    /// ATC validation result DTO for ATC configuration validation
-    /// </summary>
-    public class ATCValidationResult
-    {
-        /// <summary>
-        /// Whether the configuration is valid
-        /// </summary>
-        public bool Valid { get; set; }
-
-        /// <summary>
-        /// List of validation issues found
-        /// </summary>
-        public string[] Issues { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// ATC type
-        /// </summary>
-        public string Type { get; set; } = string.Empty;
+        public GlobalSystemConfiguration? GlobalSystem { get; set; }
     }
 
     /// <summary>

@@ -352,14 +352,17 @@ namespace HavenCNCServer.Controllers
             try
             {
                 LoggingService.Log("=== ConfigureCompleteMachine API called ===");
-                LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, ATC: {config.ATC != null}");
+                LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, GlobalSystem: {config.GlobalSystem != null}");
 
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     config.Axes ?? new List<AxisConfiguration>(),
                     config.Spindle!,
                     config.Probe,
                     config.PWMOutputs,
-                    config.ATC
+                    atc: null,
+                    touchPlate: null,
+                    secondSpindle: null,
+                    globalSystem: config.GlobalSystem
                 );
 
                 if (result)
@@ -437,24 +440,6 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Configure ATC settings
-        /// </summary>
-        /// <param name="config">ATC configuration</param>
-        /// <returns>Configuration result</returns>
-        [HttpPost("ConfigureATC")]
-        public bool ConfigureATC([FromBody] ATCConfiguration config)
-        {
-            try
-            {
-                return CentroidConfigUtil.ConfigureATC(config);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to configure ATC: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
         /// Configure probe settings
         /// </summary>
         /// <param name="config">Probe configuration</param>
@@ -487,31 +472,6 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Failed to configure tool touch off: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Validate ATC configuration for issues
-        /// </summary>
-        /// <param name="config">ATC configuration to validate</param>
-        /// <returns>Validation results</returns>
-        [HttpPost("ValidateATCConfiguration")]
-        public ATCValidationResult ValidateATCConfiguration([FromBody] ATCConfiguration config)
-        {
-            try
-            {
-                var issues = CentroidConfigUtil.ValidateATCConfiguration(config);
-
-                return new ATCValidationResult
-                {
-                    Valid = issues.Count == 0,
-                    Issues = issues.ToArray(),
-                    Type = config.Type.ToString()
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to validate ATC configuration: {ex.Message}", ex);
             }
         }
 

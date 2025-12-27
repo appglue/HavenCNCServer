@@ -266,10 +266,10 @@ namespace HavenCNCServer.Centroid
                     cncPipe.axis.SetAxisReversal(axisEnum, config.DirectionReversal.Value);
                 }
 
-                if (!string.IsNullOrEmpty(config.Label))
+                if (!string.IsNullOrEmpty(config.AxisType))
                 {
-                    LoggingService.Log($"    Setting label: {config.Label}");
-                    cncPipe.axis.SetLabel(axisEnum, config.Label[0]); // SetLabel expects a char
+                    LoggingService.Log($"    Setting label: {config.AxisType}");
+                    cncPipe.axis.SetLabel(axisEnum, config.AxisType[0]); // SetLabel expects a char
                 }
 
                 // Note: DriveEnableDelay may be a global parameter rather than per-axis
@@ -283,10 +283,10 @@ namespace HavenCNCServer.Centroid
 
                 // Configure axis properties (rotary, signal inversions, etc.) via parameters
                 // This must come AFTER SetAxisReversal to ensure proper configuration
-                LoggingService.Log($"  Configuring axis properties for {config.Label ?? "Axis " + config.AxisNumber}...");
+                LoggingService.Log($"  Configuring axis properties for {config.AxisType ?? "Axis " + config.AxisNumber}...");
                 ConfigureAxisProperties(config);
 
-                LoggingService.Log($"Axis {config.AxisNumber} ({config.Label ?? "unnamed"}) configured successfully");
+                LoggingService.Log($"Axis {config.AxisNumber} ({config.AxisType ?? "unnamed"}) configured successfully");
                 return true;
             }
             catch (Exception ex)
@@ -760,67 +760,6 @@ namespace HavenCNCServer.Centroid
             {
                 LoggingService.Log($"EXCEPTION in ConfigurePWM for Output {config.OutputNumber}: {ex.Message}", LoggingService.LogLevel.Error);
                 LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
-                return false;
-            }
-        }
-
-        #endregion
-
-        #region ATC Configuration Methods
-
-        /// <summary>
-        /// Configures ATC (Automatic Tool Changer) parameters
-        /// </summary>
-        /// <param name="config">ATC configuration</param>
-        /// <returns>True if successful</returns>
-        public static bool ConfigureATC(ATCConfiguration config)
-        {
-            try
-            {
-                // Core ATC parameters:
-                CNCUtils.SetParameterValue(CentroidParameters.TOOL_CHANGER_INSTALLED, config.Type != ATCType.None ? 1 : 0);
-                CNCUtils.SetParameterValue(CentroidParameters.ATC_TYPE, (int)config.Type);
-                CNCUtils.SetParameterValue(CentroidParameters.ATC_MAX_BINS, config.MaxBins);
-
-                // Type-specific parameters
-                switch (config.Type)
-                {
-                    case ATCType.Carousel:
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_SKIP_FIRST_COUNT_ON_REVERSAL, config.SkipFirstCountOnReversal ? 1 : 0);
-                        // Set G30 reference points for tool change position
-                        // MainWindow.skin.reference.SetG30(config.ChangePositionX, config.ChangePositionY, config.ChangePositionZ);
-                        break;
-
-                    case ATCType.RackMount:
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_HOLDING_CONFIGURATION, config.HoldingConfiguration);
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TOOL_LENGTH_METHOD, config.ToolLengthMethod);
-                        break;
-
-                    case ATCType.CounterTurret:
-                    case ATCType.TimeTurret:
-                    case ATCType.ElectricTurret:
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_DELAY_TO_START, (int)(config.TimeDelayToStart * 1000));
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_TO_REVERSE, (int)(config.TimeToReverse * 1000));
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_TO_FAULT, (int)(config.TimeToFault * 1000));
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_DELAY_TO_START_ALT, (int)(config.TimeDelayToStart * 1000));
-                        if (config.Type == ATCType.TimeTurret)
-                        {
-                            CNCUtils.SetParameterValue(CentroidParameters.ATC_TIME_PER_TOOL_POSITION, (int)(config.TimePerToolPosition * 1000));
-                        }
-                        break;
-
-                    case ATCType.AxisDrivenTurret:
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TRAVEL_PAST_DISTANCE, (int)(config.TravelPastDistance * 10000));
-                        CNCUtils.SetParameterValue(CentroidParameters.ATC_TRAVEL_BEHIND_DISTANCE, (int)(config.TravelBehindDistance * 10000));
-                        break;
-                }
-
-                System.Diagnostics.Debug.WriteLine($"Configuring ATC: Type {config.Type}, {config.MaxBins} bins");
-
-                return true;
-            }
-            catch (Exception)
-            {
                 return false;
             }
         }
@@ -1522,13 +1461,13 @@ namespace HavenCNCServer.Centroid
                 for (int i = 0; i < axes.Count; i++)
                 {
                     var axis = axes[i];
-                    LoggingService.Log($"  Configuring axis {i + 1}/{axes.Count}: {axis.Label} (Axis {axis.AxisNumber})...");
+                    LoggingService.Log($"  Configuring axis {i + 1}/{axes.Count}: {axis.AxisType} (Axis {axis.AxisNumber})...");
                     if (!ConfigureAxis(axis))
                     {
-                        LoggingService.Log($"ERROR: Failed to configure axis {axis.Label} (Axis {axis.AxisNumber})", LoggingService.LogLevel.Error);
+                        LoggingService.Log($"ERROR: Failed to configure axis {axis.AxisType} (Axis {axis.AxisNumber})", LoggingService.LogLevel.Error);
                         return false;
                     }
-                    LoggingService.Log($"  Axis {axis.Label} configured successfully");
+                    LoggingService.Log($"  Axis {axis.AxisType} configured successfully");
                 }
                 LoggingService.Log($"Step 2/9: All {axes.Count} axes configured successfully");
 
@@ -1611,36 +1550,20 @@ namespace HavenCNCServer.Centroid
                     LoggingService.Log("Step 7/9: Skipping PWM configuration (not provided)");
                 }
 
-                // Step 8: Configure ATC if provided
-                if (atc != null)
-                {
-                    LoggingService.Log($"Step 8/9: Configuring ATC (Type: {atc.Type})...");
-                    if (!ConfigureATC(atc))
-                    {
-                        LoggingService.Log($"ERROR: ATC configuration failed (Type: {atc.Type})", LoggingService.LogLevel.Error);
-                        return false;
-                    }
-                    LoggingService.Log("Step 8/9: ATC configured successfully");
-                }
-                else
-                {
-                    LoggingService.Log("Step 8/9: Skipping ATC configuration (not provided)");
-                }
-
-                // Step 9: Configure rotary settings if provided
+                // Step 8: Configure rotary settings if provided
                 if (rotary != null)
                 {
-                    LoggingService.Log("Step 9/9: Configuring rotary settings...");
+                    LoggingService.Log("Step 8/8: Configuring rotary settings...");
                     if (!ConfigureRotary(rotary))
                     {
                         LoggingService.Log("ERROR: Rotary configuration failed", LoggingService.LogLevel.Error);
                         return false;
                     }
-                    LoggingService.Log("Step 9/9: Rotary settings configured successfully");
+                    LoggingService.Log("Step 8/8: Rotary settings configured successfully");
                 }
                 else
                 {
-                    LoggingService.Log("Step 9/9: Skipping rotary configuration (not provided)");
+                    LoggingService.Log("Step 8/8: Skipping rotary configuration (not provided)");
                 }
 
                 LoggingService.Log("=== Complete Machine Configuration Finished Successfully ===");
@@ -1865,92 +1788,6 @@ namespace HavenCNCServer.Centroid
             foreach (var output in invalidOutputs)
             {
                 issues.Add($"Output number {output.Number} is out of valid range (1-64)");
-            }
-
-            return issues;
-        }
-
-        /// <summary>
-        /// Validates ATC configuration for issues
-        /// </summary>
-        /// <param name="atc">ATC configuration to validate</param>
-        /// <returns>List of validation messages</returns>
-        public static List<string> ValidateATCConfiguration(ATCConfiguration atc)
-        {
-            var issues = new List<string>();
-
-            if (atc.Type == ATCType.None)
-            {
-                return issues; // No validation needed for disabled ATC
-            }
-
-            // Validate tool count
-            if (atc.MaxBins < 1 || atc.MaxBins > 99)
-            {
-                issues.Add($"ATC tool count {atc.MaxBins} is out of valid range (1-99)");
-            }
-
-            // Type-specific validation
-            switch (atc.Type)
-            {
-                case ATCType.Carousel:
-                    // Position validation for carousel
-                    if (atc.ChangePositionZ <= 0)
-                    {
-                        issues.Add("ATC change position Z must be positive (safe height)");
-                    }
-                    break;
-
-                case ATCType.CounterTurret:
-                case ATCType.TimeTurret:
-                case ATCType.ElectricTurret:
-                    // Timing validation for turret systems
-                    if (atc.TimeDelayToStart < 0)
-                    {
-                        issues.Add("ATC time delay to start cannot be negative");
-                    }
-                    if (atc.TimeToReverse <= 0)
-                    {
-                        issues.Add("ATC time to reverse must be positive");
-                    }
-                    if (atc.TimeToFault <= atc.TimeToReverse)
-                    {
-                        issues.Add("ATC time to fault must be greater than time to reverse");
-                    }
-                    if (atc.Type == ATCType.TimeTurret && atc.TimePerToolPosition <= 0)
-                    {
-                        issues.Add("Time turret requires positive time per tool position");
-                    }
-                    break;
-
-                case ATCType.AxisDrivenTurret:
-                    // Distance validation for axis-driven systems
-                    if (atc.TravelPastDistance < 0)
-                    {
-                        issues.Add("ATC travel past distance cannot be negative");
-                    }
-                    if (atc.TravelBehindDistance < 0)
-                    {
-                        issues.Add("ATC travel behind distance cannot be negative");
-                    }
-                    break;
-
-                case ATCType.RackMount:
-                    // Position validation for rack mount
-                    if (atc.ChangePositionZ <= 0)
-                    {
-                        issues.Add("ATC change position Z must be positive (safe height)");
-                    }
-                    // Rack mount specific validation
-                    if (atc.HoldingConfiguration < 0 || atc.HoldingConfiguration > 1)
-                    {
-                        issues.Add("Rack mount holding configuration must be 0 (Hole) or 1 (Fork)");
-                    }
-                    if (atc.ToolLengthMethod < 0 || atc.ToolLengthMethod > 1)
-                    {
-                        issues.Add("Tool length method must be 0 (Fixed position) or 1 (Surface plate)");
-                    }
-                    break;
             }
 
             return issues;

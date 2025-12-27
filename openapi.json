@@ -536,56 +536,6 @@
         }
       }
     },
-    "/api/CNCConfiguration/ConfigureATC": {
-      "post": {
-        "tags": [
-          "CNCConfiguration"
-        ],
-        "summary": "Configure ATC settings",
-        "requestBody": {
-          "description": "ATC configuration",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/CNCConfiguration/ConfigureProbe": {
       "post": {
         "tags": [
@@ -679,56 +629,6 @@
               "text/json": {
                 "schema": {
                   "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCConfiguration/ValidateATCConfiguration": {
-      "post": {
-        "tags": [
-          "CNCConfiguration"
-        ],
-        "summary": "Validate ATC configuration for issues",
-        "requestBody": {
-          "description": "ATC configuration to validate",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ATCConfiguration"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ATCValidationResult"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ATCValidationResult"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ATCValidationResult"
                 }
               }
             }
@@ -4381,124 +4281,10 @@
   },
   "components": {
     "schemas": {
-      "ATCConfiguration": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/ATCType"
-          },
-          "maxBins": {
-            "type": "integer",
-            "description": "Maximum number of tool positions",
-            "format": "int32"
-          },
-          "changePositionX": {
-            "type": "number",
-            "description": "Tool change position X coordinate",
-            "format": "double"
-          },
-          "changePositionY": {
-            "type": "number",
-            "description": "Tool change position Y coordinate",
-            "format": "double"
-          },
-          "changePositionZ": {
-            "type": "number",
-            "description": "Tool change position Z coordinate",
-            "format": "double"
-          },
-          "timeDelayToStart": {
-            "type": "number",
-            "description": "Time delay to start (turret systems)",
-            "format": "double"
-          },
-          "timeToReverse": {
-            "type": "number",
-            "description": "Time to reverse (turret systems)",
-            "format": "double"
-          },
-          "timeToFault": {
-            "type": "number",
-            "description": "Time to fault (turret systems)",
-            "format": "double"
-          },
-          "timePerToolPosition": {
-            "type": "number",
-            "description": "Time per tool position (time-based turret)",
-            "format": "double"
-          },
-          "travelPastDistance": {
-            "type": "number",
-            "description": "Travel past distance (axis-driven turret)",
-            "format": "double"
-          },
-          "travelBehindDistance": {
-            "type": "number",
-            "description": "Travel behind distance (axis-driven turret)",
-            "format": "double"
-          },
-          "skipFirstCountOnReversal": {
-            "type": "boolean",
-            "description": "Skip first count on reversal (carousel)"
-          },
-          "holdingConfiguration": {
-            "type": "integer",
-            "description": "Holding configuration for rack mount (0=Hole, 1=Fork)",
-            "format": "int32"
-          },
-          "toolLengthMethod": {
-            "type": "integer",
-            "description": "Tool length measurement method (0=Fixed position, 1=Surface plate)",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Represents ATC (Automatic Tool Changer) configuration"
-      },
-      "ATCType": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
-        ],
-        "type": "integer",
-        "description": "ATC types supported by the system",
-        "format": "int32"
-      },
-      "ATCValidationResult": {
-        "type": "object",
-        "properties": {
-          "valid": {
-            "type": "boolean",
-            "description": "Whether the configuration is valid"
-          },
-          "issues": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of validation issues found",
-            "nullable": true
-          },
-          "type": {
-            "type": "string",
-            "description": "ATC type",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "ATC validation result DTO for ATC configuration validation"
-      },
       "AlwaysOnTopStatus": {
         "type": "object",
         "properties": {
-          "isAlwaysOnTop": {
+          "IsAlwaysOnTop": {
             "type": "boolean",
             "description": "Whether the main window is currently set to always stay on top"
           }
@@ -4509,17 +4295,17 @@
       "AvailableParametersResponse": {
         "type": "object",
         "properties": {
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Descriptive message",
             "nullable": true
           },
-          "parameterCount": {
+          "ParameterCount": {
             "type": "integer",
             "description": "Total parameter count",
             "format": "int32"
           },
-          "parameters": {
+          "Parameters": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ParameterInfo"
@@ -4534,151 +4320,151 @@
       "AxisConfiguration": {
         "type": "object",
         "properties": {
-          "axisNumber": {
+          "AxisNumber": {
             "type": "integer",
             "description": "Axis number (1-8) - Required",
             "format": "int32"
           },
-          "axisType": {
+          "AxisType": {
             "type": "string",
             "description": "Axis label (X, Y, Z, A, B, C, U, V, W)",
             "nullable": true
           },
-          "stepsPerRevolution": {
+          "StepsPerRevolution": {
             "type": "integer",
             "description": "Steps per revolution (motor/drive steps)",
             "format": "int32",
             "nullable": true
           },
-          "overallTurnsRatio": {
+          "OverallTurnsRatio": {
             "type": "number",
             "description": "Turn ratio - distance per revolution (inches/mm per rev for linear, degrees for rotary)",
             "format": "double",
             "nullable": true
           },
-          "plusTravelLimit": {
+          "PlusTravelLimit": {
             "type": "number",
             "description": "Plus travel limit",
             "format": "double",
             "nullable": true
           },
-          "minusTravelLimit": {
+          "MinusTravelLimit": {
             "type": "number",
             "description": "Minus travel limit",
             "format": "double",
             "nullable": true
           },
-          "lashCompensation": {
+          "LashCompensation": {
             "type": "number",
             "description": "Backlash compensation amount",
             "format": "double",
             "nullable": true
           },
-          "slowJogRate": {
+          "SlowJogRate": {
             "type": "number",
             "description": "Slow jog rate",
             "format": "double",
             "nullable": true
           },
-          "fastJogRate": {
+          "FastJogRate": {
             "type": "number",
             "description": "Fast jog rate",
             "format": "double",
             "nullable": true
           },
-          "maxRate": {
+          "MaxRate": {
             "type": "number",
             "description": "Maximum rate for axis movement",
             "format": "double",
             "nullable": true
           },
-          "fastJogPlusDirection": {
+          "FastJogPlusDirection": {
             "type": "number",
             "description": "Fast jog rate in plus direction",
             "format": "double",
             "nullable": true
           },
-          "fastJogMinusDirection": {
+          "FastJogMinusDirection": {
             "type": "number",
             "description": "Fast jog rate in minus direction",
             "format": "double",
             "nullable": true
           },
-          "accelDecel": {
+          "AccelDecel": {
             "type": "number",
             "description": "Acceleration time in seconds",
             "format": "double",
             "nullable": true
           },
-          "homingFeedrate": {
+          "HomingFeedrate": {
             "type": "number",
             "description": "Homing feedrate - the feedrate that the machine will run at to home each axis",
             "format": "double",
             "nullable": true
           },
-          "driveEnableDelay": {
+          "DriveEnableDelay": {
             "type": "integer",
             "description": "Drive enable delay in milliseconds",
             "format": "int32",
             "nullable": true
           },
-          "directionReversal": {
+          "DirectionReversal": {
             "type": "boolean",
             "description": "Whether axis direction is reversed",
             "nullable": true
           },
-          "masterAxis": {
+          "MasterAxis": {
             "type": "integer",
             "description": "Master axis for pairing (0 = none, 1-8 = master axis number)",
             "format": "int32",
             "nullable": true
           },
-          "isRotary": {
+          "IsRotary": {
             "type": "boolean",
             "description": "Whether this is a rotary axis (Parameter bit 0)",
             "nullable": true
           },
-          "rotaryWrapAround": {
+          "RotaryWrapAround": {
             "type": "boolean",
             "description": "Rotary DRO wrap around display mode (Parameter bit 1)",
             "nullable": true
           },
-          "cAxisEnabled": {
+          "CAxisEnabled": {
             "type": "boolean",
             "description": "C-Axis enable (Parameter bit 4)",
             "nullable": true
           },
-          "preventDivideBy360": {
+          "PreventDivideBy360": {
             "type": "boolean",
             "description": "Prevent divide by 360 for C-Axis (Parameter bit 7)",
             "nullable": true
           },
-          "hideFromDRO": {
+          "HideFromDRO": {
             "type": "boolean",
             "description": "Hide axis from DRO display - ATC Turret (Parameter bit 9)",
             "nullable": true
           },
-          "parallelToX": {
+          "ParallelToX": {
             "type": "boolean",
             "description": "Rotary axis parallel to X (Parameter bit 11)",
             "nullable": true
           },
-          "parallelToY": {
+          "ParallelToY": {
             "type": "boolean",
             "description": "Rotary axis parallel to Y (Parameter bit 12)",
             "nullable": true
           },
-          "stepSignalInverted": {
+          "StepSignalInverted": {
             "type": "boolean",
             "description": "Invert step signal for this axis (Parameter 961 - 4-bit nibble per axis)",
             "nullable": true
           },
-          "directionSignalInverted": {
+          "DirectionSignalInverted": {
             "type": "boolean",
             "description": "Invert direction signal for this axis (Parameter 961 - 4-bit nibble per axis)",
             "nullable": true
           },
-          "enableSignalInverted": {
+          "EnableSignalInverted": {
             "type": "boolean",
             "description": "Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)",
             "nullable": true
@@ -4690,21 +4476,21 @@
       "BoardConfiguration": {
         "type": "object",
         "properties": {
-          "boardType": {
+          "BoardType": {
             "type": "string",
             "description": "Board type: \"Acorn\" or \"Acorn6\"",
             "nullable": true
           },
-          "hasExtensionBoard": {
+          "HasExtensionBoard": {
             "type": "boolean",
             "description": "Whether an extension board is installed"
           },
-          "maxInputs": {
+          "MaxInputs": {
             "type": "integer",
             "description": "Maximum number of available input ports",
             "format": "int32"
           },
-          "maxOutputs": {
+          "MaxOutputs": {
             "type": "integer",
             "description": "Maximum number of available output ports",
             "format": "int32"
@@ -4716,7 +4502,7 @@
       "BulkIOStatesResponse": {
         "type": "object",
         "properties": {
-          "inputs": {
+          "Inputs": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IOState"
@@ -4724,7 +4510,7 @@
             "description": "List of input states (1-100)",
             "nullable": true
           },
-          "outputs": {
+          "Outputs": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IOState"
@@ -4732,7 +4518,7 @@
             "description": "List of output states (1-100)",
             "nullable": true
           },
-          "readAt": {
+          "ReadAt": {
             "type": "string",
             "description": "Timestamp when the states were read",
             "format": "date-time"
@@ -4744,11 +4530,11 @@
       "CNCReadyResponse": {
         "type": "object",
         "properties": {
-          "isReady": {
+          "IsReady": {
             "type": "boolean",
             "description": "Whether the CNC is ready to accept commands"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Message describing the CNC readiness state",
             "nullable": true
@@ -4760,16 +4546,16 @@
       "CNCResetResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the reset operation was successful"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Message describing the result of the reset operation",
             "nullable": true
           },
-          "resetEventUsed": {
+          "ResetEventUsed": {
             "type": "integer",
             "description": "The skin event number that was used for the reset operation",
             "format": "int32",
@@ -4782,15 +4568,15 @@
       "CNCServerStatus": {
         "type": "object",
         "properties": {
-          "isRunning": {
+          "IsRunning": {
             "type": "boolean",
             "description": "Whether the CNC server is currently running"
           },
-          "canStart": {
+          "CanStart": {
             "type": "boolean",
             "description": "Whether the server can be started"
           },
-          "canStop": {
+          "CanStop": {
             "type": "boolean",
             "description": "Whether the server can be stopped"
           }
@@ -4801,17 +4587,17 @@
       "CheckpointInfo": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Checkpoint name",
             "nullable": true
           },
-          "fileCount": {
+          "FileCount": {
             "type": "integer",
             "description": "Number of files in checkpoint",
             "format": "int32"
           },
-          "created": {
+          "Created": {
             "type": "string",
             "description": "Creation timestamp",
             "nullable": true
@@ -4823,12 +4609,12 @@
       "CheckpointSaveRequest": {
         "type": "object",
         "properties": {
-          "checkpointName": {
+          "CheckpointName": {
             "type": "string",
             "description": "Name of the checkpoint",
             "nullable": true
           },
-          "data": {
+          "Data": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConfigurationDataRequest"
@@ -4843,7 +4629,7 @@
       "CompileAndInstallPLCRequest": {
         "type": "object",
         "properties": {
-          "plcLines": {
+          "PlcLines": {
             "type": "array",
             "items": {
               "type": "string"
@@ -4851,7 +4637,7 @@
             "description": "PLC source code as array of lines",
             "nullable": true
           },
-          "messageLines": {
+          "MessageLines": {
             "type": "array",
             "items": {
               "type": "string"
@@ -4859,17 +4645,17 @@
             "description": "PLC message file content as array of lines",
             "nullable": true
           },
-          "estopInputNumber": {
+          "EstopInputNumber": {
             "type": "integer",
             "description": "E-stop input number (optional - if provided, will set parameter 0)",
             "format": "int32",
             "nullable": true
           },
-          "invertEstopInput": {
+          "InvertEstopInput": {
             "type": "boolean",
             "description": "Whether to invert the E-stop input (true = +number, false = -number)"
           },
-          "inputsToMonitor": {
+          "InputsToMonitor": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MonitoredIODefinition"
@@ -4877,7 +4663,7 @@
             "description": "List of input definitions to monitor (number and name)",
             "nullable": true
           },
-          "outputsToMonitor": {
+          "OutputsToMonitor": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MonitoredIODefinition"
@@ -4892,7 +4678,7 @@
       "CompilePLCRequest": {
         "type": "object",
         "properties": {
-          "plcLines": {
+          "PlcLines": {
             "type": "array",
             "items": {
               "type": "string"
@@ -4907,7 +4693,7 @@
       "CompleteMachineConfiguration": {
         "type": "object",
         "properties": {
-          "axes": {
+          "Axes": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AxisConfiguration"
@@ -4915,13 +4701,13 @@
             "description": "Axis configurations",
             "nullable": true
           },
-          "spindle": {
+          "Spindle": {
             "$ref": "#/components/schemas/SpindleConfiguration"
           },
-          "probe": {
+          "Probe": {
             "$ref": "#/components/schemas/ProbeConfiguration"
           },
-          "pwmOutputs": {
+          "PWMOutputs": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PWMConfiguration"
@@ -4929,8 +4715,8 @@
             "description": "PWM output configurations (optional)",
             "nullable": true
           },
-          "atc": {
-            "$ref": "#/components/schemas/ATCConfiguration"
+          "GlobalSystem": {
+            "$ref": "#/components/schemas/GlobalSystemConfiguration"
           }
         },
         "additionalProperties": false,
@@ -4939,12 +4725,12 @@
       "ConfigurationDataRequest": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Name of the data item",
             "nullable": true
           },
-          "content": {
+          "Content": {
             "type": "string",
             "description": "Content/value of the data item",
             "nullable": true
@@ -4956,12 +4742,12 @@
       "DataItem": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Data item name",
             "nullable": true
           },
-          "content": {
+          "Content": {
             "type": "string",
             "description": "Data item content",
             "nullable": true
@@ -4973,33 +4759,33 @@
       "GlobalSystemConfiguration": {
         "type": "object",
         "properties": {
-          "stepFrequency": {
+          "StepFrequency": {
             "$ref": "#/components/schemas/StepFrequency"
           },
-          "driveFaultDelay": {
+          "DriveFaultDelay": {
             "type": "integer",
             "description": "Axis Motor Drive fault delay time (milliseconds)\r\nGlobal drive fault delay for all axes",
             "format": "int32",
             "nullable": true
           },
-          "axisSignalInversion": {
+          "AxisSignalInversion": {
             "type": "integer",
             "description": "Global axis signal inversion settings",
             "format": "int32",
             "nullable": true
           },
-          "lowResolutionMode": {
+          "LowResolutionMode": {
             "type": "boolean",
             "description": "Low resolution mode for plasma systems",
             "nullable": true
           },
-          "chargePumpDivider": {
+          "ChargePumpDivider": {
             "type": "integer",
             "description": "Divider for charge pump frequency. 0 = turned off, 96 = default (12.5kHz)\r\nFormula: 1,200,000 / divider = frequency in Hz",
             "format": "int32",
             "nullable": true
           },
-          "toolHeightMeasurementMethod": {
+          "ToolHeightMeasurementMethod": {
             "$ref": "#/components/schemas/ToolHeightMeasurementMethod"
           }
         },
@@ -5009,22 +4795,22 @@
       "IODefinition": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "The symbolic name of the I/O (e.g., \"EStopOk\", \"SpinFWD\")",
             "nullable": true
           },
-          "number": {
+          "Number": {
             "type": "integer",
             "description": "The I/O number (e.g., 1, 2, 65, etc.)",
             "format": "int32"
           },
-          "type": {
+          "Type": {
             "type": "string",
             "description": "The type of I/O: \"INPUT\" or \"OUTPUT\"",
             "nullable": true
           },
-          "rawDefinition": {
+          "RawDefinition": {
             "type": "string",
             "description": "The raw definition line from the PLC source",
             "nullable": true
@@ -5036,7 +4822,7 @@
       "IODefinitionsResponse": {
         "type": "object",
         "properties": {
-          "inputs": {
+          "Inputs": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IODefinition"
@@ -5044,7 +4830,7 @@
             "description": "List of all input definitions",
             "nullable": true
           },
-          "outputs": {
+          "Outputs": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IODefinition"
@@ -5052,12 +4838,12 @@
             "description": "List of all output definitions",
             "nullable": true
           },
-          "sourceFilePath": {
+          "SourceFilePath": {
             "type": "string",
             "description": "The file path that was parsed",
             "nullable": true
           },
-          "parsedAt": {
+          "ParsedAt": {
             "type": "string",
             "description": "Timestamp when the definitions were parsed",
             "format": "date-time"
@@ -5069,12 +4855,12 @@
       "IOState": {
         "type": "object",
         "properties": {
-          "number": {
+          "Number": {
             "type": "integer",
             "description": "The I/O number (1-100)",
             "format": "int32"
           },
-          "isOn": {
+          "IsOn": {
             "type": "boolean",
             "description": "Current state (true = on/active, false = off/inactive)"
           }
@@ -5085,70 +4871,70 @@
       "JobDetails": {
         "type": "object",
         "properties": {
-          "jobId": {
+          "JobId": {
             "type": "string",
             "description": "Job identifier",
             "nullable": true
           },
-          "lineNumber": {
+          "LineNumber": {
             "type": "integer",
             "description": "Current line number",
             "format": "int32"
           },
-          "currentLine": {
+          "CurrentLine": {
             "type": "string",
             "description": "Current G-code line",
             "nullable": true
           },
-          "isRunning": {
+          "IsRunning": {
             "type": "boolean",
             "description": "Whether job is currently running"
           },
-          "isPaused": {
+          "IsPaused": {
             "type": "boolean",
             "description": "Whether job is paused"
           },
-          "isComplete": {
+          "IsComplete": {
             "type": "boolean",
             "description": "Whether job is complete"
           },
-          "createdAt": {
+          "CreatedAt": {
             "type": "string",
             "description": "Job creation timestamp",
             "format": "date-time"
           },
-          "startedAt": {
+          "StartedAt": {
             "type": "string",
             "description": "Job start timestamp",
             "format": "date-time",
             "nullable": true
           },
-          "completedAt": {
+          "CompletedAt": {
             "type": "string",
             "description": "Job completion timestamp",
             "format": "date-time",
             "nullable": true
           },
-          "totalLines": {
+          "TotalLines": {
             "type": "integer",
             "description": "Total number of lines in the job",
             "format": "int32"
           },
-          "lastError": {
+          "LastError": {
             "type": "string",
             "description": "Last error message",
             "nullable": true
           },
-          "filePath": {
+          "FilePath": {
             "type": "string",
             "description": "File path of the job",
             "nullable": true
           },
-          "isStepRunMode": {
+          "IsStepRunMode": {
             "type": "boolean",
             "description": "Whether the job is in step run mode"
           },
-          "stepLineNumber": {
+          "StepLineNumber": {
             "type": "integer",
             "description": "Current step line number in step run mode",
             "format": "int32"
@@ -5160,21 +4946,21 @@
       "JobOperationResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the operation was successful"
           },
-          "jobId": {
+          "JobId": {
             "type": "string",
             "description": "Job ID",
             "nullable": true
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Operation message",
             "nullable": true
           },
-          "error": {
+          "Error": {
             "type": "string",
             "description": "Error details if operation failed",
             "nullable": true
@@ -5186,22 +4972,22 @@
       "MachinePoint": {
         "type": "object",
         "properties": {
-          "x": {
+          "X": {
             "type": "number",
             "description": "X-axis coordinate",
             "format": "double"
           },
-          "y": {
+          "Y": {
             "type": "number",
             "description": "Y-axis coordinate",
             "format": "double"
           },
-          "z": {
+          "Z": {
             "type": "number",
             "description": "Z-axis coordinate",
             "format": "double"
           },
-          "a": {
+          "A": {
             "type": "number",
             "description": "A-axis coordinate (rotational axis)",
             "format": "double"
@@ -5213,22 +4999,22 @@
       "MonitoredIODefinition": {
         "type": "object",
         "properties": {
-          "number": {
+          "Number": {
             "type": "integer",
             "description": "I/O number",
             "format": "int32"
           },
-          "name": {
+          "Name": {
             "type": "string",
             "description": "I/O symbolic name",
             "nullable": true
           },
-          "activeText": {
+          "ActiveText": {
             "type": "string",
             "description": "Text to display when I/O is active/on",
             "nullable": true
           },
-          "inactiveText": {
+          "InactiveText": {
             "type": "string",
             "description": "Text to display when I/O is inactive/off",
             "nullable": true
@@ -5249,15 +5035,15 @@
       "PLCComparisonResult": {
         "type": "object",
         "properties": {
-          "installedFileExists": {
+          "InstalledFileExists": {
             "type": "boolean",
             "description": "Whether an installed PLC file exists"
           },
-          "isDifferent": {
+          "IsDifferent": {
             "type": "boolean",
             "description": "Whether the new PLC is different from installed version (ignoring timestamp)"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Comparison result message",
             "nullable": true
@@ -5269,11 +5055,11 @@
       "PLCCompilationResult": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether compilation was successful"
           },
-          "issues": {
+          "Issues": {
             "type": "array",
             "items": {
               "type": "string"
@@ -5281,7 +5067,7 @@
             "description": "Array of compilation issues (errors/warnings)",
             "nullable": true
           },
-          "compilerOutput": {
+          "CompilerOutput": {
             "type": "array",
             "items": {
               "type": "string"
@@ -5296,19 +5082,19 @@
       "PLCInstallationResult": {
         "type": "object",
         "properties": {
-          "compilationResult": {
+          "CompilationResult": {
             "$ref": "#/components/schemas/PLCCompilationResult"
           },
-          "installationSuccess": {
+          "InstallationSuccess": {
             "type": "boolean",
             "description": "Whether installation was successful"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Result message",
             "nullable": true
           },
-          "monitoredIOSaved": {
+          "MonitoredIOSaved": {
             "type": "boolean",
             "description": "Whether monitored I/O configuration was saved successfully"
           }
@@ -5319,61 +5105,61 @@
       "PWMConfiguration": {
         "type": "object",
         "properties": {
-          "outputNumber": {
+          "OutputNumber": {
             "type": "integer",
             "description": "Output number for PWM signal - Required",
             "format": "int32"
           },
-          "frequency": {
+          "Frequency": {
             "type": "integer",
             "description": "PWM frequency in Hz",
             "format": "int32",
             "nullable": true
           },
-          "sCommandRange1000": {
+          "SCommandRange1000": {
             "type": "boolean",
             "description": "PWM S command range: true = 0-1000, false = 0-100 (parameter 815, bit 1)",
             "nullable": true
           },
-          "floor": {
+          "Floor": {
             "type": "number",
             "description": "PWM floor value (minimum duty cycle percentage)",
             "format": "double",
             "nullable": true
           },
-          "onlyApplyFloorDuringVelocityMoves": {
+          "OnlyApplyFloorDuringVelocityMoves": {
             "type": "boolean",
             "description": "Only apply floor during PWM velocity modulation moves (parameter 815, bit 2)",
             "nullable": true
           },
-          "inverseOutput": {
+          "InverseOutput": {
             "type": "boolean",
             "description": "Inverse PWM output (parameter 815, bit 0)",
             "nullable": true
           },
-          "laserCoolingFanDelayTimer": {
+          "LaserCoolingFanDelayTimer": {
             "type": "number",
             "description": "Laser cooling fan delay timer in seconds (parameter 998)",
             "format": "double",
             "nullable": true
           },
-          "velocityScaling": {
+          "VelocityScaling": {
             "type": "number",
             "description": "Velocity scaling factor",
             "format": "double",
             "nullable": true
           },
-          "isInverted": {
+          "IsInverted": {
             "type": "boolean",
             "description": "Whether PWM signal is inverted (legacy property - use InverseOutput instead)",
             "nullable": true
           },
-          "inverseEnabled": {
+          "InverseEnabled": {
             "type": "boolean",
             "description": "Inverse enable bit (legacy property - use InverseOutput instead)",
             "nullable": true
           },
-          "velocity100": {
+          "Velocity100": {
             "type": "boolean",
             "description": "Velocity 100% mode (legacy property - use SCommandRange1000 instead)",
             "nullable": true
@@ -5385,17 +5171,17 @@
       "ParameterInfo": {
         "type": "object",
         "properties": {
-          "number": {
+          "Number": {
             "type": "integer",
             "description": "Parameter number",
             "format": "int32"
           },
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Parameter name",
             "nullable": true
           },
-          "description": {
+          "Description": {
             "type": "string",
             "description": "Parameter description",
             "nullable": true
@@ -5407,12 +5193,12 @@
       "ParameterSetRequest": {
         "type": "object",
         "properties": {
-          "parameter": {
+          "Parameter": {
             "type": "integer",
             "description": "Parameter number",
             "format": "int32"
           },
-          "value": {
+          "Value": {
             "type": "number",
             "description": "Parameter value",
             "format": "double"
@@ -5424,22 +5210,22 @@
       "ParameterValue": {
         "type": "object",
         "properties": {
-          "parameter": {
+          "Parameter": {
             "type": "integer",
             "description": "Parameter number",
             "format": "int32"
           },
-          "parameterName": {
+          "ParameterName": {
             "type": "string",
             "description": "Parameter name",
             "nullable": true
           },
-          "value": {
+          "Value": {
             "type": "number",
             "description": "Parameter value",
             "format": "double"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Descriptive message",
             "nullable": true
@@ -5451,69 +5237,69 @@
       "ProbeConfiguration": {
         "type": "object",
         "properties": {
-          "probePLCInput": {
+          "ProbePLCInput": {
             "type": "integer",
             "description": "Probe PLC input number",
             "format": "int32",
             "nullable": true
           },
-          "probeType": {
+          "ProbeType": {
             "$ref": "#/components/schemas/ProbeType"
           },
-          "inputStateWhenTripped": {
+          "InputStateWhenTripped": {
             "$ref": "#/components/schemas/ProbeInputState"
           },
-          "probeToolNumber": {
+          "ProbeToolNumber": {
             "type": "integer",
             "description": "Probe tool number",
             "format": "int32",
             "nullable": true
           },
-          "fastProbeRate": {
+          "FastProbeRate": {
             "type": "number",
             "description": "Fast probe rate",
             "format": "double",
             "nullable": true
           },
-          "slowProbeRate": {
+          "SlowProbeRate": {
             "type": "number",
             "description": "Slow probe rate",
             "format": "double",
             "nullable": true
           },
-          "recoveryDistance": {
+          "RecoveryDistance": {
             "type": "number",
             "description": "Recovery distance after probe contact",
             "format": "double",
             "nullable": true
           },
-          "maximumProbingDistance": {
+          "MaximumProbingDistance": {
             "type": "number",
             "description": "Maximum probing distance",
             "format": "double",
             "nullable": true
           },
-          "probeProtectionEnabled": {
+          "ProbeProtectionEnabled": {
             "type": "boolean",
             "description": "Probe protection enabled",
             "nullable": true
           },
-          "probeProtectionBasedOnToolNumber": {
+          "ProbeProtectionBasedOnToolNumber": {
             "type": "boolean",
             "description": "Probe protection based on tool number",
             "nullable": true
           },
-          "displayWarningToVerifyProbe": {
+          "DisplayWarningToVerifyProbe": {
             "type": "boolean",
             "description": "Display warning to verify that probe is functioning properly",
             "nullable": true
           },
-          "inhibitSpindleWhenDetectOn": {
+          "InhibitSpindleWhenDetectOn": {
             "type": "boolean",
             "description": "Inhibit spindle when detect is on (Green)",
             "nullable": true
           },
-          "probeSlowJogSpeeds": {
+          "ProbeSlowJogSpeeds": {
             "type": "array",
             "items": {
               "type": "number",
@@ -5522,7 +5308,7 @@
             "description": "Probe slow jog speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
             "nullable": true
           },
-          "probeFastJogNegativeSpeeds": {
+          "ProbeFastJogNegativeSpeeds": {
             "type": "array",
             "items": {
               "type": "number",
@@ -5531,7 +5317,7 @@
             "description": "Probe fast jog negative speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
             "nullable": true
           },
-          "probeFastJogPositiveSpeeds": {
+          "ProbeFastJogPositiveSpeeds": {
             "type": "array",
             "items": {
               "type": "number",
@@ -5540,54 +5326,54 @@
             "description": "Probe fast jog positive speeds for each axis (in/min)\r\nArray index corresponds to axis (0=Axis1, 1=Axis2, etc.)",
             "nullable": true
           },
-          "inputNumber": {
+          "InputNumber": {
             "type": "integer",
             "description": "Probe input number (legacy - use ProbePLCInput instead)",
             "format": "int32",
             "nullable": true
           },
-          "inputType": {
+          "InputType": {
             "type": "integer",
             "description": "Probe input type (legacy - use InputStateWhenTripped instead)",
             "format": "int32",
             "nullable": true
           },
-          "feedRate": {
+          "FeedRate": {
             "type": "number",
             "description": "Probe feed rate (legacy - use FastProbeRate/SlowProbeRate instead)",
             "format": "double",
             "nullable": true
           },
-          "touchPlateThickness": {
+          "TouchPlateThickness": {
             "type": "number",
             "description": "Touch plate thickness",
             "format": "double",
             "nullable": true
           },
-          "touchPlateInputNumber": {
+          "TouchPlateInputNumber": {
             "type": "integer",
             "description": "Touch plate input number (if different from probe)",
             "format": "int32",
             "nullable": true
           },
-          "touchPlateInputType": {
+          "TouchPlateInputType": {
             "type": "integer",
             "description": "Touch plate input type",
             "format": "int32",
             "nullable": true
           },
-          "probeTypeInt": {
+          "ProbeTypeInt": {
             "type": "integer",
             "description": "Probe type configuration (legacy - use ProbeType enum instead)",
             "format": "int32",
             "nullable": true
           },
-          "displayProbeWarning": {
+          "DisplayProbeWarning": {
             "type": "boolean",
             "description": "Display probe warning (legacy - use DisplayWarningToVerifyProbe instead)",
             "nullable": true
           },
-          "probeInhibit": {
+          "ProbeInhibit": {
             "type": "integer",
             "description": "Probe protection/inhibit settings (legacy)",
             "format": "int32",
@@ -5645,36 +5431,36 @@
       "ProgramStorage": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Unique name identifier for the storage item",
             "nullable": true
           },
-          "createdAt": {
+          "CreatedAt": {
             "type": "string",
             "description": "Creation timestamp",
             "format": "date-time"
           },
-          "updatedAt": {
+          "UpdatedAt": {
             "type": "string",
             "description": "Last updated timestamp",
             "format": "date-time"
           },
-          "exposeAsAction": {
+          "ExposeAsAction": {
             "type": "boolean",
             "description": "Whether this storage should be exposed as an action"
           },
-          "actionCategoryName": {
+          "ActionCategoryName": {
             "type": "string",
             "description": "Action category name for exposure (if ExposeAsAction is true)",
             "nullable": true
           },
-          "data": {
+          "Data": {
             "type": "string",
             "description": "Program or command data content",
             "nullable": true
           },
-          "storageType": {
+          "StorageType": {
             "$ref": "#/components/schemas/StorageType"
           }
         },
@@ -5684,26 +5470,26 @@
       "ResumeJobAtResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the operation was successful"
           },
-          "jobId": {
+          "JobId": {
             "type": "string",
             "description": "Job ID",
             "nullable": true
           },
-          "lineNumber": {
+          "LineNumber": {
             "type": "integer",
             "description": "Line number to resume at",
             "format": "int32"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Operation message",
             "nullable": true
           },
-          "error": {
+          "Error": {
             "type": "string",
             "description": "Error details if operation failed",
             "nullable": true
@@ -5715,12 +5501,12 @@
       "RunGCodeCommandRequest": {
         "type": "object",
         "properties": {
-          "gCode": {
+          "GCode": {
             "type": "string",
             "description": "Single G-code command to execute",
             "nullable": true
           },
-          "fixturePoint": {
+          "FixturePoint": {
             "$ref": "#/components/schemas/MachinePoint"
           }
         },
@@ -5730,24 +5516,24 @@
       "RunGCodeCommandResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the operation was successful"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Operation message",
             "nullable": true
           },
-          "command": {
+          "Command": {
             "type": "string",
             "description": "The command that was executed",
             "nullable": true
           },
-          "job": {
+          "Job": {
             "$ref": "#/components/schemas/JobDetails"
           },
-          "error": {
+          "Error": {
             "type": "string",
             "description": "Error details if operation failed",
             "nullable": true
@@ -5759,7 +5545,7 @@
       "RunGCodeRequest": {
         "type": "object",
         "properties": {
-          "gCodeLines": {
+          "GCodeLines": {
             "type": "array",
             "items": {
               "type": "string"
@@ -5767,15 +5553,15 @@
             "description": "Array of G-code lines to execute",
             "nullable": true
           },
-          "gcodeParameterString": {
+          "GcodeParameterString": {
             "type": "string",
             "description": "Optional parameter string to pass to the G-code program",
             "nullable": true
           },
-          "fixturePoint": {
+          "FixturePoint": {
             "$ref": "#/components/schemas/MachinePoint"
           },
-          "startImmediately": {
+          "StartImmediately": {
             "type": "boolean",
             "description": "Whether to start execution immediately or just create the job"
           }
@@ -5786,29 +5572,29 @@
       "RunGCodeResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the operation was successful"
           },
-          "jobId": {
+          "JobId": {
             "type": "string",
             "description": "Job ID",
             "nullable": true
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Operation message",
             "nullable": true
           },
-          "job": {
+          "Job": {
             "$ref": "#/components/schemas/JobDetails"
           },
-          "filePath": {
+          "FilePath": {
             "type": "string",
             "description": "File path of the created G-code file",
             "nullable": true
           },
-          "error": {
+          "Error": {
             "type": "string",
             "description": "Error details if operation failed",
             "nullable": true
@@ -5820,24 +5606,24 @@
       "SecondSpindleConfiguration": {
         "type": "object",
         "properties": {
-          "enabled": {
+          "Enabled": {
             "type": "boolean",
             "description": "Enable second spindle",
             "nullable": true
           },
-          "maxSpeed": {
+          "MaxSpeed": {
             "type": "integer",
             "description": "Second spindle maximum speed",
             "format": "int32",
             "nullable": true
           },
-          "minSpeed": {
+          "MinSpeed": {
             "type": "integer",
             "description": "Second spindle minimum speed",
             "format": "int32",
             "nullable": true
           },
-          "encoderCounts": {
+          "EncoderCounts": {
             "type": "integer",
             "description": "Second spindle encoder counts per revolution",
             "format": "int32",
@@ -5850,12 +5636,12 @@
       "SetOutputRequest": {
         "type": "object",
         "properties": {
-          "number": {
+          "Number": {
             "type": "integer",
             "description": "Output number",
             "format": "int32"
           },
-          "value": {
+          "Value": {
             "type": "boolean",
             "description": "Output value"
           }
@@ -5866,12 +5652,12 @@
       "SetPLCDataRequest": {
         "type": "object",
         "properties": {
-          "name": {
+          "Name": {
             "type": "string",
             "description": "Name of the PLC data file",
             "nullable": true
           },
-          "lines": {
+          "Lines": {
             "type": "array",
             "items": {
               "type": "string"
@@ -6039,7 +5825,7 @@
       "SkinEventActionRequest": {
         "type": "object",
         "properties": {
-          "action": {
+          "Action": {
             "$ref": "#/components/schemas/SkinEventAction"
           }
         },
@@ -6049,10 +5835,10 @@
       "SkinEventRequest": {
         "type": "object",
         "properties": {
-          "skinEvent": {
+          "SkinEvent": {
             "$ref": "#/components/schemas/SkinEvent"
           },
-          "action": {
+          "Action": {
             "$ref": "#/components/schemas/SkinEventAction"
           }
         },
@@ -6062,11 +5848,11 @@
       "SkinEventResponse": {
         "type": "object",
         "properties": {
-          "success": {
+          "Success": {
             "type": "boolean",
             "description": "Whether the operation was successful"
           },
-          "message": {
+          "Message": {
             "type": "string",
             "description": "Message describing the result of the operation",
             "nullable": true
@@ -6078,188 +5864,188 @@
       "SpindleConfiguration": {
         "type": "object",
         "properties": {
-          "encoderCounts": {
+          "EncoderCounts": {
             "type": "integer",
             "description": "Encoder counts per spindle revolution",
             "format": "int32",
             "nullable": true
           },
-          "spindleAxis": {
+          "SpindleAxis": {
             "type": "integer",
             "description": "Spindle axis number (5 standard, 8 for AcornSix/Hickory)",
             "format": "int32",
             "nullable": true
           },
-          "lowGearRatio": {
+          "LowGearRatio": {
             "type": "number",
             "description": "Low gear ratio",
             "format": "double",
             "nullable": true
           },
-          "mediumGearRatio": {
+          "MediumGearRatio": {
             "type": "number",
             "description": "Medium gear ratio",
             "format": "double",
             "nullable": true
           },
-          "highGearRatio": {
+          "HighGearRatio": {
             "type": "number",
             "description": "High gear ratio",
             "format": "double",
             "nullable": true
           },
-          "maxSpeed": {
+          "MaxSpeed": {
             "type": "integer",
             "description": "Maximum spindle speed",
             "format": "int32",
             "nullable": true
           },
-          "minSpeed": {
+          "MinSpeed": {
             "type": "integer",
             "description": "Minimum spindle speed",
             "format": "int32",
             "nullable": true
           },
-          "analogRange": {
+          "AnalogRange": {
             "type": "integer",
             "description": "Analog output voltage range (0-3)",
             "format": "int32",
             "nullable": true
           },
-          "okDelay": {
+          "OkDelay": {
             "type": "number",
             "description": "Spindle OK delay in seconds",
             "format": "double",
             "nullable": true
           },
-          "fanDelay": {
+          "FanDelay": {
             "type": "number",
             "description": "Cooling fan delay in seconds",
             "format": "double",
             "nullable": true
           },
-          "encoderEnabled": {
+          "EncoderEnabled": {
             "type": "boolean",
             "description": "Enable spindle encoder",
             "nullable": true
           },
-          "rigidTappingEnabled": {
+          "RigidTappingEnabled": {
             "type": "boolean",
             "description": "Enable rigid tapping",
             "nullable": true
           },
-          "rtgDisplay": {
+          "RtgDisplay": {
             "type": "boolean",
             "description": "Enable RTG (Real Time Graphics) display",
             "nullable": true
           },
-          "spindleScalingEnabled": {
+          "SpindleScalingEnabled": {
             "type": "boolean",
             "description": "Enable spindle speed scaling (Parameter 78 bit 4)",
             "nullable": true
           },
-          "secondSpindleEnabled": {
+          "SecondSpindleEnabled": {
             "type": "boolean",
             "description": "Enable second spindle",
             "nullable": true
           },
-          "decelTime": {
+          "DecelTime": {
             "type": "number",
             "description": "Spindle deceleration time in seconds",
             "format": "double",
             "nullable": true
           },
-          "rigidTappingSlowSpeed": {
+          "RigidTappingSlowSpeed": {
             "type": "number",
             "description": "Rigid tapping slow spindle speed",
             "format": "double",
             "nullable": true
           },
-          "rigidTappingSlowTime": {
+          "RigidTappingSlowTime": {
             "type": "number",
             "description": "Rigid tapping slow spindle time",
             "format": "double",
             "nullable": true
           },
-          "threadingTappingAccelDecelDistance": {
+          "ThreadingTappingAccelDecelDistance": {
             "type": "number",
             "description": "Threading and tapping acceleration/deceleration distance",
             "format": "double",
             "nullable": true
           },
-          "minimumRigidTappingRPM": {
+          "MinimumRigidTappingRPM": {
             "type": "integer",
             "description": "Minimum Rigid Tapping RPM (Parameter 68)",
             "format": "int32",
             "nullable": true
           },
-          "durationForMinRigidTappingRPM": {
+          "DurationForMinRigidTappingRPM": {
             "type": "number",
             "description": "Duration For Min. Rigid Tapping RPM in seconds (Parameter 69)",
             "format": "double",
             "nullable": true
           },
-          "spindleDrift": {
+          "SpindleDrift": {
             "type": "integer",
             "description": "Spindle Drift in degrees (Parameter 82)",
             "format": "int32",
             "nullable": true
           },
-          "spindleAccelDecelTime": {
+          "SpindleAccelDecelTime": {
             "type": "integer",
             "description": "Spindle Accel/Decel Time",
             "format": "int32",
             "nullable": true
           },
-          "mFuncBottomHoleG84": {
+          "MFuncBottomHoleG84": {
             "type": "string",
             "description": "M Func To Run At Bottom Of Hole G84 Tapping",
             "nullable": true
           },
-          "mFuncTopHoleG74Counter": {
+          "MFuncTopHoleG74Counter": {
             "type": "string",
             "description": "M Func To Run At Top Of Hole For G74 Counter Tapping",
             "nullable": true
           },
-          "mFuncBottomHoleG74LeftHand": {
+          "MFuncBottomHoleG74LeftHand": {
             "type": "string",
             "description": "M Func To Run At Bottom Of Hole G74 Tapping (Left Hand Taps)",
             "nullable": true
           },
-          "mFuncTopHoleG84Counter": {
+          "MFuncTopHoleG84Counter": {
             "type": "string",
             "description": "M Func To Run At Top Of Hole For G84 Counter Tapping",
             "nullable": true
           },
-          "rigidTappingZAxisSyncDistance": {
+          "RigidTappingZAxisSyncDistance": {
             "type": "integer",
             "description": "Rigid Tapping Z Axis Sync Distance (Parameter 241)",
             "format": "int32",
             "nullable": true
           },
-          "allowSpindleOverride": {
+          "AllowSpindleOverride": {
             "type": "boolean",
             "description": "Allow Spindle Override (Parameter 36 bit 2)",
             "nullable": true
           },
-          "doNotWaitForIndexPulse": {
+          "DoNotWaitForIndexPulse": {
             "type": "boolean",
             "description": "Do Not Wait For Index Pulse (Parameter 36 bit 1)",
             "nullable": true
           },
-          "ssvCycleTime": {
+          "SsvCycleTime": {
             "type": "number",
             "description": "SSV (Spindle Speed Variation) cycle time",
             "format": "double",
             "nullable": true
           },
-          "ssvAmount": {
+          "SsvAmount": {
             "type": "number",
             "description": "SSV (Spindle Speed Variation) amount percentage",
             "format": "double",
             "nullable": true
           },
-          "frvCycleTime": {
+          "FrvCycleTime": {
             "type": "number",
             "description": "FRV (Feed Rate Variation) cycle time",
             "format": "double",
@@ -6284,7 +6070,7 @@
       "StepFrequencyRequest": {
         "type": "object",
         "properties": {
-          "frequency": {
+          "Frequency": {
             "type": "integer",
             "description": "Step frequency in Hz (100,000 - 400,000)",
             "format": "int32"
@@ -6296,12 +6082,12 @@
       "StopAllJobsResponse": {
         "type": "object",
         "properties": {
-          "stoppedJobs": {
+          "StoppedJobs": {
             "type": "integer",
             "description": "Number of jobs stopped",
             "format": "int32"
           },
-          "results": {
+          "Results": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/JobOperationResponse"
@@ -6325,37 +6111,37 @@
       "SystemHardwareInfo": {
         "type": "object",
         "properties": {
-          "systemType": {
+          "SystemType": {
             "type": "string",
             "description": "System type (Acorn, AcornSix, Hickory)",
             "nullable": true
           },
-          "baseInputs": {
+          "BaseInputs": {
             "type": "integer",
             "description": "Number of base I/O points",
             "format": "int32"
           },
-          "baseOutputs": {
+          "BaseOutputs": {
             "type": "integer",
             "description": "Number of base I/O points",
             "format": "int32"
           },
-          "expansionBoards": {
+          "ExpansionBoards": {
             "type": "integer",
             "description": "Number of expansion boards detected",
             "format": "int32"
           },
-          "totalInputs": {
+          "TotalInputs": {
             "type": "integer",
             "description": "Total available inputs",
             "format": "int32"
           },
-          "totalOutputs": {
+          "TotalOutputs": {
             "type": "integer",
             "description": "Total available outputs",
             "format": "int32"
           },
-          "availableInputs": {
+          "AvailableInputs": {
             "type": "array",
             "items": {
               "type": "integer",
@@ -6364,7 +6150,7 @@
             "description": "Available input numbers",
             "nullable": true
           },
-          "availableOutputs": {
+          "AvailableOutputs": {
             "type": "array",
             "items": {
               "type": "integer",
@@ -6380,45 +6166,45 @@
       "SystemInfo": {
         "type": "object",
         "properties": {
-          "systemType": {
+          "SystemType": {
             "$ref": "#/components/schemas/SystemType"
           },
-          "totalInputs": {
+          "TotalInputs": {
             "type": "integer",
             "description": "Total number of inputs available",
             "format": "int32"
           },
-          "totalOutputs": {
+          "TotalOutputs": {
             "type": "integer",
             "description": "Total number of outputs available",
             "format": "int32"
           },
-          "baseInputs": {
+          "BaseInputs": {
             "type": "integer",
             "description": "Number of base inputs (built-in to controller)",
             "format": "int32"
           },
-          "baseOutputs": {
+          "BaseOutputs": {
             "type": "integer",
             "description": "Number of base outputs (built-in to controller)",
             "format": "int32"
           },
-          "expansionInputs": {
+          "ExpansionInputs": {
             "type": "integer",
             "description": "Number of expansion inputs",
             "format": "int32"
           },
-          "expansionOutputs": {
+          "ExpansionOutputs": {
             "type": "integer",
             "description": "Number of expansion outputs",
             "format": "int32"
           },
-          "expansionBoardCount": {
+          "ExpansionBoardCount": {
             "type": "integer",
             "description": "Number of expansion boards connected",
             "format": "int32"
           },
-          "unlockVersion": {
+          "UnlockVersion": {
             "type": "string",
             "description": "Unlock version string from CNC12",
             "nullable": true
@@ -6430,21 +6216,21 @@
       "SystemStatus": {
         "type": "object",
         "properties": {
-          "currentDateTime": {
+          "CurrentDateTime": {
             "type": "string",
             "description": "Current server date and time",
             "format": "date-time"
           },
-          "isCNCConnected": {
+          "IsCNCConnected": {
             "type": "boolean",
             "description": "Whether the CNC pipe connection is active"
           },
-          "status": {
+          "Status": {
             "type": "string",
             "description": "Additional status message",
             "nullable": true
           },
-          "plcVersion": {
+          "PlcVersion": {
             "type": "string",
             "description": "Currently installed PLC version (from PLC source file header)",
             "nullable": true
@@ -6476,68 +6262,68 @@
       "ToolTouchOffConfiguration": {
         "type": "object",
         "properties": {
-          "touchOffToolPLCInput": {
+          "TouchOffToolPLCInput": {
             "type": "integer",
             "description": "Touch Off Tool PLC input number (Parameter 44 for Mill, 244 for Lathe)",
             "format": "int32",
             "nullable": true
           },
-          "toolTouchOffType": {
+          "ToolTouchOffType": {
             "$ref": "#/components/schemas/ToolTouchOffType"
           },
-          "inputStateWhenTriggered": {
+          "InputStateWhenTriggered": {
             "$ref": "#/components/schemas/ToolTouchOffInputState"
           },
-          "displayWarningToVerify": {
+          "DisplayWarningToVerify": {
             "type": "boolean",
             "description": "Display warning to verify that Tool Touch Off is functioning properly",
             "nullable": true
           },
-          "inhibitSpindleWhenDetectOn": {
+          "InhibitSpindleWhenDetectOn": {
             "type": "boolean",
             "description": "Inhibit spindle when detect is on (Green) (Parameter 257)",
             "nullable": true
           },
-          "probeProtectionEnabled": {
+          "ProbeProtectionEnabled": {
             "type": "boolean",
             "description": "Probe protection enabled (Parameter 43 bit field)",
             "nullable": true
           },
-          "useFixedLocation": {
+          "UseFixedLocation": {
             "type": "boolean",
             "description": "Use fixed tool touch off (TT) location (Parameter 17)",
             "nullable": true
           },
-          "fixedLocationX": {
+          "FixedLocationX": {
             "type": "number",
             "description": "Fixed Tool Touch Off X position (machine coordinates) - G30 P3 X",
             "format": "double",
             "nullable": true
           },
-          "fixedLocationY": {
+          "FixedLocationY": {
             "type": "number",
             "description": "Fixed Tool Touch Off Y position (machine coordinates) - G30 P3 Y",
             "format": "double",
             "nullable": true
           },
-          "zClearanceHeight": {
+          "ZClearanceHeight": {
             "type": "number",
             "description": "Z Clearance Height for Auto moves to TT (machine coordinates) - G30 P3 Z",
             "format": "double",
             "nullable": true
           },
-          "subtractHeightWhenSettingOffsets": {
+          "SubtractHeightWhenSettingOffsets": {
             "type": "boolean",
             "description": "Subtract height of TT when setting Tool Height Offsets (Parameter 3 bit 1)",
             "nullable": true
           },
-          "ttHeight": {
+          "TTHeight": {
             "type": "number",
             "description": "TT Height - Height of touch-off device (Parameter 71)",
             "format": "double",
             "nullable": true
           },
-          "detectInputNumber": {
+          "DetectInputNumber": {
             "type": "integer",
             "description": "Tool Touch Off Detect Input number for detection/protection (Parameter 257)",
             "format": "int32",
@@ -6568,77 +6354,77 @@
       "TouchPlateConfiguration": {
         "type": "object",
         "properties": {
-          "inputNumber": {
+          "InputNumber": {
             "type": "integer",
             "description": "Touch plate input number",
             "format": "int32",
             "nullable": true
           },
-          "detectInput": {
+          "DetectInput": {
             "type": "integer",
             "description": "Touch plate detection input",
             "format": "int32",
             "nullable": true
           },
-          "inputType": {
+          "InputType": {
             "type": "integer",
             "description": "Touch plate input type (0=Normally Open, 1=Normally Closed)",
             "format": "int32",
             "nullable": true
           },
-          "wallHeight": {
+          "WallHeight": {
             "type": "number",
             "description": "Wall height dimension",
             "format": "double",
             "nullable": true
           },
-          "wallThickness": {
+          "WallThickness": {
             "type": "number",
             "description": "Wall thickness dimension",
             "format": "double",
             "nullable": true
           },
-          "internalDiameter": {
+          "InternalDiameter": {
             "type": "number",
             "description": "Internal diameter",
             "format": "double",
             "nullable": true
           },
-          "maxDistance": {
+          "MaxDistance": {
             "type": "number",
             "description": "Maximum search distance",
             "format": "double",
             "nullable": true
           },
-          "retractDistance": {
+          "RetractDistance": {
             "type": "number",
             "description": "Retract distance after touch",
             "format": "double",
             "nullable": true
           },
-          "fastRate": {
+          "FastRate": {
             "type": "number",
             "description": "Fast probing rate",
             "format": "double",
             "nullable": true
           },
-          "slowRate": {
+          "SlowRate": {
             "type": "number",
             "description": "Slow probing rate",
             "format": "double",
             "nullable": true
           },
-          "insideTouch": {
+          "InsideTouch": {
             "type": "boolean",
             "description": "Inside touch mode enabled",
             "nullable": true
           },
-          "boreEnabled": {
+          "BoreEnabled": {
             "type": "boolean",
             "description": "Bore operations enabled",
             "nullable": true
           },
-          "surfacePlate": {
+          "SurfacePlate": {
             "type": "boolean",
             "description": "Surface plate mode",
             "nullable": true
