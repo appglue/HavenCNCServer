@@ -3,6 +3,7 @@ using System.Linq;
 using CentroidAPI;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centroid.Data;
+using HavenCNCServer.Models;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Centroid
@@ -15,10 +16,27 @@ namespace HavenCNCServer.Centroid
     public static class CNCUtils
     {
         /// <summary>
-        /// Default skin event number for reset button operations
-        /// Acorn uses event 51 for Reset button (toggle type)
+        /// Skin event number for Reset button (RESET_UI)
+        /// Event 56 - Reset Button Pressed (toggle type)
         /// </summary>
-        public const int DEFAULT_CYCLE_START_EVENT = 56;
+        public const int RESET_BUTTON_EVENT = 56;
+
+        /// <summary>
+        /// Skin event number for Cycle Start button (STARTCYCLE_UI)
+        /// Event 50 - Cycle Start
+        /// </summary>
+        public const int CYCLE_START_EVENT = 50;
+
+        /// <summary>
+        /// Skin event number for Cycle Cancel/Stop button (CANCELCYCLE_UI)
+        /// Event 46 - Cycle Cancel
+        /// </summary>
+        public const int CYCLE_CANCEL_EVENT = 46;
+
+        /// <summary>
+        /// Default skin event number for reset button operations
+        /// </summary>
+        public const int DEFAULT_CYCLE_START_EVENT = RESET_BUTTON_EVENT;
 
 
         /// <summary>
@@ -659,6 +677,160 @@ namespace HavenCNCServer.Centroid
             var axisEnum = (CNCPipe.Axes)axis;
             cncPipe.axis.GetRate(axisEnum, rateType, out double value);
             return value;
+        }
+
+        /// <summary>
+        /// Trigger a skin event with a click (press, wait 100ms, release)
+        /// </summary>
+        /// <param name="skinEvent">Skin event enum value</param>
+        /// <returns>True if successful</returns>
+        public static bool TriggerSkinEvent(SkinEvent skinEvent)
+        {
+            return TriggerSkinEvent((int)skinEvent);
+        }
+
+        /// <summary>
+        /// Trigger any skin event with a click (press, wait 100ms, release)
+        /// </summary>
+        /// <param name="eventNumber">Skin event number (1-256)</param>
+        /// <returns>True if successful</returns>
+        public static bool TriggerSkinEvent(int eventNumber)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+            {
+                LogError("CNC connection not available", "CNCUtils");
+                return false;
+            }
+
+            try
+            {
+                // Press the button
+                var pressResult = cncPipe.plc.SetSkinEventState(eventNumber, 1);
+                if (pressResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to press skin event {eventNumber}: {pressResult}", "CNCUtils");
+                    return false;
+                }
+
+                // Wait 100ms
+                System.Threading.Thread.Sleep(100);
+
+                // Release the button
+                var releaseResult = cncPipe.plc.SetSkinEventState(eventNumber, 0);
+                if (releaseResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to release skin event {eventNumber}: {releaseResult}", "CNCUtils");
+                    return false;
+                }
+
+                LogInfo($"✓ Triggered skin event {eventNumber}", "CNCUtils");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Exception triggering skin event {eventNumber}: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Start (press and hold) a skin event - sets state to 1 without releasing
+        /// Use this to hold a button down, then call StopSkinEvent to release
+        /// </summary>
+        /// <param name="skinEvent">Skin event enum value</param>
+        /// <returns>True if successful</returns>
+        public static bool StartSkinEvent(SkinEvent skinEvent)
+        {
+            return StartSkinEvent((int)skinEvent);
+        }
+
+        /// <summary>
+        /// Start (press and hold) a skin event - sets state to 1 without releasing
+        /// Use this to hold a button down, then call StopSkinEvent to release
+        /// </summary>
+        /// <param name="eventNumber">Skin event number (1-256)</param>
+        /// <returns>True if successful</returns>
+        public static bool StartSkinEvent(int eventNumber)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+            {
+                LogError("CNC connection not available", "CNCUtils");
+                return false;
+            }
+
+            try
+            {
+                var pressResult = cncPipe.plc.SetSkinEventState(eventNumber, 1);
+                if (pressResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to start (press) skin event {eventNumber}: {pressResult}", "CNCUtils");
+                    return false;
+                }
+
+                LogInfo($"Started (pressed) skin event {eventNumber}", "CNCUtils");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Exception starting skin event {eventNumber}: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Stop (release) a skin event - sets state to 0
+        /// Use this after StartSkinEvent to release a held button
+        /// </summary>
+        /// <param name="skinEvent">Skin event enum value</param>
+        /// <returns>True if successful</returns>
+        public static bool StopSkinEvent(SkinEvent skinEvent)
+        {
+            return StopSkinEvent((int)skinEvent);
+        }
+
+        /// <summary>
+        /// Stop (release) a skin event - sets state to 0
+        /// Use this after StartSkinEvent to release a held button
+        /// </summary>
+        /// <param name="eventNumber">Skin event number (1-256)</param>
+        /// <returns>True if successful</returns>
+        public static bool StopSkinEvent(int eventNumber)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+            {
+                LogError("CNC connection not available", "CNCUtils");
+                return false;
+            }
+
+            try
+            {
+                var releaseResult = cncPipe.plc.SetSkinEventState(eventNumber, 0);
+                if (releaseResult != CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogError($"Failed to stop (release) skin event {eventNumber}: {releaseResult}", "CNCUtils");
+                    return false;
+                }
+
+                LogInfo($"Stopped (released) skin event {eventNumber}", "CNCUtils");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Exception stopping skin event {eventNumber}: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Legacy method name - calls TriggerSkinEvent
+        /// </summary>
+        [Obsolete("Use TriggerSkinEvent instead")]
+        public static bool TriggerSkinEventClick(int eventNumber)
+        {
+            return TriggerSkinEvent(eventNumber);
         }
 
         /// <summary>

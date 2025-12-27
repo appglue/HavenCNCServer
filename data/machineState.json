@@ -11,7 +11,6 @@
   "currentFixtureNumber": "G54",
   "currentFixtureSaved": false,
   "currentToolNumber": 1,
-  "isHomed": false,
   "materialTopZ": null,
   "rotaryInstalled": false,
   "selectedClampId": null,
@@ -148,8 +147,8 @@
       "cameraTargetMode": "MachineCenter",
       "perspectiveView": {
         "name": "default",
-        "cameraDistance": 83.83696231474643,
-        "cameraPolarAngle": 1.0872007445799632,
+        "cameraDistance": 83.83696231474636,
+        "cameraPolarAngle": 1.0872007445799634,
         "cameraAzimuthalAngle": 3.02655275577581,
         "zoomFactor": 1,
         "workHome": true,

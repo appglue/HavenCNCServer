@@ -322,9 +322,9 @@
       "fastJogRate": 501,
       "fastJogPlusDirection": 501,
       "fastJogMinusDirection": 501,
-      "stepSignalInverted": true,
-      "directionSignalInverted": true,
-      "enableSignalInverted": true
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
     },
     {
       "axisType": "Y",

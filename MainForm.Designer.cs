@@ -279,7 +279,8 @@ namespace HavenCNCServer
             this.btnReset.StateCommon.Back.Color1 = System.Drawing.Color.Orange;
             this.btnReset.StateCommon.Back.Color2 = System.Drawing.Color.Orange;
             this.btnReset.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            this.btnReset.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnReset_MouseDown);
+            this.btnReset.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnReset_MouseUp);
             // 
             // btnStop
             // 
@@ -293,7 +294,8 @@ namespace HavenCNCServer
             this.btnStop.StateCommon.Back.Color2 = System.Drawing.Color.Red;
             this.btnStop.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
             this.btnStop.StateCommon.Content.ShortText.Color1 = System.Drawing.Color.White;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnStop.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnStop_MouseDown);
+            this.btnStop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnStop_MouseUp);
             // 
             // btnStart
             // 
@@ -306,7 +308,8 @@ namespace HavenCNCServer
             this.btnStart.StateCommon.Back.Color1 = System.Drawing.Color.LimeGreen;
             this.btnStart.StateCommon.Back.Color2 = System.Drawing.Color.LimeGreen;
             this.btnStart.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
-            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.btnStart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnStart_MouseDown);
+            this.btnStart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnStart_MouseUp);
             // 
             // 
             // btnShowUI

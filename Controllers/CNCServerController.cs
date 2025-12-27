@@ -324,6 +324,75 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
+        /// Trigger the Reset button (Event 56 - RESET_UI)
+        /// Presses and releases the virtual Reset button on the control panel
+        /// </summary>
+        /// <returns>Button trigger result</returns>
+        [HttpPost("button/reset")]
+        [ProducesResponseType(typeof(SkinEventResponse), 200)]
+        [ProducesResponseType(typeof(SkinEventResponse), 500)]
+        public ActionResult<SkinEventResponse> TriggerResetButton()
+        {
+            try
+            {
+                var success = CNCUtils.TriggerSkinEvent(SkinEvent.ResetButtonPressed);
+                return success
+                    ? Ok(new SkinEventResponse { Success = true, Message = $"Reset button triggered (Event {CNCUtils.RESET_BUTTON_EVENT})" })
+                    : StatusCode(500, new SkinEventResponse { Success = false, Message = "Failed to trigger Reset button" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new SkinEventResponse { Success = false, Message = $"Error: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Trigger the Cycle Start button (Event 50 - STARTCYCLE_UI)
+        /// Presses and releases the virtual Cycle Start button on the control panel
+        /// </summary>
+        /// <returns>Button trigger result</returns>
+        [HttpPost("button/start")]
+        [ProducesResponseType(typeof(SkinEventResponse), 200)]
+        [ProducesResponseType(typeof(SkinEventResponse), 500)]
+        public ActionResult<SkinEventResponse> TriggerStartButton()
+        {
+            try
+            {
+                var success = CNCUtils.TriggerSkinEvent(SkinEvent.CycleStart);
+                return success
+                    ? Ok(new SkinEventResponse { Success = true, Message = $"Cycle Start button triggered (Event {CNCUtils.CYCLE_START_EVENT})" })
+                    : StatusCode(500, new SkinEventResponse { Success = false, Message = "Failed to trigger Cycle Start button" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new SkinEventResponse { Success = false, Message = $"Error: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Trigger the Cycle Cancel/Stop button (Event 46 - CANCELCYCLE_UI)
+        /// Presses and releases the virtual Cycle Cancel button on the control panel
+        /// </summary>
+        /// <returns>Button trigger result</returns>
+        [HttpPost("button/stop")]
+        [ProducesResponseType(typeof(SkinEventResponse), 200)]
+        [ProducesResponseType(typeof(SkinEventResponse), 500)]
+        public ActionResult<SkinEventResponse> TriggerStopButton()
+        {
+            try
+            {
+                var success = CNCUtils.TriggerSkinEvent(SkinEvent.CycleCancel);
+                return success
+                    ? Ok(new SkinEventResponse { Success = true, Message = $"Cycle Cancel button triggered (Event {CNCUtils.CYCLE_CANCEL_EVENT})" })
+                    : StatusCode(500, new SkinEventResponse { Success = false, Message = "Failed to trigger Cycle Cancel button" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new SkinEventResponse { Success = false, Message = $"Error: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
         /// Check if CNC is ready to accept commands (without attempting reset)
         /// </summary>
         /// <returns>CNC readiness status</returns>

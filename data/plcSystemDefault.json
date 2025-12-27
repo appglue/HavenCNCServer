@@ -1,10 +1,10 @@
 {
   "name": "System Default PLC Program",
   "description": "",
-  "nextStatementNumber": 9,
+  "nextStatementNumber": 22,
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-23T21:47:50.524Z",
+  "lastModified": "2025-12-27T15:31:01.904Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -460,7 +460,650 @@
       "enabled": true,
       "fast": false,
       "ordinal": 3,
-      "blocks": []
+      "blocks": [
+        {
+          "name": "Start Stop",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 0,
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 19,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "START_CYCLE_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoCycleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoCycleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 20,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "RESET_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_RESET_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_RESET_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 21,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "CANCEL_CYCLE_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoCycleCancel",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoCycleCancel",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jogging",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 1,
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 13,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS1_PLUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx1PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx1PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 14,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS1_MINUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx1MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx1MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 15,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS2_PLUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx2PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx2PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 16,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS2_MINUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx2MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx2MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 17,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS3_PLUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx3PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx3PlusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "statementNumber": 18,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_AXIS3_MINUS_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx3MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoAx3MinusJog_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "MESSAGE_S",
@@ -1081,7 +1724,7 @@
       "keybindings": []
     },
     {
-      "eventName": "STARTCYCLE_UI",
+      "eventName": "START_CYCLE_UI",
       "eventNumber": 50,
       "description": "",
       "pressedText": "Triggered",
@@ -1097,7 +1740,7 @@
       ]
     },
     {
-      "eventName": "CANCELCYCLE_UI",
+      "eventName": "CANCEL_CYCLE_UI",
       "eventNumber": 46,
       "description": "",
       "pressedText": "Triggered",
@@ -1117,6 +1760,141 @@
           "altKey": false
         }
       ]
+    },
+    {
+      "eventName": "JOG_AXIS4_PLUS_UI",
+      "eventNumber": 31,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS2_PLUS_UI",
+      "eventNumber": 33,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS3_PLUS_UI",
+      "eventNumber": 35,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS1_MINUS_UI",
+      "eventNumber": 37,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS1_PLUS_UI",
+      "eventNumber": 39,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS4_MINUS_UI",
+      "eventNumber": 41,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS2_MINUS_UI",
+      "eventNumber": 43,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_AXIS3_MINUS_UI",
+      "eventNumber": 45,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "TOOL_CHECK_UI",
+      "eventNumber": 48,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "FEED_HOLD_UI",
+      "eventNumber": 49,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "INC_CONT_JOG_UI",
+      "eventNumber": 26,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_X1_UI",
+      "eventNumber": 27,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_X10_UI",
+      "eventNumber": 28,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_X100_UI",
+      "eventNumber": 29,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "JOG_FAST_SLOW_UI",
+      "eventNumber": 38,
+      "description": "",
+      "pressedText": "Triggered",
+      "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
     }
   ],
   "m94m95Triggers": [

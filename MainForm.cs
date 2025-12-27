@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Krypton.Toolkit;
 using HavenCNCServer.Services;
+using HavenCNCServer.Centroid;
 using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Components;
+using HavenCNCServer.Models;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer
@@ -666,48 +668,123 @@ namespace HavenCNCServer
             }
         }
 
-        private void btnReset_Click(object sender, EventArgs e)
+        private void btnReset_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
-                LogInfo("Reset button clicked", "UI");
-                // TODO: Implement reset logic
-                MessageBox.Show("Reset functionality not yet implemented", "Reset", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LogInfo("Reset button pressed - starting skin event 56", "UI");
+                var success = CNCUtils.StartSkinEvent(SkinEvent.ResetButtonPressed);
+
+                if (!success)
+                {
+                    LogWarning("Failed to start Reset button - CNC may not be connected", "UI");
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Reset error: {ex.Message}", "UI");
-                MessageBox.Show($"Reset error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError($"Reset button press error: {ex.Message}", "UI");
             }
         }
 
-        private void btnStop_Click(object sender, EventArgs e)
+        private void btnReset_MouseUp(object sender, MouseEventArgs e)
         {
             try
             {
-                LogInfo("Stop button clicked", "UI");
-                // TODO: Implement stop logic
-                MessageBox.Show("Stop functionality not yet implemented", "Stop", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LogInfo("Reset button released - stopping skin event 56", "UI");
+                var success = CNCUtils.StopSkinEvent(SkinEvent.ResetButtonPressed);
+
+                if (success)
+                {
+                    LogSuccess($"Reset button triggered successfully (Event {CNCUtils.RESET_BUTTON_EVENT})", "UI");
+                }
+                else
+                {
+                    LogWarning("Failed to release Reset button - CNC may not be connected", "UI");
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Stop error: {ex.Message}", "UI");
-                MessageBox.Show($"Stop error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError($"Reset button release error: {ex.Message}", "UI");
             }
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private void btnStop_MouseDown(object sender, MouseEventArgs e)
         {
             try
             {
-                LogInfo("Start button clicked", "UI");
-                // TODO: Implement start logic
-                MessageBox.Show("Start functionality not yet implemented", "Start", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LogInfo("Stop button pressed - starting skin event 46 (Cycle Cancel)", "UI");
+                var success = CNCUtils.StartSkinEvent(SkinEvent.CycleCancel);
+
+                if (!success)
+                {
+                    LogWarning("Failed to start Cycle Cancel button - CNC may not be connected", "UI");
+                }
             }
             catch (Exception ex)
             {
-                LogError($"Start error: {ex.Message}", "UI");
-                MessageBox.Show($"Start error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogError($"Stop button press error: {ex.Message}", "UI");
+            }
+        }
+
+        private void btnStop_MouseUp(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                LogInfo("Stop button released - stopping skin event 46 (Cycle Cancel)", "UI");
+                var success = CNCUtils.StopSkinEvent(SkinEvent.CycleCancel);
+
+                if (success)
+                {
+                    LogSuccess($"Cycle Cancel button triggered successfully (Event {CNCUtils.CYCLE_CANCEL_EVENT})", "UI");
+                }
+                else
+                {
+                    LogWarning("Failed to release Cycle Cancel button - CNC may not be connected", "UI");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Stop button release error: {ex.Message}", "UI");
+            }
+        }
+
+        private void btnStart_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                LogInfo("Start button pressed - starting skin event 50 (Cycle Start)", "UI");
+                var success = CNCUtils.StartSkinEvent(SkinEvent.CycleStart);
+
+                if (!success)
+                {
+                    LogWarning("Failed to start Cycle Start button - CNC may not be connected", "UI");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Start button press error: {ex.Message}", "UI");
+            }
+        }
+
+        private void btnStart_MouseUp(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                LogInfo("Start button released - stopping skin event 50 (Cycle Start)", "UI");
+                var success = CNCUtils.StopSkinEvent(SkinEvent.CycleStart);
+
+                if (success)
+                {
+                    LogSuccess($"Cycle Start button triggered successfully (Event {CNCUtils.CYCLE_START_EVENT})", "UI");
+                }
+                else
+                {
+                    LogWarning("Failed to release Cycle Start button - CNC may not be connected", "UI");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Start button release error: {ex.Message}", "UI");
             }
         }
 
