@@ -4,7 +4,7 @@
   "nextStatementNumber": 3,
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 24,
+  "minorVersion": 30,
   "updateVersion": 0,
   "type": 1,
   "lastModified": "2025-12-15T17:00:11.831Z",
@@ -67,7 +67,7 @@
   "inputs": [
     {
       "centroidName": "ESTOPOK_I",
-      "name": "Emergency Stop OK",
+      "name": "E-Stop",
       "activeText": "EStop Released",
       "inactiveText": "EStop Pressed",
       "isInverted": true,
