@@ -1,5 +1,8 @@
 using System;
 using System.Linq;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 using CentroidAPI;
 using HavenCNCServer.Services;
 using HavenCNCServer.Centroid.Data;
@@ -15,6 +18,33 @@ namespace HavenCNCServer.Centroid
     /// </summary>
     public static class CNCUtils
     {
+        // Renewal tracking for skin events
+        private static readonly ConcurrentDictionary<int, DateTime> _activeRenewableEvents = new();
+        private static readonly System.Threading.Timer _renewalMonitor;
+        private const int RENEWAL_TIMEOUT_MS = 250;
+
+        static CNCUtils()
+        {
+            // Start monitoring task that checks every 100ms
+            _renewalMonitor = new System.Threading.Timer(MonitorRenewals, null, 100, 100);
+        }
+
+        private static void MonitorRenewals(object? state)
+        {
+            var now = DateTime.UtcNow;
+            foreach (var kvp in _activeRenewableEvents)
+            {
+                var timeSinceLastRenewal = (now - kvp.Value).TotalMilliseconds;
+                if (timeSinceLastRenewal > RENEWAL_TIMEOUT_MS)
+                {
+                    // Auto-stop event that hasn't been renewed
+                    LogWarning($"Auto-stopping skin event {kvp.Key} - no renewal received in {timeSinceLastRenewal:F0}ms", "CNCUtils");
+                    StopSkinEvent(kvp.Key);
+                    _activeRenewableEvents.TryRemove(kvp.Key, out _);
+                }
+            }
+        }
+
         /// <summary>
         /// Skin event number for Reset button (RESET_UI)
         /// Event 56 - Reset Button Pressed (toggle type)
@@ -739,10 +769,11 @@ namespace HavenCNCServer.Centroid
         /// Use this to hold a button down, then call StopSkinEvent to release
         /// </summary>
         /// <param name="skinEvent">Skin event enum value</param>
+        /// <param name="willRenew">If true, client must call RenewSkinEvent every 100ms or event will auto-stop after 250ms</param>
         /// <returns>True if successful</returns>
-        public static bool StartSkinEvent(SkinEvent skinEvent)
+        public static bool StartSkinEvent(SkinEvent skinEvent, bool willRenew = false)
         {
-            return StartSkinEvent((int)skinEvent);
+            return StartSkinEvent((int)skinEvent, willRenew);
         }
 
         /// <summary>
@@ -750,8 +781,9 @@ namespace HavenCNCServer.Centroid
         /// Use this to hold a button down, then call StopSkinEvent to release
         /// </summary>
         /// <param name="eventNumber">Skin event number (1-256)</param>
+        /// <param name="willRenew">If true, client must call RenewSkinEvent every 100ms or event will auto-stop after 250ms</param>
         /// <returns>True if successful</returns>
-        public static bool StartSkinEvent(int eventNumber)
+        public static bool StartSkinEvent(int eventNumber, bool willRenew = false)
         {
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null)
@@ -769,7 +801,17 @@ namespace HavenCNCServer.Centroid
                     return false;
                 }
 
-                LogInfo($"Started (pressed) skin event {eventNumber}", "CNCUtils");
+                // Track renewal if requested
+                if (willRenew)
+                {
+                    _activeRenewableEvents[eventNumber] = DateTime.UtcNow;
+                    LogInfo($"Started (pressed) skin event {eventNumber} with renewal tracking", "CNCUtils");
+                }
+                else
+                {
+                    LogInfo($"Started (pressed) skin event {eventNumber}", "CNCUtils");
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -814,6 +856,9 @@ namespace HavenCNCServer.Centroid
                     return false;
                 }
 
+                // Remove from renewal tracking
+                _activeRenewableEvents.TryRemove(eventNumber, out _);
+
                 LogInfo($"Stopped (released) skin event {eventNumber}", "CNCUtils");
                 return true;
             }
@@ -822,6 +867,33 @@ namespace HavenCNCServer.Centroid
                 LogError($"Exception stopping skin event {eventNumber}: {ex.Message}", "CNCUtils");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Renew a skin event to keep it active (prevents auto-stop)
+        /// Must be called every 100ms for events started with willRenew=true
+        /// </summary>
+        /// <param name="skinEvent">Skin event enum value</param>
+        /// <returns>True if event is being tracked and was renewed</returns>
+        public static bool RenewSkinEvent(SkinEvent skinEvent)
+        {
+            return RenewSkinEvent((int)skinEvent);
+        }
+
+        /// <summary>
+        /// Renew a skin event to keep it active (prevents auto-stop)
+        /// Must be called every 100ms for events started with willRenew=true
+        /// </summary>
+        /// <param name="eventNumber">Skin event number (1-256)</param>
+        /// <returns>True if event is being tracked and was renewed</returns>
+        public static bool RenewSkinEvent(int eventNumber)
+        {
+            if (_activeRenewableEvents.ContainsKey(eventNumber))
+            {
+                _activeRenewableEvents[eventNumber] = DateTime.UtcNow;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

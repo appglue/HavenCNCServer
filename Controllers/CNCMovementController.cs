@@ -20,6 +20,12 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         private static MachinePoint? _lastFixturePoint = null;
 
+        // Jog settings state
+        private static bool _isIncrementalMode = true;  // Default: incremental
+        private static bool _isSlowJogMode = true;      // Default: slow
+        private static JogIncrementSpeed _jogIncrementSpeed = JogIncrementSpeed.X1;  // Default: X1
+        private static readonly object _jogSettingsLock = new object();
+
         /// <summary>
         /// Gets the last fixture point that was set
         /// </summary>
@@ -214,6 +220,188 @@ namespace HavenCNCServer.Controllers
         public void ResetFeedRateOverride()
         {
             SetFeedRateOverride(100);
+        }
+
+        #endregion
+
+        #region Jog Settings
+
+        /// <summary>
+        /// Get current jog settings
+        /// </summary>
+        /// <returns>Current jog settings</returns>
+        [HttpGet("GetJogSettings")]
+        public IActionResult GetJogSettings()
+        {
+            lock (_jogSettingsLock)
+            {
+                return Ok(new
+                {
+                    IsIncremental = _isIncrementalMode,
+                    IsSlowMode = _isSlowJogMode,
+                    IncrementSpeed = _jogIncrementSpeed.ToString()
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get jog settings formatted for status broadcast (called by SignalRManager)
+        /// </summary>
+        internal static object GetJogSettingsForStatus()
+        {
+            lock (_jogSettingsLock)
+            {
+                return new
+                {
+                    IsIncremental = _isIncrementalMode,
+                    IsSlowMode = _isSlowJogMode,
+                    IncrementSpeed = _jogIncrementSpeed.ToString()
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get current incremental mode state (internal helper for CNCUIController)
+        /// </summary>
+        internal static bool GetIsIncrementalMode()
+        {
+            lock (_jogSettingsLock)
+            {
+                return _isIncrementalMode;
+            }
+        }
+
+        /// <summary>
+        /// Get current slow jog mode state (internal helper for CNCUIController)
+        /// </summary>
+        internal static bool GetIsSlowJogMode()
+        {
+            lock (_jogSettingsLock)
+            {
+                return _isSlowJogMode;
+            }
+        }
+
+        /// <summary>
+        /// Update incremental mode state and broadcast (internal helper for CNCUIController)
+        /// </summary>
+        internal static void UpdateIncrementalMode(bool isIncremental)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_isIncrementalMode != isIncremental)
+                {
+                    _isIncrementalMode = isIncremental;
+                    LogInfo($"Jog mode changed to: {(isIncremental ? "Incremental" : "Continuous")}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update slow jog mode state and broadcast (internal helper for CNCUIController)
+        /// </summary>
+        internal static void UpdateSlowJogMode(bool isSlowMode)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_isSlowJogMode != isSlowMode)
+                {
+                    _isSlowJogMode = isSlowMode;
+                    LogInfo($"Jog speed changed to: {(isSlowMode ? "Slow" : "Fast")}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update jog increment speed state and broadcast (internal helper for CNCUIController)
+        /// </summary>
+        internal static void UpdateJogIncrementSpeed(JogIncrementSpeed speed)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_jogIncrementSpeed != speed)
+                {
+                    _jogIncrementSpeed = speed;
+                    LogInfo($"Jog increment speed changed to: {speed}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set incremental/continuous jog mode
+        /// </summary>
+        /// <param name="isIncremental">True for incremental, false for continuous</param>
+        [HttpPost("SetIncrementalMode")]
+        public IActionResult SetIncrementalMode([FromQuery] bool isIncremental)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_isIncrementalMode != isIncremental)
+                {
+                    _isIncrementalMode = isIncremental;
+                    LogInfo($"Jog mode changed to: {(isIncremental ? "Incremental" : "Continuous")}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+            return Ok(new { success = true, message = $"Jog mode set to {(isIncremental ? "incremental" : "continuous")}" });
+        }
+
+        /// <summary>
+        /// Set slow/fast jog mode
+        /// </summary>
+        /// <param name="isSlowMode">True for slow, false for fast</param>
+        [HttpPost("SetSlowJogMode")]
+        public IActionResult SetSlowJogMode([FromQuery] bool isSlowMode)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_isSlowJogMode != isSlowMode)
+                {
+                    _isSlowJogMode = isSlowMode;
+                    LogInfo($"Jog speed changed to: {(isSlowMode ? "Slow" : "Fast")}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+            return Ok(new { success = true, message = $"Jog speed set to {(isSlowMode ? "slow" : "fast")}" });
+        }
+
+        /// <summary>
+        /// Set jog increment speed (X1, X10, X100)
+        /// </summary>
+        /// <param name="speed">Increment speed multiplier</param>
+        [HttpPost("SetJogIncrementSpeed")]
+        public IActionResult SetJogIncrementSpeed([FromBody] JogIncrementSpeed speed)
+        {
+            lock (_jogSettingsLock)
+            {
+                if (_jogIncrementSpeed != speed)
+                {
+                    _jogIncrementSpeed = speed;
+                    LogInfo($"Jog increment speed changed to: {speed}", "Movement");
+                    _ = BroadcastJogSettingsChange();
+                }
+            }
+            return Ok(new { success = true, message = $"Jog increment speed set to {speed}" });
+        }
+
+        /// <summary>
+        /// Broadcast jog settings change to all connected clients via SignalR
+        /// Sends full server status to ensure all clients have complete up-to-date information
+        /// </summary>
+        private static async Task BroadcastJogSettingsChange()
+        {
+            try
+            {
+                LogInfo($"Broadcasting server status after jog settings change: Incremental={_isIncrementalMode}, Slow={_isSlowJogMode}, Speed={_jogIncrementSpeed}", "Movement");
+                await SignalRManager.BroadcastServerStatus();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error broadcasting jog settings change: {ex.Message}", "Movement");
+            }
         }
 
         #endregion

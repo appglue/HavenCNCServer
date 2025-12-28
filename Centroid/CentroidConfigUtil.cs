@@ -1266,6 +1266,20 @@ namespace HavenCNCServer.Centroid
                     parametersSet = true;
                 }
 
+                // Set linear jog increment (Parameter 40)
+                if (config.LinearJogIncrement.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM, config.LinearJogIncrement.Value);
+                    parametersSet = true;
+                }
+
+                // Set rotary jog increment (Parameter 41)
+                if (config.RotaryJogIncrement.HasValue)
+                {
+                    CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.RotaryJogIncrement.Value);
+                    parametersSet = true;
+                }
+
                 if (parametersSet)
                 {
                     System.Diagnostics.Debug.WriteLine($"Configuring Global System: Step Frequency: {config.StepFrequency?.ToString() ?? "not set"}, Drive Fault Delay: {config.DriveFaultDelay?.ToString() ?? "not set"}");

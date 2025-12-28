@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using HavenCNCServer.Hubs;
 using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Centroid;
+using HavenCNCServer.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -543,9 +544,8 @@ namespace HavenCNCServer.Services
                         IsApiRestricted = isApiRestricted,
                         IsJobRunning = isJobRunning,
                         RequiresReset = requiresReset,
-                        IsIncrementalJogMode = isIncrementalJogMode,
-                        IsFastJogging = isFastJogging,
                         IsHomed = isHomed,
+                        JogSettings = Controllers.CNCMovementController.GetJogSettingsForStatus(),
                         PlcVersion = new
                         {
                             Major = versionMajor,
@@ -569,6 +569,15 @@ namespace HavenCNCServer.Services
                     LogError($"Error sending server status: {ex.Message}", "SignalR");
                 }
             });
+        }
+
+        /// <summary>
+        /// Broadcast the current server status to all connected clients
+        /// </summary>
+        public static async Task BroadcastServerStatus()
+        {
+            // SendHeartbeat is void, so wrap it in Task.Run to make it awaitable
+            await Task.Run(() => SendHeartbeat());
         }
 
         /// <summary>

@@ -16,7 +16,9 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>Tool changer installed parameter</summary>
         TOOL_CHANGER_INSTALLED = 6,
 
-        // Rotary Axis Parameters
+        // Jog Parameters
+        /// <summary>Basic linear jog increment parameter (inches)</summary>
+        BASIC_JOG_INCREMENT_PARM = 40,
         /// <summary>Rotary axis jog increment parameter (degrees)</summary>
         ROTARY_JOG_INCREMENT_PARM = 41,
 

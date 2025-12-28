@@ -1,6 +1,27 @@
 namespace HavenCNCServer.Models
 {
     /// <summary>
+    /// Jog increment speed multiplier
+    /// </summary>
+    public enum JogIncrementSpeed
+    {
+        /// <summary>
+        /// X1 increment speed
+        /// </summary>
+        X1 = 1,
+
+        /// <summary>
+        /// X10 increment speed
+        /// </summary>
+        X10 = 10,
+
+        /// <summary>
+        /// X100 increment speed
+        /// </summary>
+        X100 = 100
+    }
+
+    /// <summary>
     /// IO events that can be monitored or triggered
     /// </summary>
     public enum IOEvent

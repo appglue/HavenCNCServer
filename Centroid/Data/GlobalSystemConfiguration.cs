@@ -53,5 +53,19 @@ namespace HavenCNCServer.Centroid.Data
         /// Tool height offset measurement method
         /// </summary>
         public ToolHeightMeasurementMethod? ToolHeightMeasurementMethod { get; set; }
+
+        /// <summary>
+        /// Linear jog increment base value (in inches)
+        /// Default: 0.001 inches for X1 mode
+        /// Parameter 40 (BASIC_JOG_INCREMENT_PARM)
+        /// </summary>
+        public double? LinearJogIncrement { get; set; }
+
+        /// <summary>
+        /// Rotary jog increment base value (in degrees)
+        /// Default: 0.1 degrees for X1 mode
+        /// Parameter 41 (ROTARY_JOG_INCREMENT_PARM)
+        /// </summary>
+        public double? RotaryJogIncrement { get; set; }
     }
 }
