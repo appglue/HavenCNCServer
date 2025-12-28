@@ -470,8 +470,9 @@ namespace HavenCNCServer.Services
                             versionUpdate = update;
                     }
 
-                    // Get system board type and expansion board count
+                    // Get system board type, machine type, and expansion board count
                     string boardType = "Unknown";
+                    string machineType = "Unknown";
                     int expansionBoardCount = 0;
                     if (isConnected)
                     {
@@ -504,6 +505,13 @@ namespace HavenCNCServer.Services
                                     }
                                 }
 
+                                // Get machine type
+                                var machineTypeResult = cncPipe.system.GetMachineType(out CentroidAPI.CNCPipe.Sys.MachineTypes mt);
+                                if (machineTypeResult == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                                {
+                                    machineType = mt.ToString();
+                                }
+
                                 // Count expansion boards
                                 // Check for Ethernet expansion boards
                                 var etherResult = cncPipe.system.GetEther1616DeviceInfo(out List<CentroidAPI.CNCPipe.Sys.Ether1616Device> etherDevices);
@@ -529,7 +537,7 @@ namespace HavenCNCServer.Services
                         }
                         catch (Exception ex)
                         {
-                            LogWarning($"Could not get board type: {ex.Message}", "SignalR");
+                            LogWarning($"Could not get board/machine type: {ex.Message}", "SignalR");
                         }
                     }
 
@@ -553,6 +561,7 @@ namespace HavenCNCServer.Services
                             Update = versionUpdate
                         },
                         BoardType = boardType,
+                        MachineType = machineType,
                         ExpansionBoardCount = expansionBoardCount
                     };
 
