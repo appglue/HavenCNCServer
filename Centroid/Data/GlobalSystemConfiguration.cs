@@ -24,8 +24,9 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>
         /// Maximum number of steps that can be pulsed per second
         /// Global step frequency setting for all axes
+        /// Supported values: 100000, 200000, 240000, 300000, 400000
         /// </summary>
-        public StepFrequency? StepFrequency { get; set; }
+        public int? StepFrequency { get; set; }
 
         /// <summary>
         /// Axis Motor Drive fault delay time (milliseconds)

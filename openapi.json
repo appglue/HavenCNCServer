@@ -5830,7 +5830,10 @@
         "type": "object",
         "properties": {
           "StepFrequency": {
-            "$ref": "#/components/schemas/StepFrequency"
+            "type": "integer",
+            "description": "Maximum number of steps that can be pulsed per second\r\nGlobal step frequency setting for all axes\r\nSupported values: 100000, 200000, 240000, 300000, 400000",
+            "format": "int32",
+            "nullable": true
           },
           "DriveFaultDelay": {
             "type": "integer",
@@ -7146,18 +7149,6 @@
         },
         "additionalProperties": false,
         "description": "Represents spindle configuration parameters"
-      },
-      "StepFrequency": {
-        "enum": [
-          100000,
-          200000,
-          240000,
-          300000,
-          400000
-        ],
-        "type": "integer",
-        "description": "Supported step frequencies for the stepper pulse rate\r\nThese are the only valid values supported by the Centroid system",
-        "format": "int32"
       },
       "StepFrequencyRequest": {
         "type": "object",

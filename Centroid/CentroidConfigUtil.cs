@@ -1235,9 +1235,17 @@ namespace HavenCNCServer.Centroid
                 // Set global step frequency - only if provided
                 if (config.StepFrequency.HasValue)
                 {
+                    // Validate frequency against allowed values
+                    var allowedFrequencies = new[] { 100000, 200000, 240000, 300000, 400000 };
+                    if (!allowedFrequencies.Contains(config.StepFrequency.Value))
+                    {
+                        throw new ArgumentException($"Invalid step frequency: {config.StepFrequency.Value}. " +
+                            $"Allowed values: {string.Join(", ", allowedFrequencies)}");
+                    }
+
                     // Calculate parameter value from step frequency
                     const int PulseStepFrequency = 1200000;
-                    double parameterValue = PulseStepFrequency / (double)(int)config.StepFrequency.Value;
+                    double parameterValue = PulseStepFrequency / (double)config.StepFrequency.Value;
                     CNCUtils.SetParameterValue(CentroidParameters.ACORN_STEPPER_PULSE_RATE_PARM, parameterValue);
                     parametersSet = true;
                 }

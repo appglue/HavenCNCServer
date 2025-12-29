@@ -580,11 +580,12 @@ namespace HavenCNCServer.Controllers
                     throw new ArgumentException("Step frequency is required");
                 }
 
-                // Validate frequency range (100kHz to 400kHz)
-                if (request.Frequency < 100000 || request.Frequency > 400000)
+                // Validate frequency against allowed values
+                var allowedFrequencies = new[] { 100000, 200000, 240000, 300000, 400000 };
+                if (!allowedFrequencies.Contains(request.Frequency))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(request.Frequency),
-                        "Step frequency must be between 100,000 and 400,000 Hz");
+                    throw new ArgumentException($"Invalid step frequency: {request.Frequency}. " +
+                        $"Allowed values: {string.Join(", ", allowedFrequencies)}");
                 }
 
                 CNCUtils.SetStepFrequency(request.Frequency);
