@@ -216,6 +216,8 @@
   "autoSquareDistance": 0.5,
   "stepFrequency": 300000,
   "driveFaultDelay": 500,
+  "linearJogIncrement": 0.01,
+  "rotaryJogIncrement": 0.1,
   "secondSpindleEnabled": false,
   "zUpperSoftLimitFromMachineZero": 0,
   "zLowerSoftLimitFromMachineZero": -5,
@@ -312,7 +314,7 @@
     {
       "axisType": "X",
       "axisNumber": 1,
-      "stepsPerRevolution": 3200,
+      "stepsPerRevolution": 1600,
       "overallTurnsRatio": 5.1,
       "lashCompensation": 0.1,
       "maxRate": 2000,
@@ -322,9 +324,9 @@
       "fastJogRate": 501,
       "fastJogPlusDirection": 501,
       "fastJogMinusDirection": 501,
-      "stepSignalInverted": false,
-      "directionSignalInverted": false,
-      "enableSignalInverted": false
+      "stepSignalInverted": true,
+      "directionSignalInverted": true,
+      "enableSignalInverted": true
     },
     {
       "axisType": "Y",
@@ -346,7 +348,7 @@
     {
       "axisType": "Z",
       "axisNumber": 3,
-      "stepsPerRevolution": 3200,
+      "stepsPerRevolution": 1600,
       "overallTurnsRatio": 5.5,
       "lashCompensation": 0.3,
       "maxRate": 2000,
