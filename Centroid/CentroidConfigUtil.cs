@@ -1281,7 +1281,7 @@ namespace HavenCNCServer.Centroid
                     CNCUtils.SetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM, config.LinearJogIncrement.Value);
                     parametersSet = true;
                     LoggingService.Log($"Linear Jog Increment set successfully");
-                    
+
                     // Verify the parameter was set correctly
                     double verifyValue = CNCUtils.GetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM);
                     LoggingService.Log($"VERIFICATION: Parameter 40 now reads: {verifyValue} (expected: {config.LinearJogIncrement.Value})");
@@ -1298,7 +1298,7 @@ namespace HavenCNCServer.Centroid
                     CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.RotaryJogIncrement.Value);
                     parametersSet = true;
                     LoggingService.Log($"Rotary Jog Increment set successfully");
-                    
+
                     // Verify the parameter was set correctly
                     double verifyValue = CNCUtils.GetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM);
                     LoggingService.Log($"VERIFICATION: Parameter 41 now reads: {verifyValue} (expected: {config.RotaryJogIncrement.Value})");
