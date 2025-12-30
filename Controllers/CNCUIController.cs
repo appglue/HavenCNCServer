@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Models;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
 {
@@ -102,6 +103,8 @@ namespace HavenCNCServer.Controllers
         [HttpPost("TriggerJogIncrementSpeed")]
         public IActionResult TriggerJogIncrementSpeed([FromQuery] JogIncrementSpeed speed)
         {
+            LogInfo($"TriggerJogIncrementSpeed called with speed: {speed} (value: {(int)speed})", "CNCUIController");
+
             int eventNumber = speed switch
             {
                 JogIncrementSpeed.X1 => 27,   // JOG_X1_UI
@@ -110,7 +113,12 @@ namespace HavenCNCServer.Controllers
                 _ => 27
             };
 
+            LogInfo($"Triggering skin event {eventNumber} for jog increment speed {speed}", "CNCUIController");
+
             var result = CNCUtils.TriggerSkinEvent(eventNumber);
+
+            LogInfo($"TriggerSkinEvent result: {result}", "CNCUIController");
+
             if (result)
             {
                 // Update the increment speed state and broadcast
