@@ -214,7 +214,7 @@
   "enableAutoSquare": true,
   "autoSquareMasterAxis": "Y",
   "autoSquareDistance": 0.5,
-  "stepFrequency": 300000,
+  "stepFrequency": 200000,
   "driveFaultDelay": 500,
   "linearJogIncrement": 0.01,
   "rotaryJogIncrement": 0.1,
@@ -227,7 +227,7 @@
   "yUpperSoftLimitFromMachineZero": 24,
   "crosshairSize": 12,
   "crosshairLineWidth": 1,
-  "_stepFrequency": 300000,
+  "_stepFrequency": 200000,
   "_driveFaultDelay": 500,
   "_atcLocation": {
     "offset": {
@@ -324,9 +324,9 @@
       "fastJogRate": 501,
       "fastJogPlusDirection": 501,
       "fastJogMinusDirection": 501,
-      "stepSignalInverted": true,
-      "directionSignalInverted": true,
-      "enableSignalInverted": true
+      "stepSignalInverted": false,
+      "directionSignalInverted": false,
+      "enableSignalInverted": false
     },
     {
       "axisType": "Y",
@@ -484,10 +484,10 @@
   },
   "_laserPWMConfig": {
     "outputNumber": null,
-    "pwmEnabled": false,
+    "pwmEnabled": true,
     "frequency": 1000,
     "sCommandRange1000": true,
-    "floor": 0,
+    "floor": 25,
     "onlyApplyFloorDuringVelocityMoves": false,
     "inverseOutput": false,
     "laserCoolingFanDelayTimer": 0,

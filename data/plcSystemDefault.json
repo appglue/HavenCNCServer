@@ -4,7 +4,7 @@
   "nextStatementNumber": 28,
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-27T15:31:01.904Z",
+  "lastModified": "2025-12-29T18:58:59.681Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -1885,7 +1885,7 @@
           ]
         },
         {
-          "name": "System Default Block 2",
+          "name": "Set First Run",
           "comment": "",
           "enabled": true,
           "ordinal": 1,
@@ -2103,16 +2103,5 @@
       "keybindings": []
     }
   ],
-  "m94m95Triggers": [
-    {
-      "name": "M3",
-      "description": "",
-      "number": 3,
-      "outputs": [
-        "Spindle Forward"
-      ],
-      "activeText": "Is Active",
-      "inactiveText": "Is Inactive"
-    }
-  ]
+  "m94m95Triggers": []
 }

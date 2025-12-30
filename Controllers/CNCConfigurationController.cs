@@ -353,6 +353,15 @@ namespace HavenCNCServer.Controllers
             {
                 LoggingService.Log("=== ConfigureCompleteMachine API called ===");
                 LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, GlobalSystem: {config.GlobalSystem != null}");
+                
+                // Log GlobalSystem values if present
+                if (config.GlobalSystem != null)
+                {
+                    LoggingService.Log($"GlobalSystem StepFrequency: {config.GlobalSystem.StepFrequency}");
+                    LoggingService.Log($"GlobalSystem DriveFaultDelay: {config.GlobalSystem.DriveFaultDelay}");
+                    LoggingService.Log($"GlobalSystem LinearJogIncrement: {config.GlobalSystem.LinearJogIncrement}");
+                    LoggingService.Log($"GlobalSystem RotaryJogIncrement: {config.GlobalSystem.RotaryJogIncrement}");
+                }
 
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     config.Axes ?? new List<AxisConfiguration>(),

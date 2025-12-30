@@ -1277,15 +1277,35 @@ namespace HavenCNCServer.Centroid
                 // Set linear jog increment (Parameter 40)
                 if (config.LinearJogIncrement.HasValue)
                 {
+                    LoggingService.Log($"Setting Linear Jog Increment (Parameter 40) to: {config.LinearJogIncrement.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM, config.LinearJogIncrement.Value);
                     parametersSet = true;
+                    LoggingService.Log($"Linear Jog Increment set successfully");
+                    
+                    // Verify the parameter was set correctly
+                    double verifyValue = CNCUtils.GetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM);
+                    LoggingService.Log($"VERIFICATION: Parameter 40 now reads: {verifyValue} (expected: {config.LinearJogIncrement.Value})");
+                }
+                else
+                {
+                    LoggingService.Log($"Linear Jog Increment not provided in configuration");
                 }
 
                 // Set rotary jog increment (Parameter 41)
                 if (config.RotaryJogIncrement.HasValue)
                 {
+                    LoggingService.Log($"Setting Rotary Jog Increment (Parameter 41) to: {config.RotaryJogIncrement.Value}");
                     CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.RotaryJogIncrement.Value);
                     parametersSet = true;
+                    LoggingService.Log($"Rotary Jog Increment set successfully");
+                    
+                    // Verify the parameter was set correctly
+                    double verifyValue = CNCUtils.GetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM);
+                    LoggingService.Log($"VERIFICATION: Parameter 41 now reads: {verifyValue} (expected: {config.RotaryJogIncrement.Value})");
+                }
+                else
+                {
+                    LoggingService.Log($"Rotary Jog Increment not provided in configuration");
                 }
 
                 if (parametersSet)
