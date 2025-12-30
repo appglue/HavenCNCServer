@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using CentroidAPI;
 using HavenCNCServer.Centroid.Data;
 using HavenCNCServer.Services;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Centroid
 {
@@ -1277,15 +1278,25 @@ namespace HavenCNCServer.Centroid
                 // Set linear jog increment (Parameter 40)
                 if (config.LinearJogIncrement.HasValue)
                 {
+                    LogInfo($"Setting LinearJogIncrement to {config.LinearJogIncrement.Value}", "CentroidConfigUtil");
                     CNCUtils.SetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM, config.LinearJogIncrement.Value);
                     parametersSet = true;
+                }
+                else
+                {
+                    LogWarning("LinearJogIncrement not provided in config", "CentroidConfigUtil");
                 }
 
                 // Set rotary jog increment (Parameter 41)
                 if (config.RotaryJogIncrement.HasValue)
                 {
+                    LogInfo($"Setting RotaryJogIncrement to {config.RotaryJogIncrement.Value}", "CentroidConfigUtil");
                     CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.RotaryJogIncrement.Value);
                     parametersSet = true;
+                }
+                else
+                {
+                    LogWarning("RotaryJogIncrement not provided in config", "CentroidConfigUtil");
                 }
 
                 if (parametersSet)
