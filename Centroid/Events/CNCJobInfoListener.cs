@@ -103,6 +103,14 @@ namespace HavenCNCServer.Centroid.Events
                                         {
                                             // IsConstructed check is handled internally by CNCConnectionManager
                                             LogSuccess("CNC pipe reconnected", "JobInfo");
+
+                                            // CRITICAL: After reconnection, we need to restart the listener
+                                            // The old pipe reference is stale, so we must unsubscribe and resubscribe
+                                            if (_isListening)
+                                            {
+                                                LogInfo("Restarting listener with new pipe after reconnection...", "JobInfo");
+                                                StopListeningInternal(); // Clean up old pipe subscription
+                                            }
                                         }
                                     }
                                     catch (Exception connEx)

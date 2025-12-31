@@ -216,7 +216,7 @@
   "autoSquareDistance": 0.5,
   "stepFrequency": 200000,
   "driveFaultDelay": 500,
-  "linearJogIncrement": 0.01,
+  "linearJogIncrement": 0.005,
   "rotaryJogIncrement": 0.1,
   "secondSpindleEnabled": false,
   "zUpperSoftLimitFromMachineZero": 0,
@@ -514,8 +514,8 @@
     "z": 4.5
   },
   "_machineZeroCoordinatesFromMachineHome": {
-    "x": -24,
-    "y": -16,
+    "x": 0,
+    "y": -24,
     "z": 0
   },
   "_machineBaseTopCornerFromMachineZero": {

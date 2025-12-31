@@ -69,31 +69,23 @@ namespace HavenCNCServer.Controllers
         #region Jog Mode Controls
 
         /// <summary>
-        /// Set continuous or incremental jog mode (INC_CONT_JOG_UI)
+        /// Toggle between continuous and incremental jog mode (INC_CONT_JOG_UI)
+        /// Triggers event 26 to toggle the mode
         /// </summary>
-        /// <param name="isContinuous">True for continuous mode, false for incremental mode</param>
-        [HttpPost("SetContinuousJog")]
-        public IActionResult SetContinuousJog([FromQuery] bool isContinuous)
+        [HttpPost("ToggleContinuousJog")]
+        public IActionResult ToggleContinuousJog()
         {
-            bool result;
-            if (isContinuous)
-            {
-                // Start continuous mode (hold event 26)
-                result = CNCUtils.StartSkinEvent(26, false);
-            }
-            else
-            {
-                // Stop event 26 to return to incremental mode
-                result = CNCUtils.StopSkinEvent(26);
-            }
+            // Trigger event 26 to toggle between incremental and continuous
+            var result = CNCUtils.TriggerSkinEvent(26);
 
             if (result)
             {
-                // Update the incremental mode state (inverted because continuous = !incremental)
-                CNCMovementController.UpdateIncrementalMode(!isContinuous);
+                // Toggle the incremental mode state
+                bool newIncrementalMode = !CNCMovementController.GetIsIncrementalMode();
+                CNCMovementController.UpdateIncrementalMode(newIncrementalMode);
             }
-            return result ? Ok(new { success = true, message = $"Jog mode set to {(isContinuous ? "continuous" : "incremental")}" })
-                          : StatusCode(500, new { success = false, message = "Failed to set jog mode" });
+            return result ? Ok(new { success = true, message = "Jog mode toggled" })
+                          : StatusCode(500, new { success = false, message = "Failed to toggle jog mode" });
         }
 
         /// <summary>
@@ -129,31 +121,23 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Set fast or slow jog mode (JOG_FAST_SLOW_UI)
+        /// Toggle between fast and slow jog mode (JOG_FAST_SLOW_UI)
+        /// Triggers event 38 to toggle the mode
         /// </summary>
-        /// <param name="isFast">True for fast mode, false for slow mode</param>
-        [HttpPost("SetFastJog")]
-        public IActionResult SetFastJog([FromQuery] bool isFast)
+        [HttpPost("ToggleFastJog")]
+        public IActionResult ToggleFastJog()
         {
-            bool result;
-            if (isFast)
-            {
-                // Start fast mode (hold event 38)
-                result = CNCUtils.StartSkinEvent(38, false);
-            }
-            else
-            {
-                // Stop event 38 to return to slow mode
-                result = CNCUtils.StopSkinEvent(38);
-            }
+            // Trigger event 38 to toggle between slow and fast
+            var result = CNCUtils.TriggerSkinEvent(38);
 
             if (result)
             {
-                // Update the slow jog mode state (inverted because fast = !slow)
-                CNCMovementController.UpdateSlowJogMode(!isFast);
+                // Toggle the slow jog mode state
+                bool newSlowMode = !CNCMovementController.GetIsSlowJogMode();
+                CNCMovementController.UpdateSlowJogMode(newSlowMode);
             }
-            return result ? Ok(new { success = true, message = $"Jog speed set to {(isFast ? "fast" : "slow")}" })
-                          : StatusCode(500, new { success = false, message = "Failed to set jog speed" });
+            return result ? Ok(new { success = true, message = "Jog speed toggled" })
+                          : StatusCode(500, new { success = false, message = "Failed to toggle jog speed" });
         }
 
         #endregion

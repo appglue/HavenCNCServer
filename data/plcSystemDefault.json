@@ -1,10 +1,9 @@
 {
   "name": "System Default PLC Program",
   "description": "",
-  "nextStatementNumber": 28,
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-29T18:58:59.681Z",
+  "lastModified": "2025-12-27T15:31:01.904Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -24,7 +23,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -81,7 +79,6 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -107,14 +104,12 @@
             {
               "type": "InputMappingStatement",
               "comment": "",
-              "enabled": true,
-              "statementNumber": 0
+              "enabled": true
             },
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 8,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -155,7 +150,6 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -174,7 +168,6 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -193,7 +186,6 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -212,7 +204,6 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -247,7 +238,6 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -282,7 +272,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -331,7 +320,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -392,13 +380,12 @@
           "name": "Turn On Main Stage",
           "comment": "",
           "enabled": true,
-          "ordinal": 0,
+          "ordinal": 1,
           "actions": [
             {
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -412,6 +399,296 @@
                 },
                 "stageName": "MAIN_S"
               }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn Off",
+                "stageElement": {
+                  "declarationName": "INITONETIME_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "INITONETIME_S"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Defaults from Acrorn PLC",
+          "comment": "not sure which if these is needed",
+          "enabled": true,
+          "ordinal": 2,
+          "actions": [
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Value",
+                "sourceValue": "0",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "PVALUE_W",
+                    "description": "",
+                    "dataType": "Word",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": false,
+              "pieces": [
+                {
+                  "id": "piece_1767188242338_th11j6agk",
+                  "type": "Text",
+                  "text": "if 1==1 then set "
+                },
+                {
+                  "id": "piece_1767188242338_mr9ms184x",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "allowNew": true,
+                    "needsWrite": false,
+                    "declaration": {
+                      "name": "PVALUE_W",
+                      "description": "",
+                      "dataType": "Word",
+                      "category": [
+                        "* User Defined"
+                      ],
+                      "visibility": "Visible",
+                      "readOnly": false,
+                      "isSystem": false,
+                      "isConstant": false,
+                      "isSetText": "Set",
+                      "isResetText": "Reset"
+                    }
+                  }
+                },
+                {
+                  "id": "piece_1767188242338_g2j6gjb7o",
+                  "type": "Text",
+                  "text": " = SV_MACHINE_PARAMETER_264"
+                }
+              ]
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1767187780962_b4cbx3e81",
+                  "type": "Text",
+                  "text": "IF 1==1 THEN (SV_ENABLE_IO_OVERRIDE),"
+                },
+                {
+                  "id": "piece_1767187780962_dq83xu7fl",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_spkad6ny8",
+                  "type": "Text",
+                  "text": "             SV_INVERT_INP17_32_BITS     = SV_MACHINE_PARAMETER_912,"
+                },
+                {
+                  "id": "piece_1767187780962_vmd2u6mcb",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_g8kskgjsq",
+                  "type": "Text",
+                  "text": "             SV_FORCE_INP1_16_BITS       = SV_MACHINE_PARAMETER_916,"
+                },
+                {
+                  "id": "piece_1767187780962_brasp6ssw",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_hete3u7oc",
+                  "type": "Text",
+                  "text": "             SV_FORCE_INP17_32_BITS      = SV_MACHINE_PARAMETER_917,"
+                },
+                {
+                  "id": "piece_1767187780962_01j1gs2hc",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_nifx8okee",
+                  "type": "Text",
+                  "text": "             SV_FORCE_INP33_48_BITS      = SV_MACHINE_PARAMETER_918,"
+                },
+                {
+                  "id": "piece_1767187780962_ewoog5xdj",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_vlsvldbm7",
+                  "type": "Text",
+                  "text": "             SV_FORCE_INP49_64_BITS      = SV_MACHINE_PARAMETER_919,"
+                },
+                {
+                  "id": "piece_1767187780962_3jxwqc5cr",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_m528kf6lp",
+                  "type": "Text",
+                  "text": "             SV_FORCE_INP65_80_BITS      = SV_MACHINE_PARAMETER_920,"
+                },
+                {
+                  "id": "piece_1767187780962_bzurf18k1",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_fkjjoweoc",
+                  "type": "Text",
+                  "text": "             SV_FORCE_ON_OUT1_16_BITS    = SV_MACHINE_PARAMETER_921,"
+                },
+                {
+                  "id": "piece_1767187780962_w8ew6m3o5",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_esw9q662i",
+                  "type": "Text",
+                  "text": "             SV_FORCE_ON_OUT17_32_BITS   = SV_MACHINE_PARAMETER_922,"
+                },
+                {
+                  "id": "piece_1767187780962_mjxjnp3oa",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_n2hy1qw51",
+                  "type": "Text",
+                  "text": "             SV_FORCE_ON_OUT33_48_BITS   = SV_MACHINE_PARAMETER_923,"
+                },
+                {
+                  "id": "piece_1767187780962_0p4oxmr3c",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_14uqndgc5",
+                  "type": "Text",
+                  "text": "             SV_FORCE_ON_OUT49_64_BITS   = SV_MACHINE_PARAMETER_924,"
+                },
+                {
+                  "id": "piece_1767187780962_blg1nzcfg",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_w86tfitug",
+                  "type": "Text",
+                  "text": "             SV_FORCE_ON_OUT65_80_BITS   = SV_MACHINE_PARAMETER_925,"
+                },
+                {
+                  "id": "piece_1767187780962_7hm8eqi4n",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_bih0jpwbr",
+                  "type": "Text",
+                  "text": "             SV_FORCE_OFF_OUT1_16_BITS   = SV_MACHINE_PARAMETER_926,"
+                },
+                {
+                  "id": "piece_1767187780962_z5qah7a82",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_rqljysn27",
+                  "type": "Text",
+                  "text": "             SV_FORCE_OFF_OUT17_32_BITS  = SV_MACHINE_PARAMETER_927,"
+                },
+                {
+                  "id": "piece_1767187780962_xfahg6vwi",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_rte0jllkl",
+                  "type": "Text",
+                  "text": "             SV_FORCE_OFF_OUT33_48_BITS  = SV_MACHINE_PARAMETER_928,"
+                },
+                {
+                  "id": "piece_1767187780962_7ua18mgww",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_wv6gpimri",
+                  "type": "Text",
+                  "text": "             SV_FORCE_OFF_OUT49_64_BITS  = SV_MACHINE_PARAMETER_929,"
+                },
+                {
+                  "id": "piece_1767187780962_kybta58sz",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187780962_w1s48ls1r",
+                  "type": "Text",
+                  "text": "             SV_FORCE_OFF_OUT65_80_BITS  = SV_MACHINE_PARAMETER_930"
+                }
+              ]
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": false,
+              "pieces": [
+                {
+                  "id": "piece_1767187829738_cymfn9fe8",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1767187829738_gyiyilgw4",
+                  "type": "Text",
+                  "text": "IF 1==1 THEN P146Value_W = SV_MACHINE_PARAMETER_146,  ; Feed hold threshold"
+                },
+                {
+                  "id": "piece_1767187829738_3w63xfvzl",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187829738_vxqji4vz8",
+                  "type": "Text",
+                  "text": "             P148Value_W = SV_MACHINE_PARAMETER_148,  ; Misc Jogging Options"
+                },
+                {
+                  "id": "piece_1767187829738_wg8iv9qy7",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767187829738_sy33sx4mj",
+                  "type": "Text",
+                  "text": "             P170Value_W = SV_MACHINE_PARAMETER_170  ; Enable Keyboard Jogging"
+                }
+              ]
             }
           ]
         }
@@ -434,20 +711,17 @@
             {
               "type": "SystemUIEventsStatement",
               "comment": "",
-              "enabled": true,
-              "statementNumber": 3
+              "enabled": true
             },
             {
               "type": "StandardM9495HandlingStatement",
               "comment": "",
-              "enabled": true,
-              "statementNumber": 5
+              "enabled": true
             },
             {
               "type": "IOStateChangesStatement",
               "comment": "",
-              "enabled": true,
-              "statementNumber": 6
+              "enabled": true
             }
           ]
         }
@@ -471,7 +745,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 19,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -537,7 +810,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 20,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -619,7 +891,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 21,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -709,7 +980,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 13,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -775,7 +1045,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 14,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -841,7 +1110,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 15,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -907,7 +1175,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 16,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -973,7 +1240,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 17,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1039,7 +1305,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 18,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1110,10 +1375,89 @@
           "ordinal": 1,
           "actions": [
             {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_AFTER_FIRST_RUN_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX1JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectFastSlowJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": []
+            },
+            {
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 22,
               "skipInitial": true,
               "conditionGroup": {
                 "comment": "",
@@ -1143,6 +1487,38 @@
                   "type": "AssignmentPredicate",
                   "comment": "",
                   "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX10JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX100JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
                   "verb": "SET",
                   "sourceValue": "",
                   "targetElement": {
@@ -1154,32 +1530,22 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
-                }
-              ],
-              "fallingEdgePredicates": [
+                },
                 {
-                  "type": "AssignmentPredicate",
+                  "type": "SendMessagePredicate",
                   "comment": "",
                   "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectX1JogInc",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: X1 Speed"
                 }
-              ]
+              ],
+              "fallingEdgePredicates": []
             },
             {
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 24,
               "skipInitial": true,
               "conditionGroup": {
                 "comment": "",
@@ -1209,6 +1575,38 @@
                   "type": "AssignmentPredicate",
                   "comment": "",
                   "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX1JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX100JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
                   "verb": "SET",
                   "sourceValue": "",
                   "targetElement": {
@@ -1220,32 +1618,22 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
-                }
-              ],
-              "fallingEdgePredicates": [
+                },
                 {
-                  "type": "AssignmentPredicate",
+                  "type": "SendMessagePredicate",
                   "comment": "",
                   "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectX10JogInc",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: X10 Speed"
                 }
-              ]
+              ],
+              "fallingEdgePredicates": []
             },
             {
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 27,
               "skipInitial": true,
               "conditionGroup": {
                 "comment": "",
@@ -1275,10 +1663,98 @@
                   "type": "AssignmentPredicate",
                   "comment": "",
                   "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX1JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX10JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
                   "verb": "SET",
                   "sourceValue": "",
                   "targetElement": {
                     "declarationName": "SelectX100JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: X100 Speed"
+                }
+              ],
+              "fallingEdgePredicates": []
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "skipInitial": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_FAST_SLOW_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectFastSlowJog",
                     "allowNew": true,
                     "needsWrite": true
                   },
@@ -1296,7 +1772,7 @@
                   "verb": "RESET",
                   "sourceValue": "",
                   "targetElement": {
-                    "declarationName": "SelectX100JogInc",
+                    "declarationName": "SelectFastSlowJog",
                     "allowNew": true,
                     "needsWrite": true
                   },
@@ -1306,6 +1782,155 @@
                   }
                 }
               ]
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "skipInitial": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "INC_CONT_JOG_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "fallingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "skipInitial": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "INC_CONT_JOG_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "ToggleMemoryBitPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": false,
+                    "needsWrite": true
+                  }
+                }
+              ],
+              "fallingEdgePredicates": []
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "skipInitial": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "JOG_FAST_SLOW_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "ToggleMemoryBitPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "targetElement": {
+                    "declarationName": "SelectFastSlowJog",
+                    "allowNew": false,
+                    "needsWrite": true
+                  }
+                }
+              ],
+              "fallingEdgePredicates": []
             }
           ]
         }
@@ -1573,7 +2198,6 @@
               "type": "TimerStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 7,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1655,7 +2279,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1722,7 +2345,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1820,7 +2442,6 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1885,7 +2506,7 @@
           ]
         },
         {
-          "name": "Set First Run",
+          "name": "System Default Block 2",
           "comment": "",
           "enabled": true,
           "ordinal": 1,
@@ -1894,7 +2515,6 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "statementNumber": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -2103,5 +2723,16 @@
       "keybindings": []
     }
   ],
-  "m94m95Triggers": []
+  "m94m95Triggers": [
+    {
+      "name": "M3",
+      "description": "",
+      "number": 3,
+      "outputs": [
+        "Spindle Forward"
+      ],
+      "activeText": "Is Active",
+      "inactiveText": "Is Inactive"
+    }
+  ]
 }

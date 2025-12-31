@@ -1279,7 +1279,6 @@ namespace HavenCNCServer.Centroid
                 if (config.LinearJogIncrement.HasValue)
                 {
                     LoggingService.Log($"Setting Linear Jog Increment (Parameter 40) to: {config.LinearJogIncrement.Value}");
-                    LogInfo($"Setting LinearJogIncrement to {config.LinearJogIncrement.Value}", "CentroidConfigUtil");
                     CNCUtils.SetParameterValue(CentroidParameters.BASIC_JOG_INCREMENT_PARM, config.LinearJogIncrement.Value);
                     parametersSet = true;
                     LoggingService.Log($"Linear Jog Increment set successfully");
@@ -1292,16 +1291,11 @@ namespace HavenCNCServer.Centroid
                 {
                     LoggingService.Log($"Linear Jog Increment not provided in configuration");
                 }
-                else
-                {
-                    LogWarning("LinearJogIncrement not provided in config", "CentroidConfigUtil");
-                }
 
                 // Set rotary jog increment (Parameter 41)
                 if (config.RotaryJogIncrement.HasValue)
                 {
                     LoggingService.Log($"Setting Rotary Jog Increment (Parameter 41) to: {config.RotaryJogIncrement.Value}");
-                    LogInfo($"Setting RotaryJogIncrement to {config.RotaryJogIncrement.Value}", "CentroidConfigUtil");
                     CNCUtils.SetParameterValue(CentroidParameters.ROTARY_JOG_INCREMENT_PARM, config.RotaryJogIncrement.Value);
                     parametersSet = true;
                     LoggingService.Log($"Rotary Jog Increment set successfully");
