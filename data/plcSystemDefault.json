@@ -73,7 +73,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "ToggleStageStatement",
@@ -144,7 +156,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "ToggleStageStatement",
@@ -314,7 +338,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -362,7 +398,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             }
           ]
         }
@@ -804,7 +852,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -885,7 +945,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -966,7 +1038,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             }
           ]
         },
@@ -1039,7 +1123,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -1104,7 +1200,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -1169,7 +1277,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -1234,7 +1354,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -1299,7 +1431,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -1364,7 +1508,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             }
           ]
         },
@@ -1374,6 +1530,27 @@
           "enabled": true,
           "ordinal": 1,
           "actions": [
+            {
+              "type": "ScriptStatement",
+              "comment": "this sets the feedrate.  its important.",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1767366414215_0hyf0mm44",
+                  "type": "Text",
+                  "text": ";IF 1==1 THEN SV_PLC_FEEDRATE_OVERRIDE = SV_PC_FEEDRATE_PERCENTAGE/100.0"
+                },
+                {
+                  "id": "piece_1767366414215_vbp0rt9tn",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1767366414815_450xicbxw",
+                  "type": "Text",
+                  "text": "IF 1==1 THEN SV_PLC_FEEDRATE_OVERRIDE = 1"
+                }
+              ]
+            },
             {
               "type": "LogicStatement",
               "comment": "",
@@ -1452,7 +1629,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "IsChangedStatement",
@@ -1717,136 +1906,6 @@
                 }
               ],
               "fallingEdgePredicates": []
-            },
-            {
-              "type": "IsChangedStatement",
-              "comment": "",
-              "enabled": true,
-              "skipInitial": true,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "JOG_FAST_SLOW_UI",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "risingEdgePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectFastSlowJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "fallingEdgePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectFastSlowJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ]
-            },
-            {
-              "type": "IsChangedStatement",
-              "comment": "",
-              "enabled": true,
-              "skipInitial": true,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "INC_CONT_JOG_UI",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "risingEdgePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectIncContJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "fallingEdgePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectIncContJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ]
             },
             {
               "type": "IsChangedStatement",
@@ -2321,7 +2380,19 @@
                 }
               ],
               "hasElse": false,
-              "elsePredicates": []
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             }
           ]
         }
@@ -2436,7 +2507,19 @@
                     "needsWrite": false
                   }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "LogicStatement",
@@ -2481,6 +2564,22 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_MASTER_ENABLE",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
                 }
               ],
               "hasElse": true,
@@ -2500,8 +2599,36 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_MASTER_ENABLE",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
                 }
-              ]
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             }
           ]
         },
