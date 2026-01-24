@@ -17,11 +17,8 @@ namespace HavenCNCServer
     {
         private readonly MainForm? _mainForm;
 
-        // Step run mode fields
-        private string _currentJobId = string.Empty;
-        private bool _isStepRunActive = false;
-        private int _currentStepLine = 0;
-        private string[] _stepRunGCodeLines = Array.Empty<string>();
+        // Step run service
+        private readonly StepRunService _stepRunService = new StepRunService();
 
         // Drag and drop fields
         private bool _isDragging = false;
@@ -66,37 +63,21 @@ namespace HavenCNCServer
             try
             {
                 var gCodeText = txtGCode.Text.Trim();
+                var validationInfo = GCodeValidationService.GetValidationInfo(gCodeText);
 
-                if (string.IsNullOrWhiteSpace(gCodeText))
+                btnRunSingleCommand.Enabled = validationInfo.IsEnabled;
+                btnRunSingleCommand.Text = validationInfo.ButtonText;
+
+                if (validationInfo.IsSingleCommand)
                 {
-                    btnRunSingleCommand.Enabled = false;
-                    btnRunSingleCommand.Text = "Run Single Command";
-                    return;
-                }
-
-                // Count valid G-code lines (excluding comments and empty lines)
-                var validLines = gCodeText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(line => !string.IsNullOrWhiteSpace(line.Trim()) &&
-                                   !line.Trim().StartsWith(";") &&
-                                   !line.Trim().StartsWith("("))
-                    .Count();
-
-                if (validLines == 1)
-                {
-                    btnRunSingleCommand.Enabled = true;
-                    btnRunSingleCommand.Text = "Run Single Command";
                     btnRunSingleCommand.BackColor = Color.LightGreen;
                 }
-                else if (validLines == 0)
+                else if (validationInfo.ValidLineCount == 0)
                 {
-                    btnRunSingleCommand.Enabled = false;
-                    btnRunSingleCommand.Text = "Run Single Command";
                     btnRunSingleCommand.BackColor = Color.LightGray;
                 }
                 else
                 {
-                    btnRunSingleCommand.Enabled = false;
-                    btnRunSingleCommand.Text = $"Multiple Commands ({validLines})";
                     btnRunSingleCommand.BackColor = Color.LightYellow;
                 }
             }
@@ -217,27 +198,21 @@ namespace HavenCNCServer
                     return;
                 }
 
-                // Start step run using the controller
-                var controller = new Controllers.CNCProgramController();
-                var response = controller.StartStepRun(gCodeLines);
+                // Start step run using the service
+                var result = _stepRunService.StartStepRun(gCodeLines);
 
-                if (response.Success)
+                if (result.Success)
                 {
-                    _currentJobId = response.JobId;
-                    _isStepRunActive = true;
-                    _currentStepLine = 1;
-                    _stepRunGCodeLines = gCodeLines;
-
                     // Load G-code into main form display if available
                     _mainForm?.LoadGCodeForDisplay(gCodeLines);
 
                     UpdateStepRunControls();
-                    MessageBox.Show($"Step run started successfully!\nJob ID: {_currentJobId}", "Step Run Started",
+                    MessageBox.Show($"Step run started successfully!\nJob ID: {result.JobId}", "Step Run Started",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to start step run:\n{response.Error}", "Step Run Error",
+                    MessageBox.Show($"Failed to start step run:\n{result.Error}", "Step Run Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -261,33 +236,30 @@ namespace HavenCNCServer
             {
                 btnNextStep.Enabled = false;
 
-                if (!_isStepRunActive || string.IsNullOrEmpty(_currentJobId))
+                if (!_stepRunService.IsActive)
                 {
                     MessageBox.Show("No step run is currently active.", "No Active Step Run",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // Execute next step using the controller
-                var controller = new Controllers.CNCProgramController();
-                var response = controller.StepRunNext();
+                // Execute next step using the service
+                var result = _stepRunService.ExecuteNextStep();
 
-                if (response.Success)
+                if (result.Success)
                 {
-                    _currentStepLine++;
                     UpdateStepRunControls();
 
-                    // Check if we've reached the end of the G-code
-                    if (_currentStepLine > _stepRunGCodeLines.Length)
+                    // Check if step run completed
+                    if (result.IsComplete)
                     {
                         MessageBox.Show("Step run completed successfully!", "Step Run Complete",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ResetStepRun();
                     }
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to execute next step:\n{response.Error}", "Step Execution Error",
+                    MessageBox.Show($"Failed to execute next step:\n{result.Error}", "Step Execution Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -311,26 +283,25 @@ namespace HavenCNCServer
             {
                 btnRunFromCurrent.Enabled = false;
 
-                if (!_isStepRunActive || string.IsNullOrEmpty(_currentJobId))
+                if (!_stepRunService.IsActive)
                 {
                     MessageBox.Show("No step run is currently active.", "No Active Step Run",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // Run from current step using the controller
-                var controller = new Controllers.CNCProgramController();
-                var response = controller.RunFromCurrentStep();
+                // Run from current step using the service
+                var result = _stepRunService.RunFromCurrentStep();
 
-                if (response.Success)
+                if (result.Success)
                 {
                     MessageBox.Show("Running from current step to completion...", "Running to Completion",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ResetStepRun();
+                    UpdateStepRunControls();
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to run from current step:\n{response.Error}", "Run Error",
+                    MessageBox.Show($"Failed to run from current step:\n{result.Error}", "Run Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -355,7 +326,7 @@ namespace HavenCNCServer
         private void UpdateStepRunControls()
         {
             bool stepRunMode = chkStepRunMode.Checked;
-            bool hasStepRunActive = _isStepRunActive && !string.IsNullOrEmpty(_currentJobId);
+            bool hasStepRunActive = _stepRunService.IsActive;
 
             if (stepRunMode)
             {
@@ -392,13 +363,12 @@ namespace HavenCNCServer
             // Update current line display for step run mode
             if (stepRunMode && hasStepRunActive)
             {
-                var totalLines = _stepRunGCodeLines.Length;
-                lblCurrentLine.Text = $"Step {_currentStepLine}/{totalLines}";
+                var status = _stepRunService.GetCurrentStatus();
+                lblCurrentLine.Text = $"Step {status.CurrentLine}/{status.TotalLines}";
 
-                if (_currentStepLine <= _stepRunGCodeLines.Length)
+                if (!string.IsNullOrEmpty(status.CurrentGCode))
                 {
-                    var currentLine = _stepRunGCodeLines[_currentStepLine - 1];
-                    var displayLine = currentLine.Length > 40 ? currentLine.Substring(0, 40) + "..." : currentLine;
+                    var displayLine = GCodeValidationService.GetDisplayLine(status.CurrentGCode, 40);
                     lblCurrentLine.Text += $": {displayLine}";
                 }
             }
@@ -413,10 +383,7 @@ namespace HavenCNCServer
         /// </summary>
         private void ResetStepRun()
         {
-            _currentJobId = string.Empty;
-            _isStepRunActive = false;
-            _currentStepLine = 0;
-            _stepRunGCodeLines = Array.Empty<string>();
+            _stepRunService.Reset();
             UpdateStepRunControls();
         }
 
@@ -433,7 +400,7 @@ namespace HavenCNCServer
                 txtGCode.TextChanged -= OnGCodeTextChanged;
 
                 // Clean up step run if active
-                if (_isStepRunActive)
+                if (_stepRunService.IsActive)
                 {
                     ResetStepRun();
                 }

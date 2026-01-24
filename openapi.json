@@ -4178,12 +4178,22 @@
         }
       }
     },
-    "/api/CNCUI/ToggleContinuousJog": {
+    "/api/CNCUI/SetJogMode": {
       "post": {
         "tags": [
           "CNCUI"
         ],
-        "summary": "Toggle between continuous and incremental jog mode (INC_CONT_JOG_UI)\r\nTriggers event 26 to toggle the mode",
+        "summary": "Set continuous/incremental jog mode (INC_CONT_JOG_UI)\r\nContinuous mode (true) holds event 26, incremental mode (false) releases it",
+        "parameters": [
+          {
+            "name": "isContinuous",
+            "in": "query",
+            "description": "True for continuous mode, false for incremental mode",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -4214,12 +4224,22 @@
         }
       }
     },
-    "/api/CNCUI/ToggleFastJog": {
+    "/api/CNCUI/SetFastJog": {
       "post": {
         "tags": [
           "CNCUI"
         ],
-        "summary": "Toggle between fast and slow jog mode (JOG_FAST_SLOW_UI)\r\nTriggers event 38 to toggle the mode",
+        "summary": "Set fast/slow jog mode (JOG_FAST_SLOW_UI)\r\nFast mode (true) holds event 38, slow mode (false) releases it",
+        "parameters": [
+          {
+            "name": "isFast",
+            "in": "query",
+            "description": "True for fast mode, false for slow mode",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
