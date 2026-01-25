@@ -33,6 +33,7 @@ namespace HavenCNCServer
 
         // Component instances
         private CoordinateDisplayComponent? _coordinateDisplayComponent;
+        private FlickerFreeLogViewer? _mainLogViewer;
 
         // Separate forms for different views
         private Forms.LogsForm? _logsForm;
@@ -131,9 +132,25 @@ namespace HavenCNCServer
         /// </summary>
         private void SetupLogging()
         {
-            // Logging is now set up in the separate LogsForm
+            // Create log viewer for main form if not already created
+            if (_mainLogViewer == null)
+            {
+                _mainLogViewer = new FlickerFreeLogViewer();
+                _mainLogViewer.Dock = DockStyle.Fill;
+                _mainLogViewer.Name = "mainLogViewer";
+
+                // Add to a middle panel (will be created in InitializeUIComponents)
+            }
+
             // Set maximum log entries from settings or default
             LoggingService.MaxLogEntries = 10000;
+
+            // Register main form's log viewer as a target
+            if (_mainLogViewer != null)
+            {
+                var logTarget = new LoggingService.FlickerFreeLogTarget(_mainLogViewer, this);
+                LoggingService.AddTarget(logTarget);
+            }
 
             LogInfo("Logging system initialized", "System");
         }
@@ -148,6 +165,28 @@ namespace HavenCNCServer
                 // Create the coordinate display component and position it properly on the right
                 _coordinateDisplayComponent = new CoordinateDisplayComponent();
                 PositionCoordinateDisplay();
+
+                // Add the log viewer to the main form if it exists
+                if (_mainLogViewer != null)
+                {
+                    // Find or create a panel between pnlTop and pnlBottom for logs
+                    // The log viewer will fill the middle space
+                    var middlePanel = this.Controls.Find("pnlMiddle", false).FirstOrDefault() as Panel;
+                    if (middlePanel == null)
+                    {
+                        middlePanel = new Panel
+                        {
+                            Name = "pnlMiddle",
+                            Dock = DockStyle.Fill
+                        };
+                        this.Controls.Add(middlePanel);
+                        middlePanel.BringToFront();
+                        pnlBottom.BringToFront(); // Keep bottom panel on top
+                    }
+
+                    middlePanel.Controls.Add(_mainLogViewer);
+                    _mainLogViewer.BringToFront();
+                }
 
                 // Initialize the separate forms (but don't show them yet)
                 _logsForm = new Forms.LogsForm();
@@ -364,57 +403,62 @@ namespace HavenCNCServer
                         this.Close(); // Try closing again
                     };
                     retryTimer.Start();
+                    base.OnFormClosing(e);
                     return;
                 }
             }
 
-            // Cancel the close to handle it asynchronously
-            if (!e.Cancel)
+            // Perform synchronous shutdown
+            try
             {
-                e.Cancel = true;
+                LogInfo("Application shutdown initiated", "System");
 
-                // Run shutdown asynchronously but with better error handling and timeout
-                _ = Task.Run(async () =>
+                // Signal all background operations to stop
+                _cancellationTokenSource?.Cancel();
+
+                // Stop CNC Job Info Listener with timeout
+                var shutdownTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                CNCJobInfoListener.Stop(shutdownTokenSource.Token);
+
+                // Clean up UI components
+                _logsForm?.Dispose();
+                _messagesForm?.Dispose();
+                _gCodeForm?.Dispose();
+                _settingsForm?.Dispose();
+                _coordinateDisplayComponent?.Dispose();
+
+                // Clear all event listeners
+                CNCJobInfoListener.ClearAllListeners();
+
+                // Stop API manager synchronously
+                try
                 {
-                    try
+                    var stopTask = ApiManager.StopAsync(CancellationToken.None);
+                    if (!stopTask.Wait(TimeSpan.FromSeconds(3)))
                     {
-                        // Add a timeout to the entire shutdown process
-                        using var shutdownTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                        try
-                        {
-                            await PerformShutdownAsync().WaitAsync(shutdownTimeout.Token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            LogError("⏰ Shutdown process timed out after 10 seconds - forcing exit", "System");
-                            Environment.Exit(1);
-                            return;
-                        }
+                        LogWarning("API manager stop timed out", "System");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error stopping API manager: {ex.Message}", "System");
+                }
 
-                        Environment.Exit(0);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log any errors in the shutdown process
-                        try
-                        {
-                            this.Invoke(() =>
-                            {
-                                LogError($"❌ Fatal error during shutdown: {ex.Message}", "System");
-                                LogInfo("🚪 Forcing exit due to error...", "System");
-                            });
-                            await Task.Delay(2000); // Give time to see the error
-                        }
-                        catch
-                        {
-                            // If even logging fails, just exit
-                        }
-                        finally
-                        {
-                            Environment.Exit(1);
-                        }
-                    }
-                });
+                // Unsubscribe from CNC events
+                CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
+
+                // Cleanup the CNC connection manager
+                CNCConnectionManager.Disconnect();
+
+                // Dispose cancellation token source
+                _cancellationTokenSource?.Dispose();
+                _cancellationTokenSource = null;
+
+                LogSuccess("Application shutdown completed", "System");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during shutdown: {ex.Message}", "System");
             }
 
             base.OnFormClosing(e);

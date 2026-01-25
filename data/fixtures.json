@@ -349,6 +349,48 @@
         "z": 0,
         "coordinateType": "MachineZero"
       }
+    },
+    {
+      "name": "Fixed Tool Measurement Point",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Spoilboard Tool Measurement Point",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
+    },
+    {
+      "name": "Machine Bed Tool Measurement Point",
+      "fixtureNumber": "",
+      "used": false,
+      "fixtureType": 3,
+      "userDefined": false,
+      "isComputed": true,
+      "offset": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "coordinateType": "MachineZero"
+      }
     }
   ]
 }

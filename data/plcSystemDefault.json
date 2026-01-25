@@ -18,11 +18,14 @@
           "comment": "",
           "enabled": true,
           "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -91,6 +94,7 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -105,23 +109,28 @@
                 "stageName": "MESSAGE_S"
               }
             }
-          ]
+          ],
+          "subBlocks": []
         },
         {
           "name": "Input Mapping/EStop",
           "comment": "",
           "enabled": true,
           "ordinal": 1,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "InputMappingStatement",
               "comment": "",
-              "enabled": true
+              "enabled": true,
+              "ordinal": 0
             },
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -174,6 +183,7 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -192,6 +202,7 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -210,6 +221,7 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -228,6 +240,7 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -262,6 +275,7 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -296,6 +310,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -356,6 +371,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -412,7 +428,8 @@
               "hideSimpleActions": false,
               "hideElseActions": false
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -429,11 +446,14 @@
           "comment": "",
           "enabled": true,
           "ordinal": 1,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -452,6 +472,7 @@
               "type": "ToggleStageStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "predicate": {
                 "type": "ToggleStagePredicate",
                 "comment": "",
@@ -466,18 +487,22 @@
                 "stageName": "INITONETIME_S"
               }
             }
-          ]
+          ],
+          "subBlocks": []
         },
         {
           "name": "Defaults from Acrorn PLC",
           "comment": "not sure which if these is needed",
           "enabled": true,
           "ordinal": 2,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -738,7 +763,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -755,23 +781,29 @@
           "comment": "",
           "enabled": true,
           "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "SystemUIEventsStatement",
               "comment": "",
-              "enabled": true
+              "enabled": true,
+              "ordinal": 0
             },
             {
               "type": "StandardM9495HandlingStatement",
               "comment": "",
-              "enabled": true
+              "enabled": true,
+              "ordinal": 0
             },
             {
               "type": "IOStateChangesStatement",
               "comment": "",
-              "enabled": true
+              "enabled": true,
+              "ordinal": 0
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -788,11 +820,14 @@
           "comment": "",
           "enabled": true,
           "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -870,6 +905,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -963,6 +999,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1052,18 +1089,22 @@
               "hideSimpleActions": false,
               "hideElseActions": false
             }
-          ]
+          ],
+          "subBlocks": []
         },
         {
           "name": "Jogging",
           "comment": "",
           "enabled": true,
           "ordinal": 2,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1141,6 +1182,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1218,6 +1260,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1295,6 +1338,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1372,6 +1416,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1449,6 +1494,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1522,13 +1568,16 @@
               "hideSimpleActions": false,
               "hideElseActions": false
             }
-          ]
+          ],
+          "subBlocks": []
         },
         {
           "name": "Jogging Defaults",
           "comment": "",
           "enabled": true,
           "ordinal": 1,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "ScriptStatement",
@@ -1555,6 +1604,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1586,7 +1636,7 @@
                   "verb": "SET",
                   "sourceValue": "",
                   "targetElement": {
-                    "declarationName": "SelectX1JogInc",
+                    "declarationName": "SelectX10JogInc",
                     "allowNew": true,
                     "needsWrite": true
                   },
@@ -1647,7 +1697,10 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "skipInitial": true,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1735,7 +1788,10 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "skipInitial": true,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1823,7 +1879,10 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "skipInitial": true,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1911,7 +1970,10 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1937,23 +1999,49 @@
               },
               "risingEdgePredicates": [
                 {
-                  "type": "ToggleMemoryBitPredicate",
+                  "type": "AssignmentPredicate",
                   "comment": "",
                   "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
                   "targetElement": {
                     "declarationName": "SelectIncContJog",
-                    "allowNew": false,
+                    "allowNew": true,
                     "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
                   }
                 }
               ],
-              "fallingEdgePredicates": []
+              "fallingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
             },
             {
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1979,19 +2067,43 @@
               },
               "risingEdgePredicates": [
                 {
-                  "type": "ToggleMemoryBitPredicate",
+                  "type": "AssignmentPredicate",
                   "comment": "",
                   "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
                   "targetElement": {
                     "declarationName": "SelectFastSlowJog",
-                    "allowNew": false,
+                    "allowNew": true,
                     "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
                   }
                 }
               ],
-              "fallingEdgePredicates": []
+              "fallingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectFastSlowJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -2008,6 +2120,8 @@
           "comment": "",
           "enabled": true,
           "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "ScriptStatement",
@@ -2257,6 +2371,10 @@
               "type": "TimerStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
+              "timerLengthMs": 100,
+              "cancelEnabled": false,
+              "hideTimerStartActions": false,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -2280,6 +2398,7 @@
                   }
                 ]
               },
+              "timerStartPredicates": [],
               "timerCompletePredicates": [
                 {
                   "type": "AssignmentPredicate",
@@ -2330,14 +2449,13 @@
                   }
                 }
               ],
-              "timerLengthMs": 100,
-              "cancelConditionGroup": null,
-              "cancelEnabled": false
+              "cancelConditionGroup": null
             },
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -2394,7 +2512,8 @@
               "hideSimpleActions": false,
               "hideElseActions": false
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -2411,11 +2530,14 @@
           "comment": "",
           "enabled": true,
           "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -2525,6 +2647,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -2630,18 +2753,22 @@
               "hideSimpleActions": false,
               "hideElseActions": false
             }
-          ]
+          ],
+          "subBlocks": []
         },
         {
           "name": "System Default Block 2",
           "comment": "",
           "enabled": true,
           "ordinal": 1,
+          "requiredInputs": [],
+          "requiredOutputs": [],
           "actions": [
             {
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
+              "ordinal": 0,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -2659,7 +2786,8 @@
                 }
               }
             }
-          ]
+          ],
+          "subBlocks": []
         }
       ]
     }

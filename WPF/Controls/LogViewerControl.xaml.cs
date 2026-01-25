@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -75,6 +76,7 @@ namespace HavenCNCServer.WPF.Controls
     public class WpfLogTarget : ILogTarget
     {
         private readonly LogViewerControl _control;
+        private int _lastDisplayedCount = 0;
         public bool IsDisposed { get; private set; }
 
         public WpfLogTarget(LogViewerControl control)
@@ -82,14 +84,59 @@ namespace HavenCNCServer.WPF.Controls
             _control = control;
         }
 
-        public void Log(string message, System.Drawing.Color color)
-        {
-            _control.AppendLogEntry(message, color);
-        }
-
         public void UpdateLog(System.Collections.Generic.IEnumerable<LoggingService.LogEntry> entries)
         {
-            // Not used for this implementation - we use direct Log() calls
+            if (IsDisposed) return;
+
+            try
+            {
+                var entryList = entries.ToList();
+                int newCount = entryList.Count;
+
+                // Only append new entries since last update
+                if (newCount > _lastDisplayedCount)
+                {
+                    var newEntries = entryList.Skip(_lastDisplayedCount);
+                    foreach (var entry in newEntries)
+                    {
+                        var text = entry.FormatForDisplay();
+                        var color = GetColorForLogLevel(entry.Level);
+                        _control.AppendLogEntry(text, color);
+                    }
+                    _lastDisplayedCount = newCount;
+                }
+                else if (newCount < _lastDisplayedCount)
+                {
+                    // Logs were cleared, rebuild
+                    _control.Clear();
+                    _lastDisplayedCount = 0;
+
+                    foreach (var entry in entryList)
+                    {
+                        var text = entry.FormatForDisplay();
+                        var color = GetColorForLogLevel(entry.Level);
+                        _control.AppendLogEntry(text, color);
+                    }
+                    _lastDisplayedCount = newCount;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating WPF log target: {ex.Message}");
+            }
+        }
+
+        private static System.Drawing.Color GetColorForLogLevel(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Success => System.Drawing.Color.Green,
+                LogLevel.Error => System.Drawing.Color.Red,
+                LogLevel.Warning => System.Drawing.Color.Orange,
+                LogLevel.Info => System.Drawing.Color.Black,
+                LogLevel.Debug => System.Drawing.Color.Gray,
+                _ => System.Drawing.Color.Black
+            };
         }
 
         public void Dispose()

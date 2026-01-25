@@ -72,7 +72,9 @@ namespace HavenCNCServer.Services
                 try
                 {
                     // Get machine coordinates using DRO API
-                    var result = cncPipe.dro.GetDro(CentroidAPI.CNCPipe.Dro.DroCoordinates.DRO_MACHINE, out var droStrings);
+                    // Explicitly specify the tuple type to avoid ambiguity with new API overload
+                    Tuple<string, string, string>[]? droStrings;
+                    var result = cncPipe.dro.GetDro(CentroidAPI.CNCPipe.Dro.DroCoordinates.DRO_MACHINE, out droStrings);
 
                     if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
                     {

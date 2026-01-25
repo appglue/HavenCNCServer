@@ -214,11 +214,56 @@
   "enableAutoSquare": true,
   "autoSquareMasterAxis": "Y",
   "autoSquareDistance": 0.5,
-  "stepFrequency": 200000,
+  "stepFrequency": 100000,
   "driveFaultDelay": 500,
   "linearJogIncrement": 0.005,
   "rotaryJogIncrement": 0.1,
   "secondSpindleEnabled": false,
+  "fixedToolMeasurementPoint": {
+    "_x": 0,
+    "_y": 0,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-FixedToolMeasurementPoint",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "fixedToolMeasurementPointEnabled": false,
+  "spoilboardToolMeasurementPoint": {
+    "_x": 0,
+    "_y": 0,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-SpoilboardToolMeasurementPoint",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "spoilboardToolMeasurementPointEnabled": false,
+  "machineBedToolMeasurementPoint": {
+    "_x": 0,
+    "_y": 0,
+    "_z": 0,
+    "_____observers": {
+      "components": [],
+      "functions": [
+        {
+          "name": "MachineData-MachineBedToolMeasurementPoint",
+          "properties": []
+        }
+      ]
+    }
+  },
+  "machineBedToolMeasurementPointEnabled": false,
   "zUpperSoftLimitFromMachineZero": 0,
   "zLowerSoftLimitFromMachineZero": -5,
   "xLowerSoftLimitFromMachineZero": 0,
@@ -227,7 +272,7 @@
   "yUpperSoftLimitFromMachineZero": 24,
   "crosshairSize": 12,
   "crosshairLineWidth": 1,
-  "_stepFrequency": 200000,
+  "_stepFrequency": 100000,
   "_driveFaultDelay": 500,
   "_atcLocation": {
     "offset": {
@@ -425,7 +470,7 @@
     "analogRange": null,
     "okDelay": 0,
     "fanDelay": 0,
-    "encoderEnabled": false,
+    "encoderEnabled": true,
     "rigidTappingEnabled": null,
     "rtgDisplay": null,
     "spindleScalingEnabled": false,

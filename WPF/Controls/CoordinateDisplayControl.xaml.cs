@@ -26,13 +26,30 @@ namespace HavenCNCServer.WPF.Controls
         /// </summary>
         public void EventReceived(ICentroidEvent centroidEvent)
         {
-            if (centroidEvent is DROEvent droEvent && DataContext is CoordinateDisplayViewModel vm)
+            try
             {
-                // Update UI on the main thread using Dispatcher
-                Dispatcher.Invoke(() =>
+                if (centroidEvent is DROEvent droEvent)
                 {
-                    vm.UpdateCoordinates(droEvent.Axis1, droEvent.Axis2, droEvent.Axis3);
-                });
+                    // Update UI on the main thread using Dispatcher
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        try
+                        {
+                            if (DataContext is CoordinateDisplayViewModel vm)
+                            {
+                                vm.UpdateCoordinates(droEvent.Axis1, droEvent.Axis2, droEvent.Axis3);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError($"Error updating coordinates on UI thread: {ex.Message}", "CoordinateDisplay");
+                        }
+                    }));
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error in EventReceived: {ex.Message}", "CoordinateDisplay");
             }
         }
 

@@ -20,6 +20,6 @@
     "connectionTimeoutMs": 10000,
     "connectionRetries": 3,
     "retryDelayMs": 1000,
-    "autoConnectOnStartup": false
+    "autoConnectOnStartup": true
   }
 }

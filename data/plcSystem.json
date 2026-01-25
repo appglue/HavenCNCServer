@@ -3,8 +3,8 @@
   "description": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 55,
-  "updateVersion": 0,
+  "minorVersion": 60,
+  "updateVersion": 2,
   "type": 1,
   "lastModified": "2025-12-15T17:00:11.831Z",
   "stages": [
@@ -71,6 +71,30 @@
       "inactiveText": "EStop Pressed",
       "isInverted": true,
       "number": 1
+    },
+    {
+      "centroidName": "x_AXISLIMITOK_I",
+      "name": "X Axis Home/Limit",
+      "activeText": "At Limit",
+      "inactiveText": "Inactive",
+      "isInverted": true,
+      "number": 2
+    },
+    {
+      "centroidName": "Y_AXISLIMITOK_I",
+      "name": "Y Axis Home/Limit",
+      "activeText": "At Limit",
+      "inactiveText": "Inactive",
+      "isInverted": true,
+      "number": 3
+    },
+    {
+      "centroidName": "Z_AXISLIMITOK_I",
+      "name": "Z Axis Home/Limit",
+      "activeText": "At Limit",
+      "inactiveText": "Inactive",
+      "isInverted": true,
+      "number": 4
     }
   ],
   "outputs": [],
