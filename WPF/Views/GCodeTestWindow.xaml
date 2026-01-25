@@ -1,0 +1,88 @@
+<Window x:Class="HavenCNCServer.WPF.Views.GCodeTestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="G-Code Test"
+        Height="500"
+        Width="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesign.Brush.Background}"
+        TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <materialDesign:ColorZone Grid.Row="0"
+                                  Mode="PrimaryMid"
+                                  Padding="16"
+                                  materialDesign:ElevationAssist.Elevation="Dp4">
+            <TextBlock Text="G-Code Test - Step-by-Step Execution"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+        </materialDesign:ColorZone>
+
+        <!-- G-Code Input -->
+        <Grid Grid.Row="1"
+                Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="Enter G-Code (one command per line):"
+                       Style="{StaticResource MaterialDesignBody1TextBlock}"
+                       Margin="0,0,0,10"/>
+
+            <TextBox Grid.Row="1"
+                     x:Name="txtGCode"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas"
+                     FontSize="12"
+                     materialDesign:HintAssist.Hint="G0 X10 Y20&#x0a;G1 X30 Y40 F100&#x0a;M3 S1000"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+        </Grid>
+
+        <!-- Control Buttons -->
+        <materialDesign:Card Grid.Row="2"
+                             Margin="20,0,20,20"
+                             Padding="15">
+            <UniformGrid Columns="5"
+                    Rows="1">
+                <Button Content="LOAD FILE"
+                        Margin="5"
+                        Click="LoadFile_Click"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                <Button Content="START"
+                        Margin="5"
+                        Click="Start_Click"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Background="Green"/>
+                <Button Content="STEP"
+                        Margin="5"
+                        Click="Step_Click"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Background="Orange"/>
+                <Button Content="STOP"
+                        Margin="5"
+                        Click="Stop_Click"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Background="Red"/>
+                <Button Content="CLOSE"
+                        Margin="5"
+                        Click="Close_Click"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+            </UniformGrid>
+        </materialDesign:Card>
+    </Grid>
+</Window>

@@ -1,0 +1,179 @@
+<Window x:Class="HavenCNCServer.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:HavenCNCServer.WPF.ViewModels"
+        xmlns:controls="clr-namespace:HavenCNCServer.WPF.Controls"
+        Title="HavenCNC Server (WPF)"
+        Width="650"
+        WindowStartupLocation="Manual"
+        Topmost="{Binding IsAlwaysOnTop}"
+        Loaded="Window_Loaded">
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <DockPanel>
+        <!-- Top Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Settings"
+                          Command="{Binding OpenSettingsCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit"
+                          Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Always on Top"
+                          IsCheckable="True"
+                          IsChecked="{Binding IsAlwaysOnTop}"
+                          Command="{Binding ToggleAlwaysOnTopCommand}"/>
+                <Separator/>
+                <MenuItem Header="_Logs"
+                          Command="{Binding ShowLogsCommand}"/>
+                <MenuItem Header="_Messages"
+                          Command="{Binding ShowMessagesCommand}"/>
+                <MenuItem Header="_G-Code"
+                          Command="{Binding ShowGCodeCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="_G-Code Test"
+                          Command="{Binding ShowGCodeTestCommand}"/>
+                <MenuItem Header="Open _Browser UI"
+                          Command="{Binding OpenBrowserUICommand}"/>
+                <MenuItem Header="Open _Swagger"
+                          Command="{Binding OpenSwaggerCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Admin">
+                <MenuItem Header="Open _Data Folder"
+                          Command="{Binding OpenDataFolderCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Status Bar -->
+        <StatusBar DockPanel.Dock="Bottom"
+                   Height="30">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="CNC12: "/>
+                    <TextBlock Text="{Binding IsCnc12Running}"
+                               FontWeight="Bold"/>
+                    <TextBlock Text="  |  Connection: "
+                               Margin="10,0,0,0"/>
+                    <TextBlock Text="{Binding IsConnected}"
+                               FontWeight="Bold"/>
+                    <TextBlock Text="  |  Retries: "
+                               Margin="10,0,0,0"/>
+                    <TextBlock Text="{Binding ConnectionRetryCount}"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Main Content -->
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- CNC Control Buttons -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="CNC Control"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,0,10"/>
+
+                <UniformGrid Columns="1"
+                             Rows="3">
+                    <Button Content="RESET"
+                            Command="{Binding ResetButtonCommand}"
+                            Height="50"
+                            Margin="0,0,0,5"
+                            Background="Orange"
+                            FontSize="14"
+                            FontWeight="Bold"/>
+                    <Button Content="STOP"
+                            Command="{Binding StopButtonCommand}"
+                            Height="50"
+                            Margin="0,0,0,5"
+                            Background="Red"
+                            Foreground="White"
+                            FontSize="14"
+                            FontWeight="Bold"/>
+                    <Button Content="START"
+                            Command="{Binding StartButtonCommand}"
+                            Height="50"
+                            Margin="0,0,0,5"
+                            Background="Green"
+                            Foreground="White"
+                            FontSize="14"
+                            FontWeight="Bold"/>
+                </UniformGrid>
+            </StackPanel>
+
+            <!-- Coordinate Display (DRO) -->
+            <controls:CoordinateDisplayControl Grid.Row="1"
+                                               Margin="0,20,0,0"/>
+
+            <!-- Tabs for Messages/Logs/GCode -->
+            <TabControl Grid.Row="2"
+                        Margin="0,20,0,0">
+                <TabItem Header="Messages">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="5">
+                            <Button Content="Clear"
+                                    Command="{Binding ClearMessagesCommand}"
+                                    Width="80"
+                                    Margin="5,0"/>
+                            <Button Content="Open"
+                                    Command="{Binding ShowMessagesCommand}"
+                                    Width="80"
+                                    Margin="5,0"/>
+                        </StackPanel>
+                        <controls:MessageDisplayControl/>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="Logs">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="5">
+                            <Button Content="Clear"
+                                    Command="{Binding ClearLogsCommand}"
+                                    Width="80"
+                                    Margin="5,0"/>
+                            <Button Content="Open"
+                                    Command="{Binding ShowLogsCommand}"
+                                    Width="80"
+                                    Margin="5,0"/>
+                        </StackPanel>
+                        <controls:LogViewerControl/>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="G-Code">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="5">
+                            <Button Content="Open"
+                                    Command="{Binding ShowGCodeCommand}"
+                                    Width="80"
+                                    Margin="5,0"/>
+                        </StackPanel>
+                        <controls:GCodeViewerControl/>
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -30,6 +30,11 @@ namespace HavenCNCServer
                 {
                     switch (args[0].ToLowerInvariant())
                     {
+                        case "--wpf":
+                        case "-w":
+                            // Launch WPF UI instead of WinForms
+                            ProgramWPF.Main(args);
+                            return;
                         case "--generate-openapi":
                         case "-g":
                             GenerateOpenApiAsync().GetAwaiter().GetResult();
@@ -223,11 +228,13 @@ namespace HavenCNCServer
             Console.WriteLine("HavenCNCServer - CNC Server Management Application");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  HavenCNCServer.exe                    Start the GUI application");
+            Console.WriteLine("  HavenCNCServer.exe                    Start the GUI application (WinForms)");
+            Console.WriteLine("  HavenCNCServer.exe --wpf              Start the WPF GUI application");
             Console.WriteLine("  HavenCNCServer.exe --generate-openapi Generate OpenAPI specification");
             Console.WriteLine("  HavenCNCServer.exe --help             Show this help message");
             Console.WriteLine();
             Console.WriteLine("Options:");
+            Console.WriteLine("  --wpf, -w                 Launch WPF UI instead of WinForms");
             Console.WriteLine("  --generate-openapi, -g    Generate OpenAPI/Swagger specification");
             Console.WriteLine("                            Starts the server, downloads the spec, then exits");
             Console.WriteLine("  --help, -h, /?            Show this help message");

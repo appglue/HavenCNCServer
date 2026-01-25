@@ -1,0 +1,37 @@
+<UserControl x:Class="HavenCNCServer.WPF.Controls.GCodeViewerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="400"
+        d:DesignWidth="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0"
+                   Text="Current G-Code"
+                   FontWeight="Bold"
+                   Foreground="DarkBlue"
+                   Margin="0,0,0,5"/>
+
+        <!-- G-Code display -->
+        <RichTextBox Grid.Row="1"
+                     x:Name="txtGCode"
+                     IsReadOnly="True"
+                     VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas"
+                     FontSize="9"
+                     Background="White"/>
+
+        <!-- Current job info -->
+        <TextBlock Grid.Row="2"
+                   Text="{Binding CurrentJobInfo}"
+                   Margin="0,5,0,0"/>
+    </Grid>
+</UserControl>
