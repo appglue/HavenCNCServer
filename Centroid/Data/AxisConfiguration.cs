@@ -139,5 +139,20 @@ namespace HavenCNCServer.Centroid.Data
         /// Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)
         /// </summary>
         public bool? EnableSignalInverted { get; set; }
+
+        /// <summary>
+        /// Input number for the positive limit switch (1-based, 1-96, or 0 for none)
+        /// </summary>
+        public int? PositiveLimitInput { get; set; }
+
+        /// <summary>
+        /// Input number for the negative limit switch (1-based, 1-96, or 0 for none)
+        /// </summary>
+        public int? NegativeLimitInput { get; set; }
+
+        /// <summary>
+        /// Homing direction: true = homes in positive direction, false = homes in negative direction, null = does not home
+        /// </summary>
+        public bool? HomingDirectionPositive { get; set; }
     }
 }

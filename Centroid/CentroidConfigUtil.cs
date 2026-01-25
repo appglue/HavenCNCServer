@@ -282,6 +282,10 @@ namespace HavenCNCServer.Centroid
                     LoggingService.Log($"    DriveEnableDelay: {config.DriveEnableDelay.Value}ms (parameter implementation needed)");
                 }
 
+                // Configure limit and home switches
+                // If only one switch is provided, it acts as a dual-purpose home/limit switch
+                ConfigureLimitSwitches(axisEnum, config);
+
                 // Configure axis properties (rotary, signal inversions, etc.) via parameters
                 // This must come AFTER SetAxisReversal to ensure proper configuration
                 LoggingService.Log($"  Configuring axis properties for {config.AxisType ?? "Axis " + config.AxisNumber}...");
@@ -295,6 +299,93 @@ namespace HavenCNCServer.Centroid
                 LoggingService.Log($"EXCEPTION in ConfigureAxis for Axis {config.AxisNumber}: {ex.Message}", LoggingService.LogLevel.Error);
                 LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Configures limit and home switches for an axis
+        /// If only one switch is provided, it acts as a dual-purpose home/limit switch
+        /// </summary>
+        /// <param name="axisEnum">The axis to configure</param>
+        /// <param name="config">Axis configuration containing limit input numbers and homing direction</param>
+        private static void ConfigureLimitSwitches(CNCPipe.Axes axisEnum, AxisConfiguration config)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null) return;
+
+            // Determine which inputs to use based on what's provided
+            bool hasPositiveInput = config.PositiveLimitInput.HasValue && config.PositiveLimitInput.Value > 0;
+            bool hasNegativeInput = config.NegativeLimitInput.HasValue && config.NegativeLimitInput.Value > 0;
+
+            // If only one switch is provided, use it as home/limit in the homing direction
+            if ((hasPositiveInput || hasNegativeInput) && !(hasPositiveInput && hasNegativeInput))
+            {
+                // Single switch mode - acts as dual-purpose home/limit
+                int switchInput = hasPositiveInput ? config.PositiveLimitInput!.Value : config.NegativeLimitInput!.Value;
+
+                // Determine which direction based on homing direction
+                var direction = config.HomingDirectionPositive.HasValue && config.HomingDirectionPositive.Value
+                    ? CNCPipe.Axis.Direction.PLUS
+                    : CNCPipe.Axis.Direction.MINUS;
+                var oppositeDirection = direction == CNCPipe.Axis.Direction.PLUS
+                    ? CNCPipe.Axis.Direction.MINUS
+                    : CNCPipe.Axis.Direction.PLUS;
+
+                LoggingService.Log($"    Single switch mode: Input {switchInput} as HomeLimit in {direction} direction");
+
+                // Set as both limit and home switch in the homing direction
+                cncPipe.axis.SetLimit(axisEnum, direction, switchInput);
+                cncPipe.axis.SetHomeLimit(axisEnum, direction, switchInput);
+
+                // Clear the opposite direction
+                cncPipe.axis.SetLimit(axisEnum, oppositeDirection, 0);
+                cncPipe.axis.SetHomeLimit(axisEnum, oppositeDirection, 0);
+            }
+            else if (hasPositiveInput && hasNegativeInput)
+            {
+                // Dual switch mode - separate limit switches
+                LoggingService.Log($"    Dual switch mode:");
+                LoggingService.Log($"      Positive limit: Input {config.PositiveLimitInput.Value}");
+                LoggingService.Log($"      Negative limit: Input {config.NegativeLimitInput.Value}");
+
+                // Set limit switches
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PositiveLimitInput.Value);
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.NegativeLimitInput.Value);
+
+                // Set home switch based on homing direction
+                if (config.HomingDirectionPositive.HasValue)
+                {
+                    if (config.HomingDirectionPositive.Value)
+                    {
+                        // Homes in positive direction - use positive limit as home
+                        LoggingService.Log($"      Homing: Positive direction (using positive limit as home)");
+                        cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PositiveLimitInput.Value);
+                        cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+                    }
+                    else
+                    {
+                        // Homes in negative direction - use negative limit as home
+                        LoggingService.Log($"      Homing: Negative direction (using negative limit as home)");
+                        cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.NegativeLimitInput.Value);
+                        cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                    }
+                }
+                else
+                {
+                    // No homing configured - clear home switches
+                    LoggingService.Log($"      Homing: Disabled (InPlace)");
+                    cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                    cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+                }
+            }
+            else
+            {
+                // No switches configured - clear all
+                LoggingService.Log($"    No limit switches configured");
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+                cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
             }
         }
 

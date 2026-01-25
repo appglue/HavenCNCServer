@@ -5538,6 +5538,23 @@
             "type": "boolean",
             "description": "Invert enable signal for this axis (Parameter 961 - 4-bit nibble per axis)",
             "nullable": true
+          },
+          "PositiveLimitInput": {
+            "type": "integer",
+            "description": "Input number for the positive limit switch (1-based, 1-96, or 0 for none)",
+            "format": "int32",
+            "nullable": true
+          },
+          "NegativeLimitInput": {
+            "type": "integer",
+            "description": "Input number for the negative limit switch (1-based, 1-96, or 0 for none)",
+            "format": "int32",
+            "nullable": true
+          },
+          "HomingDirectionPositive": {
+            "type": "boolean",
+            "description": "Homing direction: true = homes in positive direction, false = homes in negative direction, null = does not home",
+            "nullable": true
           }
         },
         "additionalProperties": false,
