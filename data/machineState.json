@@ -1,5 +1,5 @@
 {
-  "sessionNumber": 1,
+  "sessionNumber": 12,
   "spoilBoardWidth": 13,
   "spoilBoardYLength": 23,
   "spoilBoardHeight": 0.8,
@@ -13,7 +13,7 @@
   "selectedClampId": null,
   "_currentMachinePoint": {
     "x": 0,
-    "y": 24,
+    "y": 0,
     "z": 0,
     "coordinateType": "MachineZero"
   },
@@ -197,9 +197,9 @@
       },
       "topView": {
         "name": "default",
-        "cameraDistance": 41.72271456992591,
-        "cameraPolarAngle": 0.000001000044449303342,
-        "cameraAzimuthalAngle": -3.141592653334353,
+        "cameraDistance": 41.72271456992291,
+        "cameraPolarAngle": 0.0000010003774459658713,
+        "cameraAzimuthalAngle": -3.14159265312159,
         "zoomFactor": 1,
         "workHome": true,
         "toolpaths": true,

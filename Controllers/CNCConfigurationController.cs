@@ -363,8 +363,16 @@ namespace HavenCNCServer.Controllers
                     LoggingService.Log($"GlobalSystem RotaryJogIncrement: {config.GlobalSystem.RotaryJogIncrement}");
                 }
 
+                // Get configured axes
+                var configuredAxes = (config.Axes ?? new List<AxisConfiguration>())
+                    .Where(a => !string.IsNullOrEmpty(a.AxisType) && a.AxisType.ToLower() != "unset")
+                    .ToList();
+
+                LoggingService.Log($"Received {configuredAxes.Count} configured axes");
+
+                // Configure the machine with the provided axes
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
-                    config.Axes ?? new List<AxisConfiguration>(),
+                    configuredAxes,
                     config.Spindle!,
                     config.Probe,
                     config.PWMOutputs,
@@ -376,6 +384,35 @@ namespace HavenCNCServer.Controllers
 
                 if (result)
                 {
+                    // CNC12 has 6 axis slots - hide any unused slots from DRO
+                    // This prevents unconfigured axes from showing as "U" on the control panel
+                    int maxAxes = 6;
+                    int configuredCount = configuredAxes.Count;
+
+                    if (configuredCount < maxAxes)
+                    {
+                        LoggingService.Log($"Hiding unused axis slots {configuredCount + 1}-{maxAxes} from DRO");
+
+                        for (int axisNum = configuredCount + 1; axisNum <= maxAxes; axisNum++)
+                        {
+                            try
+                            {
+                                var hideConfig = new AxisConfiguration
+                                {
+                                    AxisNumber = axisNum,
+                                    HideFromDRO = true
+                                };
+
+                                CentroidConfigUtil.ConfigureAxisProperties(hideConfig);
+                                LoggingService.Log($"  ✓ Axis {axisNum} hidden from DRO");
+                            }
+                            catch (Exception ex)
+                            {
+                                LoggingService.Log($"  ⚠ Failed to hide axis {axisNum}: {ex.Message}", LoggingService.LogLevel.Warning);
+                            }
+                        }
+                    }
+
                     LoggingService.Log("=== ConfigureCompleteMachine API completed successfully ===");
                 }
                 else

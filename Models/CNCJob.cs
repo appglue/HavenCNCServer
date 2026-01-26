@@ -925,8 +925,28 @@ namespace HavenCNCServer.Models
                         }
                         else if (!jobRunning && !wasRunning && pollCount > 20)
                         {
-                            // Job never started running after 5 seconds (20 polls) - likely stuck
-                            LoggingService.LogWarning($"⚠️ Job {_jobId} never started running after {pollCount} polls (5+ seconds) - may be stuck", "CNCJob");
+                            // Job never started running after 5 seconds (20 polls)
+                            // This likely means the job completed SO FAST that we never caught it in the "running" state
+                            // Mark it as complete to prevent infinite stuck state
+                            if (pollCount == 21) // Log once at the threshold
+                            {
+                                LoggingService.LogWarning($"⚠️ Job {_jobId} never detected as running after {pollCount} polls (5+ seconds) - likely completed too quickly. Marking complete.", "CNCJob");
+                            }
+
+                            // After 10 seconds (40 polls), force completion
+                            if (pollCount > 40 && !IsComplete)
+                            {
+                                LoggingService.LogWarning($"⚠️ Job {_jobId} forcing completion after {pollCount} polls - job never detected as running", "CNCJob");
+
+                                IsRunning = false;
+                                IsComplete = true;
+                                CompletedAt = DateTime.Now;
+                                StopListening();
+
+                                // Notify completion callback
+                                OnJobCompleted?.Invoke(this);
+                                break;
+                            }
                         }
                     }
                     else
