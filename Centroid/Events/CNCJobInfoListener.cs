@@ -104,12 +104,31 @@ namespace HavenCNCServer.Centroid.Events
                                             // IsConstructed check is handled internally by CNCConnectionManager
                                             LogSuccess("CNC pipe reconnected", "JobInfo");
 
+                                            // Log current listener state before reconnection
+                                            lock (_listenersLock)
+                                            {
+                                                var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
+                                                LogInfo($"Current event listeners before reconnection ({_eventListeners.Count}): {listenerNames}", "JobInfo");
+                                            }
+
                                             // CRITICAL: After reconnection, we need to restart the listener
                                             // The old pipe reference is stale, so we must unsubscribe and resubscribe
+                                            // NOTE: Use StopListeningInternal() NOT Stop() - we're reconnecting, not shutting down
                                             if (_isListening)
                                             {
                                                 LogInfo("Restarting listener with new pipe after reconnection...", "JobInfo");
-                                                StopListeningInternal(); // Clean up old pipe subscription
+                                                StopListeningInternal(); // Clean up old pipe subscription WITHOUT setting shutdown flag
+                                            }
+
+                                            // Always restart listener after reconnection
+                                            LogInfo("Starting job listener after reconnection...", "JobInfo");
+                                            StartListening();
+
+                                            // Log listener state after reconnection
+                                            lock (_listenersLock)
+                                            {
+                                                var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
+                                                LogInfo($"Event listeners after reconnection ({_eventListeners.Count}): {listenerNames}", "JobInfo");
                                             }
                                         }
                                     }
@@ -118,10 +137,9 @@ namespace HavenCNCServer.Centroid.Events
                                         LogWarning($"CNC reconnection failed: {connEx.Message}", "JobInfo");
                                     }
                                 }
-
-                                // Try to start job listener if connected but not running
-                                if (CNCConnectionManager.IsConnected && !IsListening)
+                                else if (CNCConnectionManager.IsConnected && !IsListening)
                                 {
+                                    // Try to start job listener if connected but not running (initial start)
                                     LogInfo("Starting job listener...", "JobInfo");
                                     StartListening();
                                 }
@@ -206,13 +224,6 @@ namespace HavenCNCServer.Centroid.Events
         {
             lock (_lock)
             {
-                // Check if shutdown is in progress
-                if (_isShuttingDown)
-                {
-                    LogWarning("Cannot start JOB_INFO listener - shutdown in progress", "JobInfo");
-                    return false;
-                }
-
                 if (_isListening)
                 {
                     LogWarning("CNC JOB_INFO listener is already running", "JobInfo");
@@ -234,6 +245,22 @@ namespace HavenCNCServer.Centroid.Events
                     {
                         LogWarning("Cannot start JOB_INFO listener: CNCPipe is null despite connection", "JobInfo");
                         return false;
+                    }
+
+                    // CRITICAL: If we have an old pipe reference, clean it up first
+                    if (_currentCNCPipe != null && _currentCNCPipe != cncPipe)
+                    {
+                        LogInfo("Cleaning up old pipe reference before starting new listener", "JobInfo");
+                        try
+                        {
+                            _currentCNCPipe.MessageReceived -= OnMessageReceived;
+                            _currentCNCPipe.StopListening();
+                        }
+                        catch (Exception cleanupEx)
+                        {
+                            LogWarning($"Error cleaning up old pipe: {cleanupEx.Message}", "JobInfo");
+                        }
+                        _currentCNCPipe = null;
                     }
 
                     // Configure inbound communications to send JOB_INFO messages  
@@ -485,15 +512,10 @@ namespace HavenCNCServer.Centroid.Events
                     LogToFile("Cleared stored messages on listener stop");
                 }
 
-                // Clear all event listeners to prevent holding stale references
-                lock (_listenersLock)
-                {
-                    if (_eventListeners.Count > 0)
-                    {
-                        LogInfo($"Clearing {_eventListeners.Count} event listeners", "JobInfo");
-                        _eventListeners.Clear();
-                    }
-                }
+                // NOTE: DO NOT clear event listeners here!
+                // UI listeners (MessageDisplay, SignalR, CoordinateDisplay, etc.) are registered once during 
+                // app initialization and must persist across reconnections. Only the pipe subscription changes.
+                // Use ClearAllListeners() explicitly during app shutdown only.
 
                 // Reset the disconnected state flag
                 _hasLoggedDisconnectedState = false;
@@ -817,6 +839,23 @@ namespace HavenCNCServer.Centroid.Events
         {
             lock (_listenersLock)
             {
+                if (_eventListeners.Count == 0)
+                {
+                    // Log this occasionally, not every single message
+                    if ((_messageCount % 100) == 0)
+                    {
+                        LogWarning($"No event listeners registered - messages not being forwarded to UI/SignalR (message #{_messageCount})", "JobInfo");
+                    }
+                    return;
+                }
+
+                // Log listener details every 50 messages to track who's listening
+                if ((_messageCount % 50) == 0)
+                {
+                    var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
+                    LogInfo($"Notifying {_eventListeners.Count} listeners: {listenerNames} (message #{_messageCount})", "JobInfo");
+                }
+
                 foreach (var listener in _eventListeners.ToList()) // ToList() to avoid collection modified exceptions
                 {
                     try
@@ -952,10 +991,20 @@ namespace HavenCNCServer.Centroid.Events
         {
             try
             {
+                // Log first 10 messages to confirm we're receiving
+                if (_messageCount < 10)
+                {
+                    LogInfo($"OnMessageReceived called (message #{_messageCount + 1}), IsShuttingDown={_isShuttingDown}, IsConnected={CNCConnectionManager.IsConnected}", "JobInfo");
+                }
+
                 // CRITICAL: Guard against callbacks during shutdown
                 // Check shutdown flag first to prevent processing events on disposed COM objects
                 if (_isShuttingDown)
                 {
+                    if (_messageCount < 10)
+                    {
+                        LogWarning("Ignoring message because _isShuttingDown is true", "JobInfo");
+                    }
                     return; // Silently ignore all events during shutdown
                 }
 
