@@ -384,31 +384,33 @@ namespace HavenCNCServer.Controllers
 
                 if (result)
                 {
-                    // CNC12 has 6 axis slots - hide any unused slots from DRO
-                    // This prevents unconfigured axes from showing as "U" on the control panel
+                    // CNC12 has 6 axis slots - set unused slots to 'N' (None) and hide from DRO
+                    // This prevents unconfigured axes from showing as "U" or other default letters
                     int maxAxes = 6;
                     int configuredCount = configuredAxes.Count;
 
                     if (configuredCount < maxAxes)
                     {
-                        LoggingService.Log($"Hiding unused axis slots {configuredCount + 1}-{maxAxes} from DRO");
+                        LoggingService.Log($"Configuring unused axis slots {configuredCount + 1}-{maxAxes} as 'N' (None)");
 
                         for (int axisNum = configuredCount + 1; axisNum <= maxAxes; axisNum++)
                         {
                             try
                             {
-                                var hideConfig = new AxisConfiguration
+                                var unconfiguredAxis = new AxisConfiguration
                                 {
                                     AxisNumber = axisNum,
+                                    AxisType = "N",  // Set label to 'N' for None/unconfigured
                                     HideFromDRO = true
                                 };
 
-                                CentroidConfigUtil.ConfigureAxisProperties(hideConfig);
-                                LoggingService.Log($"  ✓ Axis {axisNum} hidden from DRO");
+                                // This will set the label to 'N' and hide from DRO
+                                CentroidConfigUtil.ConfigureAxis(unconfiguredAxis);
+                                LoggingService.Log($"  ✓ Axis {axisNum} set to 'N' and hidden from DRO");
                             }
                             catch (Exception ex)
                             {
-                                LoggingService.Log($"  ⚠ Failed to hide axis {axisNum}: {ex.Message}", LoggingService.LogLevel.Warning);
+                                LoggingService.Log($"  ⚠ Failed to configure axis {axisNum}: {ex.Message}", LoggingService.LogLevel.Warning);
                             }
                         }
                     }
