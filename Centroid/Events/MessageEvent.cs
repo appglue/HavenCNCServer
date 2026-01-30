@@ -66,13 +66,20 @@ namespace HavenCNCServer.Centroid.Events
                 // Extract error code and determine event type based on Centroid documentation
                 var (eventCode, eventType) = ClassifyMessage(finalMessage);
 
+                // Get timestamp from CNC12 packet (CentroidAPI v5.40+)
+                var cncTimestamp = GetCNCTimestamp(packet);
+
                 var messageEvent = new MessageEvent
                 {
-                    Timestamp = DateTime.Now,
+                    Timestamp = cncTimestamp,
                     EventCode = eventCode,
                     Message = finalMessage,
                     EventType = eventType
                 };
+
+                // Log with CNC timestamp
+                var timestampSource = cncTimestamp != DateTime.Now ? "CNC" : "Server";
+                logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
                 // Store the message event in history
                 storeMessage(messageEvent, "MESSAGE_WINDOW_MESSAGE");
@@ -326,6 +333,36 @@ namespace HavenCNCServer.Centroid.Events
                 return MessageEventType.ConfigurationChange;
 
             return MessageEventType.StatusMessage; // Default for unclassified messages
+        }
+
+        /// <summary>
+        /// Extract CNC timestamp from packet (CentroidAPI v5.40+)
+        /// </summary>
+        private static DateTime GetCNCTimestamp(CNCPipe.InboundComm.CommPacket packet)
+        {
+            try
+            {
+                // Try TimestampTicks first (CentroidAPI v5.40+)
+                var ticks = GetPacketProperty<long>(packet, "TimestampTicks", 0);
+                if (ticks > 0)
+                {
+                    return new DateTime(ticks);
+                }
+
+                // Try Timestamp property
+                var timestamp = GetPacketProperty<DateTime>(packet, "Timestamp", DateTime.MinValue);
+                if (timestamp != DateTime.MinValue)
+                {
+                    return timestamp;
+                }
+
+                // Fallback to server time
+                return DateTime.Now;
+            }
+            catch
+            {
+                return DateTime.Now;
+            }
         }
 
         /// <summary>

@@ -103,14 +103,19 @@ namespace HavenCNCServer.Centroid.Events
             }
 
             // Create and notify listeners of job info event only when job data actually changes
+            var cncTimestamp = GetCNCTimestamp(packet);
             var jobInfoEvent = new JobInfoEvent
             {
-                Timestamp = DateTime.Now,
+                Timestamp = cncTimestamp,
                 LineNumber = lineNumber,
                 StackLevel = stackLevel,
                 Message = message ?? string.Empty,
                 JobName = message ?? string.Empty // Use the message as job name for now
             };
+
+            // Log with CNC timestamp
+            var timestampSource = cncTimestamp != DateTime.Now ? "CNC" : "Server";
+            logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
             // Store the job info event in history
             storeMessage(jobInfoEvent, "JOB_INFO");
@@ -119,6 +124,36 @@ namespace HavenCNCServer.Centroid.Events
             notifyListeners(jobInfoEvent);
 
             return jobInfoEvent;
+        }
+
+        /// <summary>
+        /// Extract CNC timestamp from packet (CentroidAPI v5.40+)
+        /// </summary>
+        private static DateTime GetCNCTimestamp(CNCPipe.InboundComm.CommPacket packet)
+        {
+            try
+            {
+                // Try TimestampTicks first (CentroidAPI v5.40+)
+                var ticks = GetPacketProperty<long>(packet, "TimestampTicks", 0);
+                if (ticks > 0)
+                {
+                    return new DateTime(ticks);
+                }
+
+                // Try Timestamp property
+                var timestamp = GetPacketProperty<DateTime>(packet, "Timestamp", DateTime.MinValue);
+                if (timestamp != DateTime.MinValue)
+                {
+                    return timestamp;
+                }
+
+                // Fallback to server time
+                return DateTime.Now;
+            }
+            catch
+            {
+                return DateTime.Now;
+            }
         }
 
         /// <summary>

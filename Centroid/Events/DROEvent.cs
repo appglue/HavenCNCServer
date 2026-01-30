@@ -170,9 +170,10 @@ namespace HavenCNCServer.Centroid.Events
                 }
 
                 // Create DRO event for position change
+                var cncTimestamp = GetCNCTimestamp(packet);
                 var droEvent = new DROEvent
                 {
-                    Timestamp = DateTime.Now,
+                    Timestamp = cncTimestamp,
                     Axis1 = positions.Length > 0 ? positions[0] : 0.0,
                     Axis2 = positions.Length > 1 ? positions[1] : 0.0,
                     Axis3 = positions.Length > 2 ? positions[2] : 0.0,
@@ -291,6 +292,36 @@ namespace HavenCNCServer.Centroid.Events
         public object ToSignalRData()
         {
             return this;
+        }
+
+        /// <summary>
+        /// Extract CNC timestamp from packet (CentroidAPI v5.40+)
+        /// </summary>
+        private static DateTime GetCNCTimestamp(CNCPipe.InboundComm.CommPacket packet)
+        {
+            try
+            {
+                // Try TimestampTicks first (CentroidAPI v5.40+)
+                var ticks = GetPacketProperty<long>(packet, "TimestampTicks", 0);
+                if (ticks > 0)
+                {
+                    return new DateTime(ticks);
+                }
+
+                // Try Timestamp property
+                var timestamp = GetPacketProperty<DateTime>(packet, "Timestamp", DateTime.MinValue);
+                if (timestamp != DateTime.MinValue)
+                {
+                    return timestamp;
+                }
+
+                // Fallback to server time
+                return DateTime.Now;
+            }
+            catch
+            {
+                return DateTime.Now;
+            }
         }
 
         /// <summary>

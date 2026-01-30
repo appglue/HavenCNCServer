@@ -3,7 +3,7 @@
   "description": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 70,
+  "minorVersion": 71,
   "updateVersion": 0,
   "type": 1,
   "lastModified": "2025-12-15T17:00:11.831Z",
@@ -67,6 +67,7 @@
     {
       "centroidName": "ESTOPOK_I",
       "name": "E-Stop",
+      "category": "General",
       "activeText": "EStop Released",
       "inactiveText": "EStop Pressed",
       "isInverted": true,
@@ -75,6 +76,7 @@
     {
       "centroidName": "x_AXISLIMITOK_I",
       "name": "X Axis Home/Limit",
+      "category": "General",
       "activeText": "At Limit",
       "inactiveText": "Inactive",
       "isInverted": false,
@@ -83,6 +85,7 @@
     {
       "centroidName": "Y_AXISLIMITOK_I",
       "name": "Y Axis Home/Limit",
+      "category": "General",
       "activeText": "At Limit",
       "inactiveText": "Inactive",
       "isInverted": false,
@@ -91,6 +94,7 @@
     {
       "centroidName": "Z_AXISLIMITOK_I",
       "name": "Z Axis Home/Limit",
+      "category": "General",
       "activeText": "At Limit",
       "inactiveText": "Inactive",
       "isInverted": false,

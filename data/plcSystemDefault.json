@@ -3,7 +3,7 @@
   "description": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2025-12-27T15:31:01.904Z",
+  "lastModified": "2026-01-28T03:04:06.760Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -1594,9 +1594,23 @@
                   "type": "NewLine"
                 },
                 {
-                  "id": "piece_1767366414815_450xicbxw",
+                  "id": "piece_1769571321865_ugm9oj1ob",
                   "type": "Text",
-                  "text": "IF 1==1 THEN SV_PLC_FEEDRATE_OVERRIDE = 1"
+                  "text": "IF 1==1 THEN "
+                },
+                {
+                  "id": "piece_1769571321865_9stienkpm",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SV_PLC_FEEDRATE_OVERRIDE",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1769571321865_l5n04972q",
+                  "type": "Text",
+                  "text": " = 1"
                 }
               ]
             },
@@ -1700,7 +1714,7 @@
               "ordinal": 0,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
-              "hideFallingEdgeActions": false,
+              "hideFallingEdgeActions": true,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1779,7 +1793,7 @@
                   "enabled": true,
                   "level": "info",
                   "mode": "async",
-                  "messageText": "Jog: X1 Speed"
+                  "messageText": "Jog Speed: X1"
                 }
               ],
               "fallingEdgePredicates": []
@@ -1791,7 +1805,7 @@
               "ordinal": 0,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
-              "hideFallingEdgeActions": false,
+              "hideFallingEdgeActions": true,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1870,7 +1884,7 @@
                   "enabled": true,
                   "level": "info",
                   "mode": "async",
-                  "messageText": "Jog: X10 Speed"
+                  "messageText": "Jog Speed: X10"
                 }
               ],
               "fallingEdgePredicates": []
@@ -1882,7 +1896,7 @@
               "ordinal": 0,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
-              "hideFallingEdgeActions": false,
+              "hideFallingEdgeActions": true,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -1961,7 +1975,7 @@
                   "enabled": true,
                   "level": "info",
                   "mode": "async",
-                  "messageText": "Jog: X100 Speed"
+                  "messageText": "Jog Speed: X100"
                 }
               ],
               "fallingEdgePredicates": []
@@ -2013,6 +2027,14 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: Incremental"
                 }
               ],
               "fallingEdgePredicates": [
@@ -2031,6 +2053,14 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: Continuous"
                 }
               ]
             },
@@ -2081,6 +2111,14 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: Fast"
                 }
               ],
               "fallingEdgePredicates": [
@@ -2099,8 +2137,138 @@
                     "allowNew": false,
                     "needsWrite": false
                   }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Jog: Slow"
                 }
               ]
+            }
+          ],
+          "subBlocks": []
+        },
+        {
+          "name": "Travel Limits",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 3,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "actions": [
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "DISABLE_TRAVEL_LIMITS_MM",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_PLC_DISABLE_TRAVEL_LIMITS",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "fallingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SV_PLC_DISABLE_TRAVEL_LIMITS",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 1,
+              "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "SV_PC_HOME_SET",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Home Set"
+                }
+              ],
+              "fallingEdgePredicates": []
             }
           ],
           "subBlocks": []
@@ -2988,6 +3156,14 @@
       ],
       "activeText": "Is Active",
       "inactiveText": "Is Inactive"
+    },
+    {
+      "name": "DISABLE_TRAVEL_LIMITS_MM",
+      "description": "",
+      "number": 105,
+      "outputs": [],
+      "activeText": "IsDisabled",
+      "inactiveText": "IsEnabled"
     }
   ]
 }
