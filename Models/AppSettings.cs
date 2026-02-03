@@ -21,6 +21,11 @@ namespace HavenCNCServer.Models
         /// CNC and API settings
         /// </summary>
         public CncSettings Cnc { get; set; } = new();
+
+        /// <summary>
+        /// MongoDB configuration settings
+        /// </summary>
+        public MongoDbSettings MongoDB { get; set; } = new();
     }
 
     /// <summary>
@@ -200,5 +205,46 @@ namespace HavenCNCServer.Models
         /// Working directory for the CNC server process
         /// </summary>
         public string? WorkingDirectory { get; set; }
+    }
+
+    /// <summary>
+    /// MongoDB configuration settings
+    /// </summary>
+    public class MongoDbSettings
+    {
+        /// <summary>
+        /// Enable MongoDB synchronization
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// MongoDB connection string
+        /// </summary>
+        public string ConnectionString { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Database name for machine configurations
+        /// </summary>
+        public string DatabaseName { get; set; } = "HavenCNCMachineData";
+
+        /// <summary>
+        /// Collection name for machine configurations
+        /// </summary>
+        public string MachineConfigurationsCollection { get; set; } = "machineConfigurations";
+
+        /// <summary>
+        /// Collection name for default PLC versions
+        /// </summary>
+        public string DefaultPlcVersionsCollection { get; set; } = "defaultPlcVersions";
+
+        /// <summary>
+        /// Connection timeout in milliseconds
+        /// </summary>
+        public int ConnectionTimeoutMs { get; set; } = 5000;
+
+        /// <summary>
+        /// Whether to continue working when MongoDB is offline
+        /// </summary>
+        public bool ContinueOnOffline { get; set; } = true;
     }
 }
