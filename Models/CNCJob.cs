@@ -211,11 +211,10 @@ namespace HavenCNCServer.Models
                     // This prevents "file in use" errors when CNC12 tries to open it immediately after
                     await Task.Delay(100);
 
-                    // Create the G65 command - use just filename since CNC12 looks in its programs directory
-                    var fileName = Path.GetFileName(_filePath);
+                    // Create the G65 command - use full absolute path
                     commandToExecute = string.IsNullOrEmpty(_gcodeParameterString)
-                        ? $"G65 \"{fileName}\""
-                        : $"G65 \"{fileName}\" {_gcodeParameterString}";
+                        ? $"G65 \"{_filePath}\""
+                        : $"G65 \"{_filePath}\" {_gcodeParameterString}";
 
                     LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
                     LoggingService.LogInfo($"Job {_jobId} file written to: {_filePath}", "CNCJob");

@@ -63,8 +63,6 @@ namespace HavenCNCServer.Centroid.Events
 
             if (!string.IsNullOrWhiteSpace(finalMessage))
             {
-                Console.WriteLine($"[MessageEvent] Processing message: {finalMessage.Substring(0, Math.Min(50, finalMessage.Length))}");
-
                 // Extract error code and determine event type based on Centroid documentation
                 var (eventCode, eventType) = ClassifyMessage(finalMessage);
 
@@ -84,7 +82,6 @@ namespace HavenCNCServer.Centroid.Events
                 logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
                 // Publish to CNCEventBus (channel-based event distribution)
-                Console.WriteLine($"[MessageEvent] Publishing to CNCEventBus: {messageEvent.EventType}");
                 CNCEventBus.Instance.PublishMessage(messageEvent);
 
                 return messageEvent;

@@ -805,7 +805,6 @@ namespace HavenCNCServer.Centroid.Events
 
                 // Handle each communication type according to API documentation
                 bool shouldSkipRestOfLogging = false;
-                if (_messageCount <= 20) Console.WriteLine($"[CentroidEventBridge] Processing message type: {commType}");
                 switch (commType)
                 {
                     case "DRO_UPDATE":

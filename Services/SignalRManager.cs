@@ -755,13 +755,10 @@ namespace HavenCNCServer.Services
                 return;
             }
 
-            Console.WriteLine($"[SignalREventListener] OnCNCMessage called: {message.GetType().Name}");
-
             // Try to add to queue without blocking
             if (!_messageQueue.TryAdd(message))
             {
                 // Queue is full - log and drop the event
-                Console.WriteLine($"[SignalREventListener] Queue full, dropping message");
                 LogWarning($"SignalR message queue full - dropping {message.GetType().Name} event", "SignalR");
             }
         }

@@ -162,30 +162,19 @@ namespace HavenCNCServer.Centroid.Events
         {
             try
             {
-                if (_messageEventsPublished < 20)
-                {
-                    Console.WriteLine($"[CNCEventBus] PublishMessage called: {message.GetType().Name}");
-                }
-
                 // Use TryWrite for synchronous publishing
                 if (!_messageChannel.Writer.TryWrite(message))
                 {
                     // Channel full, fall back to async
-                    Console.WriteLine($"[CNCEventBus] Channel full, using async for: {message.GetType().Name}");
                     _ = PublishMessageAsync(message);
                 }
                 else
                 {
                     Interlocked.Increment(ref _messageEventsPublished);
-                    if (_messageEventsPublished <= 20)
-                    {
-                        Console.WriteLine($"[CNCEventBus] Message published to channel (total: {_messageEventsPublished})");
-                    }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[CNCEventBus] ERROR publishing: {ex.Message}");
                 LogError($"Error publishing message event: {ex.Message}", "EventBus");
             }
         }
@@ -204,7 +193,6 @@ namespace HavenCNCServer.Centroid.Events
 
             if (_subscribers.TryAdd(subscriber, 0))
             {
-                Console.WriteLine($"[CNCEventBus] Subscriber registered: {subscriber.GetType().Name} (wants: {subscriber.GetSubscribedEvents()}), Total subscribers: {_subscribers.Count}");
                 LogInfo($"Subscriber registered: {subscriber.GetType().Name} (wants: {subscriber.GetSubscribedEvents()})", "EventBus");
             }
             else
@@ -273,7 +261,6 @@ namespace HavenCNCServer.Centroid.Events
         /// </summary>
         private void PositionWorker(CancellationToken ct)
         {
-            Console.WriteLine("[CNCEventBus] Position worker started");
             LogInfo("Position worker started", "EventBus");
 
             try
@@ -325,7 +312,6 @@ namespace HavenCNCServer.Centroid.Events
         private void MessageWorker(CancellationToken ct)
         {
             var workerName = Thread.CurrentThread.Name;
-            Console.WriteLine($"[CNCEventBus] {workerName} started");
             LogInfo($"{workerName} started", "EventBus");
 
             try
@@ -336,27 +322,17 @@ namespace HavenCNCServer.Centroid.Events
                     // Try to read from message channel first (non-blocking check)
                     if (_messageChannel.Reader.TryRead(out var message))
                     {
-                        if (_messageEventsPublished <= 25)
-                        {
-                            Console.WriteLine($"[CNCEventBus] {workerName} received MESSAGE: {message.GetType().Name}, Subscribers: {_subscribers.Count}");
-                        }
-
                         foreach (var subscriber in _subscribers.Keys)
                         {
                             try
                             {
                                 if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Messages))
                                 {
-                                    if (_messageEventsPublished <= 25)
-                                    {
-                                        Console.WriteLine($"[CNCEventBus] Calling OnCNCMessage on: {subscriber.GetType().Name}");
-                                    }
                                     subscriber.OnCNCMessage(message);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"[CNCEventBus] ERROR in subscriber {subscriber.GetType().Name}: {ex.Message}");
                                 LogError($"Subscriber {subscriber.GetType().Name} error in OnCNCMessage: {ex.Message}", "EventBus");
                             }
                         }

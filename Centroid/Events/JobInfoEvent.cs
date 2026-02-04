@@ -13,8 +13,6 @@ namespace HavenCNCServer.Centroid.Events
         private static string _lastJobInfoHash = string.Empty;
         private static int _jobInfoDuplicateSkipCount = 0;
 
-        /// <summary>
-        /// Timestamp when the job info event occurred
         /// </summary>
         public DateTime Timestamp { get; set; }
 
@@ -104,7 +102,6 @@ namespace HavenCNCServer.Centroid.Events
 
             // Create and notify listeners of job info event only when job data actually changes
             var cncTimestamp = GetCNCTimestamp(packet);
-            Console.WriteLine($"[JobInfoEvent] Creating event - Line: {lineNumber}, Job: {message}");
             var jobInfoEvent = new JobInfoEvent
             {
                 Timestamp = cncTimestamp,
@@ -119,7 +116,6 @@ namespace HavenCNCServer.Centroid.Events
             logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
             // Publish to CNCEventBus (channel-based event distribution)
-            Console.WriteLine($"[JobInfoEvent] Publishing to CNCEventBus");
             CNCEventBus.Instance.PublishMessage(jobInfoEvent);
 
             return jobInfoEvent;
