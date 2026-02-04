@@ -582,10 +582,10 @@ namespace HavenCNCServer.Services
                 // This prevents callbacks from firing on disposed COM objects which causes 0xc0000005 crashes
                 try
                 {
-                    if (HavenCNCServer.Centroid.Events.CNCJobInfoListener.IsListening)
+                    if (HavenCNCServer.Centroid.Events.CentroidEventBridge.IsListening)
                     {
                         Log("Stopping event listener and clearing all listeners...", LogLevel.Info, "CNCConnectionManager");
-                        HavenCNCServer.Centroid.Events.CNCJobInfoListener.StopListening();
+                        HavenCNCServer.Centroid.Events.CentroidEventBridge.StopListening();
                         Log("Event listener stopped", LogLevel.Success, "CNCConnectionManager");
                     }
                 }

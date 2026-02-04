@@ -5,7 +5,6 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HavenCNCServer.Centroid.Events;
-using HavenCNCServer.Components;
 using HavenCNCServer.Services;
 using static HavenCNCServer.Services.LoggingService;
 using Color = System.Windows.Media.Color;
@@ -13,9 +12,21 @@ using Color = System.Windows.Media.Color;
 namespace HavenCNCServer.WPF.Controls
 {
     /// <summary>
+    /// Message severity levels for color coding
+    /// </summary>
+    public enum MessageSeverity
+    {
+        Normal,
+        Info,
+        Success,
+        Warning,
+        Error
+    }
+
+    /// <summary>
     /// WPF control for displaying CNC messages
     /// </summary>
-    public partial class MessageDisplayControl : System.Windows.Controls.UserControl, ICNCEventListener
+    public partial class MessageDisplayControl : System.Windows.Controls.UserControl, IEventSubscriber
     {
         private const int MaxMessages = 5000;
         private int _currentMessageCount = 0;
@@ -30,21 +41,36 @@ namespace HavenCNCServer.WPF.Controls
             AppendColoredMessage("Waiting for CNC messages...", Colors.Gray);
             AppendColoredMessage("", Colors.Black);
 
-            // Register as event listener
-            CNCJobInfoListener.AddListener(this);
+            // Subscribe to CNCEventBus for messages and job info
+            CNCEventBus.Instance.Subscribe(this);
         }
 
-        public void EventReceived(ICentroidEvent centroidEvent)
+        public EventTypeFlags GetSubscribedEvents()
         {
-            if (centroidEvent is MessageEvent messageEvent)
+            return EventTypeFlags.Messages; // Only subscribe to CNC messages and job info
+        }
+
+        public void OnPositionUpdate(DROEvent position)
+        {
+            // Not interested in position updates
+        }
+
+        public void OnLogMessage(LogEvent log)
+        {
+            // Not interested in log messages
+        }
+
+        public void OnCNCMessage(ICentroidEvent message)
+        {
+            if (message is MessageEvent messageEvent)
             {
                 Dispatcher.Invoke(() => AddMessage(messageEvent));
             }
-            else if (centroidEvent is JobInfoEvent jobEvent)
+            else if (message is JobInfoEvent jobEvent)
             {
                 Dispatcher.Invoke(() => AddJobInfoMessage(jobEvent));
             }
-            else if (centroidEvent is StepExecutionEvent stepEvent)
+            else if (message is StepExecutionEvent stepEvent)
             {
                 if (stepEvent.Status == StepExecutionStatus.Failed ||
                     stepEvent.Status == StepExecutionStatus.Completed ||
@@ -196,7 +222,7 @@ namespace HavenCNCServer.WPF.Controls
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            CNCJobInfoListener.RemoveListener(this);
+            CNCEventBus.Instance.Unsubscribe(this);
         }
     }
 

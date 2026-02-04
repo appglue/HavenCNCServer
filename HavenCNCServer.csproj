@@ -9,7 +9,7 @@
     <UseWPF>true</UseWPF>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <StartupObject>HavenCNCServer.Program</StartupObject>
+    <StartupObject>HavenCNCServer.ProgramWPF</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

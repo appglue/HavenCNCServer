@@ -77,8 +77,8 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult<bool>> SetAlwaysOnTop()
         {
-            var success = await UIControlService.SetAlwaysOnTopAsync(true);
-            return Ok(success);
+            // WinForms UIControlService removed - not applicable to WPF application
+            return Ok(false);
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult<bool>> CancelAlwaysOnTop()
         {
-            var success = await UIControlService.SetAlwaysOnTopAsync(false);
-            return Ok(success);
+            // WinForms UIControlService removed - not applicable to WPF application
+            return Ok(false);
         }
 
         /// <summary>
@@ -101,10 +101,10 @@ namespace HavenCNCServer.Controllers
         [ProducesResponseType(typeof(AlwaysOnTopStatus), 200)]
         public ActionResult<AlwaysOnTopStatus> GetAlwaysOnTop()
         {
-            var isAlwaysOnTop = UIControlService.GetAlwaysOnTop();
+            // WinForms UIControlService removed - not applicable to WPF application
             return Ok(new AlwaysOnTopStatus
             {
-                IsAlwaysOnTop = isAlwaysOnTop
+                IsAlwaysOnTop = false
             });
         }
 

@@ -14,7 +14,7 @@ namespace HavenCNCServer.WPF.Controls
     /// <summary>
     /// WPF control for displaying G-code with line highlighting
     /// </summary>
-    public partial class GCodeViewerControl : System.Windows.Controls.UserControl, ICNCEventListener
+    public partial class GCodeViewerControl : System.Windows.Controls.UserControl, IEventSubscriber
     {
         private string[] _currentGCode = Array.Empty<string>();
         private int _currentLineNumber = 0;
@@ -24,8 +24,43 @@ namespace HavenCNCServer.WPF.Controls
             InitializeComponent();
             DataContext = new GCodeViewerViewModel();
 
-            // Register as event listener
-            CNCJobInfoListener.AddListener(this);
+            // Subscribe to CNCEventBus for job events
+            CNCEventBus.Instance.Subscribe(this);
+        }
+
+        public EventTypeFlags GetSubscribedEvents()
+        {
+            return EventTypeFlags.Messages; // Subscribe to messages (job/step events)
+        }
+
+        public void OnPositionUpdate(DROEvent position)
+        {
+            // Not interested in position updates
+        }
+
+        public void OnLogMessage(LogEvent log)
+        {
+            // Not interested in log messages
+        }
+
+        public void OnCNCMessage(ICentroidEvent message)
+        {
+            if (message is StepExecutionEvent stepEvent)
+            {
+                Dispatcher.Invoke(() => HandleStepExecution(stepEvent));
+            }
+            else if (message is JobStartedEvent jobStartedEvent)
+            {
+                Dispatcher.Invoke(() => HandleJobStarted(jobStartedEvent));
+            }
+            else if (message is JobCompletedEvent jobCompletedEvent)
+            {
+                Dispatcher.Invoke(() => HandleJobCompleted(jobCompletedEvent));
+            }
+            else if (message is JobInfoEvent jobEvent)
+            {
+                Dispatcher.Invoke(() => UpdateGCodeDisplayFallback(jobEvent));
+            }
         }
 
         public void EventReceived(ICentroidEvent centroidEvent)
@@ -244,7 +279,7 @@ namespace HavenCNCServer.WPF.Controls
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            CNCJobInfoListener.RemoveListener(this);
+            CNCEventBus.Instance.Unsubscribe(this);
         }
     }
 

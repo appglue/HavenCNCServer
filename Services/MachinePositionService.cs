@@ -24,9 +24,9 @@ namespace HavenCNCServer.Services
             {
                 if (!_isListenerRegistered)
                 {
-                    CNCJobInfoListener.AddListener(new MachinePositionListener());
+                    CNCEventBus.Instance.Subscribe(new MachinePositionListener());
                     _isListenerRegistered = true;
-                    LogDebug("MachinePositionService listener registered", "MachinePositionService");
+                    LogDebug("MachinePositionService listener registered with CNCEventBus", "MachinePositionService");
                 }
             }
         }
@@ -160,8 +160,28 @@ namespace HavenCNCServer.Services
         /// <summary>
         /// Internal listener class that updates position cache from DRO events
         /// </summary>
-        private class MachinePositionListener : ICNCEventListener
+        private class MachinePositionListener : IEventSubscriber
         {
+            public EventTypeFlags GetSubscribedEvents()
+            {
+                return EventTypeFlags.Position; // Only subscribe to position/DRO updates
+            }
+
+            public void OnPositionUpdate(DROEvent position)
+            {
+                UpdateFromDRO(position);
+            }
+
+            public void OnLogMessage(LogEvent log)
+            {
+                // Not interested in log messages
+            }
+
+            public void OnCNCMessage(ICentroidEvent message)
+            {
+                // Not interested in CNC messages
+            }
+
             public void EventReceived(ICentroidEvent centroidEvent)
             {
                 if (centroidEvent is DROEvent droEvent)

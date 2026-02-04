@@ -123,6 +123,9 @@ namespace HavenCNCServer.Centroid.Events
             // Notify listeners
             notifyListeners(jobInfoEvent);
 
+            // PHASE 2: Publish to CNCEventBus (new channel-based architecture)
+            CNCEventBus.Instance.PublishMessage(jobInfoEvent);
+
             return jobInfoEvent;
         }
 

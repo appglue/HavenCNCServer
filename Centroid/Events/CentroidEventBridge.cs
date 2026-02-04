@@ -14,9 +14,10 @@ using static HavenCNCServer.Services.LoggingService;
 namespace HavenCNCServer.Centroid.Events
 {
     /// <summary>
-    /// Service for listening to CNC JOB_INFO messages and outputting them to debug logging
+    /// Bridge between CentroidAPI events and the CNCEventBus distribution system.
+    /// Listens to CNC pipe messages and publishes them to the event bus for distribution to subscribers.
     /// </summary>
-    public static class CNCJobInfoListener
+    public static class CentroidEventBridge
     {
         private static bool _isListening = false;
         private static readonly object _lock = new object();
@@ -36,15 +37,6 @@ namespace HavenCNCServer.Centroid.Events
         // Duplicate message detection
         private static Dictionary<string, string> _lastMessageHashes = new Dictionary<string, string>();
         private static Dictionary<string, int> _duplicateCounters = new Dictionary<string, int>();
-
-        // Event listener management
-        private static readonly List<ICNCEventListener> _eventListeners = new List<ICNCEventListener>();
-        private static readonly object _listenersLock = new object();
-
-        // Message storage for recent messages (most recent first)
-        private static readonly List<StoredMessage> _storedMessages = new List<StoredMessage>();
-        private static readonly object _storedMessagesLock = new object();
-        private static readonly int MaxStoredMessages = 1000;
 
         /// <summary>
         /// Start the CNC job listener with automatic connection monitoring
@@ -104,13 +96,6 @@ namespace HavenCNCServer.Centroid.Events
                                             // IsConstructed check is handled internally by CNCConnectionManager
                                             LogSuccess("CNC pipe reconnected", "JobInfo");
 
-                                            // Log current listener state before reconnection
-                                            lock (_listenersLock)
-                                            {
-                                                var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
-                                                LogInfo($"Current event listeners before reconnection ({_eventListeners.Count}): {listenerNames}", "JobInfo");
-                                            }
-
                                             // CRITICAL: After reconnection, we need to restart the listener
                                             // The old pipe reference is stale, so we must unsubscribe and resubscribe
                                             // NOTE: Use StopListeningInternal() NOT Stop() - we're reconnecting, not shutting down
@@ -123,13 +108,6 @@ namespace HavenCNCServer.Centroid.Events
                                             // Always restart listener after reconnection
                                             LogInfo("Starting job listener after reconnection...", "JobInfo");
                                             StartListening();
-
-                                            // Log listener state after reconnection
-                                            lock (_listenersLock)
-                                            {
-                                                var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
-                                                LogInfo($"Event listeners after reconnection ({_eventListeners.Count}): {listenerNames}", "JobInfo");
-                                            }
                                         }
                                     }
                                     catch (Exception connEx)
@@ -210,7 +188,7 @@ namespace HavenCNCServer.Centroid.Events
             })
             {
                 IsBackground = true,
-                Name = "CNCJobInfoListener-Monitor"
+                Name = "CentroidEventBridge-Monitor"
             };
 
             _monitoringThread.Start();
@@ -505,18 +483,6 @@ namespace HavenCNCServer.Centroid.Events
                     LogWarning($"Error resetting event tracking: {resetEx.Message}", "JobInfo");
                 }
 
-                // Clear stored messages
-                lock (_storedMessagesLock)
-                {
-                    _storedMessages.Clear();
-                    LogToFile("Cleared stored messages on listener stop");
-                }
-
-                // NOTE: DO NOT clear event listeners here!
-                // UI listeners (MessageDisplay, SignalR, CoordinateDisplay, etc.) are registered once during 
-                // app initialization and must persist across reconnections. Only the pipe subscription changes.
-                // Use ClearAllListeners() explicitly during app shutdown only.
-
                 // Reset the disconnected state flag
                 _hasLoggedDisconnectedState = false;
             }
@@ -579,204 +545,7 @@ namespace HavenCNCServer.Centroid.Events
             }
         }
 
-        /// <summary>
-        /// Add an event listener for CNC events
-        /// </summary>
-        /// <param name="listener">The event listener to add</param>
-        public static void AddListener(ICNCEventListener listener)
-        {
-            if (listener == null)
-                throw new ArgumentNullException(nameof(listener));
 
-            lock (_listenersLock)
-            {
-                if (!_eventListeners.Contains(listener))
-                {
-                    _eventListeners.Add(listener);
-                    LogInfo($"Added CNC event listener: {listener.GetType().Name}", "JobInfo");
-                }
-                else
-                {
-                    LogWarning($"Event listener already exists: {listener.GetType().Name}", "JobInfo");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Remove an event listener for CNC events
-        /// </summary>
-        /// <param name="listener">The event listener to remove</param>
-        /// <returns>True if the listener was removed, false if it wasn't found</returns>
-        public static bool RemoveListener(ICNCEventListener listener)
-        {
-            if (listener == null)
-                return false;
-
-            lock (_listenersLock)
-            {
-                bool removed = _eventListeners.Remove(listener);
-                if (removed)
-                {
-                    LogInfo($"Removed CNC event listener: {listener.GetType().Name}", "JobInfo");
-                }
-                else
-                {
-                    LogWarning($"Event listener not found for removal: {listener.GetType().Name}", "JobInfo");
-                }
-                return removed;
-            }
-        }
-
-        /// <summary>
-        /// Remove all event listeners
-        /// </summary>
-        public static void ClearAllListeners()
-        {
-            lock (_listenersLock)
-            {
-                int count = _eventListeners.Count;
-                _eventListeners.Clear();
-                LogInfo($"Cleared all CNC event listeners ({count} listeners removed)", "JobInfo");
-            }
-        }
-
-        /// <summary>
-        /// Push a custom event to all registered listeners
-        /// </summary>
-        /// <param name="customEvent">The custom event to push to listeners</param>
-        public static void PushCustomEvent(ICentroidEvent customEvent)
-        {
-            if (customEvent == null)
-            {
-                LogWarning("Attempted to push null custom event", "JobInfo");
-                return;
-            }
-
-            try
-            {
-                // Set timestamp if not already set
-                if (customEvent.Timestamp == default)
-                {
-                    customEvent.Timestamp = DateTime.Now;
-                }
-
-                // Notify all listeners
-                NotifyListeners(customEvent);
-
-                // Store the event in message history
-                StoreMessage(customEvent, "CustomEvent");
-
-                LogDebug($"Pushed custom event: {customEvent.GetType().Name} - {customEvent.Message}", "JobInfo");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error pushing custom event {customEvent.GetType().Name}: {ex.Message}", "JobInfo");
-            }
-        }
-
-        /// <summary>
-        /// Get the number of registered event listeners
-        /// </summary>
-        /// <returns>Number of active listeners</returns>
-        public static int GetListenerCount()
-        {
-            lock (_listenersLock)
-            {
-                return _eventListeners.Count;
-            }
-        }
-
-        /// <summary>
-        /// Get all stored messages (most recent first)
-        /// </summary>
-        /// <returns>List of stored messages with most recent at index 0</returns>
-        public static List<StoredMessage> GetStoredMessages()
-        {
-            lock (_storedMessagesLock)
-            {
-                // Return a copy to prevent external modification
-                return new List<StoredMessage>(_storedMessages);
-            }
-        }
-
-        /// <summary>
-        /// Get stored messages within the specified time cutoff
-        /// </summary>
-        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now (e.g., 5000 for last 5 seconds)</param>
-        /// <returns>List of stored messages within the time cutoff (most recent first)</returns>
-        public static List<StoredMessage> GetRecentMessages(long timeCutoffMs)
-        {
-            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-
-            lock (_storedMessagesLock)
-            {
-                return _storedMessages
-                    .Where(msg => msg.TimestampMs >= cutoffTime)
-                    .ToList(); // Already ordered most recent first
-            }
-        }
-
-        /// <summary>
-        /// Get stored messages of a specific type within the time cutoff
-        /// </summary>
-        /// <typeparam name="T">Type of event to filter by</typeparam>
-        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now</param>
-        /// <returns>List of matching stored messages (most recent first)</returns>
-        public static List<StoredMessage> GetRecentMessagesByType<T>(long timeCutoffMs) where T : ICentroidEvent
-        {
-            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-
-            lock (_storedMessagesLock)
-            {
-                return _storedMessages
-                    .Where(msg => msg.TimestampMs >= cutoffTime && msg.Event is T)
-                    .ToList();
-            }
-        }
-
-        /// <summary>
-        /// Get stored messages by communication type within the time cutoff
-        /// </summary>
-        /// <param name="timeCutoffMs">Time cutoff in milliseconds from now</param>
-        /// <param name="communicationType">Communication type to filter by (e.g., "DRO_UPDATE", "MESSAGE_WINDOW_MESSAGE")</param>
-        /// <returns>List of matching stored messages (most recent first)</returns>
-        public static List<StoredMessage> GetRecentMessagesByCommunicationType(long timeCutoffMs, string communicationType)
-        {
-            var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - timeCutoffMs;
-
-            lock (_storedMessagesLock)
-            {
-                return _storedMessages
-                    .Where(msg => msg.TimestampMs >= cutoffTime &&
-                                  string.Equals(msg.CommunicationType, communicationType, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-        }
-
-        /// <summary>
-        /// Get the count of stored messages
-        /// </summary>
-        /// <returns>Number of messages currently stored</returns>
-        public static int GetStoredMessageCount()
-        {
-            lock (_storedMessagesLock)
-            {
-                return _storedMessages.Count;
-            }
-        }
-
-        /// <summary>
-        /// Clear all stored messages
-        /// </summary>
-        public static void ClearStoredMessages()
-        {
-            lock (_storedMessagesLock)
-            {
-                var count = _storedMessages.Count;
-                _storedMessages.Clear();
-                LogToFile($"Cleared {count} stored messages");
-            }
-        }
 
         /// <summary>
         /// Initialize file logging for detailed listener data
@@ -831,74 +600,7 @@ namespace HavenCNCServer.Centroid.Events
             }
         }
 
-        /// <summary>
-        /// Notify all registered event listeners of a CNC event
-        /// </summary>
-        /// <param name="centroidEvent">The event to notify listeners about</param>
-        private static void NotifyListeners(ICentroidEvent centroidEvent)
-        {
-            lock (_listenersLock)
-            {
-                if (_eventListeners.Count == 0)
-                {
-                    // Log this occasionally, not every single message
-                    if ((_messageCount % 100) == 0)
-                    {
-                        LogWarning($"No event listeners registered - messages not being forwarded to UI/SignalR (message #{_messageCount})", "JobInfo");
-                    }
-                    return;
-                }
 
-                // Log listener details every 50 messages to track who's listening
-                if ((_messageCount % 50) == 0)
-                {
-                    var listenerNames = string.Join(", ", _eventListeners.Select(l => l.GetType().Name));
-                    LogInfo($"Notifying {_eventListeners.Count} listeners: {listenerNames} (message #{_messageCount})", "JobInfo");
-                }
-
-                foreach (var listener in _eventListeners.ToList()) // ToList() to avoid collection modified exceptions
-                {
-                    try
-                    {
-                        listener.EventReceived(centroidEvent);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error notifying event listener {listener.GetType().Name}: {ex.Message}", "JobInfo");
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Store a CNC event in the message history
-        /// </summary>
-        /// <param name="centroidEvent">The event to store</param>
-        /// <param name="communicationType">The communication type</param>
-        private static void StoreMessage(ICentroidEvent centroidEvent, string communicationType)
-        {
-            lock (_storedMessagesLock)
-            {
-                // Create stored message
-                var storedMessage = new StoredMessage(centroidEvent, communicationType);
-
-                // Add at the beginning (most recent first)
-                _storedMessages.Insert(0, storedMessage);
-
-                // Trim to maximum size if needed
-                if (_storedMessages.Count > MaxStoredMessages)
-                {
-                    var removed = _storedMessages.Count - MaxStoredMessages;
-                    _storedMessages.RemoveRange(MaxStoredMessages, removed);
-
-                    // Log trimming occasionally to avoid spam
-                    if (removed > 0 && (_messageCount % 500) == 0)
-                    {
-                        LogDebug($"Trimmed {removed} old messages from storage (keeping last {MaxStoredMessages})", "JobInfo");
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Process shutdown messages (CNC12_SHUT_DOWN or PC_SHUT_DOWN)
@@ -1105,8 +807,8 @@ namespace HavenCNCServer.Centroid.Events
                 switch (commType)
                 {
                     case "DRO_UPDATE":
-                        // Use DROEvent's processing method
-                        var (shouldSkip, droEvent) = DROEvent.ProcessMessage(packet, LogToFile, StoreMessage, NotifyListeners);
+                        // Use DROEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
+                        var (shouldSkip, droEvent) = DROEvent.ProcessMessage(packet, LogToFile, null!, null!);
                         if (shouldSkip)
                         {
                             return false; // Skip all logging for unchanged DRO positions
@@ -1132,13 +834,13 @@ namespace HavenCNCServer.Centroid.Events
                         break;
 
                     case "MESSAGE_WINDOW_MESSAGE":
-                        // Use MessageEvent's processing method
-                        MessageEvent.ProcessMessage(packet, LogToFile, StoreMessage, NotifyListeners);
+                        // Use MessageEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
+                        MessageEvent.ProcessMessage(packet, LogToFile, null!, null!);
                         break;
 
                     case "JOB_INFO":
-                        // Use JobInfoEvent's processing method
-                        JobInfoEvent.ProcessMessage(packet, LogToFile, StoreMessage, NotifyListeners);
+                        // Use JobInfoEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
+                        JobInfoEvent.ProcessMessage(packet, LogToFile, null!, null!);
                         break;
 
                     default:

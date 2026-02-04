@@ -136,7 +136,7 @@ namespace HavenCNCServer.Controllers
                     FilePath = completedJob.FilePath
                 };
 
-                CNCJobInfoListener.PushCustomEvent(jobCompletedEvent);
+                CNCEventBus.Instance.PublishMessage(jobCompletedEvent);
                 LogSuccess($"✓ Job {jobId} completion event sent", "CNCProgramController");
 
                 // Dispose the completed job
@@ -492,7 +492,7 @@ namespace HavenCNCServer.Controllers
                     IsStepRunMode = false,
                     FilePath = null // Jobs from array don't have a file path
                 };
-                CNCJobInfoListener.PushCustomEvent(jobStartedEvent);
+                CNCEventBus.Instance.PublishMessage(jobStartedEvent);
 
                 // Start the job if requested
                 if (request.StartImmediately)
@@ -822,7 +822,7 @@ namespace HavenCNCServer.Controllers
                     IsStepRunMode = true,
                     FilePath = null // Step run jobs are created from array, not file
                 };
-                CNCJobInfoListener.PushCustomEvent(jobStartedEvent);
+                CNCEventBus.Instance.PublishMessage(jobStartedEvent);
 
                 var jobDetails = new JobDetails
                 {
@@ -951,7 +951,7 @@ namespace HavenCNCServer.Controllers
                     IsLastStep = currentJob.StepLineNumber >= currentJob.TotalLines,
                     Status = StepExecutionStatus.AboutToExecute
                 };
-                CNCJobInfoListener.PushCustomEvent(aboutToExecuteEvent);
+                CNCEventBus.Instance.PublishMessage(aboutToExecuteEvent);
 
                 // Execute outside the lock to avoid blocking
                 var success = currentJob.ExecuteNextStep();
@@ -970,7 +970,7 @@ namespace HavenCNCServer.Controllers
                         (currentJob.IsComplete ? StepExecutionStatus.Completed : StepExecutionStatus.Completed) :
                         StepExecutionStatus.Failed
                 };
-                CNCJobInfoListener.PushCustomEvent(stepEvent);
+                CNCEventBus.Instance.PublishMessage(stepEvent);
 
                 return new JobOperationResponse
                 {
@@ -1032,7 +1032,7 @@ namespace HavenCNCServer.Controllers
                     IsLastStep = currentJob.StepLineNumber >= currentJob.TotalLines,
                     Status = StepExecutionStatus.AboutToExecute
                 };
-                CNCJobInfoListener.PushCustomEvent(aboutToExecuteEvent);
+                CNCEventBus.Instance.PublishMessage(aboutToExecuteEvent);
 
                 // Execute outside the lock to avoid blocking
                 var success = currentJob.RunFromCurrentStep();
@@ -1049,7 +1049,7 @@ namespace HavenCNCServer.Controllers
                     IsLastStep = currentJob.IsComplete,
                     Status = success ? StepExecutionStatus.Executing : StepExecutionStatus.Failed
                 };
-                CNCJobInfoListener.PushCustomEvent(stepEvent);
+                CNCEventBus.Instance.PublishMessage(stepEvent);
 
                 return new JobOperationResponse
                 {

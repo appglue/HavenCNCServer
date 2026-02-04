@@ -61,8 +61,8 @@ namespace HavenCNCServer.Services
                             LogInfo("Creating SignalREventListener instance", "SignalR");
                             var listener = new SignalREventListener(_hubContext);
 
-                            LogInfo("Adding listener to CNCJobInfoListener", "SignalR");
-                            CNCJobInfoListener.AddListener(listener);
+                            LogInfo("Subscribing to CNCEventBus (new channel-based architecture)", "SignalR");
+                            CNCEventBus.Instance.Subscribe(listener);
 
                             LogInfo("Subscribing to CNC connection status changes", "SignalR");
                             CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;
@@ -662,7 +662,10 @@ namespace HavenCNCServer.Services
     /// Event listener that forwards CNC events to SignalR clients
     /// Uses a dedicated thread with queue to ensure ordered delivery
     /// </summary>
-    public class SignalREventListener : ICNCEventListener
+    /// <summary>
+    /// Event listener for broadcasting CNC events to SignalR clients via the new CNCEventBus
+    /// </summary>
+    public class SignalREventListener : IEventSubscriber
     {
         private readonly IHubContext<CNCMessageHub> _hubContext;
         private long _skippedDroEventCount = 0;
@@ -696,6 +699,69 @@ namespace HavenCNCServer.Services
             LogInfo("SignalR message queue processor started with bounded capacity of 1000", "SignalR");
         }
 
+        /// <summary>
+        /// Specify which event types this subscriber wants to receive (all types)
+        /// </summary>
+        public EventTypeFlags GetSubscribedEvents()
+        {
+            return EventTypeFlags.All; // Subscribe to all event types
+        }
+
+        /// <summary>
+        /// Receive position/DRO update from event bus
+        /// </summary>
+        public void OnPositionUpdate(DROEvent position)
+        {
+            if (!_isRunning)
+            {
+                return;
+            }
+
+            // Try to add to queue without blocking
+            if (!_messageQueue.TryAdd(position))
+            {
+                // Queue is full - log and drop the event
+                LogWarning($"SignalR message queue full - dropping DROEvent", "SignalR");
+            }
+        }
+
+        /// <summary>
+        /// Receive log message from event bus
+        /// </summary>
+        public void OnLogMessage(LogEvent log)
+        {
+            if (!_isRunning)
+            {
+                return;
+            }
+
+            // Try to add to queue without blocking
+            if (!_messageQueue.TryAdd(log))
+            {
+                // Queue is full - log and drop the event
+                LogWarning($"SignalR message queue full - dropping LogEvent", "SignalR");
+            }
+        }
+
+        /// <summary>
+        /// Receive CNC message from event bus
+        /// </summary>
+        public void OnCNCMessage(ICentroidEvent message)
+        {
+            if (!_isRunning)
+            {
+                return;
+            }
+
+            // Try to add to queue without blocking
+            if (!_messageQueue.TryAdd(message))
+            {
+                // Queue is full - log and drop the event
+                LogWarning($"SignalR message queue full - dropping {message.GetType().Name} event", "SignalR");
+            }
+        }
+
+        // LEGACY SUPPORT: Keep ICNCEventListener interface for compatibility during migration
         /// <summary>
         /// Receives a CNC event and queues it for processing and broadcast to SignalR clients
         /// </summary>

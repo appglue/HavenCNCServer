@@ -126,9 +126,9 @@
                 <TabItem Header="Messages">
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Bottom"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="5">
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="5">
                             <Button Content="Clear"
                                     Command="{Binding ClearMessagesCommand}"
                                     Width="80"
@@ -144,9 +144,9 @@
                 <TabItem Header="Logs">
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Bottom"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="5">
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="5">
                             <Button Content="Clear"
                                     Command="{Binding ClearLogsCommand}"
                                     Width="80"
@@ -162,9 +162,9 @@
                 <TabItem Header="G-Code">
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Bottom"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="5">
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="5">
                             <Button Content="Open"
                                     Command="{Binding ShowGCodeCommand}"
                                     Width="80"

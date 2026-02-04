@@ -23,6 +23,7 @@ namespace HavenCNCServer
             _cancellationTokenSource?.Cancel();
         }
 
+        [STAThread]
         public static void Main(string[] args)
         {
             try
@@ -33,27 +34,68 @@ namespace HavenCNCServer
                 _cancellationTokenSource = new CancellationTokenSource();
 
                 // Initialize the same backend services as WinForms
+                Console.WriteLine("Initializing backend services...");
                 InitializeBackend();
 
                 // Start the WPF application
+                Console.WriteLine("Creating WPF application...");
                 var app = new WPF.App();
+
+                Console.WriteLine("Initializing WPF components...");
                 app.InitializeComponent();
 
                 // Handle app shutdown
                 app.Exit += App_Exit;
 
+                // Handle unhandled exceptions
+                app.DispatcherUnhandledException += (s, e) =>
+                {
+                    Console.WriteLine($"Unhandled exception: {e.Exception.Message}");
+                    Console.WriteLine($"Inner exception: {e.Exception.InnerException?.Message}");
+                    Console.WriteLine($"Stack trace: {e.Exception.StackTrace}");
+                    if (e.Exception.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner stack trace: {e.Exception.InnerException.StackTrace}");
+                    }
+                    Console.ReadLine(); // Pause to read error
+                    e.Handled = false; // Let it crash so we can see the dialog too
+                };
+
+                // Create MainWindow manually after backend is initialized
+                Console.WriteLine("Creating MainWindow...");
+                var mainWindow = new WPF.MainWindow();
+                app.MainWindow = mainWindow;
+                mainWindow.Show();
+
+                Console.WriteLine("Running WPF application...");
                 app.Run();
+
+                Console.WriteLine("WPF application exited normally.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Fatal error starting WPF UI: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
+                Console.ReadLine(); // Pause to read error
                 Environment.Exit(1);
             }
         }
 
         private static void InitializeBackend()
         {
+            try
+            {
+                // Initialize CNCEventBus early to avoid lazy initialization during UI creation
+                Console.WriteLine("Initializing CNC Event Bus...");
+                _ = HavenCNCServer.Centroid.Events.CNCEventBus.Instance;
+                Console.WriteLine("CNC Event Bus initialized successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize CNC Event Bus: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
+
             try
             {
                 // Initialize application settings
@@ -130,12 +172,12 @@ namespace HavenCNCServer
             {
                 // Start job listener with background monitoring
                 var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
-                CNCJobInfoListener.Start(cancellationToken);
-                LogInfo("CNC job listener started", "CNC");
+                CentroidEventBridge.Start(cancellationToken);
+                LogInfo("Centroid event bridge started", "CNC");
             }
             catch (Exception ex)
             {
-                LogError($"Failed to start CNC job listener: {ex.Message}", "CNC");
+                LogError($"Failed to start Centroid event bridge: {ex.Message}", "CNC");
             }
 
             // Set up SignalR event listeners asynchronously after API is fully ready
@@ -176,12 +218,23 @@ namespace HavenCNCServer
                 // Signal all background operations to stop
                 _cancellationTokenSource?.Cancel();
 
-                // Stop CNC Job Info Listener
+                // Stop Centroid Event Bridge
                 var shutdownToken = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
-                CNCJobInfoListener.Stop(shutdownToken);
+                CentroidEventBridge.Stop(shutdownToken);
 
-                // Clear all event listeners
-                CNCJobInfoListener.ClearAllListeners();
+                // Dispose CNCEventBus to stop worker threads
+                try
+                {
+                    LogInfo("Disposing CNC Event Bus...", "System");
+                    HavenCNCServer.Centroid.Events.CNCEventBus.Instance.Dispose();
+                    LogInfo("CNC Event Bus disposed", "System");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error disposing CNC Event Bus: {ex.Message}", "System");
+                }
+
+                // Event bus subscribers will be cleaned up automatically via Dispose
 
                 // Stop API manager
                 _ = Task.Run(async () =>

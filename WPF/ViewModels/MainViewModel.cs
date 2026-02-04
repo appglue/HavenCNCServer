@@ -29,8 +29,17 @@ public partial class MainViewModel : BaseViewModel
 
     public MainViewModel()
     {
-        // Subscribe to CNC connection events
-        CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;
+        try
+        {
+            // Subscribe to CNC connection events
+            CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"MainViewModel constructor error: {ex}");
+            Console.WriteLine($"MainViewModel constructor error: {ex}");
+            throw new Exception($"MainViewModel initialization failed: {ex.Message}", ex);
+        }
     }
 
     [RelayCommand]

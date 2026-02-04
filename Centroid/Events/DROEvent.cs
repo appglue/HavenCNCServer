@@ -192,6 +192,9 @@ namespace HavenCNCServer.Centroid.Events
                 // Note: EnableThrottling is set to false. If re-enabled, use ThrottledNotifyListeners instead.
                 notifyListeners(droEvent);
 
+                // PHASE 2: Publish to CNCEventBus (new channel-based architecture)
+                CNCEventBus.Instance.PublishPosition(droEvent);
+
                 return (false, droEvent); // Don't skip logging - positions have changed
             }
 

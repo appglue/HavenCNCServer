@@ -10,15 +10,56 @@ namespace HavenCNCServer.WPF.Controls
     /// <summary>
     /// WPF control for displaying machine coordinates (DRO - Digital Readout)
     /// </summary>
-    public partial class CoordinateDisplayControl : System.Windows.Controls.UserControl, ICNCEventListener
+    public partial class CoordinateDisplayControl : System.Windows.Controls.UserControl, IEventSubscriber
     {
         public CoordinateDisplayControl()
         {
             InitializeComponent();
             DataContext = new CoordinateDisplayViewModel();
 
-            // Register as event listener with CNCJobInfoListener
-            CNCJobInfoListener.AddListener(this);
+            // Subscribe to CNCEventBus for position updates
+            CNCEventBus.Instance.Subscribe(this);
+        }
+
+        public EventTypeFlags GetSubscribedEvents()
+        {
+            return EventTypeFlags.Position; // Only subscribe to position/DRO updates
+        }
+
+        public void OnPositionUpdate(DROEvent position)
+        {
+            try
+            {
+                // Update UI on the main thread using Dispatcher
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    try
+                    {
+                        if (DataContext is CoordinateDisplayViewModel vm)
+                        {
+                            vm.UpdateCoordinates(position.Axis1, position.Axis2, position.Axis3);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error updating coordinates on UI thread: {ex.Message}", "CoordinateDisplay");
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error in OnPositionUpdate: {ex.Message}", "CoordinateDisplay");
+            }
+        }
+
+        public void OnLogMessage(LogEvent log)
+        {
+            // Not interested in log messages
+        }
+
+        public void OnCNCMessage(ICentroidEvent message)
+        {
+            // Not interested in CNC messages
         }
 
         /// <summary>
@@ -55,8 +96,8 @@ namespace HavenCNCServer.WPF.Controls
 
         private void UserControl_Unloaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            // Unregister from event listener when control is unloaded
-            CNCJobInfoListener.RemoveListener(this);
+            // Unsubscribe from event bus when control is unloaded
+            CNCEventBus.Instance.Unsubscribe(this);
         }
     }
 
