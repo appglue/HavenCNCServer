@@ -780,21 +780,6 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                // If marking as latest, unmark all existing local versions
-                if (markAsLatest)
-                {
-                    var existingFiles = Directory.GetFiles(_defaultPlcDirectory, "*.json");
-                    foreach (var file in existingFiles)
-                    {
-                        var existingDoc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(System.IO.File.ReadAllText(file));
-                        if (existingDoc != null && existingDoc.IsLatest)
-                        {
-                            existingDoc.IsLatest = false;
-                            System.IO.File.WriteAllText(file, JsonSerializer.Serialize(existingDoc, new JsonSerializerOptions { WriteIndented = true }));
-                        }
-                    }
-                }
-
                 var document = new DefaultPlcVersionDocument
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -802,12 +787,12 @@ namespace HavenCNCServer.Controllers
                     Timestamp = DateTime.UtcNow,
                     JsonData = jsonData,
                     Description = description,
-                    IsLatest = markAsLatest,
+                    IsLatest = true, // Always latest since there's only one
                     CreatedBy = createdBy
                 };
 
-                var safeFileName = string.Join("", versionName.Split(Path.GetInvalidFileNameChars()));
-                var filePath = Path.Combine(_defaultPlcDirectory, $"{safeFileName}_{document.Id}.json");
+                // Always save to single fixed file - overwrites previous version
+                var filePath = Path.Combine(_defaultPlcDirectory, "systemDefault.json");
                 var json = JsonSerializer.Serialize(document, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(filePath, json);
 
@@ -828,32 +813,26 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                var files = Directory.GetFiles(_defaultPlcDirectory, "*.json");
-                var documents = new List<DefaultPlcVersionDocument>();
+                var filePath = Path.Combine(_defaultPlcDirectory, "systemDefault.json");
 
-                foreach (var file in files)
+                if (!System.IO.File.Exists(filePath))
                 {
-                    var json = System.IO.File.ReadAllText(file);
-                    var doc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(json);
-                    if (doc != null)
+                    return null;
+                }
+
+                var json = System.IO.File.ReadAllText(filePath);
+                var doc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(json);
+
+                // If version name specified, verify it matches
+                if (!string.IsNullOrWhiteSpace(versionName) && doc != null)
+                {
+                    if (doc.VersionName != versionName)
                     {
-                        documents.Add(doc);
+                        return null; // Requested version doesn't match stored version
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(versionName))
-                {
-                    // Return latest
-                    return documents
-                        .Where(d => d.IsLatest)
-                        .OrderByDescending(d => d.Timestamp)
-                        .FirstOrDefault();
-                }
-                else
-                {
-                    // Return specific version
-                    return documents.FirstOrDefault(d => d.VersionName == versionName);
-                }
+                return doc;
             }
             catch (Exception ex)
             {
@@ -869,12 +848,12 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                var files = Directory.GetFiles(_defaultPlcDirectory, "*.json");
                 var versions = new List<DefaultPlcVersionInfo>();
+                var filePath = Path.Combine(_defaultPlcDirectory, "systemDefault.json");
 
-                foreach (var file in files)
+                if (System.IO.File.Exists(filePath))
                 {
-                    var json = System.IO.File.ReadAllText(file);
+                    var json = System.IO.File.ReadAllText(filePath);
                     var doc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(json);
                     if (doc != null)
                     {

@@ -209,11 +209,59 @@ namespace HavenCNCServer
             }
         }
 
+        private static void DumpActiveThreads()
+        {
+            try
+            {
+                var process = System.Diagnostics.Process.GetCurrentProcess();
+                Console.WriteLine("\n========== ACTIVE THREADS DUMP ==========");
+                Console.WriteLine($"Process: {process.ProcessName} (PID: {process.Id})");
+                Console.WriteLine($"Total Threads: {process.Threads.Count}");
+                Console.WriteLine($"Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}\n");
+
+                foreach (System.Diagnostics.ProcessThread thread in process.Threads)
+                {
+                    Console.WriteLine($"Thread ID: {thread.Id}");
+                    Console.WriteLine($"  State: {thread.ThreadState}");
+                    Console.WriteLine($"  Priority: {thread.PriorityLevel}");
+                    Console.WriteLine($"  Start Time: {thread.StartTime:yyyy-MM-dd HH:mm:ss}");
+                    Console.WriteLine($"  CPU Time: {thread.TotalProcessorTime}");
+                    Console.WriteLine($"  Wait Reason: {(thread.ThreadState == System.Diagnostics.ThreadState.Wait ? thread.WaitReason.ToString() : "N/A")}");
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine("=========================================\n");
+
+                // Also dump managed threads
+                Console.WriteLine("\n========== MANAGED THREADS ==========\n");
+                var managedThreads = System.Diagnostics.Process.GetCurrentProcess().Threads;
+                Console.WriteLine($"Active managed thread pool threads: {System.Threading.ThreadPool.ThreadCount}");
+                Console.WriteLine($"Pending work items: {System.Threading.ThreadPool.PendingWorkItemCount}");
+                Console.WriteLine("\n====================================\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error dumping thread info: {ex.Message}");
+            }
+        }
+
         private static void App_Exit(object? sender, System.Windows.ExitEventArgs e)
         {
             try
             {
                 LogInfo("Application shutdown initiated", "System");
+                Console.WriteLine("\n*** SHUTDOWN STARTED - Dumping active threads ***\n");
+                DumpActiveThreads();
+
+                // Set a global timeout for shutdown
+                var shutdownTimer = new System.Timers.Timer(10000); // 10 seconds max
+                shutdownTimer.Elapsed += (s, args) =>
+                {
+                    LogWarning("Shutdown timeout reached, forcing exit", "System");
+                    Environment.Exit(0);
+                };
+                shutdownTimer.AutoReset = false;
+                shutdownTimer.Start();
 
                 // Signal all background operations to stop
                 _cancellationTokenSource?.Cancel();
@@ -258,11 +306,27 @@ namespace HavenCNCServer
 
                 _cancellationTokenSource?.Dispose();
 
+                shutdownTimer.Stop();
+                shutdownTimer.Dispose();
+
+                Console.WriteLine("\n*** SHUTDOWN CLEANUP COMPLETE - Dumping remaining threads ***\n");
+                DumpActiveThreads();
+
                 LogSuccess("Application shutdown completed", "System");
+
+                // Give console time to display final messages
+                System.Threading.Thread.Sleep(500);
+
+                // Force process exit since WPF shutdown is already in progress
+                Console.WriteLine("\n*** Forcing process exit ***\n");
+                Environment.Exit(0);
             }
             catch (Exception ex)
             {
                 LogError($"Error during shutdown: {ex.Message}", "System");
+                Console.WriteLine($"\n*** Error during shutdown, forcing exit: {ex.Message} ***\n");
+                // Force exit on error
+                Environment.Exit(1);
             }
         }
     }

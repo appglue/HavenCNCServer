@@ -23,9 +23,22 @@ namespace HavenCNCServer.Services
         public MongoDbService(MongoDbSettings settings)
         {
             _settings = settings;
+
+            LogInfo("=== MongoDB Initialization ===", "MongoDB");
+            LogInfo($"  Enabled: {_settings.Enabled}", "MongoDB");
+            LogInfo($"  Database: {_settings.DatabaseName}", "MongoDB");
+            LogInfo($"  Connection timeout: {_settings.ConnectionTimeoutMs}ms", "MongoDB");
+            LogInfo($"  Continue on offline: {_settings.ContinueOnOffline}", "MongoDB");
+            LogInfo($"  Connection string configured: {!string.IsNullOrEmpty(_settings.ConnectionString)}", "MongoDB");
+
             if (_settings.Enabled)
             {
+                LogInfo("MongoDB is enabled - attempting connection...", "MongoDB");
                 InitializeConnection();
+            }
+            else
+            {
+                LogWarning("MongoDB is disabled in settings - all operations will be local only", "MongoDB");
             }
         }
 
@@ -65,6 +78,19 @@ namespace HavenCNCServer.Services
             {
                 _isConnected = false;
                 LogError($"Failed to connect to MongoDB: {ex.Message}", "MongoDB");
+
+                // Log inner exception details for better diagnostics
+                if (ex.InnerException != null)
+                {
+                    LogError($"  Inner exception: {ex.InnerException.Message}", "MongoDB");
+                }
+
+                // Log connection details (without sensitive info)
+                LogError($"  Database: {_settings.DatabaseName}", "MongoDB");
+                LogError($"  Timeout: {_settings.ConnectionTimeoutMs}ms", "MongoDB");
+
+                // Log exception type for troubleshooting
+                LogError($"  Exception type: {ex.GetType().Name}", "MongoDB");
 
                 if (!_settings.ContinueOnOffline)
                 {
@@ -137,7 +163,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<bool> SaveMachineConfigurationAsync(string machineName, string fileName, string jsonData, string? description = null)
         {
-            if (!IsConnected) return false;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot save {fileName} for '{machineName}' - MongoDB offline", "MongoDB");
+                return false;
+            }
 
             try
             {
@@ -181,7 +211,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<MachineConfigurationDocument?> GetMachineConfigurationAsync(string machineName, string fileName)
         {
-            if (!IsConnected) return null;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot get {fileName} for '{machineName}' - MongoDB offline", "MongoDB");
+                return null;
+            }
 
             try
             {
@@ -211,7 +245,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<List<string>> GetAllMachineNamesAsync()
         {
-            if (!IsConnected) return new List<string>();
+            if (!IsConnected)
+            {
+                LogWarning("Cannot get machine names - MongoDB offline", "MongoDB");
+                return new List<string>();
+            }
 
             try
             {
@@ -234,7 +272,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<List<MachineConfigurationDocument>> GetMachineAllConfigurationsAsync(string machineName)
         {
-            if (!IsConnected) return new List<MachineConfigurationDocument>();
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot get configurations for '{machineName}' - MongoDB offline", "MongoDB");
+                return new List<MachineConfigurationDocument>();
+            }
 
             try
             {
@@ -256,7 +298,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<bool> CopyMachineConfigurationAsync(string sourceMachineName, string newMachineName, string? description = null)
         {
-            if (!IsConnected) return false;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot copy '{sourceMachineName}' to '{newMachineName}' - MongoDB offline", "MongoDB");
+                return false;
+            }
 
             try
             {
@@ -302,7 +348,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<bool> StoreDefaultPlcAsync(string versionName, string jsonData, string? description = null, bool markAsLatest = true, string? createdBy = null)
         {
-            if (!IsConnected) return false;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot store default PLC '{versionName}' - MongoDB offline", "MongoDB");
+                return false;
+            }
 
             try
             {
@@ -341,7 +391,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<DefaultPlcVersionDocument?> GetLatestDefaultPlcAsync()
         {
-            if (!IsConnected) return null;
+            if (!IsConnected)
+            {
+                LogWarning("Cannot get latest default PLC - MongoDB offline", "MongoDB");
+                return null;
+            }
 
             try
             {
@@ -369,7 +423,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<DefaultPlcVersionDocument?> GetDefaultPlcByVersionAsync(string versionName)
         {
-            if (!IsConnected) return null;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot get default PLC '{versionName}' - MongoDB offline", "MongoDB");
+                return null;
+            }
 
             try
             {
@@ -395,7 +453,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<List<DefaultPlcVersionInfo>> ListDefaultPlcVersionsAsync()
         {
-            if (!IsConnected) return new List<DefaultPlcVersionInfo>();
+            if (!IsConnected)
+            {
+                LogWarning("Cannot list default PLC versions - MongoDB offline", "MongoDB");
+                return new List<DefaultPlcVersionInfo>();
+            }
 
             try
             {
@@ -429,7 +491,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public async Task<bool> DeleteMachineConfigurationAsync(string machineName)
         {
-            if (!IsConnected) return false;
+            if (!IsConnected)
+            {
+                LogWarning($"Cannot delete configurations for '{machineName}' - MongoDB offline", "MongoDB");
+                return false;
+            }
 
             try
             {

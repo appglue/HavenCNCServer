@@ -43,8 +43,24 @@ public partial class MainWindow : Window
 
         _isShuttingDown = true;
 
-        // Just let the window close - App.Exit will handle all cleanup
-        // This prevents duplicate cleanup calls
+        LogInfo("MainWindow closing, initiating application shutdown...", "System");
+
+        // Force application shutdown
         base.OnClosing(e);
+
+        // Ensure the application shuts down
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            try
+            {
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during Application.Shutdown: {ex.Message}", "System");
+                // Force exit if graceful shutdown fails
+                Environment.Exit(0);
+            }
+        }));
     }
 }

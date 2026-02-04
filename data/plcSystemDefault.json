@@ -3,7 +3,7 @@
   "description": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2026-01-28T03:04:06.760Z",
+  "lastModified": "2026-01-30T18:50:42.218Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -20,6 +20,7 @@
           "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "LogicStatement",
@@ -89,25 +90,6 @@
               "nestedElseElsePredicates": [],
               "hideSimpleActions": false,
               "hideElseActions": false
-            },
-            {
-              "type": "ToggleStageStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "predicate": {
-                "type": "ToggleStagePredicate",
-                "comment": "",
-                "enabled": true,
-                "action": "Turn On",
-                "stageElement": {
-                  "declarationName": "MESSAGE_S",
-                  "allowNew": false,
-                  "requiresType": "Stage",
-                  "needsWrite": true
-                },
-                "stageName": "MESSAGE_S"
-              }
             }
           ],
           "subBlocks": []
@@ -119,6 +101,7 @@
           "ordinal": 1,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "InputMappingStatement",
@@ -130,7 +113,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 1,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -178,63 +161,6 @@
               "nestedElseElsePredicates": [],
               "hideSimpleActions": false,
               "hideElseActions": false
-            },
-            {
-              "type": "ToggleStageStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "predicate": {
-                "type": "ToggleStagePredicate",
-                "comment": "",
-                "enabled": true,
-                "action": "Turn On",
-                "stageElement": {
-                  "declarationName": "INITONETIME_S",
-                  "allowNew": false,
-                  "requiresType": "Stage",
-                  "needsWrite": true
-                },
-                "stageName": "INITONETIME_S"
-              }
-            },
-            {
-              "type": "ToggleStageStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "predicate": {
-                "type": "ToggleStagePredicate",
-                "comment": "",
-                "enabled": true,
-                "action": "Turn On",
-                "stageElement": {
-                  "declarationName": "INITEVERYTIME_S",
-                  "allowNew": false,
-                  "requiresType": "Stage",
-                  "needsWrite": true
-                },
-                "stageName": "INITEVERYTIME_S"
-              }
-            },
-            {
-              "type": "ToggleStageStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "predicate": {
-                "type": "ToggleStagePredicate",
-                "comment": "",
-                "enabled": true,
-                "action": "Turn On",
-                "stageElement": {
-                  "declarationName": "FINAL_S",
-                  "allowNew": false,
-                  "requiresType": "Stage",
-                  "needsWrite": true
-                },
-                "stageName": "FINAL_S"
-              }
             },
             {
               "type": "AssignmentStatement",
@@ -287,10 +213,11 @@
                   "needsWrite": true,
                   "declaration": {
                     "name": "HV_ESTOP_PRESSED_M",
+                    "displayName": "HV_ESTOP_PRESSED_M",
                     "description": "",
                     "dataType": "Memory Bit",
                     "category": [
-                      "* User Defined"
+                      "* Control"
                     ],
                     "visibility": "Visible",
                     "readOnly": false,
@@ -310,7 +237,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 4,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -371,7 +298,7 @@
               "type": "LogicStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 5,
               "conditionGroup": {
                 "comment": "",
                 "enabled": true,
@@ -430,6 +357,288 @@
             }
           ],
           "subBlocks": []
+        },
+        {
+          "name": "Turn On Stages",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 2,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "INITONETIME_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "INITONETIME_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 1,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "INITEVERYTIME_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "INITEVERYTIME_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 2,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "FINAL_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "FINAL_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 3,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "MESSAGE_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "MESSAGE_S"
+              }
+            }
+          ],
+          "subBlocks": []
+        },
+        {
+          "name": "Diagnostics",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 3,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Data Element",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "ECHO_SV_PC_COMMANDED_SPINDLE_SPEED_FW",
+                    "displayName": "SV_PC_COMMANDED_SPINDLE_SPEE_D_FW",
+                    "description": "",
+                    "dataType": "Floating-point Word",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_COMMANDED_SPINDLE_SPEED",
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Data Element",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "ECHO_SV_PC_CONFIG_MIN_SPINDLE_SPEED_FW",
+                    "description": "",
+                    "dataType": "Floating-point Word",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_CONFIG_MIN_SPINDLE_SPEED",
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Data Element",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "ECHO_SV_PC_CONFIG_MAX_SPINDLE_SPEED_FW",
+                    "description": "",
+                    "dataType": "Floating-point Word",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_CONFIG_MAX_SPINDLE_SPEED",
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Data Element",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "ECHO_SV_PC_FEEDRATE_PERCENTAGE_W",
+                    "description": "",
+                    "dataType": "Word",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_FEEDRATE_PERCENTAGE",
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Memory Bit",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "ECHO_SV_PC_OVERRIDE_CONTROL_FEEDRATE_OVERRIDE_M",
+                    "description": "",
+                    "dataType": "Memory Bit",
+                    "category": [
+                      "* User Defined"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_OVERRIDE_CONTROL_FEEDRATE_OVERRIDE",
+                  "allowNew": false,
+                  "requiresType": "Memory Bit",
+                  "needsWrite": false
+                }
+              }
+            }
+          ],
+          "subBlocks": []
         }
       ]
     },
@@ -448,6 +657,7 @@
           "ordinal": 1,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "ToggleStageStatement",
@@ -497,81 +707,8 @@
           "ordinal": 2,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "= Value",
-                "sourceValue": "0",
-                "targetElement": {
-                  "allowNew": true,
-                  "needsWrite": true,
-                  "declaration": {
-                    "name": "PVALUE_W",
-                    "description": "",
-                    "dataType": "Word",
-                    "category": [
-                      "* User Defined"
-                    ],
-                    "visibility": "Visible",
-                    "readOnly": false,
-                    "isSystem": false,
-                    "isConstant": false,
-                    "isSetText": "Set",
-                    "isResetText": "Reset"
-                  }
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            },
-            {
-              "type": "ScriptStatement",
-              "comment": "",
-              "enabled": false,
-              "pieces": [
-                {
-                  "id": "piece_1767188242338_th11j6agk",
-                  "type": "Text",
-                  "text": "if 1==1 then set "
-                },
-                {
-                  "id": "piece_1767188242338_mr9ms184x",
-                  "type": "DataElement",
-                  "dataElement": {
-                    "allowNew": true,
-                    "needsWrite": false,
-                    "declaration": {
-                      "name": "PVALUE_W",
-                      "description": "",
-                      "dataType": "Word",
-                      "category": [
-                        "* User Defined"
-                      ],
-                      "visibility": "Visible",
-                      "readOnly": false,
-                      "isSystem": false,
-                      "isConstant": false,
-                      "isSetText": "Set",
-                      "isResetText": "Reset"
-                    }
-                  }
-                },
-                {
-                  "id": "piece_1767188242338_g2j6gjb7o",
-                  "type": "Text",
-                  "text": " = SV_MACHINE_PARAMETER_264"
-                }
-              ]
-            },
             {
               "type": "ScriptStatement",
               "comment": "",
@@ -727,41 +864,297 @@
                   "text": "             SV_FORCE_OFF_OUT65_80_BITS  = SV_MACHINE_PARAMETER_930"
                 }
               ]
+            }
+          ],
+          "subBlocks": []
+        },
+        {
+          "name": "Setup Defaults",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 3,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_AFTER_FIRST_RUN_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectX10JogInc",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectFastSlowJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SelectIncContJog",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
             },
             {
               "type": "ScriptStatement",
-              "comment": "",
-              "enabled": false,
+              "comment": "set spindle to auto",
+              "enabled": true,
               "pieces": [
                 {
-                  "id": "piece_1767187829738_cymfn9fe8",
+                  "id": "piece_1770219062262_72k0ug0xd",
+                  "type": "Text",
+                  "text": "if (1==1) then set "
+                },
+                {
+                  "id": "piece_1770219062262_6cy7pvlrq",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SpinAutoMode_SV",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770219062262_jscw62dlm",
+                  "type": "Text",
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "declarationName": "SelectManAutoSpindle",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "set high range",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1770219091809_t8xl0bv4y",
+                  "type": "Text",
+                  "text": "if (1==1) then set "
+                },
+                {
+                  "id": "piece_1770219091809_5cduujmsf",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SpindleHigh_SV",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770219144335_vl232w99t",
                   "type": "Text",
                   "text": ""
                 },
                 {
-                  "id": "piece_1767187829738_gyiyilgw4",
-                  "type": "Text",
-                  "text": "IF 1==1 THEN P146Value_W = SV_MACHINE_PARAMETER_146,  ; Feed hold threshold"
-                },
-                {
-                  "id": "piece_1767187829738_3w63xfvzl",
+                  "id": "piece_1770219144335_06pjir1vy",
                   "type": "NewLine"
                 },
                 {
-                  "id": "piece_1767187829738_vxqji4vz8",
+                  "id": "piece_1770219151895_ens9a4xzm",
                   "type": "Text",
-                  "text": "             P148Value_W = SV_MACHINE_PARAMETER_148,  ; Misc Jogging Options"
+                  "text": "if (1==1) then rst"
                 },
                 {
-                  "id": "piece_1767187829738_wg8iv9qy7",
+                  "id": "piece_1770219151895_8zvtce8ny",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SpindleMed_SV",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770219173677_b8gpkmn80",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1770219173677_vwnp8iwkl",
                   "type": "NewLine"
                 },
                 {
-                  "id": "piece_1767187829738_sy33sx4mj",
+                  "id": "piece_1770219182508_01uj43fve",
                   "type": "Text",
-                  "text": "             P170Value_W = SV_MACHINE_PARAMETER_170  ; Enable Keyboard Jogging"
+                  "text": "if (1==1) then rst "
+                },
+                {
+                  "id": "piece_1770219182508_5zhott48i",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SpindleLow_SV",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770219182508_3lg8dbxda",
+                  "type": "Text",
+                  "text": ""
                 }
               ]
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "declarationName": "SelectRapidOverride",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "declarationName": "SelectRapidLink",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Value",
+                "sourceValue": "100",
+                "targetElement": {
+                  "declarationName": "SV_PLC_SPINDLE_KNOB",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
             }
           ],
           "subBlocks": []
@@ -783,6 +1176,7 @@
           "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "SystemUIEventsStatement",
@@ -822,6 +1216,7 @@
           "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "LogicStatement",
@@ -1099,6 +1494,7 @@
           "ordinal": 2,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "LogicStatement",
@@ -1578,6 +1974,7 @@
           "ordinal": 1,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "ScriptStatement",
@@ -1585,21 +1982,12 @@
               "enabled": true,
               "pieces": [
                 {
-                  "id": "piece_1767366414215_0hyf0mm44",
-                  "type": "Text",
-                  "text": ";IF 1==1 THEN SV_PLC_FEEDRATE_OVERRIDE = SV_PC_FEEDRATE_PERCENTAGE/100.0"
-                },
-                {
-                  "id": "piece_1767366414215_vbp0rt9tn",
-                  "type": "NewLine"
-                },
-                {
-                  "id": "piece_1769571321865_ugm9oj1ob",
+                  "id": "piece_1770051830234_5j0hxc2jj",
                   "type": "Text",
                   "text": "IF 1==1 THEN "
                 },
                 {
-                  "id": "piece_1769571321865_9stienkpm",
+                  "id": "piece_1770051830234_wzzr5qvjs",
                   "type": "DataElement",
                   "dataElement": {
                     "declarationName": "SV_PLC_FEEDRATE_OVERRIDE",
@@ -1608,110 +1996,54 @@
                   }
                 },
                 {
-                  "id": "piece_1769571321865_l5n04972q",
+                  "id": "piece_1770051830234_xgiy11642",
+                  "type": "Text",
+                  "text": " = SV_PC_FEEDRATE_PERCENTAGE/100.0"
+                },
+                {
+                  "id": "piece_1767366414215_vbp0rt9tn",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1770072325240_1fanc4z09",
+                  "type": "Text",
+                  "text": "IF "
+                },
+                {
+                  "id": "piece_1770072325240_wg5xruhxj",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SV_PLC_FEEDRATE_OVERRIDE",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770072355173_ezxk2ebq1",
+                  "type": "Text",
+                  "text": " < .0001 then "
+                },
+                {
+                  "id": "piece_1770072355173_bnr9xgttp",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SV_PLC_FEEDRATE_OVERRIDE",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770072355173_36gvitq9m",
                   "type": "Text",
                   "text": " = 1"
                 }
               ]
             },
             {
-              "type": "LogicStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "RESET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "HV_AFTER_FIRST_RUN_M",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "predicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectX10JogInc",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectFastSlowJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": "",
-                  "targetElement": {
-                    "declarationName": "SelectIncContJog",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasElse": false,
-              "elsePredicates": [],
-              "hasNestedIf": false,
-              "nestedIfCondition": null,
-              "nestedIfThenPredicates": [],
-              "hasNestedIfElse": false,
-              "nestedIfElsePredicates": [],
-              "hasNestedElse": false,
-              "nestedElseCondition": null,
-              "nestedElseThenPredicates": [],
-              "hasNestedElseElse": false,
-              "nestedElseElsePredicates": [],
-              "hideSimpleActions": false,
-              "hideElseActions": false
-            },
-            {
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 1,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
               "hideFallingEdgeActions": true,
@@ -1802,7 +2134,7 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 2,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
               "hideFallingEdgeActions": true,
@@ -1893,7 +2225,7 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 3,
               "skipInitial": true,
               "hideRisingEdgeActions": false,
               "hideFallingEdgeActions": true,
@@ -1984,7 +2316,7 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 4,
               "skipInitial": false,
               "hideRisingEdgeActions": false,
               "hideFallingEdgeActions": false,
@@ -2068,7 +2400,7 @@
               "type": "IsChangedStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 5,
               "skipInitial": false,
               "hideRisingEdgeActions": false,
               "hideFallingEdgeActions": false,
@@ -2158,6 +2490,7 @@
           "ordinal": 3,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "IsChangedStatement",
@@ -2272,6 +2605,1216 @@
             }
           ],
           "subBlocks": []
+        },
+        {
+          "name": "Spindle",
+          "comment": "need to handle\nSV_PC_COMMANDED_SPINDLE_SPEED (input)\nSV_PC_CONFIG_MIN_SPINDLE_SPEED (input)\nSV_PC_CONFIG_MAX_SPINDLE_SPEED (input)\nSV_PLC_SPINDLE_SPEED (output)\nSV_PLC_SPINDLE_KNOB (output for override)\nSV_STOP (input for emergency stop)\n\nhere is all of them \n\nWritten To (PLC - CNC Software):\nSV_PLC_SPINDLE_KNOB - Spindle speed override percentage (1-200%)\nSV_PLC_SPINDLE_SPEED - Current spindle speed reported to display\nSV_SPINDLE_LOW_RANGE - Flag indicating low gear range active\nSV_SPINDLE_MID_RANGE - Flag indicating mid gear range active\nRead From (CNC Software - PLC):\nSV_PC_COMMANDED_SPINDLE_SPEED - Commanded spindle speed (with override already applied)\nSV_PC_CONFIG_MIN_SPINDLE_SPEED - Minimum spindle speed from configuration\nSV_PC_CONFIG_MAX_SPINDLE_SPEED - Maximum spindle speed from configuration\nSV_PROGRAM_RUNNING - Flag indicating a program is running\nSV_MDI_MODE - Flag indicating MDI mode is active\nSV_FORCE_PROBE_DETECTION_ON - Force probe detection mode\nSV_MACHINE_PARAMETER_65 - Gear range 1 (low) speed adjustment ratio\nSV_MACHINE_PARAMETER_66 - Gear range 2 (med-low) speed adjustment ratio\nSV_MACHINE_PARAMETER_416 - Probe spindle inhibit mode setting\nSV_MACHINE_PARAMETER_420 - Spindle DAC mode/frequency setting (Acorn6)\nSV_MACHINE_PARAMETER_451 - External USB feed rate multiplier\nSV_MACHINE_PARAMETER_455 - Custom spindle override percentage\nSV_MACHINE_PARAMETER_459 - Second spindle enable setting\nSV_MACHINE_PARAMETER_814 - Aux DAC PWM frequency setting\nSV_MACHINE_PARAMETER_969 - PWM VM mode setting\nSV_MACHINE_PARAMETER_982 - Spindle speed variation cycle time\nSV_MACHINE_PARAMETER_983 - Spindle speed variation adjustment amount\nSV_PC_RIGID_TAP_SPINDLE_OFF - Rigid tapping spindle off flag\nSV_STOP - Emergency stop flag\nSV_LIMIT_TRIPPED - Limit switch tripped flag",
+          "enabled": true,
+          "ordinal": 4,
+          "requiredInputs": [],
+          "requiredOutputs": [
+            "SPINFWD_O"
+          ],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "M3_SPINFWD_MM",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SPINFWD_O",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoSpindleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoSpindleStop",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SPINFWD_O",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoSpindleStop",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "DoSpindleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "= Data Element",
+                "sourceValue": "",
+                "targetElement": {
+                  "allowNew": true,
+                  "needsWrite": true,
+                  "declaration": {
+                    "name": "SPINSPEEDCOMMAND_FW",
+                    "displayName": "SPINSPEEDCOMMAND",
+                    "description": "",
+                    "dataType": "Floating-point Word",
+                    "category": [
+                      "* Control",
+                      "Spindle"
+                    ],
+                    "visibility": "Visible",
+                    "readOnly": false,
+                    "isSystem": false,
+                    "isConstant": false,
+                    "isSetText": "Set",
+                    "isResetText": "Reset"
+                  }
+                },
+                "sourceElement": {
+                  "declarationName": "SV_PC_COMMANDED_SPINDLE_SPEED",
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "if stopped or spindle stopped, set to zero",
+              "enabled": true,
+              "ordinal": 6,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "OR",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "DoSpindleStop",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  },
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_STOP_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Value",
+                  "sourceValue": "0",
+                  "targetElement": {
+                    "declarationName": "SPINSPEEDCOMMAND_FW",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "set the min speed.",
+              "enabled": true,
+              "ordinal": 4,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "<",
+                    "memoryBitState": "SET",
+                    "useConstant": false,
+                    "comparisonValue": "1000",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "SPINSPEEDCOMMAND_FW",
+                      "allowNew": false,
+                      "needsWrite": false
+                    },
+                    "comparisonElement": {
+                      "declarationName": "SV_PC_CONFIG_MIN_SPINDLE_SPEED",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Data Element",
+                  "sourceValue": "8000",
+                  "targetElement": {
+                    "declarationName": "SPINSPEEDCOMMAND_FW",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "declarationName": "SV_PC_CONFIG_MIN_SPINDLE_SPEED",
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "set the max speed",
+              "enabled": true,
+              "ordinal": 5,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": ">",
+                    "memoryBitState": "SET",
+                    "useConstant": false,
+                    "comparisonValue": "1000",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "SPINSPEEDCOMMAND_FW",
+                      "allowNew": false,
+                      "needsWrite": false
+                    },
+                    "comparisonElement": {
+                      "declarationName": "SV_PC_CONFIG_MAX_SPINDLE_SPEED",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "= Data Element",
+                  "sourceValue": "8000",
+                  "targetElement": {
+                    "declarationName": "SPINSPEEDCOMMAND_FW",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "declarationName": "SV_PC_CONFIG_MAX_SPINDLE_SPEED",
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "",
+              "enabled": false,
+              "pieces": [
+                {
+                  "id": "piece_1770041221109_gxw51kf1k",
+                  "type": "Text",
+                  "text": "if (1==1) then "
+                },
+                {
+                  "id": "piece_1770041221108_8pospa296",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "allowNew": true,
+                    "needsWrite": false,
+                    "declaration": {
+                      "name": "SPINRATEADJUST_FW",
+                      "displayName": "SPINRATEADJUST_FW",
+                      "description": "",
+                      "dataType": "Floating-point Word",
+                      "category": [
+                        "* Control",
+                        "Spindle"
+                      ],
+                      "visibility": "Visible",
+                      "readOnly": false,
+                      "isSystem": false,
+                      "isConstant": false,
+                      "isSetText": "Set",
+                      "isResetText": "Reset"
+                    }
+                  }
+                },
+                {
+                  "id": "piece_1770041355155_5dr1viazb",
+                  "type": "Text",
+                  "text": " = SV_MACHINE_PARAMETER_66"
+                },
+                {
+                  "id": "piece_1770041355155_djni1pv6q",
+                  "type": "NewLine"
+                },
+                {
+                  "id": "piece_1770041368604_lketuyfi3",
+                  "type": "Text",
+                  "text": "IF "
+                },
+                {
+                  "id": "piece_1770041368604_vmndn47yg",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SPINRATEADJUST_FW",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770041385627_jln1ws86p",
+                  "type": "Text",
+                  "text": " < 0.001 THEN "
+                },
+                {
+                  "id": "piece_1770041385627_comf4wvov",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SPINRATEADJUST_FW",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770041385627_812y5ybi5",
+                  "type": "Text",
+                  "text": " = 0.001"
+                }
+              ]
+            },
+            {
+              "type": "ScriptStatement",
+              "comment": "tell pc what speed we are at?",
+              "enabled": true,
+              "pieces": [
+                {
+                  "id": "piece_1770040717663_j7zrk9fwy",
+                  "type": "Text",
+                  "text": "if (1==1) then "
+                },
+                {
+                  "id": "piece_1770040717663_y3wcq48ku",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SV_PLC_SPINDLE_SPEED",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770040739486_6sdcnei5n",
+                  "type": "Text",
+                  "text": " = "
+                },
+                {
+                  "id": "piece_1770040739486_g40etnca5",
+                  "type": "DataElement",
+                  "dataElement": {
+                    "declarationName": "SPINSPEEDCOMMAND_FW",
+                    "allowNew": true,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "id": "piece_1770072422104_dit9yml5d",
+                  "type": "Text",
+                  "text": ""
+                },
+                {
+                  "id": "piece_1770072426191_73la3e8fp",
+                  "type": "Text",
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 9,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "DoSpindleStart",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SpindleUpToSpeedState_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SpindleZeroSpeedState_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SpindleUpToSpeedState_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": "",
+                  "targetElement": {
+                    "declarationName": "SpindleZeroSpeedState_SV",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            }
+          ],
+          "subBlocks": [
+            {
+              "name": "Acorn6 Settings",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 7,
+              "requiredInputs": [],
+              "requiredOutputs": [],
+              "requiredBoardTypes": [
+                "Acorn6"
+              ],
+              "actions": [
+                {
+                  "type": "ScriptStatement",
+                  "comment": "bits per rpm",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770041742854_lt2ta8su9",
+                      "type": "Text",
+                      "text": "IF SV_PC_CONFIG_MAX_SPINDLE_SPEED > 0.0 THEN "
+                    },
+                    {
+                      "id": "piece_1770041835864_2lbzzfy7g",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "allowNew": true,
+                        "needsWrite": false,
+                        "declaration": {
+                          "name": "RPMPERBIT_FW",
+                          "description": "",
+                          "dataType": "Floating-point Word",
+                          "category": [
+                            "* User Defined"
+                          ],
+                          "visibility": "Visible",
+                          "readOnly": false,
+                          "isSystem": false,
+                          "isConstant": false,
+                          "isSetText": "Set",
+                          "isResetText": "Reset"
+                        }
+                      }
+                    },
+                    {
+                      "id": "piece_1770046007810_wragiga2j",
+                      "type": "Text",
+                      "text": "= "
+                    },
+                    {
+                      "id": "piece_1770046007810_hlnkma6o6",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SV_PC_CONFIG_MAX_SPINDLE_SPEED",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770046007810_5veluudly",
+                      "type": "Text",
+                      "text": "/65535.0"
+                    },
+                    {
+                      "id": "piece_1770041742854_m3z1a72po",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770041856400_vuodi97xa",
+                      "type": "Text",
+                      "text": "IF SV_PC_CONFIG_MAX_SPINDLE_SPEED <= 0.0 THEN RPMPERBIT_FW = 1.0"
+                    }
+                  ]
+                },
+                {
+                  "type": "ScriptStatement",
+                  "comment": "turn into 16 bit speed",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770042437722_lrjqi95gl",
+                      "type": "Text",
+                      "text": ";Convert RPM to 16 bit value"
+                    },
+                    {
+                      "id": "piece_1770042437722_ycon1t4zx",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042506811_vit2cfj40",
+                      "type": "Text",
+                      "text": "IF 1==1 THEN "
+                    },
+                    {
+                      "id": "piece_1770042506811_ommk7gwug",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "allowNew": true,
+                        "needsWrite": false,
+                        "declaration": {
+                          "name": "SIXTEENBITSPEED_FW",
+                          "displayName": "SIXTEENBITSPEED_FW",
+                          "description": "",
+                          "dataType": "Floating-point Word",
+                          "category": [
+                            "* Control",
+                            "Spindle"
+                          ],
+                          "visibility": "Visible",
+                          "readOnly": false,
+                          "isSystem": false,
+                          "isConstant": false,
+                          "isSetText": "Set",
+                          "isResetText": "Reset"
+                        }
+                      }
+                    },
+                    {
+                      "id": "piece_1770042529864_mzwg32vpm",
+                      "type": "Text",
+                      "text": "= "
+                    },
+                    {
+                      "id": "piece_1770042529864_ch31p6gsk",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SPINSPEEDCOMMAND_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770042559452_nb1c9pnzb",
+                      "type": "Text",
+                      "text": "/"
+                    },
+                    {
+                      "id": "piece_1770042559452_5fer2gct8",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "RPMPERBIT_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770042559452_58udk4a9f",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_qcrki4vn2",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_tts8vevcm",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_ffew097qq",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_ipee6ifcd",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_koska99rs",
+                      "type": "Text",
+                      "text": ";Bound min 0 to max 65535"
+                    },
+                    {
+                      "id": "piece_1770042437722_sbhv9uv5x",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_zzmzex853",
+                      "type": "Text",
+                      "text": "IF SIXTEENBITSPEED_FW< 0 THEN SIXTEENBITSPEED_FW= 0"
+                    },
+                    {
+                      "id": "piece_1770042437722_k34zk9l5u",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_8mdrcu0u2",
+                      "type": "Text",
+                      "text": "IF SIXTEENBITSPEED_FW> 65535 THEN SIXTEENBITSPEED_FW= 65535"
+                    }
+                  ]
+                },
+                {
+                  "type": "AssignmentStatement",
+                  "comment": "",
+                  "enabled": true,
+                  "ordinal": 0,
+                  "assignmentPredicate": {
+                    "type": "AssignmentPredicate",
+                    "comment": "",
+                    "enabled": true,
+                    "verb": "= Data Element",
+                    "sourceValue": "",
+                    "targetElement": {
+                      "allowNew": true,
+                      "needsWrite": true,
+                      "declaration": {
+                        "name": "SPINDLESPEEDCOMMAND_W",
+                        "description": "",
+                        "dataType": "Word",
+                        "category": [
+                          "* Control"
+                        ],
+                        "visibility": "Visible",
+                        "readOnly": false,
+                        "isSystem": false,
+                        "isConstant": false,
+                        "isSetText": "Set",
+                        "isResetText": "Reset"
+                      }
+                    },
+                    "sourceElement": {
+                      "declarationName": "SIXTEENBITSPEED_FW",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                },
+                {
+                  "type": "ScriptStatement",
+                  "comment": "this is important.  this is how cnc12 knows how to set the speed.",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770040679503_lfmiw8sbc",
+                      "type": "Text",
+                      "text": "if 1==1 then WTB "
+                    },
+                    {
+                      "id": "piece_1770040679503_wxl25fkvp",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SPINDLESPEEDCOMMAND_W",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770040679503_70va4urs0",
+                      "type": "Text",
+                      "text": " OUT17 16"
+                    }
+                  ]
+                }
+              ],
+              "subBlocks": []
+            },
+            {
+              "name": "Acorn Settings",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 8,
+              "requiredInputs": [],
+              "requiredOutputs": [],
+              "requiredBoardTypes": [
+                "Acorn"
+              ],
+              "actions": [
+                {
+                  "type": "ScriptStatement",
+                  "comment": "bits per rpm",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770041742854_lt2ta8su9",
+                      "type": "Text",
+                      "text": "IF SV_PC_CONFIG_MAX_SPINDLE_SPEED > 0.0 THEN "
+                    },
+                    {
+                      "id": "piece_1770041835864_2lbzzfy7g",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "allowNew": true,
+                        "needsWrite": false,
+                        "declaration": {
+                          "name": "RPMPERBIT_FW",
+                          "displayName": "RPMPERBIT_FW",
+                          "description": "",
+                          "dataType": "Floating-point Word",
+                          "category": [
+                            "* Control",
+                            "Spindle"
+                          ],
+                          "visibility": "Visible",
+                          "readOnly": false,
+                          "isSystem": false,
+                          "isConstant": false,
+                          "isSetText": "Set",
+                          "isResetText": "Reset"
+                        }
+                      }
+                    },
+                    {
+                      "id": "piece_1770046007810_wragiga2j",
+                      "type": "Text",
+                      "text": "= "
+                    },
+                    {
+                      "id": "piece_1770046007810_hlnkma6o6",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SV_PC_CONFIG_MAX_SPINDLE_SPEED",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770046007810_5veluudly",
+                      "type": "Text",
+                      "text": "/4095.0"
+                    },
+                    {
+                      "id": "piece_1770041742854_m3z1a72po",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770041856400_vuodi97xa",
+                      "type": "Text",
+                      "text": "IF SV_PC_CONFIG_MAX_SPINDLE_SPEED <= 0.0 THEN RPMPERBIT_FW = 1.0"
+                    }
+                  ]
+                },
+                {
+                  "type": "ScriptStatement",
+                  "comment": "turn into 12 bit speed",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770042437722_lrjqi95gl",
+                      "type": "Text",
+                      "text": ";Convert RPM to 12 bit value"
+                    },
+                    {
+                      "id": "piece_1770042437722_ycon1t4zx",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042506811_vit2cfj40",
+                      "type": "Text",
+                      "text": "IF 1==1 THEN "
+                    },
+                    {
+                      "id": "piece_1770042506811_ommk7gwug",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "allowNew": true,
+                        "needsWrite": false,
+                        "declaration": {
+                          "name": "TWELVEBITSPEED_FW",
+                          "displayName": "SIXTEENBITSPEED_FW",
+                          "description": "",
+                          "dataType": "Floating-point Word",
+                          "category": [
+                            "* Control",
+                            "Spindle"
+                          ],
+                          "visibility": "Visible",
+                          "readOnly": false,
+                          "isSystem": false,
+                          "isConstant": false,
+                          "isSetText": "Set",
+                          "isResetText": "Reset"
+                        }
+                      }
+                    },
+                    {
+                      "id": "piece_1770042529864_mzwg32vpm",
+                      "type": "Text",
+                      "text": "= "
+                    },
+                    {
+                      "id": "piece_1770042529864_ch31p6gsk",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SPINSPEEDCOMMAND_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770042559452_nb1c9pnzb",
+                      "type": "Text",
+                      "text": "/"
+                    },
+                    {
+                      "id": "piece_1770042559452_5fer2gct8",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "RPMPERBIT_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770042559452_58udk4a9f",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_qcrki4vn2",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_tts8vevcm",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_ffew097qq",
+                      "type": "Text",
+                      "text": ""
+                    },
+                    {
+                      "id": "piece_1770042437722_ipee6ifcd",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770042437722_koska99rs",
+                      "type": "Text",
+                      "text": ";Bound min 0 to max 4095"
+                    },
+                    {
+                      "id": "piece_1770042437722_sbhv9uv5x",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770056228380_nyje5rdbp",
+                      "type": "Text",
+                      "text": "IF "
+                    },
+                    {
+                      "id": "piece_1770056228380_e1fvujwrm",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "TWELVEBITSPEED_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770056228380_bw80cp698",
+                      "type": "Text",
+                      "text": " < 0 THEN "
+                    },
+                    {
+                      "id": "piece_1770056206083_7eabiae2o",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "TWELVEBITSPEED_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770056206083_nsma99y7k",
+                      "type": "Text",
+                      "text": " = 0"
+                    },
+                    {
+                      "id": "piece_1770042437722_k34zk9l5u",
+                      "type": "NewLine"
+                    },
+                    {
+                      "id": "piece_1770056257816_1pmc9mvaa",
+                      "type": "Text",
+                      "text": "IF "
+                    },
+                    {
+                      "id": "piece_1770056257816_dzmqpu7st",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "TWELVEBITSPEED_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770056275721_ycye7vvax",
+                      "type": "Text",
+                      "text": "  > 4095 THEN "
+                    },
+                    {
+                      "id": "piece_1770056275721_q9vhaddh6",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "TWELVEBITSPEED_FW",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770056275721_enjl9bvif",
+                      "type": "Text",
+                      "text": " = 4095"
+                    }
+                  ]
+                },
+                {
+                  "type": "AssignmentStatement",
+                  "comment": "",
+                  "enabled": true,
+                  "ordinal": 0,
+                  "assignmentPredicate": {
+                    "type": "AssignmentPredicate",
+                    "comment": "",
+                    "enabled": true,
+                    "verb": "= Data Element",
+                    "sourceValue": "",
+                    "targetElement": {
+                      "allowNew": true,
+                      "needsWrite": true,
+                      "declaration": {
+                        "name": "SPINDLESPEEDCOMMAND_W",
+                        "description": "",
+                        "dataType": "Word",
+                        "category": [
+                          "* Control"
+                        ],
+                        "visibility": "Visible",
+                        "readOnly": false,
+                        "isSystem": false,
+                        "isConstant": false,
+                        "isSetText": "Set",
+                        "isResetText": "Reset"
+                      }
+                    },
+                    "sourceElement": {
+                      "declarationName": "TWELVEBITSPEED_FW",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                },
+                {
+                  "type": "ScriptStatement",
+                  "comment": "this is important.  this is how cnc12 knows how to set the speed.",
+                  "enabled": true,
+                  "pieces": [
+                    {
+                      "id": "piece_1770040679503_lfmiw8sbc",
+                      "type": "Text",
+                      "text": "if 1==1 then WTB "
+                    },
+                    {
+                      "id": "piece_1770040679503_wxl25fkvp",
+                      "type": "DataElement",
+                      "dataElement": {
+                        "declarationName": "SPINDLESPEEDCOMMAND_W",
+                        "allowNew": true,
+                        "needsWrite": false
+                      }
+                    },
+                    {
+                      "id": "piece_1770040679503_70va4urs0",
+                      "type": "Text",
+                      "text": " OUT17 12"
+                    }
+                  ]
+                }
+              ],
+              "subBlocks": []
+            }
+          ]
         }
       ]
     },
@@ -2290,6 +3833,7 @@
           "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "ScriptStatement",
@@ -2350,7 +3894,7 @@
                       "description": "",
                       "dataType": "Memory Bit",
                       "category": [
-                        "* User Defined"
+                        "* Control"
                       ],
                       "visibility": "Visible",
                       "readOnly": false,
@@ -2700,6 +4244,7 @@
           "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "LogicStatement",
@@ -2931,6 +4476,7 @@
           "ordinal": 1,
           "requiredInputs": [],
           "requiredOutputs": [],
+          "requiredBoardTypes": [],
           "actions": [
             {
               "type": "AssignmentStatement",
@@ -3148,22 +4694,26 @@
   ],
   "m94m95Triggers": [
     {
-      "name": "M3",
-      "description": "",
-      "number": 3,
-      "outputs": [
-        "Spindle Forward"
-      ],
-      "activeText": "Is Active",
-      "inactiveText": "Is Inactive"
-    },
-    {
       "name": "DISABLE_TRAVEL_LIMITS_MM",
       "description": "",
       "number": 105,
       "outputs": [],
       "activeText": "IsDisabled",
-      "inactiveText": "IsEnabled"
+      "inactiveText": "IsEnabled",
+      "onCommand": "",
+      "offCommand": ""
+    },
+    {
+      "name": "M3_SPINFWD_MM",
+      "description": "",
+      "number": 1,
+      "outputs": [
+        "Spindle Forward"
+      ],
+      "activeText": "SpindleOn",
+      "inactiveText": "SpindleOff",
+      "onCommand": "M3",
+      "offCommand": "M5"
     }
   ]
 }
