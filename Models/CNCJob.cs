@@ -11,20 +11,13 @@ namespace HavenCNCServer.Models
     /// <summary>
     /// Represents a CNC job that can be controlled and monitored
     /// </summary>
-    public class CNCJob : ICNCEventListener
+    public class CNCJob
     {
         private readonly string[] _gCodeLines;
         private readonly string? _gcodeParameterString;
         private readonly string _jobId;
         private readonly string _filePath;
         private CentroidAPI.CNCPipe.Job? _cncJob;
-        private bool _isListening = false;
-        private CancellationTokenSource? _monitorCancellation;
-
-        /// <summary>
-        /// Callback to invoke when the job completes
-        /// </summary>
-        public Action<CNCJob>? OnJobCompleted { get; set; }
 
         #region Properties
 
@@ -148,9 +141,6 @@ namespace HavenCNCServer.Models
             job.LineNumber = 0; // Reset to beginning
             job.UpdateCurrentLine();
 
-            // Start listening for events but don't start the actual job
-            job.StartListening();
-
             System.Diagnostics.Debug.WriteLine($"[CNCJob {job._jobId}] Created in step run mode with {gCodeLines.Length} lines");
             LoggingService.LogInfo($"Job {job._jobId} - Created in step run mode with {gCodeLines.Length} lines", "CNCJob");
 
@@ -224,10 +214,6 @@ namespace HavenCNCServer.Models
                     LoggingService.LogInfo($"Job {_jobId} executing G65 command: {commandToExecute}", "CNCJob");
                 }
 
-                // Start listening for job updates before executing the command
-                // This ensures we capture the program start event
-                StartListening();
-
                 // Create and execute the job
                 _cncJob = new CentroidAPI.CNCPipe.Job(cncPipe);
                 var executeResult = _cncJob.RunCommand(commandToExecute, false);
@@ -239,23 +225,15 @@ namespace HavenCNCServer.Models
 
                     // Log job start failure to main UI
                     LoggingService.LogError($"Job {_jobId} failed to start: {LastError}", "CNCJob");
-
-                    // Stop listening since the job failed to start
-                    StopListening();
                     return false;
                 }
 
-                // Don't set IsRunning = true here - wait for the job start indicator
-                // IsRunning will be set to true when we receive "API_COMMAND_RUNNING" on line 1 in OnJobInfoReceived
-                IsPaused = false;
-                // StartedAt will be set when we receive the actual start message
+                // Mark as running
+                IsRunning = true;
+                StartedAt = DateTime.Now;
 
                 // Log that the job command was sent successfully
-                LoggingService.LogInfo($"Job {_jobId} command sent successfully - waiting for execution to begin", "CNCJob");
-
-                // Start background polling to monitor job completion via API
-                _monitorCancellation = new CancellationTokenSource();
-                _ = Task.Run(() => MonitorJobCompletion(_monitorCancellation.Token), _monitorCancellation.Token);
+                LoggingService.LogInfo($"Job {_jobId} command sent successfully - execution started", "CNCJob");
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job started successfully");
                 return true;
@@ -418,19 +396,12 @@ namespace HavenCNCServer.Models
                     }
                 }
 
-                // Stop listening to events
-                StopListening();
-
                 IsRunning = false;
                 IsPaused = false;
                 IsComplete = true;
                 CompletedAt = DateTime.Now;
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped");
-
-                // Notify completion callback
-                OnJobCompleted?.Invoke(this);
-
                 return true;
             }
             catch (Exception ex)
@@ -548,8 +519,6 @@ namespace HavenCNCServer.Models
                     IsPaused = false;
                 }
 
-                StopListening();
-
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Step run mode ended");
                 LoggingService.LogInfo($"Job {_jobId} - Step run mode ended", "CNCJob");
 
@@ -582,13 +551,9 @@ namespace HavenCNCServer.Models
                     IsStepRunMode = false;
                     IsComplete = true;
                     CompletedAt = DateTime.Now;
-                    StopListening();
 
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] All steps completed");
                     LoggingService.LogSuccess($"✓ Job {_jobId} step run completed - all {TotalLines} lines executed", "CNCJob");
-
-                    // Notify completion callback
-                    OnJobCompleted?.Invoke(this);
                     return true;
                 }
 
@@ -678,12 +643,9 @@ namespace HavenCNCServer.Models
                 {
                     IsComplete = true;
                     CompletedAt = DateTime.Now;
-                    StopListening();
 
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] No remaining lines to execute");
                     LoggingService.LogSuccess($"✓ Job {_jobId} completed - no remaining lines", "CNCJob");
-
-                    OnJobCompleted?.Invoke(this);
                     return true;
                 }
 
@@ -737,413 +699,6 @@ namespace HavenCNCServer.Models
         #region Private Methods
 
         /// <summary>
-        /// Start listening for job status updates
-        /// </summary>
-        private void StartListening()
-        {
-            if (_isListening) return;
-
-            _isListening = true;
-
-            // Subscribe to job info events to track progress
-            CNCJobInfoListener.JobInfoReceived += OnJobInfoReceived;
-
-            // Register as an event listener for message events (with error codes)
-            CNCJobInfoListener.AddListener(this);
-
-            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Started listening for job updates and message events");
-            LoggingService.LogInfo($"Job {_jobId} - Registered as listener. Total listeners: {CNCJobInfoListener.GetListenerCount()}", "CNCJob");
-        }
-
-        /// <summary>
-        /// Stop listening for job status updates
-        /// </summary>
-        private void StopListening()
-        {
-            if (!_isListening) return;
-
-            _isListening = false;
-
-            // Unsubscribe from job info events
-            CNCJobInfoListener.JobInfoReceived -= OnJobInfoReceived;
-
-            // Unregister as event listener for message events
-            CNCJobInfoListener.RemoveListener(this);
-
-            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Stopped listening for job updates and message events");
-        }
-
-        /// <summary>
-        /// Handle CNC events (including message events with error codes)
-        /// </summary>
-        public void EventReceived(ICentroidEvent centroidEvent)
-        {
-            try
-            {
-                // Debug log events (debug only, not to main UI)
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] EventReceived: {centroidEvent.GetType().Name} - {centroidEvent.Message}");
-
-                if (centroidEvent is MessageEvent messageEvent)
-                {
-                    // Check for completion messages - code 306 indicates job finished
-                    // In step run mode, ignore completion messages since we control execution manually
-                    if (IsRunning && !IsComplete && !IsStepRunMode)
-                    {
-                        if (messageEvent.EventCode == 306)
-                        {
-                            LoggingService.LogSuccess($"✓ Job {_jobId} received completion event (code 306): {messageEvent.Message}", "CNCJob");
-                            LoggingService.LogInfo($"[DEBUG] Job completion triggered - IsRunning={IsRunning}, IsComplete={IsComplete}, IsStepRunMode={IsStepRunMode}, OnJobCompleted callback={(OnJobCompleted != null ? "SET" : "NULL")}", "CNCJob");
-
-                            IsRunning = false;
-                            IsComplete = true;
-                            CompletedAt = DateTime.Now;
-                            StopListening();
-
-                            // Cancel the monitoring task since we detected completion via event
-                            _monitorCancellation?.Cancel();
-
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - received code 306: {messageEvent.Message}");
-
-                            // Notify completion callback
-                            if (OnJobCompleted != null)
-                            {
-                                LoggingService.LogInfo($"[DEBUG] Invoking OnJobCompleted callback for job {_jobId}", "CNCJob");
-                                OnJobCompleted?.Invoke(this);
-                            }
-                            else
-                            {
-                                LoggingService.LogWarning($"[DEBUG] OnJobCompleted callback is NULL - job completion will not be sent to client!", "CNCJob");
-                            }
-                        }
-                    }
-
-                    // Check for error messages
-                    if (CNCJobInfoListener.IsErrorMessage(messageEvent.EventType))
-                    {
-                        LastError = $"Error {messageEvent.EventCode}: {messageEvent.Message}";
-                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error detected - {LastError}");
-
-                        // Log error to main UI
-                        LoggingService.LogError($"Job {_jobId} error - {LastError}", "CNCJob");
-
-                        // For critical errors, stop the job
-                        if (messageEvent.EventType == MessageEventType.SystemFault ||
-                            messageEvent.EventType == MessageEventType.AxisFault ||
-                            messageEvent.EventType == MessageEventType.LimitError ||
-                            messageEvent.EventType == MessageEventType.MiscellaneousError) // Includes travel exceeded (907)
-                        {
-                            IsRunning = false;
-                            IsComplete = true;
-                            CompletedAt = DateTime.Now;
-                            StopListening();
-
-                            // Cancel the monitoring task since we detected completion via error
-                            _monitorCancellation?.Cancel();
-
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job stopped due to critical error: {LastError}");
-
-                            // Log critical error job stop to main UI
-                            LoggingService.LogError($"Job {_jobId} stopped due to critical error: {LastError}", "CNCJob");
-
-                            // Notify completion callback
-                            OnJobCompleted?.Invoke(this);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error processing CNC event: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Monitor job completion by polling the Centroid API IsJobRunning method
-        /// This provides reliable completion detection for fast jobs that may not send completion events
-        /// Polls every 250ms to catch stuck jobs
-        /// </summary>
-        private async Task MonitorJobCompletion(CancellationToken cancellationToken)
-        {
-            try
-            {
-                // Wait a bit for the job to actually start running
-                await Task.Delay(100, cancellationToken);
-
-                bool wasRunning = false;
-                int pollCount = 0;
-                DateTime lastStateLogTime = DateTime.Now;
-
-                LoggingService.LogInfo($"📊 Job {_jobId} monitor started - polling every 250ms", "CNCJob");
-
-                while (!IsComplete && !cancellationToken.IsCancellationRequested)
-                {
-                    pollCount++;
-
-                    // Get CNC pipe
-                    var cncPipe = CNCConnectionManager.GetCNCPipe();
-                    if (cncPipe == null)
-                    {
-                        // Connection lost
-                        LoggingService.LogWarning($"Job {_jobId} monitor: CNC connection lost at poll #{pollCount}", "CNCJob");
-                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: CNC connection lost");
-                        break;
-                    }
-
-                    // Check if any job is currently running
-                    var result = cncPipe.state.IsJobRunning(out bool jobRunning);
-
-                    if (result == CNCPipe.ReturnCode.SUCCESS)
-                    {
-                        // Log state every 5 seconds (20 polls at 250ms)
-                        if ((DateTime.Now - lastStateLogTime).TotalSeconds >= 5)
-                        {
-                            LoggingService.LogInfo($"📊 Job {_jobId} state: IsRunning={IsRunning}, IsPaused={IsPaused}, IsComplete={IsComplete}, API_JobRunning={jobRunning}, Line={LineNumber}/{TotalLines}, Poll#{pollCount}", "CNCJob");
-                            lastStateLogTime = DateTime.Now;
-                        }
-
-                        if (jobRunning && !wasRunning)
-                        {
-                            // Job just started running
-                            wasRunning = true;
-                            LoggingService.LogSuccess($"✓ Job {_jobId} started running (detected by API at poll #{pollCount})", "CNCJob");
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job started running (detected by API)");
-                        }
-                        else if (!jobRunning && wasRunning && !IsComplete)
-                        {
-                            // Job WAS running but now stopped - mark as complete
-                            LoggingService.LogSuccess($"✓ Job {_jobId} stopped running (detected by API at poll #{pollCount}) - marking complete", "CNCJob");
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Job stopped running (detected by API) - marking complete");
-
-                            IsRunning = false;
-                            IsComplete = true;
-                            CompletedAt = DateTime.Now;
-                            StopListening();
-
-                            // Notify completion callback
-                            OnJobCompleted?.Invoke(this);
-                            break;
-                        }
-                        else if (!jobRunning && !wasRunning && pollCount > 20)
-                        {
-                            // Job never started running after 5 seconds (20 polls)
-                            // This likely means the job completed SO FAST that we never caught it in the "running" state
-                            // Mark it as complete to prevent infinite stuck state
-                            if (pollCount == 21) // Log once at the threshold
-                            {
-                                LoggingService.LogWarning($"⚠️ Job {_jobId} never detected as running after {pollCount} polls (5+ seconds) - likely completed too quickly. Marking complete.", "CNCJob");
-                            }
-
-                            // After 10 seconds (40 polls), force completion
-                            if (pollCount > 40 && !IsComplete)
-                            {
-                                LoggingService.LogWarning($"⚠️ Job {_jobId} forcing completion after {pollCount} polls - job never detected as running", "CNCJob");
-
-                                IsRunning = false;
-                                IsComplete = true;
-                                CompletedAt = DateTime.Now;
-                                StopListening();
-
-                                // Notify completion callback
-                                OnJobCompleted?.Invoke(this);
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        LoggingService.LogWarning($"Job {_jobId} monitor: IsJobRunning returned {result} at poll #{pollCount}", "CNCJob");
-                    }
-
-                    // Poll every 250ms for responsive completion detection
-                    await Task.Delay(250, cancellationToken);
-                }
-
-                LoggingService.LogInfo($"📊 Job {_jobId} monitor exiting after {pollCount} polls (Cancelled={cancellationToken.IsCancellationRequested}, IsComplete={IsComplete})", "CNCJob");
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Exiting monitoring loop (Cancelled={cancellationToken.IsCancellationRequested})");
-            }
-            catch (OperationCanceledException)
-            {
-                // Monitor was cancelled (likely due to 306 message event) - this is normal
-                LoggingService.LogInfo($"📊 Job {_jobId} monitor cancelled by event-based completion", "CNCJob");
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor: Cancelled by event-based completion");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Monitor exception: {ex.Message}");
-                LoggingService.LogError($"Job {_jobId} monitoring error: {ex.Message}", "CNCJob");
-            }
-        }
-
-        /// <summary>
-        /// Handle job info updates from the CNC system (mainly for line number tracking and job start detection)
-        /// </summary>
-        private async void OnJobInfoReceived(JobInfoData jobInfo)
-        {
-            try
-            {
-                // Debug log job info messages (debug only, not to main UI)
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] JobInfo: Line {jobInfo.LineNumber}, Message: '{jobInfo.Message}'");
-
-                // Check for job start: Look for actual CNC start messages or line 1 execution
-                if (!IsRunning && !IsComplete)
-                {
-                    var message = jobInfo.Message ?? "";
-
-                    // Look for CNC program start indicators - be more flexible
-                    bool jobStartDetected = false;
-                    string startReason = "";
-
-                    if (message.Contains("program is now running") ||
-                        message.Contains("Running program:"))
-                    {
-                        jobStartDetected = true;
-                        startReason = $"Program start message: {message}";
-                    }
-                    else if (jobInfo.LineNumber == 1 && !string.IsNullOrEmpty(message))
-                    {
-                        jobStartDetected = true;
-                        startReason = $"Line 1 execution: {message}";
-                    }
-                    else if (jobInfo.LineNumber > 0 && !string.IsNullOrEmpty(message))
-                    {
-                        // Any line execution could indicate the job has started
-                        jobStartDetected = true;
-                        startReason = $"Line {jobInfo.LineNumber} execution: {message}";
-                    }
-
-                    if (jobStartDetected)
-                    {
-                        IsRunning = true;
-                        StartedAt = DateTime.Now;
-                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job started - detected: {startReason}");
-
-                        // Log job started to main UI in GREEN
-                        LoggingService.LogSuccess($"✓ Job {_jobId} started successfully - {startReason}", "CNCJob");
-                    }
-                }
-
-                // Process job info updates if we're running and not complete
-                if (IsRunning && !IsComplete)
-                {
-                    // Validate line number - ignore corrupted/invalid line numbers
-                    if (jobInfo.LineNumber > 0 && jobInfo.LineNumber <= TotalLines && jobInfo.LineNumber != LineNumber)
-                    {
-                        LineNumber = jobInfo.LineNumber;
-                        UpdateCurrentLine();
-
-                        // Send StepExecutionEvent for G-code viewer (for both regular and step run jobs)
-                        var stepExecutionEvent = new StepExecutionEvent
-                        {
-                            Timestamp = DateTime.Now,
-                            Message = $"Executing line {LineNumber}: {CurrentLine}",
-                            JobId = _jobId,
-                            LineNumber = LineNumber,
-                            CurrentLine = CurrentLine,
-                            TotalLines = TotalLines,
-                            IsLastStep = (LineNumber >= TotalLines),
-                            Status = StepExecutionStatus.Executing
-                        };
-                        CNCJobInfoListener.PushCustomEvent(stepExecutionEvent);
-
-                        // Log progress to main UI only for significant lines (every 50 lines or major milestones)
-                        if (LineNumber == 1 || LineNumber == TotalLines || LineNumber % 50 == 0)
-                        {
-                            LoggingService.LogInfo($"Job {_jobId}: Line {LineNumber}/{TotalLines} - {CurrentLine}", "CNCJob");
-                        }
-
-                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Line {LineNumber}: {CurrentLine}");
-
-                        // Check if we've reached the last line - wait for machine to actually finish
-                        // This ensures we don't send completion message before the last move completes
-                        if (LineNumber >= TotalLines)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Reached last line {LineNumber}/{TotalLines}, waiting for machine to finish...");
-
-                            // Wait for up to 10 seconds for the machine to actually finish
-                            bool machineFinished = await WaitForMachineToFinish(TimeSpan.FromSeconds(10));
-
-                            IsRunning = false;
-                            IsComplete = true;
-                            CompletedAt = DateTime.Now;
-                            StopListening();
-
-                            // Cancel the monitoring task since we detected completion via line count
-                            _monitorCancellation?.Cancel();
-
-                            if (machineFinished)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - machine finished executing");
-                                LoggingService.LogSuccess($"✓ Job {_jobId} completed - executed all {TotalLines} lines", "CNCJob");
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Job completed - timeout waiting for machine (sent completion anyway)");
-                                LoggingService.LogWarning($"Job {_jobId} completed with timeout - machine may still be executing final moves", "CNCJob");
-                            }
-
-                            // Notify completion callback
-                            OnJobCompleted?.Invoke(this);
-                        }
-                    }
-                    else if (jobInfo.LineNumber > TotalLines)
-                    {
-                        // Debug log invalid line numbers (debug only, not to main UI)
-                        System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Ignoring invalid line number: {jobInfo.LineNumber} (max: {TotalLines})");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error processing job info: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Wait for the machine to finish executing (IsJobRunning returns false)
-        /// </summary>
-        /// <param name="timeout">Maximum time to wait</param>
-        /// <returns>True if machine finished within timeout, false if timed out</returns>
-        private async Task<bool> WaitForMachineToFinish(TimeSpan timeout)
-        {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-            while (stopwatch.Elapsed < timeout)
-            {
-                var cncPipe = CNCConnectionManager.GetCNCPipe();
-                if (cncPipe == null)
-                {
-                    // Connection lost - assume finished
-                    return true;
-                }
-
-                try
-                {
-                    var result = cncPipe.state.IsJobRunning(out bool jobRunning);
-                    if (result == CNCPipe.ReturnCode.SUCCESS)
-                    {
-                        if (!jobRunning)
-                        {
-                            // Machine is no longer running - finished successfully
-                            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Machine finished after {stopwatch.ElapsedMilliseconds}ms");
-                            return true;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Error checking IsJobRunning: {ex.Message}");
-                }
-
-                // Poll every 50ms for responsive detection
-                await Task.Delay(50);
-            }
-
-            // Timed out
-            System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Timeout waiting for machine to finish after {stopwatch.ElapsedMilliseconds}ms");
-            return false;
-        }
-
-        /// <summary>
         /// Update the current line text based on line number
         /// </summary>
         private void UpdateCurrentLine()
@@ -1180,17 +735,6 @@ namespace HavenCNCServer.Models
         /// </summary>
         public void Dispose()
         {
-            // Stop listening first to unregister event handlers
-            StopListening();
-
-            // Cancel and dispose the monitoring task
-            if (_monitorCancellation != null)
-            {
-                _monitorCancellation.Cancel();
-                _monitorCancellation.Dispose();
-                _monitorCancellation = null;
-            }
-
             // Clean up the G-code file
             try
             {
