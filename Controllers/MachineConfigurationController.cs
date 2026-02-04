@@ -23,6 +23,7 @@ namespace HavenCNCServer.Controllers
         private readonly string _dataDirectory;
         private readonly string _localSettingsPath;
         private readonly string _archiveDirectory;
+        private readonly string _defaultPlcDirectory;
         private static readonly string[] ConfigFiles = new[]
         {
             "plcSystem.json",
@@ -42,9 +43,11 @@ namespace HavenCNCServer.Controllers
             _dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
             _localSettingsPath = Path.Combine(_dataDirectory, "localMachineSettings.json");
             _archiveDirectory = Path.Combine(_dataDirectory, "machineArchives");
+            _defaultPlcDirectory = Path.Combine(_dataDirectory, "defaultPlcVersions");
 
             Directory.CreateDirectory(_dataDirectory);
             Directory.CreateDirectory(_archiveDirectory);
+            Directory.CreateDirectory(_defaultPlcDirectory);
 
             LogInfo("MachineConfigurationController initialized", "MachineConfig");
         }
@@ -444,6 +447,35 @@ namespace HavenCNCServer.Controllers
                     LogInfo("Machine name not set - skipping MongoDB sync", "MachineConfig");
                 }
 
+                // If saving plcSystemDefault.json and no default PLC versions exist, store this as the first default
+                if (fileName == "plcSystemDefault.json" && _mongoService.IsConnected)
+                {
+                    try
+                    {
+                        var existingVersions = await _mongoService.ListDefaultPlcVersionsAsync();
+                        if (existingVersions.Count == 0)
+                        {
+                            LogInfo("No default PLC versions found - storing current plcSystemDefault.json as first default version", "MachineConfig");
+                            var storeSuccess = await _mongoService.StoreDefaultPlcAsync(
+                                versionName: "Initial Default",
+                                jsonData: content,
+                                description: "Automatically created from first plcSystemDefault.json save",
+                                markAsLatest: true,
+                                createdBy: "System"
+                            );
+                            if (storeSuccess)
+                            {
+                                LogSuccess("✓ Automatically stored first default PLC version", "MachineConfig");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWarning($"Could not auto-store default PLC to MongoDB (offline): {ex.Message}", "MachineConfig");
+                        // Continue - local file is already saved
+                    }
+                }
+
                 LogSuccess($"✓ Saved configuration: {fileName}", "MachineConfig");
                 return Ok(new { message = "Configuration saved successfully", syncedToMongoDB = mongoSuccess });
             }
@@ -481,18 +513,43 @@ namespace HavenCNCServer.Controllers
 
                 LogInfo($"💾 StoreAsDefaultPLC request: '{request.VersionName}'", "MachineConfig");
 
-                var success = await _mongoService.StoreDefaultPlcAsync(
-                    request.VersionName,
-                    request.JsonData,
-                    request.Description,
-                    request.MarkAsLatest,
-                    request.CreatedBy
-                );
+                // Check if this is the first default PLC version (check both MongoDB and local)
+                var existingVersions = await _mongoService.ListDefaultPlcVersionsAsync();
+                var localVersions = GetLocalDefaultPlcVersions();
+                var isFirstVersion = existingVersions.Count == 0 && localVersions.Count == 0;
 
-                if (success)
+                // If this is the first version, always mark it as latest regardless of request
+                var markAsLatest = isFirstVersion || request.MarkAsLatest;
+
+                if (isFirstVersion)
                 {
-                    LogSuccess($"✓ Stored default PLC version: '{request.VersionName}'", "MachineConfig");
-                    return Ok(new { message = "Default PLC version stored successfully" });
+                    LogInfo("First default PLC version - automatically marking as latest", "MachineConfig");
+                }
+
+                // Save to local file system first
+                var localSuccess = SaveDefaultPlcLocally(request.VersionName, request.JsonData, request.Description, markAsLatest, request.CreatedBy);
+
+                // Try to save to MongoDB if connected
+                var mongoSuccess = false;
+                if (_mongoService.IsConnected)
+                {
+                    mongoSuccess = await _mongoService.StoreDefaultPlcAsync(
+                        request.VersionName,
+                        request.JsonData,
+                        request.Description,
+                        markAsLatest,
+                        request.CreatedBy
+                    );
+                }
+                else
+                {
+                    LogInfo("MongoDB offline - default PLC stored locally only", "MachineConfig");
+                }
+
+                if (localSuccess)
+                {
+                    LogSuccess($"✓ Stored default PLC version: '{request.VersionName}' (MongoDB: {mongoSuccess})", "MachineConfig");
+                    return Ok(new { message = "Default PLC version stored successfully", syncedToMongoDB = mongoSuccess });
                 }
                 else
                 {
@@ -519,15 +576,34 @@ namespace HavenCNCServer.Controllers
             {
                 LogInfo($"📖 GetDefaultPLC request: version='{versionName ?? "latest"}'", "MachineConfig");
 
-                DefaultPlcVersionDocument? result;
+                DefaultPlcVersionDocument? result = null;
 
-                if (string.IsNullOrWhiteSpace(versionName))
+                // Try MongoDB first if connected
+                if (_mongoService.IsConnected)
                 {
-                    result = await _mongoService.GetLatestDefaultPlcAsync();
+                    if (string.IsNullOrWhiteSpace(versionName))
+                    {
+                        result = await _mongoService.GetLatestDefaultPlcAsync();
+                    }
+                    else
+                    {
+                        result = await _mongoService.GetDefaultPlcByVersionAsync(versionName);
+                    }
                 }
-                else
+
+                // Fallback to local storage if MongoDB didn't return a result
+                if (result == null)
                 {
-                    result = await _mongoService.GetDefaultPlcByVersionAsync(versionName);
+                    if (_mongoService.IsConnected)
+                    {
+                        LogInfo("Default PLC not found in MongoDB, checking local storage", "MachineConfig");
+                    }
+                    else
+                    {
+                        LogInfo("MongoDB offline - using local default PLC storage", "MachineConfig");
+                    }
+
+                    result = GetDefaultPlcLocally(versionName);
                 }
 
                 if (result != null)
@@ -560,7 +636,26 @@ namespace HavenCNCServer.Controllers
             {
                 LogInfo("📋 ListDefaultPLCVersions request", "MachineConfig");
 
-                var versions = await _mongoService.ListDefaultPlcVersionsAsync();
+                var versions = new List<DefaultPlcVersionInfo>();
+
+                // Get from MongoDB if connected
+                if (_mongoService.IsConnected)
+                {
+                    versions = await _mongoService.ListDefaultPlcVersionsAsync();
+                }
+
+                // Merge with local versions (avoid duplicates)
+                var localVersions = GetLocalDefaultPlcVersions();
+                foreach (var localVersion in localVersions)
+                {
+                    if (!versions.Any(v => v.VersionName == localVersion.VersionName))
+                    {
+                        versions.Add(localVersion);
+                    }
+                }
+
+                // Sort by timestamp descending
+                versions = versions.OrderByDescending(v => v.Timestamp).ToList();
 
                 LogSuccess($"✓ Retrieved {versions.Count} default PLC versions", "MachineConfig");
                 return Ok(versions.ToArray());
@@ -675,6 +770,132 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 LogError($"Failed to archive local files: {ex.Message}", "MachineConfig");
+            }
+        }
+
+        /// <summary>
+        /// Save default PLC version to local file system
+        /// </summary>
+        private bool SaveDefaultPlcLocally(string versionName, string jsonData, string? description, bool markAsLatest, string? createdBy)
+        {
+            try
+            {
+                // If marking as latest, unmark all existing local versions
+                if (markAsLatest)
+                {
+                    var existingFiles = Directory.GetFiles(_defaultPlcDirectory, "*.json");
+                    foreach (var file in existingFiles)
+                    {
+                        var existingDoc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(System.IO.File.ReadAllText(file));
+                        if (existingDoc != null && existingDoc.IsLatest)
+                        {
+                            existingDoc.IsLatest = false;
+                            System.IO.File.WriteAllText(file, JsonSerializer.Serialize(existingDoc, new JsonSerializerOptions { WriteIndented = true }));
+                        }
+                    }
+                }
+
+                var document = new DefaultPlcVersionDocument
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    VersionName = versionName,
+                    Timestamp = DateTime.UtcNow,
+                    JsonData = jsonData,
+                    Description = description,
+                    IsLatest = markAsLatest,
+                    CreatedBy = createdBy
+                };
+
+                var safeFileName = string.Join("", versionName.Split(Path.GetInvalidFileNameChars()));
+                var filePath = Path.Combine(_defaultPlcDirectory, $"{safeFileName}_{document.Id}.json");
+                var json = JsonSerializer.Serialize(document, new JsonSerializerOptions { WriteIndented = true });
+                System.IO.File.WriteAllText(filePath, json);
+
+                LogInfo($"Saved default PLC version '{versionName}' locally", "MachineConfig");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save default PLC locally: {ex.Message}", "MachineConfig");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get default PLC version from local file system
+        /// </summary>
+        private DefaultPlcVersionDocument? GetDefaultPlcLocally(string? versionName)
+        {
+            try
+            {
+                var files = Directory.GetFiles(_defaultPlcDirectory, "*.json");
+                var documents = new List<DefaultPlcVersionDocument>();
+
+                foreach (var file in files)
+                {
+                    var json = System.IO.File.ReadAllText(file);
+                    var doc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(json);
+                    if (doc != null)
+                    {
+                        documents.Add(doc);
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(versionName))
+                {
+                    // Return latest
+                    return documents
+                        .Where(d => d.IsLatest)
+                        .OrderByDescending(d => d.Timestamp)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    // Return specific version
+                    return documents.FirstOrDefault(d => d.VersionName == versionName);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get default PLC locally: {ex.Message}", "MachineConfig");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get all local default PLC versions
+        /// </summary>
+        private List<DefaultPlcVersionInfo> GetLocalDefaultPlcVersions()
+        {
+            try
+            {
+                var files = Directory.GetFiles(_defaultPlcDirectory, "*.json");
+                var versions = new List<DefaultPlcVersionInfo>();
+
+                foreach (var file in files)
+                {
+                    var json = System.IO.File.ReadAllText(file);
+                    var doc = JsonSerializer.Deserialize<DefaultPlcVersionDocument>(json);
+                    if (doc != null)
+                    {
+                        versions.Add(new DefaultPlcVersionInfo
+                        {
+                            Id = doc.Id!,
+                            VersionName = doc.VersionName,
+                            Timestamp = doc.Timestamp,
+                            Description = doc.Description,
+                            IsLatest = doc.IsLatest,
+                            CreatedBy = doc.CreatedBy
+                        });
+                    }
+                }
+
+                return versions;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to list local default PLC versions: {ex.Message}", "MachineConfig");
+                return new List<DefaultPlcVersionInfo>();
             }
         }
 
