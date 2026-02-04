@@ -9,8 +9,7 @@ namespace HavenCNCServer.Services
     public static class SettingsManager
     {
         private static readonly string _settingsFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "HavenCNCServer",
+            Directory.GetCurrentDirectory(),
             "settings.json");
 
         private static AppSettings? _settings;

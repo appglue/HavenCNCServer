@@ -21,5 +21,14 @@
     "connectionRetries": 3,
     "retryDelayMs": 1000,
     "autoConnectOnStartup": true
+  },
+  "mongoDB": {
+    "enabled": true,
+    "connectionString": "mongodb+srv://havenadmin:havenadminpw@havencncmachinedata.1e669.mongodb.net/?appName=HavenCNCMachineData",
+    "databaseName": "HavenCNCMachineData",
+    "machineConfigurationsCollection": "machineConfigurations",
+    "defaultPlcVersionsCollection": "defaultPlcVersions",
+    "connectionTimeoutMs": 5000,
+    "continueOnOffline": true
   }
 }
