@@ -13,8 +13,8 @@
   "selectedClampId": null,
   "_currentMachinePoint": {
     "x": 0,
-    "y": 0.02,
-    "z": -0.01,
+    "y": 0,
+    "z": 0,
     "coordinateType": "MachineZero"
   },
   "_spoilboardPosition": {

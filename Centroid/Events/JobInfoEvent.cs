@@ -47,7 +47,7 @@ namespace HavenCNCServer.Centroid.Events
         /// Process JOB_INFO message - Contains job execution details
         /// Returns null if this is a duplicate that should be skipped
         /// </summary>
-        public static JobInfoEvent? ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile, System.Action<ICentroidEvent, string> storeMessage, System.Action<ICentroidEvent> notifyListeners)
+        public static JobInfoEvent? ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile)
         {
             // Check for job info duplicates first (ignoring movement/position changes)
             var jobInfoHash = CalculateJobInfoHash(packet);
@@ -104,6 +104,7 @@ namespace HavenCNCServer.Centroid.Events
 
             // Create and notify listeners of job info event only when job data actually changes
             var cncTimestamp = GetCNCTimestamp(packet);
+            Console.WriteLine($"[JobInfoEvent] Creating event - Line: {lineNumber}, Job: {message}");
             var jobInfoEvent = new JobInfoEvent
             {
                 Timestamp = cncTimestamp,
@@ -117,13 +118,8 @@ namespace HavenCNCServer.Centroid.Events
             var timestampSource = cncTimestamp != DateTime.Now ? "CNC" : "Server";
             logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
-            // Store the job info event in history
-            storeMessage(jobInfoEvent, "JOB_INFO");
-
-            // Notify listeners
-            notifyListeners(jobInfoEvent);
-
-            // PHASE 2: Publish to CNCEventBus (new channel-based architecture)
+            // Publish to CNCEventBus (channel-based event distribution)
+            Console.WriteLine($"[JobInfoEvent] Publishing to CNCEventBus");
             CNCEventBus.Instance.PublishMessage(jobInfoEvent);
 
             return jobInfoEvent;

@@ -62,7 +62,9 @@ namespace HavenCNCServer.Services
                             var listener = new SignalREventListener(_hubContext);
 
                             LogInfo("Subscribing to CNCEventBus (new channel-based architecture)", "SignalR");
+                            Console.WriteLine("[SignalRManager] About to subscribe SignalREventListener to CNCEventBus");
                             CNCEventBus.Instance.Subscribe(listener);
+                            Console.WriteLine($"[SignalRManager] Subscribed! EventBus now has {CNCEventBus.Instance.GetSubscriberCount()} subscribers");
 
                             LogInfo("Subscribing to CNC connection status changes", "SignalR");
                             CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;
@@ -753,10 +755,13 @@ namespace HavenCNCServer.Services
                 return;
             }
 
+            Console.WriteLine($"[SignalREventListener] OnCNCMessage called: {message.GetType().Name}");
+
             // Try to add to queue without blocking
             if (!_messageQueue.TryAdd(message))
             {
                 // Queue is full - log and drop the event
+                Console.WriteLine($"[SignalREventListener] Queue full, dropping message");
                 LogWarning($"SignalR message queue full - dropping {message.GetType().Name} event", "SignalR");
             }
         }

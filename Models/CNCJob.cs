@@ -119,7 +119,10 @@ namespace HavenCNCServer.Models
 
             // Create the file path for this job
             var fileName = $"job_{_jobId}_{DateTime.Now:yyyyMMdd_HHmmss}{SettingsManager.Settings.Files.DefaultGCodeExtension}";
-            _filePath = Path.Combine(SettingsManager.GetCncProgramsDirectory(), fileName);
+
+            // Get CNC programs directory (should be CNC12's programs folder)
+            var programsDir = SettingsManager.GetCncProgramsDirectory();
+            _filePath = Path.Combine(programsDir, fileName);
 
             // Initialize current line to first non-comment line
             UpdateCurrentLine();
@@ -201,15 +204,21 @@ namespace HavenCNCServer.Models
                     // Ensure target directory exists
                     Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
 
-                    // Write G-code to file
+                    // Write G-code to file and ensure it's flushed to disk
                     await IOFile.WriteAllLinesAsync(_filePath, _gCodeLines);
 
-                    // Create the G65 command
+                    // CRITICAL: Add a small delay to ensure file system has released the file handle
+                    // This prevents "file in use" errors when CNC12 tries to open it immediately after
+                    await Task.Delay(100);
+
+                    // Create the G65 command - use just filename since CNC12 looks in its programs directory
+                    var fileName = Path.GetFileName(_filePath);
                     commandToExecute = string.IsNullOrEmpty(_gcodeParameterString)
-                        ? $"G65 \"{_filePath}\""
-                        : $"G65 \"{_filePath}\" {_gcodeParameterString}";
+                        ? $"G65 \"{fileName}\""
+                        : $"G65 \"{fileName}\" {_gcodeParameterString}";
 
                     LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
+                    LoggingService.LogInfo($"Job {_jobId} file written to: {_filePath}", "CNCJob");
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Starting job with command: {commandToExecute}");
                     LoggingService.LogInfo($"Job {_jobId} executing G65 command: {commandToExecute}", "CNCJob");
                 }
@@ -735,18 +744,21 @@ namespace HavenCNCServer.Models
         /// </summary>
         public void Dispose()
         {
+            // NOTE: File cleanup disabled - files will be cleaned up on next application startup
+            // This allows examination of generated files for debugging
+
             // Clean up the G-code file
-            try
-            {
-                if (IOFile.Exists(_filePath))
-                {
-                    IOFile.Delete(_filePath);
-                }
-            }
-            catch
-            {
-                // Not critical - file cleanup can fail
-            }
+            //try
+            //{
+            //    if (IOFile.Exists(_filePath))
+            //    {
+            //        IOFile.Delete(_filePath);
+            //    }
+            //}
+            //catch
+            //{
+            //    // Not critical - file cleanup can fail
+            //}
         }
 
         #endregion

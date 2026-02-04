@@ -38,7 +38,7 @@ namespace HavenCNCServer.Centroid.Events
         /// <summary>
         /// Process MESSAGE_WINDOW_MESSAGE - Contains message text
         /// </summary>
-        public static MessageEvent? ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile, System.Action<ICentroidEvent, string> storeMessage, System.Action<ICentroidEvent> notifyListeners)
+        public static MessageEvent? ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile)
         {
             logToFile($"    Message Window Event:");
 
@@ -63,6 +63,8 @@ namespace HavenCNCServer.Centroid.Events
 
             if (!string.IsNullOrWhiteSpace(finalMessage))
             {
+                Console.WriteLine($"[MessageEvent] Processing message: {finalMessage.Substring(0, Math.Min(50, finalMessage.Length))}");
+
                 // Extract error code and determine event type based on Centroid documentation
                 var (eventCode, eventType) = ClassifyMessage(finalMessage);
 
@@ -81,13 +83,8 @@ namespace HavenCNCServer.Centroid.Events
                 var timestampSource = cncTimestamp != DateTime.Now ? "CNC" : "Server";
                 logToFile($"    Timestamp: {cncTimestamp:yyyy-MM-dd HH:mm:ss.fff} ({timestampSource})");
 
-                // Store the message event in history
-                storeMessage(messageEvent, "MESSAGE_WINDOW_MESSAGE");
-
-                // Notify listeners
-                notifyListeners(messageEvent);
-
-                // PHASE 2: Publish to CNCEventBus (new channel-based architecture)
+                // Publish to CNCEventBus (channel-based event distribution)
+                Console.WriteLine($"[MessageEvent] Publishing to CNCEventBus: {messageEvent.EventType}");
                 CNCEventBus.Instance.PublishMessage(messageEvent);
 
                 return messageEvent;

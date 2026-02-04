@@ -162,19 +162,30 @@ namespace HavenCNCServer.Centroid.Events
         {
             try
             {
+                if (_messageEventsPublished < 20)
+                {
+                    Console.WriteLine($"[CNCEventBus] PublishMessage called: {message.GetType().Name}");
+                }
+
                 // Use TryWrite for synchronous publishing
                 if (!_messageChannel.Writer.TryWrite(message))
                 {
                     // Channel full, fall back to async
+                    Console.WriteLine($"[CNCEventBus] Channel full, using async for: {message.GetType().Name}");
                     _ = PublishMessageAsync(message);
                 }
                 else
                 {
                     Interlocked.Increment(ref _messageEventsPublished);
+                    if (_messageEventsPublished <= 20)
+                    {
+                        Console.WriteLine($"[CNCEventBus] Message published to channel (total: {_messageEventsPublished})");
+                    }
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[CNCEventBus] ERROR publishing: {ex.Message}");
                 LogError($"Error publishing message event: {ex.Message}", "EventBus");
             }
         }
@@ -193,6 +204,7 @@ namespace HavenCNCServer.Centroid.Events
 
             if (_subscribers.TryAdd(subscriber, 0))
             {
+                Console.WriteLine($"[CNCEventBus] Subscriber registered: {subscriber.GetType().Name} (wants: {subscriber.GetSubscribedEvents()}), Total subscribers: {_subscribers.Count}");
                 LogInfo($"Subscriber registered: {subscriber.GetType().Name} (wants: {subscriber.GetSubscribedEvents()})", "EventBus");
             }
             else
@@ -259,26 +271,39 @@ namespace HavenCNCServer.Centroid.Events
         /// <summary>
         /// Worker thread for position/DRO updates (high priority)
         /// </summary>
-        private async void PositionWorker(CancellationToken ct)
+        private void PositionWorker(CancellationToken ct)
         {
+            Console.WriteLine("[CNCEventBus] Position worker started");
             LogInfo("Position worker started", "EventBus");
 
             try
             {
-                await foreach (var position in _positionChannel.Reader.ReadAllAsync(ct))
+                while (!ct.IsCancellationRequested)
                 {
-                    foreach (var subscriber in _subscribers.Keys)
+                    // Try to read position from channel (non-blocking)
+                    if (_positionChannel.Reader.TryRead(out var position))
                     {
-                        try
+                        foreach (var subscriber in _subscribers.Keys)
                         {
-                            if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Position))
+                            try
                             {
-                                subscriber.OnPositionUpdate(position);
+                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Position))
+                                {
+                                    subscriber.OnPositionUpdate(position);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogError($"Subscriber {subscriber.GetType().Name} error in OnPositionUpdate: {ex.Message}", "EventBus");
                             }
                         }
-                        catch (Exception ex)
+                    }
+                    else
+                    {
+                        // No position available, wait a bit
+                        if (!ct.WaitHandle.WaitOne(10)) // 10ms wait
                         {
-                            LogError($"Subscriber {subscriber.GetType().Name} error in OnPositionUpdate: {ex.Message}", "EventBus");
+                            // Token was not signaled, continue loop
                         }
                     }
                 }
@@ -297,23 +322,50 @@ namespace HavenCNCServer.Centroid.Events
         /// Worker thread for log and message events (normal priority)
         /// Interleaves reading from both channels
         /// </summary>
-        private async void MessageWorker(CancellationToken ct)
+        private void MessageWorker(CancellationToken ct)
         {
-            LogInfo("Message worker started", "EventBus");
+            var workerName = Thread.CurrentThread.Name;
+            Console.WriteLine($"[CNCEventBus] {workerName} started");
+            LogInfo($"{workerName} started", "EventBus");
 
             try
             {
-                // Use Task.WhenAny to interleave reading from both channels
-                var logTask = _logChannel.Reader.ReadAsync(ct);
-                var messageTask = _messageChannel.Reader.ReadAsync(ct);
-
+                // Process messages in a loop using blocking reads
                 while (!ct.IsCancellationRequested)
                 {
-                    var completed = await Task.WhenAny(logTask.AsTask(), messageTask.AsTask());
-
-                    if (completed == logTask.AsTask() && logTask.IsCompleted)
+                    // Try to read from message channel first (non-blocking check)
+                    if (_messageChannel.Reader.TryRead(out var message))
                     {
-                        var log = await logTask;
+                        if (_messageEventsPublished <= 25)
+                        {
+                            Console.WriteLine($"[CNCEventBus] {workerName} received MESSAGE: {message.GetType().Name}, Subscribers: {_subscribers.Count}");
+                        }
+
+                        foreach (var subscriber in _subscribers.Keys)
+                        {
+                            try
+                            {
+                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Messages))
+                                {
+                                    if (_messageEventsPublished <= 25)
+                                    {
+                                        Console.WriteLine($"[CNCEventBus] Calling OnCNCMessage on: {subscriber.GetType().Name}");
+                                    }
+                                    subscriber.OnCNCMessage(message);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[CNCEventBus] ERROR in subscriber {subscriber.GetType().Name}: {ex.Message}");
+                                LogError($"Subscriber {subscriber.GetType().Name} error in OnCNCMessage: {ex.Message}", "EventBus");
+                            }
+                        }
+                        continue; // Check for more messages immediately
+                    }
+
+                    // Try to read from log channel (non-blocking check)
+                    if (_logChannel.Reader.TryRead(out var log))
+                    {
                         foreach (var subscriber in _subscribers.Keys)
                         {
                             try
@@ -328,26 +380,13 @@ namespace HavenCNCServer.Centroid.Events
                                 LogError($"Subscriber {subscriber.GetType().Name} error in OnLogMessage: {ex.Message}", "EventBus");
                             }
                         }
-                        logTask = _logChannel.Reader.ReadAsync(ct);
+                        continue; // Check for more messages immediately
                     }
-                    else if (completed == messageTask.AsTask() && messageTask.IsCompleted)
+
+                    // No messages available in either channel, wait a bit
+                    if (!ct.WaitHandle.WaitOne(10)) // 10ms wait
                     {
-                        var message = await messageTask;
-                        foreach (var subscriber in _subscribers.Keys)
-                        {
-                            try
-                            {
-                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Messages))
-                                {
-                                    subscriber.OnCNCMessage(message);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogError($"Subscriber {subscriber.GetType().Name} error in OnCNCMessage: {ex.Message}", "EventBus");
-                            }
-                        }
-                        messageTask = _messageChannel.Reader.ReadAsync(ct);
+                        // Token was not signaled, continue loop
                     }
                 }
             }

@@ -117,15 +117,11 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                Services.LoggingService.LogInfo($"📋 ListData request - checking directory: {_dataDirectory}", "Config");
-
                 var files = Directory.GetFiles(_dataDirectory, "*.json")
                     .Select(f => Path.GetFileName(f))  // Get full filename with .json extension
                     .Where(name => !string.IsNullOrEmpty(name))
                     .OrderBy(name => name)
                     .ToArray();
-
-                Services.LoggingService.LogInfo($"📋 ListData returning {files.Length} files: [{string.Join(", ", files)}]", "Config");
 
                 return files;
             }

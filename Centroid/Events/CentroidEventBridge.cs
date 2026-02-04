@@ -696,6 +696,7 @@ namespace HavenCNCServer.Centroid.Events
                 // Log first 10 messages to confirm we're receiving
                 if (_messageCount < 10)
                 {
+                    Console.WriteLine($"[CentroidEventBridge] OnMessageReceived called (message #{_messageCount + 1})");
                     LogInfo($"OnMessageReceived called (message #{_messageCount + 1}), IsShuttingDown={_isShuttingDown}, IsConnected={CNCConnectionManager.IsConnected}", "JobInfo");
                 }
 
@@ -804,11 +805,12 @@ namespace HavenCNCServer.Centroid.Events
 
                 // Handle each communication type according to API documentation
                 bool shouldSkipRestOfLogging = false;
+                if (_messageCount <= 20) Console.WriteLine($"[CentroidEventBridge] Processing message type: {commType}");
                 switch (commType)
                 {
                     case "DRO_UPDATE":
-                        // Use DROEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
-                        var (shouldSkip, droEvent) = DROEvent.ProcessMessage(packet, LogToFile, null!, null!);
+                        // Use DROEvent's processing method
+                        var (shouldSkip, droEvent) = DROEvent.ProcessMessage(packet, LogToFile);
                         if (shouldSkip)
                         {
                             return false; // Skip all logging for unchanged DRO positions
@@ -834,13 +836,13 @@ namespace HavenCNCServer.Centroid.Events
                         break;
 
                     case "MESSAGE_WINDOW_MESSAGE":
-                        // Use MessageEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
-                        MessageEvent.ProcessMessage(packet, LogToFile, null!, null!);
+                        // Use MessageEvent's processing method
+                        MessageEvent.ProcessMessage(packet, LogToFile);
                         break;
 
                     case "JOB_INFO":
-                        // Use JobInfoEvent's processing method (notifyListeners and storeMessage removed - now using event bus)
-                        JobInfoEvent.ProcessMessage(packet, LogToFile, null!, null!);
+                        // Use JobInfoEvent's processing method
+                        JobInfoEvent.ProcessMessage(packet, LogToFile);
                         break;
 
                     default:
