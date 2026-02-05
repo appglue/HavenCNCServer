@@ -259,26 +259,38 @@ namespace HavenCNCServer.Centroid.Events
         /// <summary>
         /// Worker thread for position/DRO updates (high priority)
         /// </summary>
-        private async void PositionWorker(CancellationToken ct)
+        private void PositionWorker(CancellationToken ct)
         {
             LogInfo("Position worker started", "EventBus");
 
             try
             {
-                await foreach (var position in _positionChannel.Reader.ReadAllAsync(ct))
+                while (!ct.IsCancellationRequested)
                 {
-                    foreach (var subscriber in _subscribers.Keys)
+                    // Try to read position from channel (non-blocking)
+                    if (_positionChannel.Reader.TryRead(out var position))
                     {
-                        try
+                        foreach (var subscriber in _subscribers.Keys)
                         {
-                            if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Position))
+                            try
                             {
-                                subscriber.OnPositionUpdate(position);
+                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Position))
+                                {
+                                    subscriber.OnPositionUpdate(position);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogError($"Subscriber {subscriber.GetType().Name} error in OnPositionUpdate: {ex.Message}", "EventBus");
                             }
                         }
-                        catch (Exception ex)
+                    }
+                    else
+                    {
+                        // No position available, wait a bit
+                        if (!ct.WaitHandle.WaitOne(10)) // 10ms wait
                         {
-                            LogError($"Subscriber {subscriber.GetType().Name} error in OnPositionUpdate: {ex.Message}", "EventBus");
+                            // Token was not signaled, continue loop
                         }
                     }
                 }
@@ -297,42 +309,19 @@ namespace HavenCNCServer.Centroid.Events
         /// Worker thread for log and message events (normal priority)
         /// Interleaves reading from both channels
         /// </summary>
-        private async void MessageWorker(CancellationToken ct)
+        private void MessageWorker(CancellationToken ct)
         {
-            LogInfo("Message worker started", "EventBus");
+            var workerName = Thread.CurrentThread.Name;
+            LogInfo($"{workerName} started", "EventBus");
 
             try
             {
-                // Use Task.WhenAny to interleave reading from both channels
-                var logTask = _logChannel.Reader.ReadAsync(ct);
-                var messageTask = _messageChannel.Reader.ReadAsync(ct);
-
+                // Process messages in a loop using blocking reads
                 while (!ct.IsCancellationRequested)
                 {
-                    var completed = await Task.WhenAny(logTask.AsTask(), messageTask.AsTask());
-
-                    if (completed == logTask.AsTask() && logTask.IsCompleted)
+                    // Try to read from message channel first (non-blocking check)
+                    if (_messageChannel.Reader.TryRead(out var message))
                     {
-                        var log = await logTask;
-                        foreach (var subscriber in _subscribers.Keys)
-                        {
-                            try
-                            {
-                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Logs))
-                                {
-                                    subscriber.OnLogMessage(log);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                LogError($"Subscriber {subscriber.GetType().Name} error in OnLogMessage: {ex.Message}", "EventBus");
-                            }
-                        }
-                        logTask = _logChannel.Reader.ReadAsync(ct);
-                    }
-                    else if (completed == messageTask.AsTask() && messageTask.IsCompleted)
-                    {
-                        var message = await messageTask;
                         foreach (var subscriber in _subscribers.Keys)
                         {
                             try
@@ -347,7 +336,33 @@ namespace HavenCNCServer.Centroid.Events
                                 LogError($"Subscriber {subscriber.GetType().Name} error in OnCNCMessage: {ex.Message}", "EventBus");
                             }
                         }
-                        messageTask = _messageChannel.Reader.ReadAsync(ct);
+                        continue; // Check for more messages immediately
+                    }
+
+                    // Try to read from log channel (non-blocking check)
+                    if (_logChannel.Reader.TryRead(out var log))
+                    {
+                        foreach (var subscriber in _subscribers.Keys)
+                        {
+                            try
+                            {
+                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.Logs))
+                                {
+                                    subscriber.OnLogMessage(log);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogError($"Subscriber {subscriber.GetType().Name} error in OnLogMessage: {ex.Message}", "EventBus");
+                            }
+                        }
+                        continue; // Check for more messages immediately
+                    }
+
+                    // No messages available in either channel, wait a bit
+                    if (!ct.WaitHandle.WaitOne(10)) // 10ms wait
+                    {
+                        // Token was not signaled, continue loop
                     }
                 }
             }

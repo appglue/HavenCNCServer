@@ -83,7 +83,7 @@ namespace HavenCNCServer.Centroid.Events
         /// Process DRO_UPDATE message - Contains position data
         /// Returns tuple of (shouldSkip, droEvent) where shouldSkip indicates if positions haven't changed
         /// </summary>
-        public static (bool shouldSkip, DROEvent? droEvent) ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile, System.Action<ICentroidEvent, string> storeMessage, System.Action<ICentroidEvent> notifyListeners)
+        public static (bool shouldSkip, DROEvent? droEvent) ProcessMessage(CNCPipe.InboundComm.CommPacket packet, System.Action<string> logToFile)
         {
             // According to API docs: "Positions - New location of dro"
             var positions = GetPacketProperty<double[]?>(packet, "Positions", null);
@@ -185,14 +185,7 @@ namespace HavenCNCServer.Centroid.Events
                     Message = $"DRO positions updated: {string.Join(", ", positions.Select(p => p.ToString("F4")))}"
                 };
 
-                // Store the DRO event in message history
-                storeMessage(droEvent, "DRO_UPDATE");
-
-                // Throttling disabled - send every event immediately
-                // Note: EnableThrottling is set to false. If re-enabled, use ThrottledNotifyListeners instead.
-                notifyListeners(droEvent);
-
-                // PHASE 2: Publish to CNCEventBus (new channel-based architecture)
+                // Publish to CNCEventBus (channel-based event distribution)
                 CNCEventBus.Instance.PublishPosition(droEvent);
 
                 return (false, droEvent); // Don't skip logging - positions have changed

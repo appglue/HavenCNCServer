@@ -62,7 +62,9 @@ namespace HavenCNCServer.Services
                             var listener = new SignalREventListener(_hubContext);
 
                             LogInfo("Subscribing to CNCEventBus (new channel-based architecture)", "SignalR");
+                            Console.WriteLine("[SignalRManager] About to subscribe SignalREventListener to CNCEventBus");
                             CNCEventBus.Instance.Subscribe(listener);
+                            Console.WriteLine($"[SignalRManager] Subscribed! EventBus now has {CNCEventBus.Instance.GetSubscriberCount()} subscribers");
 
                             LogInfo("Subscribing to CNC connection status changes", "SignalR");
                             CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;

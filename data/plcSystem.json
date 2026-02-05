@@ -3,8 +3,8 @@
   "description": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 71,
-  "updateVersion": 0,
+  "minorVersion": 80,
+  "updateVersion": 1,
   "type": 1,
   "lastModified": "2025-12-15T17:00:11.831Z",
   "stages": [
@@ -101,7 +101,18 @@
       "number": 4
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "centroidName": "SPINFWD_O",
+      "name": "Spindle Forward",
+      "category": "Spindle",
+      "activeText": "Spindle Forward",
+      "inactiveText": "Spindle Stopped",
+      "number": 8,
+      "onCommand": "",
+      "offCommand": ""
+    }
+  ],
   "uiTriggers": [],
   "m94m95Triggers": []
 }

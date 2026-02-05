@@ -972,54 +972,6 @@
             },
             {
               "type": "ScriptStatement",
-              "comment": "set spindle to auto",
-              "enabled": true,
-              "pieces": [
-                {
-                  "id": "piece_1770219062262_72k0ug0xd",
-                  "type": "Text",
-                  "text": "if (1==1) then set "
-                },
-                {
-                  "id": "piece_1770219062262_6cy7pvlrq",
-                  "type": "DataElement",
-                  "dataElement": {
-                    "declarationName": "SpinAutoMode_SV",
-                    "allowNew": true,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "id": "piece_1770219062262_jscw62dlm",
-                  "type": "Text",
-                  "text": ""
-                }
-              ]
-            },
-            {
-              "type": "AssignmentStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "assignmentPredicate": {
-                "type": "AssignmentPredicate",
-                "comment": "",
-                "enabled": true,
-                "verb": "SET",
-                "sourceValue": "",
-                "targetElement": {
-                  "declarationName": "SelectManAutoSpindle",
-                  "allowNew": true,
-                  "needsWrite": true
-                },
-                "sourceElement": {
-                  "allowNew": false,
-                  "needsWrite": false
-                }
-              }
-            },
-            {
-              "type": "ScriptStatement",
               "comment": "set high range",
               "enabled": true,
               "pieces": [
@@ -1049,7 +1001,7 @@
                 {
                   "id": "piece_1770219151895_ens9a4xzm",
                   "type": "Text",
-                  "text": "if (1==1) then rst"
+                  "text": "if (1==1) then rst "
                 },
                 {
                   "id": "piece_1770219151895_8zvtce8ny",
@@ -1094,7 +1046,51 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 2,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "declarationName": "SpinAutoMode_SV",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 3,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": "",
+                "targetElement": {
+                  "declarationName": "SelectManAutoSpindle",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 4,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -1116,7 +1112,7 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 5,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -1138,7 +1134,7 @@
               "type": "AssignmentStatement",
               "comment": "",
               "enabled": true,
-              "ordinal": 0,
+              "ordinal": 6,
               "assignmentPredicate": {
                 "type": "AssignmentPredicate",
                 "comment": "",
@@ -2819,21 +2815,6 @@
                     "conditionType": "DataCondition",
                     "dataElement": {
                       "declarationName": "DoSpindleStop",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  },
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "HV_STOP_M",
                       "allowNew": false,
                       "needsWrite": false
                     }

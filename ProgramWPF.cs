@@ -103,6 +103,17 @@ namespace HavenCNCServer
                 LogSuccess($"Settings loaded from: {SettingsManager.GetSettingsFilePath()}", "Settings");
                 LogInfo($"Temp files directory: {SettingsManager.Settings.Files.TempFilesDirectory}", "Settings");
                 LogInfo($"CNC programs directory: {SettingsManager.GetCncProgramsDirectory()}", "Settings");
+
+                // Ensure CNC programs directory exists
+                var cncProgramsDir = SettingsManager.GetCncProgramsDirectory();
+                if (!Directory.Exists(cncProgramsDir))
+                {
+                    Directory.CreateDirectory(cncProgramsDir);
+                    LogSuccess($"Created CNC programs directory: {cncProgramsDir}", "Settings");
+                }
+
+                // Clean up old job files from previous sessions
+                CleanupOldJobFiles();
             }
             catch (Exception ex)
             {
@@ -206,6 +217,51 @@ namespace HavenCNCServer
             else
             {
                 LogWarning(message, "CNC");
+            }
+        }
+
+        /// <summary>
+        /// Clean up old job files from previous sessions on startup
+        /// </summary>
+        private static void CleanupOldJobFiles()
+        {
+            try
+            {
+                var cncProgramsDir = SettingsManager.GetCncProgramsDirectory();
+                if (!Directory.Exists(cncProgramsDir))
+                {
+                    LogInfo($"CNC programs directory does not exist yet: {cncProgramsDir}", "Cleanup");
+                    return;
+                }
+
+                // Find all job files (pattern: job_*.nc)
+                var jobFiles = Directory.GetFiles(cncProgramsDir, "job_*.nc");
+
+                if (jobFiles.Length == 0)
+                {
+                    LogInfo("No old job files to clean up", "Cleanup");
+                    return;
+                }
+
+                int deletedCount = 0;
+                foreach (var filePath in jobFiles)
+                {
+                    try
+                    {
+                        File.Delete(filePath);
+                        deletedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWarning($"Failed to delete old job file {Path.GetFileName(filePath)}: {ex.Message}", "Cleanup");
+                    }
+                }
+
+                LogSuccess($"Cleaned up {deletedCount} old job file(s) from {cncProgramsDir}", "Cleanup");
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Error during job file cleanup: {ex.Message}", "Cleanup");
             }
         }
 
