@@ -410,6 +410,9 @@ namespace HavenCNCServer.Services
 
                                     // Reset all outputs to clean state on startup
                                     await ResetAllOutputsAsync();
+
+                                    // Initialize machine homed state from Centroid
+                                    Controllers.CNCUIController.InitializeHomedState();
                                 }
                                 catch (Exception ex)
                                 {

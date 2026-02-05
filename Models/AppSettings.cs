@@ -34,6 +34,12 @@ namespace HavenCNCServer.Models
     public class FileSettings
     {
         /// <summary>
+        /// Absolute path to the data directory for all configuration files
+        /// Default: C:\havencncdata
+        /// </summary>
+        public string? DataDirectory { get; set; } = @"C:\havencncdata";
+
+        /// <summary>
         /// Directory for temporary G-code files
         /// Default: ./temp
         /// </summary>

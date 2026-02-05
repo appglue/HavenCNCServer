@@ -1996,7 +1996,7 @@
         "tags": [
           "CNCProgram"
         ],
-        "summary": "Stop all running jobs",
+        "summary": "Stop all running jobs (same as Stop since only one job can run)",
         "responses": {
           "200": {
             "description": "Success",
@@ -4847,12 +4847,113 @@
         }
       }
     },
+    "/api/CNCUI/Stop": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Trigger stop button (STOP_UI)",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/CancelCycle": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Trigger cycle cancel (CANCEL_CYCLE_UI) - cancels running program",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/SetMachineHomed": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Set machine homed state (MACHINE_HOMED_UI)",
+        "parameters": [
+          {
+            "name": "isHomed",
+            "in": "query",
+            "description": "True to set machine as homed, false to set as unhomed",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/MachineHomed": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Mark machine as homed (MACHINE_HOMED_UI)",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/MachineUnhomed": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Mark machine as unhomed (MACHINE_HOMED_UI)",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/Reset": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Trigger reset (RESET_UI) - clears errors and resets machine state",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCUI/EStop": {
+      "post": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Trigger emergency stop and reset (RESET_UI) - clears E-stop condition",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/CNCUI/TriggerReset": {
       "post": {
         "tags": [
           "CNCUI"
         ],
-        "summary": "Trigger reset (RESET_UI)",
+        "summary": "Trigger reset (RESET_UI) - Legacy endpoint, use /Reset instead",
         "responses": {
           "200": {
             "description": "Success"
@@ -5025,6 +5126,19 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/SyncLocalToMongo": {
+      "post": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Sync local files to MongoDB (upload newer local files)",
         "responses": {
           "200": {
             "description": "Success"

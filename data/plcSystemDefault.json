@@ -3,7 +3,7 @@
   "description": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2026-02-05T15:07:19.146Z",
+  "lastModified": "2026-02-05T19:38:33.466Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -441,6 +441,25 @@
                   "needsWrite": true
                 },
                 "stageName": "MESSAGE_S"
+              }
+            },
+            {
+              "type": "ToggleStageStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 4,
+              "predicate": {
+                "type": "ToggleStagePredicate",
+                "comment": "",
+                "enabled": true,
+                "action": "Turn On",
+                "stageElement": {
+                  "declarationName": "STATEMANAGEMENT_S",
+                  "allowNew": false,
+                  "requiresType": "Stage",
+                  "needsWrite": true
+                },
+                "stageName": "STATEMANAGEMENT_S"
               }
             }
           ],
@@ -1206,288 +1225,10 @@
       "ordinal": 3,
       "blocks": [
         {
-          "name": "Start Stop",
-          "comment": "",
-          "enabled": true,
-          "ordinal": 0,
-          "requiredInputs": [],
-          "requiredOutputs": [],
-          "requiredBoardTypes": [],
-          "actions": [
-            {
-              "type": "LogicStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "START_CYCLE_UI",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "predicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "DoCycleStart",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasElse": true,
-              "elsePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "DoCycleStart",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasNestedIf": false,
-              "nestedIfCondition": null,
-              "nestedIfThenPredicates": [],
-              "hasNestedIfElse": false,
-              "nestedIfElsePredicates": [],
-              "hasNestedElse": false,
-              "nestedElseCondition": null,
-              "nestedElseThenPredicates": [],
-              "hasNestedElseElse": false,
-              "nestedElseElsePredicates": [],
-              "hideSimpleActions": false,
-              "hideElseActions": false
-            },
-            {
-              "type": "LogicStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "RESET_UI",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "predicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "SV_RESET_PRESSED",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "HV_STOP_M",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasElse": true,
-              "elsePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "SV_RESET_PRESSED",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasNestedIf": false,
-              "nestedIfCondition": null,
-              "nestedIfThenPredicates": [],
-              "hasNestedIfElse": false,
-              "nestedIfElsePredicates": [],
-              "hasNestedElse": false,
-              "nestedElseCondition": null,
-              "nestedElseThenPredicates": [],
-              "hasNestedElseElse": false,
-              "nestedElseElsePredicates": [],
-              "hideSimpleActions": false,
-              "hideElseActions": false
-            },
-            {
-              "type": "LogicStatement",
-              "comment": "",
-              "enabled": true,
-              "ordinal": 0,
-              "conditionGroup": {
-                "comment": "",
-                "enabled": true,
-                "groupType": "AND",
-                "conditionType": "ConditionGroup",
-                "conditions": [
-                  {
-                    "comment": "",
-                    "enabled": true,
-                    "comparisonOperator": "==",
-                    "memoryBitState": "SET",
-                    "useConstant": true,
-                    "comparisonValue": "",
-                    "tolerance": 0.001,
-                    "conditionType": "DataCondition",
-                    "dataElement": {
-                      "declarationName": "CANCEL_CYCLE_UI",
-                      "allowNew": false,
-                      "needsWrite": false
-                    }
-                  }
-                ]
-              },
-              "predicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "DoCycleCancel",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                },
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "SET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "HV_STOP_M",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasElse": true,
-              "elsePredicates": [
-                {
-                  "type": "AssignmentPredicate",
-                  "comment": "",
-                  "enabled": true,
-                  "verb": "RESET",
-                  "sourceValue": 0,
-                  "targetElement": {
-                    "declarationName": "DoCycleCancel",
-                    "allowNew": true,
-                    "needsWrite": true
-                  },
-                  "sourceElement": {
-                    "allowNew": false,
-                    "needsWrite": false
-                  }
-                }
-              ],
-              "hasNestedIf": false,
-              "nestedIfCondition": null,
-              "nestedIfThenPredicates": [],
-              "hasNestedIfElse": false,
-              "nestedIfElsePredicates": [],
-              "hasNestedElse": false,
-              "nestedElseCondition": null,
-              "nestedElseThenPredicates": [],
-              "hasNestedElseElse": false,
-              "nestedElseElsePredicates": [],
-              "hideSimpleActions": false,
-              "hideElseActions": false
-            }
-          ],
-          "subBlocks": []
-        },
-        {
           "name": "Jogging",
           "comment": "",
           "enabled": true,
-          "ordinal": 2,
+          "ordinal": 0,
           "requiredInputs": [],
           "requiredOutputs": [],
           "requiredBoardTypes": [],
@@ -2483,7 +2224,7 @@
           "name": "Travel Limits",
           "comment": "",
           "enabled": true,
-          "ordinal": 3,
+          "ordinal": 2,
           "requiredInputs": [],
           "requiredOutputs": [],
           "requiredBoardTypes": [],
@@ -2606,7 +2347,7 @@
           "name": "Spindle",
           "comment": "need to handle\nSV_PC_COMMANDED_SPINDLE_SPEED (input)\nSV_PC_CONFIG_MIN_SPINDLE_SPEED (input)\nSV_PC_CONFIG_MAX_SPINDLE_SPEED (input)\nSV_PLC_SPINDLE_SPEED (output)\nSV_PLC_SPINDLE_KNOB (output for override)\nSV_STOP (input for emergency stop)\n\nhere is all of them \n\nWritten To (PLC - CNC Software):\nSV_PLC_SPINDLE_KNOB - Spindle speed override percentage (1-200%)\nSV_PLC_SPINDLE_SPEED - Current spindle speed reported to display\nSV_SPINDLE_LOW_RANGE - Flag indicating low gear range active\nSV_SPINDLE_MID_RANGE - Flag indicating mid gear range active\nRead From (CNC Software - PLC):\nSV_PC_COMMANDED_SPINDLE_SPEED - Commanded spindle speed (with override already applied)\nSV_PC_CONFIG_MIN_SPINDLE_SPEED - Minimum spindle speed from configuration\nSV_PC_CONFIG_MAX_SPINDLE_SPEED - Maximum spindle speed from configuration\nSV_PROGRAM_RUNNING - Flag indicating a program is running\nSV_MDI_MODE - Flag indicating MDI mode is active\nSV_FORCE_PROBE_DETECTION_ON - Force probe detection mode\nSV_MACHINE_PARAMETER_65 - Gear range 1 (low) speed adjustment ratio\nSV_MACHINE_PARAMETER_66 - Gear range 2 (med-low) speed adjustment ratio\nSV_MACHINE_PARAMETER_416 - Probe spindle inhibit mode setting\nSV_MACHINE_PARAMETER_420 - Spindle DAC mode/frequency setting (Acorn6)\nSV_MACHINE_PARAMETER_451 - External USB feed rate multiplier\nSV_MACHINE_PARAMETER_455 - Custom spindle override percentage\nSV_MACHINE_PARAMETER_459 - Second spindle enable setting\nSV_MACHINE_PARAMETER_814 - Aux DAC PWM frequency setting\nSV_MACHINE_PARAMETER_969 - PWM VM mode setting\nSV_MACHINE_PARAMETER_982 - Spindle speed variation cycle time\nSV_MACHINE_PARAMETER_983 - Spindle speed variation adjustment amount\nSV_PC_RIGID_TAP_SPINDLE_OFF - Rigid tapping spindle off flag\nSV_STOP - Emergency stop flag\nSV_LIMIT_TRIPPED - Limit switch tripped flag",
           "enabled": true,
-          "ordinal": 4,
+          "ordinal": 3,
           "requiredInputs": [],
           "requiredOutputs": [
             "SPINFWD_O"
@@ -4983,6 +4724,930 @@
           "subBlocks": []
         }
       ]
+    },
+    {
+      "name": "STATEMANAGEMENT_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "ordinal": 3,
+      "blocks": [
+        {
+          "name": "Start Stop",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 0,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "START_CYCLE_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "DoCycleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "DoCycleStart",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "RESET_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "SV_RESET_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "SV_RESET_PRESSED",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "CANCEL_CYCLE_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "DoCycleCancel",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_STOP_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "DoCycleCancel",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            }
+          ],
+          "subBlocks": []
+        },
+        {
+          "name": "System Default Block 2",
+          "comment": "",
+          "enabled": true,
+          "ordinal": 1,
+          "requiredInputs": [],
+          "requiredOutputs": [],
+          "requiredBoardTypes": [],
+          "actions": [
+            {
+              "type": "AssignmentStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 0,
+              "assignmentPredicate": {
+                "type": "AssignmentPredicate",
+                "comment": "",
+                "enabled": true,
+                "verb": "SET",
+                "sourceValue": 0,
+                "targetElement": {
+                  "declarationName": "SV_MASTER_ENABLE",
+                  "allowNew": true,
+                  "needsWrite": true
+                },
+                "sourceElement": {
+                  "allowNew": false,
+                  "needsWrite": false
+                }
+              }
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "homing",
+              "enabled": true,
+              "ordinal": 1,
+              "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "MACHINE_HOMED_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_HOMED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "fallingEdgePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_HOMED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "IsChangedStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 2,
+              "skipInitial": false,
+              "hideRisingEdgeActions": false,
+              "hideFallingEdgeActions": false,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_IS_HOMED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "risingEdgePredicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Machine Homed"
+                }
+              ],
+              "fallingEdgePredicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "!! Machine Needs Homing !!"
+                }
+              ]
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "reset",
+              "enabled": true,
+              "ordinal": 3,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "OR",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "RESET_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  },
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "ESTOPOK2_I",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  },
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "ESTOPOK_I",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "EStop Pressed"
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_RESET_NEEDED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_HOMED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "Stop",
+              "enabled": true,
+              "ordinal": 4,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "OR",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "STOP_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Stop Pressed"
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_RESET_NEEDED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "clear reset",
+              "enabled": true,
+              "ordinal": 5,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "RESET_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  },
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_RESET_NEEDED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "Reset System"
+                },
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_RESET_NEEDED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "cancel",
+              "enabled": true,
+              "ordinal": 6,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "CANCEL_CYCLE_UI",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_CANCELED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": false,
+              "elsePredicates": [],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            },
+            {
+              "type": "TimerStatement",
+              "comment": "",
+              "enabled": true,
+              "ordinal": 7,
+              "timerLengthMs": 1000,
+              "cancelEnabled": false,
+              "hideTimerStartActions": true,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "SET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_IS_CANCELED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "timerStartPredicates": [],
+              "timerCompletePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_CANCELED_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                },
+                {
+                  "type": "SendMessagePredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "level": "info",
+                  "mode": "async",
+                  "messageText": "cancel cleared"
+                }
+              ],
+              "cancelConditionGroup": null
+            },
+            {
+              "type": "LogicStatement",
+              "comment": "compute is ready",
+              "enabled": true,
+              "ordinal": 8,
+              "conditionGroup": {
+                "comment": "",
+                "enabled": true,
+                "groupType": "AND",
+                "conditionType": "ConditionGroup",
+                "conditions": [
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_RESET_NEEDED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  },
+                  {
+                    "comment": "",
+                    "enabled": true,
+                    "comparisonOperator": "==",
+                    "memoryBitState": "RESET",
+                    "useConstant": true,
+                    "comparisonValue": "",
+                    "tolerance": 0.001,
+                    "conditionType": "DataCondition",
+                    "dataElement": {
+                      "declarationName": "HV_IS_CANCELED_M",
+                      "allowNew": false,
+                      "needsWrite": false
+                    }
+                  }
+                ]
+              },
+              "predicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "SET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_READY_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasElse": true,
+              "elsePredicates": [
+                {
+                  "type": "AssignmentPredicate",
+                  "comment": "",
+                  "enabled": true,
+                  "verb": "RESET",
+                  "sourceValue": 0,
+                  "targetElement": {
+                    "declarationName": "HV_IS_READY_M",
+                    "allowNew": true,
+                    "needsWrite": true
+                  },
+                  "sourceElement": {
+                    "allowNew": false,
+                    "needsWrite": false
+                  }
+                }
+              ],
+              "hasNestedIf": false,
+              "nestedIfCondition": null,
+              "nestedIfThenPredicates": [],
+              "hasNestedIfElse": false,
+              "nestedIfElsePredicates": [],
+              "hasNestedElse": false,
+              "nestedElseCondition": null,
+              "nestedElseThenPredicates": [],
+              "hasNestedElseElse": false,
+              "nestedElseElsePredicates": [],
+              "hideSimpleActions": false,
+              "hideElseActions": false
+            }
+          ],
+          "subBlocks": []
+        }
+      ]
     }
   ],
   "inputs": [],
@@ -5176,6 +5841,15 @@
       "description": "",
       "pressedText": "Is Homed",
       "notPressedText": "Not Homed",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "STOP_UI",
+      "eventNumber": 47,
+      "description": "",
+      "pressedText": "Stopped",
+      "notPressedText": "Not Stopped",
       "addAction": 0,
       "keybindings": []
     }

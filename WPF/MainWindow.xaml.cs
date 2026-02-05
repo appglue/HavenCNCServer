@@ -43,24 +43,25 @@ public partial class MainWindow : Window
 
         _isShuttingDown = true;
 
-        LogInfo("MainWindow closing, initiating application shutdown...", "System");
+        LogInfo("MainWindow closing...", "System");
 
-        // Force application shutdown
+        // Allow window to close immediately - don't block UI thread
         base.OnClosing(e);
 
-        // Ensure the application shuts down
-        System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+        // Trigger cleanup asynchronously without blocking
+        System.Threading.Tasks.Task.Run(() =>
         {
             try
             {
-                System.Windows.Application.Current.Shutdown();
+                LogInfo("Starting async cleanup...", "System");
+                ProgramWPF.CleanupBeforeShutdown();
             }
             catch (Exception ex)
             {
-                LogError($"Error during Application.Shutdown: {ex.Message}", "System");
-                // Force exit if graceful shutdown fails
-                Environment.Exit(0);
+                LogError($"Error during async cleanup: {ex.Message}", "System");
             }
-        }));
+        });
+
+        // Let App.Shutdown happen naturally - App_Exit will handle the rest
     }
 }

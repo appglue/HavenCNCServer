@@ -3,10 +3,10 @@
   "description": "",
   "isSystem": true,
   "majorVersion": 1,
-  "minorVersion": 80,
-  "updateVersion": 13,
+  "minorVersion": 85,
+  "updateVersion": 1,
   "type": 1,
-  "lastModified": "2025-12-15T17:00:11.831Z",
+  "lastModified": "2026-02-05T19:48:42.862Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -60,6 +60,15 @@
       "enabled": true,
       "fast": false,
       "ordinal": 1,
+      "blocks": []
+    },
+    {
+      "name": "STATEMANAGEMENT_S",
+      "type": "Initial",
+      "description": "",
+      "enabled": true,
+      "fast": false,
+      "ordinal": 3,
       "blocks": []
     }
   ],

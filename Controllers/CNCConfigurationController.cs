@@ -25,7 +25,15 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         public CNCConfigurationController()
         {
-            _dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
+            // Use centralized data directory from settings
+            var dataDir = SettingsManager.Settings.Files.DataDirectory;
+            if (string.IsNullOrEmpty(dataDir))
+            {
+                // Fallback to old behavior if not set
+                dataDir = Path.Combine(Directory.GetCurrentDirectory(), "data");
+                Services.LoggingService.LogWarning("DataDirectory not set in settings.json, using fallback", "Config");
+            }
+            _dataDirectory = dataDir;
             _checkpointsDirectory = Path.Combine(_dataDirectory, "checkpoints");
 
             // Ensure directories exist
@@ -51,20 +59,28 @@ namespace HavenCNCServer.Controllers
                 Services.LoggingService.LogInfo($"📖 GetData request received: '{name}'", "Config");
                 Services.LoggingService.LogDebug($"Data directory: {_dataDirectory}", "Config");
 
-                var filePath = Path.Combine(_dataDirectory, name);
-                Services.LoggingService.LogDebug($"Looking for file at: {filePath}", "Config");
+                var dataPath = Path.Combine(_dataDirectory, name);
+                Services.LoggingService.LogDebug($"Looking for data file at: {dataPath}", "Config");
 
-                if (!System.IO.File.Exists(filePath))
+                if (!System.IO.File.Exists(dataPath))
                 {
-                    Services.LoggingService.LogWarning($"❌ Data '{name}' not found at: {filePath}", "Config");
-                    Services.LoggingService.LogDebug($"File.Exists returned false for: {filePath}", "Config");
+                    Services.LoggingService.LogWarning($"❌ Data '{name}' not found at: {dataPath}", "Config");
+                    Services.LoggingService.LogDebug($"File.Exists returned false for: {dataPath}", "Config");
                     return null; // Return null instead of throwing error
                 }
 
-                Services.LoggingService.LogDebug($"File exists, reading content from: {filePath}", "Config");
-                var content = System.IO.File.ReadAllText(filePath);
-                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} characters from {filePath}", "Config");
-                return content;
+                Services.LoggingService.LogDebug($"File exists, reading content from: {dataPath}", "Config");
+                var versioned = LoadVersionedFile(name);
+                if (versioned == null)
+                {
+                    // Fallback: read raw file if no version metadata
+                    var content = System.IO.File.ReadAllText(dataPath);
+                    Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} chars (no version metadata)", "Config");
+                    return content;
+                }
+
+                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned v{versioned.Metadata.Version} ({versioned.Data.Length} chars)", "Config");
+                return versioned.Data;
             }
             catch (Exception ex)
             {
@@ -92,17 +108,33 @@ namespace HavenCNCServer.Controllers
 
                 Services.LoggingService.LogInfo($"💾 SetData request: '{request.Name}' ({(request.Content?.Length ?? 0)} chars)", "Config");
 
-                var filePath = Path.Combine(_dataDirectory, request.Name);
+                var dataPath = Path.Combine(_dataDirectory, request.Name);
+                var versionPath = Path.Combine(_dataDirectory, $"{request.Name}.version.json");
+
+                // Load current version to increment it
+                var currentVersioned = LoadVersionedFile(request.Name);
+                var currentVersion = currentVersioned?.Metadata.Version ?? 0;
+
+                // Create new versioned file with incremented version
+                var newVersioned = VersionedConfigurationFile.Create(request.Name, request.Content ?? string.Empty, currentVersion);
 
                 // Create backup before saving
-                Services.BackupService.CreateBackup(filePath);
+                if (System.IO.File.Exists(dataPath))
+                {
+                    Services.BackupService.CreateBackup(dataPath);
+                }
 
-                System.IO.File.WriteAllText(filePath, request.Content ?? string.Empty);
+                // Save data file
+                System.IO.File.WriteAllText(dataPath, newVersioned.Data);
 
-                Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved to: {filePath}", "Config");
+                // Save version metadata file
+                var versionJson = System.Text.Json.JsonSerializer.Serialize(newVersioned.Metadata, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                System.IO.File.WriteAllText(versionPath, versionJson);
+
+                Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved v{newVersioned.Metadata.Version} to: {dataPath}", "Config");
 
                 // Sync to MongoDB if enabled
-                await SyncToMongoDbAsync(request.Name, request.Content ?? string.Empty);
+                await SyncToMongoDbAsync(request.Name, System.Text.Json.JsonSerializer.Serialize(newVersioned));
             }
             catch (Exception ex)
             {
@@ -856,6 +888,51 @@ namespace HavenCNCServer.Controllers
                 CentroidParameters.HIGH_GEAR_RATIO_PARM => "High gear ratio",
                 _ => "CNC parameter"
             };
+        }
+
+        /// <summary>
+        /// Load a versioned configuration file from disk (data + version metadata)
+        /// </summary>
+        private VersionedConfigurationFile? LoadVersionedFile(string fileName)
+        {
+            try
+            {
+                var dataPath = Path.Combine(_dataDirectory, fileName);
+                var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+
+                // Data file must exist
+                if (!System.IO.File.Exists(dataPath))
+                {
+                    return null;
+                }
+
+                var data = System.IO.File.ReadAllText(dataPath);
+
+                // If version file doesn't exist, return null (will trigger sync from MongoDB)
+                if (!System.IO.File.Exists(versionPath))
+                {
+                    return null;
+                }
+
+                var versionJson = System.IO.File.ReadAllText(versionPath);
+                var metadata = System.Text.Json.JsonSerializer.Deserialize<ConfigurationMetadata>(versionJson);
+
+                if (metadata == null)
+                {
+                    return null;
+                }
+
+                return new VersionedConfigurationFile
+                {
+                    Metadata = metadata,
+                    Data = data
+                };
+            }
+            catch (Exception ex)
+            {
+                Services.LoggingService.LogError($"Failed to load versioned file {fileName}: {ex.Message}", "Config");
+                return null;
+            }
         }
 
         #endregion

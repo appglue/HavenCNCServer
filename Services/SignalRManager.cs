@@ -399,9 +399,11 @@ namespace HavenCNCServer.Services
                         }
                     }
 
-                    // Get homed status
-                    bool isHomed = false;
-                    if (isConnected)
+                    // Get homed status from cached state (updated on startup and when changed via UI)
+                    bool? isHomed = Controllers.CNCUIController.GetCachedMachineHomedState();
+
+                    // If cached state is null (unknown), fall back to querying Centroid
+                    if (!isHomed.HasValue && isConnected)
                     {
                         try
                         {
@@ -410,8 +412,8 @@ namespace HavenCNCServer.Services
                             {
                                 // Check each axis home status using GetPcSystemVariableBit
                                 cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_1);
-                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_2);
-                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_3);
+                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_2, out var state_axis_2);
+                                cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_3, out var state_axis_3);
 
                                 if (state_axis_1 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
                                     state_axis_2 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
@@ -419,6 +421,10 @@ namespace HavenCNCServer.Services
                                 {
                                     cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_PC_HOME_SET, out var state_home);
                                     isHomed = (state_home == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                                }
+                                else
+                                {
+                                    isHomed = false;
                                 }
                             }
                         }

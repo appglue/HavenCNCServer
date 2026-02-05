@@ -40,7 +40,12 @@ namespace HavenCNCServer.Controllers
             var mongoSettings = SettingsManager.Settings.MongoDB;
             _mongoService = new MongoDbService(mongoSettings);
 
-            _dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
+            // Use absolute data directory from settings, or fall back to default
+            var dataDirectoryFromSettings = SettingsManager.Settings.Files?.DataDirectory;
+            _dataDirectory = !string.IsNullOrEmpty(dataDirectoryFromSettings)
+                ? dataDirectoryFromSettings
+                : Path.Combine(Directory.GetCurrentDirectory(), "data");
+
             _localSettingsPath = Path.Combine(_dataDirectory, "localMachineSettings.json");
             _archiveDirectory = Path.Combine(_dataDirectory, "machineArchives");
             _defaultPlcDirectory = Path.Combine(_dataDirectory, "defaultPlcVersions");
@@ -48,11 +53,87 @@ namespace HavenCNCServer.Controllers
             Directory.CreateDirectory(_dataDirectory);
             Directory.CreateDirectory(_archiveDirectory);
             Directory.CreateDirectory(_defaultPlcDirectory);
+        }
 
-            LogInfo("MachineConfigurationController initialized", "MachineConfig");
+        /// <summary>
+        /// Perform one-time startup initialization - migration and sync
+        /// Called once at application startup, NOT on every API request
+        /// </summary>
+        public static async Task InitializeAtStartupAsync()
+        {
+            try
+            {
+                LogInfo("🔄 MachineConfigurationController startup initialization...", "MachineConfig");
 
-            // Perform initial sync check on startup
-            _ = Task.Run(async () => await CheckAndPerformInitialSync());
+                var controller = new MachineConfigurationController();
+                await controller.MigrateToVersionedFormat();
+                await controller.CheckAndPerformInitialSync();
+
+                LogSuccess("✓ MachineConfigurationController startup complete", "MachineConfig");
+            }
+            catch (Exception ex)
+            {
+                LogError($"MachineConfigurationController startup failed: {ex.Message}", "MachineConfig");
+                LogError($"Stack: {ex.StackTrace}", "MachineConfig");
+            }
+        }
+
+        /// <summary>
+        /// Migrate existing configuration files to versioned format
+        /// </summary>
+        private async Task MigrateToVersionedFormat()
+        {
+            try
+            {
+                LogInfo("Checking for files to migrate to dual-file versioned format...", "MachineConfig");
+
+                foreach (var fileName in ConfigFiles)
+                {
+                    var oldVersionedPath = Path.Combine(_dataDirectory, $"{fileName}.versioned");
+                    var dataPath = Path.Combine(_dataDirectory, fileName);
+                    var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+
+                    // Migrate old .versioned files to new dual-file format
+                    if (System.IO.File.Exists(oldVersionedPath) && !System.IO.File.Exists(versionPath))
+                    {
+                        try
+                        {
+                            var json = System.IO.File.ReadAllText(oldVersionedPath);
+                            var versioned = JsonSerializer.Deserialize<VersionedConfigurationFile>(json);
+
+                            if (versioned != null)
+                            {
+                                // Write to new format (data file + version file)
+                                System.IO.File.WriteAllText(dataPath, versioned.Data);
+                                var versionJson = JsonSerializer.Serialize(versioned.Metadata, new JsonSerializerOptions { WriteIndented = true });
+                                System.IO.File.WriteAllText(versionPath, versionJson);
+
+                                LogInfo($"  ✓ Migrated {fileName} from .versioned to dual-file format (v{versioned.Metadata.Version})", "MachineConfig");
+
+                                // Delete old .versioned file
+                                System.IO.File.Delete(oldVersionedPath);
+
+                                // Clean up old backup if exists
+                                var oldBackupPath = Path.Combine(_dataDirectory, $"{fileName}.pre-versioned");
+                                if (System.IO.File.Exists(oldBackupPath))
+                                {
+                                    System.IO.File.Delete(oldBackupPath);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError($"  ✗ Failed to migrate {fileName}: {ex.Message}", "MachineConfig");
+                        }
+                    }
+                }
+
+                LogInfo("Migration to dual-file versioned format complete", "MachineConfig");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Migration process failed: {ex.Message}", "MachineConfig");
+            }
         }
 
         /// <summary>
@@ -91,55 +172,122 @@ namespace HavenCNCServer.Controllers
 
                 LogInfo($"🔍 Checking if initial sync needed for machine '{machineName}'...", "MachineConfig");
 
-                // Check if any configuration files exist in MongoDB for this machine
-                var hasMongoFiles = false;
+                // Check and sync all configuration files based on version numbers
+                int syncedCount = 0;
+                int skippedCount = 0;
+
                 foreach (var fileName in ConfigFiles)
                 {
-                    var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
-                    if (mongoDoc != null)
+                    try
                     {
-                        hasMongoFiles = true;
-                        break;
+                        var localVersioned = LoadVersionedFile(fileName);
+                        var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+
+                        VersionedConfigurationFile? mongoVersioned = null;
+                        if (mongoDoc != null)
+                        {
+                            try
+                            {
+                                mongoVersioned = JsonSerializer.Deserialize<VersionedConfigurationFile>(mongoDoc.JsonData);
+                            }
+                            catch
+                            {
+                                // MongoDB has old format - skip for now, will convert on save
+                                LogInfo($"  {fileName}: MongoDB has old format, skipping", "MachineConfig");
+                                skippedCount++;
+                                continue;
+                            }
+                        }
+
+                        // Log version comparison
+                        var localVer = localVersioned?.Metadata?.Version ?? 0;
+                        var mongoVer = mongoVersioned?.Metadata?.Version ?? 0;
+                        LogInfo($"  📊 {fileName}: Local v{localVer} vs MongoDB v{mongoVer}", "MachineConfig");
+
+                        // Both exist - compare versions
+                        if (localVersioned != null && mongoVersioned != null)
+                        {
+                            if (mongoVersioned.Metadata.Version > localVersioned.Metadata.Version)
+                            {
+                                // MongoDB is newer - download
+                                SaveVersionedFile(mongoVersioned);
+                                LogInfo($"  ✓ {fileName}: Synced v{mongoVersioned.Metadata.Version} from MongoDB (local was v{localVersioned.Metadata.Version})", "MachineConfig");
+                                syncedCount++;
+                            }
+                            else if (localVersioned.Metadata.Version > mongoVersioned.Metadata.Version)
+                            {
+                                // Local is newer - upload
+                                var versionedJson = JsonSerializer.Serialize(localVersioned);
+                                await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
+                                LogInfo($"  ✓ {fileName}: Synced v{localVersioned.Metadata.Version} to MongoDB (MongoDB was v{mongoVersioned.Metadata.Version})", "MachineConfig");
+                                syncedCount++;
+                            }
+                            else
+                            {
+                                // Same version
+                                skippedCount++;
+                            }
+                        }
+                        else if (mongoVersioned != null && localVersioned == null)
+                        {
+                            // Only in MongoDB - download
+                            SaveVersionedFile(mongoVersioned);
+                            LogInfo($"  ✓ {fileName}: Downloaded v{mongoVersioned.Metadata.Version} from MongoDB", "MachineConfig");
+                            syncedCount++;
+                        }
+                        else if (localVersioned != null && mongoVersioned == null)
+                        {
+                            // Only local - upload
+                            var versionedJson = JsonSerializer.Serialize(localVersioned);
+                            await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
+                            LogInfo($"  ✓ {fileName}: Uploaded v{localVersioned.Metadata.Version} to MongoDB", "MachineConfig");
+                            syncedCount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"  ✗ {fileName}: Sync error - {ex.Message}", "MachineConfig");
                     }
                 }
 
-                if (!hasMongoFiles)
+                if (syncedCount > 0)
                 {
-                    // No files in MongoDB, check if we have local files to upload
-                    var hasLocalFiles = false;
-                    foreach (var fileName in ConfigFiles)
-                    {
-                        var localFilePath = Path.Combine(_dataDirectory, fileName);
-                        if (System.IO.File.Exists(localFilePath))
-                        {
-                            hasLocalFiles = true;
-                            break;
-                        }
-                    }
-
-                    if (hasLocalFiles)
-                    {
-                        LogInfo($"📤 No MongoDB files found but local files exist. Performing initial sync...", "MachineConfig");
-                        await SaveAllLocalFilesToMongoAsync(machineName);
-
-                        localSettings.LastSyncTime = DateTime.UtcNow;
-                        SaveLocalSettings(localSettings);
-
-                        LogSuccess($"✓ Initial sync completed for machine '{machineName}'", "MachineConfig");
-                    }
-                    else
-                    {
-                        LogInfo("No local files found to sync", "MachineConfig");
-                    }
+                    localSettings.LastSyncTime = DateTime.UtcNow;
+                    SaveLocalSettings(localSettings);
+                    LogSuccess($"✓ Startup sync completed: {syncedCount} synced, {skippedCount} unchanged", "MachineConfig");
                 }
                 else
                 {
-                    LogInfo("MongoDB files already exist, no initial sync needed", "MachineConfig");
+                    LogInfo($"All files in sync ({ConfigFiles.Length} files)", "MachineConfig");
                 }
             }
             catch (Exception ex)
             {
-                LogError($"Error during initial sync check: {ex.Message}", "MachineConfig");
+                LogError($"Initial sync check failed: {ex.Message}", "MachineConfig");
+            }
+        }
+
+        /// <summary>
+        /// Save all local configuration files to MongoDB (legacy - for initial upload only)
+        /// </summary>
+        private async Task SaveAllLocalFilesToMongoAsync(string machineName)
+        {
+            foreach (var fileName in ConfigFiles)
+            {
+                try
+                {
+                    var localVersioned = LoadVersionedFile(fileName);
+                    if (localVersioned != null)
+                    {
+                        var versionedJson = JsonSerializer.Serialize(localVersioned);
+                        await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
+                        LogInfo($"  ✓ Uploaded {fileName} v{localVersioned.Metadata.Version}", "MachineConfig");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"  ✗ Failed to upload {fileName}: {ex.Message}", "MachineConfig");
+                }
             }
         }
 
@@ -510,10 +658,11 @@ namespace HavenCNCServer.Controllers
         #region Configuration File Operations
 
         /// <summary>
-        /// Get configuration file (checks local vs MongoDB timestamp and returns latest)
+        /// Get configuration file (checks local vs MongoDB version and returns latest)
+        /// Uses versioned format with incrementing version numbers
         /// </summary>
         /// <param name="fileName">Configuration file name</param>
-        /// <returns>Configuration file content</returns>
+        /// <returns>Configuration file content (data only, not wrapper)</returns>
         [HttpGet("GetConfiguration/{fileName}")]
         [ProducesResponseType(typeof(string), 200)]
         public async Task<ActionResult<string>> GetConfiguration(string fileName)
@@ -530,24 +679,16 @@ namespace HavenCNCServer.Controllers
                 var localSettings = LoadLocalSettings();
                 var machineName = localSettings.CurrentMachineName;
 
-                // Get local file timestamp and content
-                var localFilePath = Path.Combine(_dataDirectory, fileName);
-                DateTime? localTimestamp = null;
-                string? localContent = null;
-
-                if (System.IO.File.Exists(localFilePath))
-                {
-                    localTimestamp = System.IO.File.GetLastWriteTimeUtc(localFilePath);
-                    localContent = System.IO.File.ReadAllText(localFilePath);
-                }
+                // Load local versioned file
+                var localVersioned = LoadVersionedFile(fileName);
 
                 // If machine name is not set, only return local file (no MongoDB sync)
                 if (string.IsNullOrEmpty(machineName))
                 {
-                    if (localContent != null)
+                    if (localVersioned != null)
                     {
-                        LogInfo($"Machine name not set - returning local file only: {fileName}", "MachineConfig");
-                        return Ok(localContent);
+                        LogInfo($"Machine name not set - returning local file only: {fileName} v{localVersioned.Metadata.Version}", "MachineConfig");
+                        return Ok(localVersioned.Data);
                     }
                     else
                     {
@@ -556,59 +697,75 @@ namespace HavenCNCServer.Controllers
                     }
                 }
 
-                // Check MongoDB status (only if machine name is set)
-                MachineConfigurationDocument? mongoDoc = null;
+                // Get versioned data from MongoDB
+                VersionedConfigurationFile? mongoVersioned = null;
                 if (_mongoService.IsConnected)
                 {
-                    mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+                    var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+                    if (mongoDoc != null)
+                    {
+                        try
+                        {
+                            // Try to deserialize as versioned format
+                            mongoVersioned = JsonSerializer.Deserialize<VersionedConfigurationFile>(mongoDoc.JsonData);
+                        }
+                        catch
+                        {
+                            // MongoDB has old format - convert it
+                            LogInfo($"MongoDB has old format for {fileName}, converting...", "MachineConfig");
+                            mongoVersioned = VersionedConfigurationFile.Create(fileName, mongoDoc.JsonData, 0);
+                        }
+                    }
                 }
                 else
                 {
                     LogInfo("MongoDB offline - using local file only", "MachineConfig");
                 }
 
-                // Compare timestamps and return latest
-                if (mongoDoc != null && localTimestamp != null)
+                // Compare versions and sync
+                if (mongoVersioned != null && localVersioned != null)
                 {
-                    if (mongoDoc.Timestamp > localTimestamp)
+                    LogInfo($"Comparing versions: Local v{localVersioned.Metadata.Version} vs MongoDB v{mongoVersioned.Metadata.Version}", "MachineConfig");
+
+                    if (mongoVersioned.Metadata.Version > localVersioned.Metadata.Version)
                     {
-                        // MongoDB is newer - update local file and return MongoDB content
-                        System.IO.File.WriteAllText(localFilePath, mongoDoc.JsonData);
-                        LogInfo($"MongoDB version is newer, updated local file: {fileName}", "MachineConfig");
-                        return Ok(mongoDoc.JsonData);
+                        // MongoDB is newer - update local
+                        SaveVersionedFile(mongoVersioned);
+                        LogInfo($"✓ MongoDB version {mongoVersioned.Metadata.Version} > local {localVersioned.Metadata.Version}, updated local: {fileName}", "MachineConfig");
+                        return Ok(mongoVersioned.Data);
                     }
-                    else if (localTimestamp > mongoDoc.Timestamp)
+                    else if (localVersioned.Metadata.Version > mongoVersioned.Metadata.Version)
                     {
-                        // Local is newer - update MongoDB and return local content
-                        await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, localContent!);
-                        LogInfo($"Local version is newer, updated MongoDB: {fileName}", "MachineConfig");
-                        return Ok(localContent);
+                        // Local is newer - update MongoDB
+                        var versionedJson = JsonSerializer.Serialize(localVersioned);
+                        await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
+                        LogInfo($"✓ Local version {localVersioned.Metadata.Version} > MongoDB {mongoVersioned.Metadata.Version}, updated MongoDB: {fileName}", "MachineConfig");
+                        return Ok(localVersioned.Data);
                     }
                     else
                     {
-                        // Same timestamp - return local
-                        return Ok(localContent);
+                        // Same version
+                        LogInfo($"Versions match (v{localVersioned.Metadata.Version}): {fileName}", "MachineConfig");
+                        return Ok(localVersioned.Data);
                     }
                 }
-                else if (mongoDoc != null)
+                else if (mongoVersioned != null)
                 {
-                    // Only MongoDB has it - save locally and return
-                    System.IO.File.WriteAllText(localFilePath, mongoDoc.JsonData);
-                    LogInfo($"Loaded from MongoDB only: {fileName}", "MachineConfig");
-                    return Ok(mongoDoc.JsonData);
+                    // Only MongoDB has it - save locally
+                    SaveVersionedFile(mongoVersioned);
+                    LogInfo($"Loaded from MongoDB only: {fileName} v{mongoVersioned.Metadata.Version}", "MachineConfig");
+                    return Ok(mongoVersioned.Data);
                 }
-                else if (localContent != null)
+                else if (localVersioned != null)
                 {
-                    // Only local has it - try to save to MongoDB if online
+                    // Only local has it - upload to MongoDB
                     if (_mongoService.IsConnected)
                     {
-                        var syncSuccess = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, localContent);
-                        if (syncSuccess)
-                        {
-                            LogInfo($"Synced local file to MongoDB: {fileName}", "MachineConfig");
-                        }
+                        var versionedJson = JsonSerializer.Serialize(localVersioned);
+                        await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
+                        LogInfo($"Uploaded to MongoDB: {fileName} v{localVersioned.Metadata.Version}", "MachineConfig");
                     }
-                    return Ok(localContent);
+                    return Ok(localVersioned.Data);
                 }
                 else
                 {
@@ -651,25 +808,29 @@ namespace HavenCNCServer.Controllers
                 var localSettings = LoadLocalSettings();
                 var machineName = localSettings.CurrentMachineName;
 
-                // Save to local file
-                var localFilePath = Path.Combine(_dataDirectory, fileName);
+                // Load current version to get the version number
+                var currentVersioned = LoadVersionedFile(fileName);
+                var currentVersion = currentVersioned?.Metadata.Version ?? 0;
 
-                // Create backup before saving
-                BackupService.CreateBackup(localFilePath);
+                // Create new versioned file with incremented version
+                var newVersioned = VersionedConfigurationFile.Create(fileName, content, currentVersion);
 
-                System.IO.File.WriteAllText(localFilePath, content);
-                LogInfo($"Saved locally: {fileName}", "MachineConfig");
+                // Save versioned file locally
+                SaveVersionedFile(newVersioned);
+                LogInfo($"Saved locally: {fileName} v{newVersioned.Metadata.Version}", "MachineConfig");
 
                 // Save to MongoDB only if machine name is set
                 var mongoSuccess = false;
                 if (!string.IsNullOrEmpty(machineName))
                 {
-                    mongoSuccess = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
+                    var versionedJson = JsonSerializer.Serialize(newVersioned);
+                    mongoSuccess = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, versionedJson);
 
                     if (mongoSuccess)
                     {
                         localSettings.LastSyncTime = DateTime.UtcNow;
                         SaveLocalSettings(localSettings);
+                        LogInfo($"Synced to MongoDB: {fileName} v{newVersioned.Metadata.Version}", "MachineConfig");
                     }
                 }
                 else
@@ -706,8 +867,13 @@ namespace HavenCNCServer.Controllers
                     }
                 }
 
-                LogSuccess($"✓ Saved configuration: {fileName}", "MachineConfig");
-                return Ok(new { message = "Configuration saved successfully", syncedToMongoDB = mongoSuccess });
+                LogSuccess($"✓ Saved configuration: {fileName} v{newVersioned.Metadata.Version}", "MachineConfig");
+                return Ok(new
+                {
+                    message = "Configuration saved successfully",
+                    version = newVersioned.Metadata.Version,
+                    syncedToMongoDB = mongoSuccess
+                });
             }
             catch (Exception ex)
             {
@@ -938,64 +1104,6 @@ namespace HavenCNCServer.Controllers
         #region Private Helper Methods
 
         /// <summary>
-        /// Save all local configuration files to MongoDB for a specific machine
-        /// </summary>
-        private async Task SaveAllLocalFilesToMongoAsync(string machineName)
-        {
-            LogInfo($"Uploading all local config files to MongoDB for machine '{machineName}'...", "MachineConfig");
-            var successCount = 0;
-            var failCount = 0;
-
-            foreach (var fileName in ConfigFiles)
-            {
-                var filePath = Path.Combine(_dataDirectory, fileName);
-                if (System.IO.File.Exists(filePath))
-                {
-                    try
-                    {
-                        var content = System.IO.File.ReadAllText(filePath);
-                        var success = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
-
-                        if (success)
-                        {
-                            successCount++;
-                            LogInfo($"  ✓ Uploaded {fileName}", "MachineConfig");
-                        }
-                        else
-                        {
-                            failCount++;
-                            LogWarning($"  ✗ Failed to upload {fileName} (MongoDB offline or error)", "MachineConfig");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        failCount++;
-                        LogError($"  ✗ Error uploading {fileName}: {ex.Message}", "MachineConfig");
-                    }
-                }
-                else
-                {
-                    LogInfo($"  ⊘ Skipped {fileName} (not found locally)", "MachineConfig");
-                }
-            }
-
-            if (successCount > 0)
-            {
-                LogSuccess($"✓ Uploaded {successCount} files to MongoDB for '{machineName}'", "MachineConfig");
-            }
-
-            if (failCount > 0)
-            {
-                LogWarning($"⚠ {failCount} files failed to upload to MongoDB", "MachineConfig");
-            }
-
-            if (successCount == 0 && failCount == 0)
-            {
-                LogWarning("No files were uploaded to MongoDB", "MachineConfig");
-            }
-        }
-
-        /// <summary>
         /// Load all configuration files from MongoDB for a specific machine
         /// </summary>
         /// <returns>True if any files were loaded from MongoDB, false otherwise</returns>
@@ -1075,6 +1183,136 @@ namespace HavenCNCServer.Controllers
             {
                 LogError($"Failed to save default PLC locally: {ex.Message}", "MachineConfig");
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Load a versioned configuration file from disk (data + version metadata)
+        /// </summary>
+        private VersionedConfigurationFile? LoadVersionedFile(string fileName)
+        {
+            try
+            {
+                var dataPath = Path.Combine(_dataDirectory, fileName);
+                var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+
+                // Data file must exist
+                if (!System.IO.File.Exists(dataPath))
+                {
+                    return null;
+                }
+
+                var data = System.IO.File.ReadAllText(dataPath);
+
+                // If version file doesn't exist, assume MongoDB is primary - return null to trigger sync
+                if (!System.IO.File.Exists(versionPath))
+                {
+                    LogInfo($"{fileName}: No version metadata found, will sync from MongoDB", "MachineConfig");
+                    return null;
+                }
+
+                var versionJson = System.IO.File.ReadAllText(versionPath);
+                var metadata = JsonSerializer.Deserialize<ConfigurationMetadata>(versionJson);
+
+                if (metadata == null)
+                {
+                    LogWarning($"Failed to deserialize version metadata for {fileName}", "MachineConfig");
+                    return null;
+                }
+
+                var versioned = new VersionedConfigurationFile
+                {
+                    Metadata = metadata,
+                    Data = data
+                };
+
+                if (!versioned.VerifyHash())
+                {
+                    LogWarning($"Hash mismatch for {fileName} - file may be corrupted", "MachineConfig");
+                }
+
+                return versioned;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to load versioned file {fileName}: {ex.Message}", "MachineConfig");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Save a versioned configuration file to disk (data + version metadata as separate files)
+        /// </summary>
+        private bool SaveVersionedFile(VersionedConfigurationFile versioned)
+        {
+            try
+            {
+                var dataPath = Path.Combine(_dataDirectory, versioned.Metadata.FileName);
+                var versionPath = Path.Combine(_dataDirectory, $"{versioned.Metadata.FileName}.version.json");
+
+                // Write the actual data file
+                System.IO.File.WriteAllText(dataPath, versioned.Data);
+
+                // Write the version metadata file
+                var versionJson = JsonSerializer.Serialize(versioned.Metadata, new JsonSerializerOptions { WriteIndented = true });
+                System.IO.File.WriteAllText(versionPath, versionJson);
+
+                LogInfo($"Saved {versioned.Metadata.FileName} version {versioned.Metadata.Version}", "MachineConfig");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save versioned file {versioned.Metadata.FileName}: {ex.Message}", "MachineConfig");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Compare version numbers from two JSON strings
+        /// Returns (localVersion, mongoVersion) as decimal values or null if not parseable
+        /// </summary>
+        private (decimal? localVersion, decimal? mongoVersion) CompareVersionNumbers(string? localJson, string? mongoJson, string fileName)
+        {
+            try
+            {
+                decimal? localVer = null;
+                decimal? mongoVer = null;
+
+                if (!string.IsNullOrEmpty(localJson))
+                {
+                    var localDoc = JsonDocument.Parse(localJson);
+                    if (localDoc.RootElement.TryGetProperty("majorVersion", out var localMajor) &&
+                        localDoc.RootElement.TryGetProperty("minorVersion", out var localMinor))
+                    {
+                        // Try to parse as numbers
+                        if (decimal.TryParse(localMajor.GetString(), out var maj) &&
+                            decimal.TryParse(localMinor.GetString(), out var min))
+                        {
+                            localVer = maj + (min / 100m); // e.g., 1.84 = 1 + 84/100
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(mongoJson))
+                {
+                    var mongoDoc = JsonDocument.Parse(mongoJson);
+                    if (mongoDoc.RootElement.TryGetProperty("majorVersion", out var mongoMajor) &&
+                        mongoDoc.RootElement.TryGetProperty("minorVersion", out var mongoMinor))
+                    {
+                        if (decimal.TryParse(mongoMajor.GetString(), out var maj) &&
+                            decimal.TryParse(mongoMinor.GetString(), out var min))
+                        {
+                            mongoVer = maj + (min / 100m);
+                        }
+                    }
+                }
+
+                return (localVer, mongoVer);
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Failed to parse version numbers for {fileName}: {ex.Message}", "MachineConfig");
+                return (null, null);
             }
         }
 

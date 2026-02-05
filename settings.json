@@ -1,5 +1,6 @@
 {
   "files": {
+    "dataDirectory": "C:\\havencncdata",
     "tempFilesDirectory": "./temp",
     "cncProgramsDirectory": "C:\\cncr\\temp",
     "defaultGCodeExtension": ".nc",

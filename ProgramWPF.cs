@@ -143,15 +143,8 @@ namespace HavenCNCServer
                 LogWarning($"Script deployment failed: {ex.Message}", "Scripts");
             }
 
-            try
-            {
-                // Initialize MongoDB and trigger initial sync
-                InitializeMongoDB();
-            }
-            catch (Exception ex)
-            {
-                LogError($"MongoDB initialization failed: {ex.Message}", "MongoDB");
-            }
+            // MongoDB sync now handled automatically by MachineConfigurationController.CheckAndPerformInitialSync()
+            // Runs 2 seconds after controller initialization with version-based comparison
 
             try
             {
@@ -276,143 +269,6 @@ namespace HavenCNCServer
             }
         }
 
-        /// <summary>
-        /// Initialize MongoDB and perform initial sync if needed
-        /// </summary>
-        private static void InitializeMongoDB()
-        {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    // Wait a bit for API to be ready
-                    await Task.Delay(3000);
-
-                    LogInfo("🔄 Initializing MongoDB sync...", "MongoDB");
-
-                    var mongoSettings = SettingsManager.Settings.MongoDB;
-                    if (!mongoSettings.Enabled)
-                    {
-                        LogInfo("MongoDB is disabled in settings", "MongoDB");
-                        return;
-                    }
-
-                    var mongoService = new Services.MongoDbService(mongoSettings);
-
-                    if (!mongoService.IsConnected)
-                    {
-                        LogWarning("MongoDB is offline, skipping initial sync", "MongoDB");
-                        return;
-                    }
-
-                    LogSuccess("MongoDB connected successfully", "MongoDB");
-
-                    // Load local machine settings
-                    var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
-                    var localSettingsPath = Path.Combine(dataDirectory, "localMachineSettings.json");
-
-                    if (!System.IO.File.Exists(localSettingsPath))
-                    {
-                        LogInfo("No local machine settings found, skipping sync", "MongoDB");
-                        return;
-                    }
-
-                    var localSettingsJson = System.IO.File.ReadAllText(localSettingsPath);
-                    var localSettings = System.Text.Json.JsonSerializer.Deserialize<Models.LocalMachineSettings>(localSettingsJson);
-
-                    if (localSettings == null || string.IsNullOrEmpty(localSettings.CurrentMachineName))
-                    {
-                        LogInfo("Machine name not set, skipping initial sync", "MongoDB");
-                        return;
-                    }
-
-                    var machineName = localSettings.CurrentMachineName;
-                    LogInfo($"Checking sync status for machine: {machineName}", "MongoDB");
-
-                    // Check if any files exist in MongoDB
-                    var configFiles = new[]
-                    {
-                        "plcSystem.json",
-                        "plcSystemDefault.json",
-                        "configuration.json",
-                        "machine.json",
-                        "machineState.json",
-                        "fixtures.json",
-                        "userActionData.json"
-                    };
-
-                    LogInfo($"📤 Checking for missing files in MongoDB...", "MongoDB");
-
-                    var uploadCount = 0;
-                    var skipCount = 0;
-
-                    foreach (var fileName in configFiles)
-                    {
-                        var localFilePath = Path.Combine(dataDirectory, fileName);
-
-                        // Skip if local file doesn't exist
-                        if (!System.IO.File.Exists(localFilePath))
-                        {
-                            continue;
-                        }
-
-                        try
-                        {
-                            // Check if file exists in MongoDB
-                            var mongoDoc = await mongoService.GetMachineConfigurationAsync(machineName, fileName);
-
-                            if (mongoDoc == null)
-                            {
-                                // File missing from MongoDB, upload it
-                                LogInfo($"  📤 {fileName} - missing from MongoDB, uploading...", "MongoDB");
-                                var content = System.IO.File.ReadAllText(localFilePath);
-                                var success = await mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
-                                if (success)
-                                {
-                                    uploadCount++;
-                                }
-                                else
-                                {
-                                    LogWarning($"    ✗ Failed to upload {fileName}", "MongoDB");
-                                }
-                            }
-                            else
-                            {
-                                skipCount++;
-                                LogInfo($"  ✓ {fileName} - already exists in MongoDB", "MongoDB");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogError($"  ✗ Error checking/uploading {fileName}: {ex.Message}", "MongoDB");
-                        }
-                    }
-
-                    if (uploadCount > 0)
-                    {
-                        localSettings.LastSyncTime = DateTime.UtcNow;
-                        var updatedJson = System.Text.Json.JsonSerializer.Serialize(localSettings,
-                            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                        System.IO.File.WriteAllText(localSettingsPath, updatedJson);
-
-                        LogSuccess($"✓ Initial sync completed: {uploadCount} uploaded, {skipCount} already synced", "MongoDB");
-                    }
-                    else if (skipCount > 0)
-                    {
-                        LogInfo($"All {skipCount} files already synced to MongoDB", "MongoDB");
-                    }
-                    else
-                    {
-                        LogInfo("No local files found to sync", "MongoDB");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogError($"MongoDB initialization error: {ex.Message}", "MongoDB");
-                }
-            });
-        }
-
         private static void DumpActiveThreads()
         {
             try
@@ -449,16 +305,48 @@ namespace HavenCNCServer
             }
         }
 
+        /// <summary>
+        /// Cleanup that must happen BEFORE WPF shutdown to avoid WeakEventTable errors
+        /// Called from MainWindow.OnClosing (async, non-blocking)
+        /// </summary>
+        public static void CleanupBeforeShutdown()
+        {
+            try
+            {
+                LogInfo("CleanupBeforeShutdown starting...", "System");
+
+                // Signal all background operations to stop
+                _cancellationTokenSource?.Cancel();
+
+                // Unsubscribe from CNC events to prevent WeakEventTable errors
+                CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
+
+                // Stop Centroid Event Bridge with timeout
+                var shutdownToken = new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
+                CentroidEventBridge.Stop(shutdownToken);
+
+                // Dispose CNC Event Bus worker threads
+                CNCEventBus.Instance.Dispose();
+
+                // Disconnect from CNC
+                CNCConnectionManager.Disconnect();
+
+                LogInfo("CleanupBeforeShutdown completed", "System");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during pre-shutdown cleanup: {ex.Message}", "System");
+            }
+        }
+
         private static void App_Exit(object? sender, System.Windows.ExitEventArgs e)
         {
             try
             {
-                LogInfo("Application shutdown initiated", "System");
-                Console.WriteLine("\n*** SHUTDOWN STARTED - Dumping active threads ***\n");
-                DumpActiveThreads();
+                LogInfo("Application shutdown (App_Exit)", "System");
 
                 // Set a global timeout for shutdown
-                var shutdownTimer = new System.Timers.Timer(10000); // 10 seconds max
+                var shutdownTimer = new System.Timers.Timer(3000); // 3 seconds max
                 shutdownTimer.Elapsed += (s, args) =>
                 {
                     LogWarning("Shutdown timeout reached, forcing exit", "System");
@@ -467,68 +355,36 @@ namespace HavenCNCServer
                 shutdownTimer.AutoReset = false;
                 shutdownTimer.Start();
 
-                // Signal all background operations to stop
-                _cancellationTokenSource?.Cancel();
-
-                // Stop Centroid Event Bridge
-                var shutdownToken = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
-                CentroidEventBridge.Stop(shutdownToken);
-
-                // Dispose CNCEventBus to stop worker threads
-                try
-                {
-                    LogInfo("Disposing CNC Event Bus...", "System");
-                    HavenCNCServer.Centroid.Events.CNCEventBus.Instance.Dispose();
-                    LogInfo("CNC Event Bus disposed", "System");
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Error disposing CNC Event Bus: {ex.Message}", "System");
-                }
-
-                // Event bus subscribers will be cleaned up automatically via Dispose
-
                 // Stop API manager
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                        var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
                         await ApiManager.StopAsync(timeoutSource.Token);
+                        LogInfo("API manager stopped", "System");
                     }
                     catch (Exception ex)
                     {
                         LogError($"Error stopping API manager: {ex.Message}", "System");
                     }
-                }).Wait(3500);
-
-                // Unsubscribe from CNC events
-                CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
-
-                // Cleanup the CNC connection manager
-                CNCConnectionManager.Disconnect();
+                }).Wait(2500);
 
                 _cancellationTokenSource?.Dispose();
-
                 shutdownTimer.Stop();
                 shutdownTimer.Dispose();
-
-                Console.WriteLine("\n*** SHUTDOWN CLEANUP COMPLETE - Dumping remaining threads ***\n");
-                DumpActiveThreads();
 
                 LogSuccess("Application shutdown completed", "System");
 
                 // Give console time to display final messages
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(200);
 
-                // Force process exit since WPF shutdown is already in progress
-                Console.WriteLine("\n*** Forcing process exit ***\n");
+                // Force process exit
                 Environment.Exit(0);
             }
             catch (Exception ex)
             {
-                LogError($"Error during shutdown: {ex.Message}", "System");
-                Console.WriteLine($"\n*** Error during shutdown, forcing exit: {ex.Message} ***\n");
+                LogError($"Error during App_Exit: {ex.Message}", "System");
                 // Force exit on error
                 Environment.Exit(1);
             }

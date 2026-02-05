@@ -421,6 +421,22 @@ namespace HavenCNCServer.Models
         }
 
         /// <summary>
+        /// Mark the job as completed (used when completion is detected externally)
+        /// </summary>
+        public void MarkCompleted(string? errorMessage = null)
+        {
+            if (IsComplete)
+            {
+                return;
+            }
+
+            IsRunning = false;
+            IsPaused = false;
+            IsComplete = true;
+            CompletedAt = DateTime.Now;
+            LastError = errorMessage;
+        }
+        /// <summary>
         /// Pause the job execution
         /// </summary>
         /// <returns>True if paused successfully</returns>

@@ -118,6 +118,9 @@ namespace HavenCNCServer.Controllers
 
             if (completedJob != null)
             {
+                // Ensure job is marked as completed when detected via polling
+                completedJob.MarkCompleted(null);
+
                 // Calculate job duration
                 var duration = completedJob.CompletedAt.HasValue && completedJob.StartedAt.HasValue
                     ? completedJob.CompletedAt.Value - completedJob.StartedAt.Value

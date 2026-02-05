@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Models;
+using HavenCNCServer.Services;
 using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Controllers
@@ -12,6 +13,61 @@ namespace HavenCNCServer.Controllers
     [Route("api/[controller]")]
     public class CNCUIController : ControllerBase
     {
+        private static bool? _machineHomedState = null; // Cached homed state, null = unknown
+        private static readonly object _homedStateLock = new object();
+
+        /// <summary>
+        /// Initialize the homed state from Centroid (called on startup)
+        /// </summary>
+        public static void InitializeHomedState()
+        {
+            lock (_homedStateLock)
+            {
+                try
+                {
+                    var cncPipe = CNCConnectionManager.GetCNCPipe();
+                    if (cncPipe != null)
+                    {
+                        // Check each axis home status
+                        cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_1, out var state_axis_1);
+                        cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_2, out var state_axis_2);
+                        cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_HOME_SET_AXIS_3, out var state_axis_3);
+
+                        if (state_axis_1 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
+                            state_axis_2 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1 &&
+                            state_axis_3 == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1)
+                        {
+                            cncPipe.plc.GetPcSystemVariableBit(CentroidAPI.PcToMpuSysVarBit.SV_PC_HOME_SET, out var state_home);
+                            _machineHomedState = (state_home == CentroidAPI.CNCPipe.Plc.IOState.IO_LOGICAL_1);
+                        }
+                        else
+                        {
+                            _machineHomedState = false;
+                        }
+
+                        LogInfo($"Machine homed state initialized: {_machineHomedState}", "CNCUIController");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error initializing homed state from Centroid: {ex.Message}", "CNCUIController");
+                    _machineHomedState = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the current cached machine homed state
+        /// </summary>
+        /// <returns>True if homed, false if not homed, null if unknown</returns>
+        public static bool? GetCachedMachineHomedState()
+        {
+            lock (_homedStateLock)
+            {
+                return _machineHomedState;
+            }
+        }
+
         #region General Skin Event Controls
 
         /// <summary>
@@ -592,17 +648,135 @@ namespace HavenCNCServer.Controllers
 
         #endregion
 
-        #region Reset Control
+        #region Machine Control
 
         /// <summary>
-        /// Trigger reset (RESET_UI)
+        /// Trigger stop button (STOP_UI)
+        /// </summary>
+        [HttpPost("Stop")]
+        public IActionResult Stop()
+        {
+            var result = CNCUtils.TriggerSkinEvent(47);
+            return result ? Ok(new { success = true, message = "Stop triggered" })
+                          : StatusCode(500, new { success = false, message = "Failed to trigger stop" });
+        }
+
+        /// <summary>
+        /// Trigger cycle cancel (CANCEL_CYCLE_UI) - cancels running program
+        /// </summary>
+        [HttpPost("CancelCycle")]
+        public IActionResult CancelCycle()
+        {
+            var result = CNCUtils.TriggerSkinEvent(46);
+            return result ? Ok(new { success = true, message = "Cycle cancelled" })
+                          : StatusCode(500, new { success = false, message = "Failed to cancel cycle" });
+        }
+
+        /// <summary>
+        /// Set machine homed state (MACHINE_HOMED_UI)
+        /// </summary>
+        /// <param name="isHomed">True to set machine as homed, false to set as unhomed</param>
+        [HttpPost("SetMachineHomed")]
+        public IActionResult SetMachineHomed([FromQuery] bool isHomed)
+        {
+            var cncPipe = CNCConnectionManager.GetCNCPipe();
+            if (cncPipe == null)
+            {
+                return StatusCode(500, new { success = false, message = "CNC not connected" });
+            }
+
+            try
+            {
+                // SkinEvent 57 = MACHINE_HOMED_UI
+                // Set state to 1 if homed, 0 if unhomed
+                var result = cncPipe.plc.SetSkinEventState(57, isHomed ? 1 : 0);
+
+                if (result == CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
+                {
+                    // Update cached state
+                    lock (_homedStateLock)
+                    {
+                        _machineHomedState = isHomed;
+                    }
+                    LogInfo($"Machine homed state set to: {isHomed}", "CNCUIController");
+
+                    return Ok(new { success = true, message = $"Machine set to {(isHomed ? "homed" : "unhomed")}" });
+                }
+                else
+                {
+                    return StatusCode(500, new { success = false, message = $"Failed to set homed state: {result}" });
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error setting machine homed state: {ex.Message}", "CNCUIController");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get the current machine homed state
+        /// </summary>
+        /// <returns>Object with isHomed property (true/false/null if unknown)</returns>
+        [HttpGet("GetMachineHomedState")]
+        public IActionResult GetMachineHomedState()
+        {
+            var homedState = GetCachedMachineHomedState();
+            return Ok(new { isHomed = homedState });
+        }
+
+        /// <summary>
+        /// Mark machine as homed (MACHINE_HOMED_UI)
+        /// </summary>
+        [HttpPost("MachineHomed")]
+        public IActionResult MachineHomed()
+        {
+            return SetMachineHomed(true);
+        }
+
+        /// <summary>
+        /// Mark machine as unhomed (MACHINE_HOMED_UI)
+        /// </summary>
+        [HttpPost("MachineUnhomed")]
+        public IActionResult MachineUnhomed()
+        {
+            return SetMachineHomed(false);
+        }
+
+        /// <summary>
+        /// Trigger reset (RESET_UI) - clears errors and resets machine state
+        /// </summary>
+        [HttpPost("Reset")]
+        public IActionResult Reset()
+        {
+            var result = CNCUtils.TriggerSkinEvent(56);
+            return result ? Ok(new { success = true, message = "Reset triggered" })
+                          : StatusCode(500, new { success = false, message = "Failed to trigger reset" });
+        }
+
+        /// <summary>
+        /// Trigger emergency stop and reset (RESET_UI) - clears E-stop condition
+        /// </summary>
+        [HttpPost("EStop")]
+        public IActionResult EStop()
+        {
+            // E-stop uses the same reset mechanism to clear the condition
+            var result = CNCUtils.TriggerSkinEvent(56);
+            return result ? Ok(new { success = true, message = "E-stop reset triggered" })
+                          : StatusCode(500, new { success = false, message = "Failed to trigger E-stop reset" });
+        }
+
+        #endregion
+
+        #region Legacy Reset Control
+
+        /// <summary>
+        /// Trigger reset (RESET_UI) - Legacy endpoint, use /Reset instead
         /// </summary>
         [HttpPost("TriggerReset")]
         public IActionResult TriggerReset()
         {
-            var result = CNCUtils.TriggerSkinEvent(56);
-            return result ? Ok(new { success = true, message = "Reset triggered" })
-                          : StatusCode(500, new { success = false, message = "Failed to trigger event" });
+            return Reset();
         }
 
         /// <summary>
