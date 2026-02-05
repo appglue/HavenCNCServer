@@ -7,7 +7,7 @@ namespace HavenCNCServer.Centroid.Events
     /// <summary>
     /// Event containing job execution information
     /// </summary>
-    public class JobInfoEvent : ICentroidEvent
+    public class JobInfoEvent : ICentroidEvent, ISignalRSerializable
     {
         // Static fields for duplicate detection
         private static string _lastJobInfoHash = string.Empty;
@@ -42,6 +42,22 @@ namespace HavenCNCServer.Centroid.Events
         /// Name of the currently running job
         /// </summary>
         public string JobName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Serialize this event for SignalR transmission
+        /// </summary>
+        public object ToSignalRData()
+        {
+            return new
+            {
+                MessageType = "JobInfoEvent",
+                Timestamp = Timestamp.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                Message,
+                LineNumber,
+                JobName,
+                StackLevel
+            };
+        }
 
         /// <summary>
         /// Process JOB_INFO message - Contains job execution details

@@ -5,7 +5,7 @@ namespace HavenCNCServer.Centroid.Events
     /// <summary>
     /// Event for log messages from the CNC system
     /// </summary>
-    public class LogEvent : ICentroidEvent
+    public class LogEvent : ICentroidEvent, ISignalRSerializable
     {
         public DateTime Timestamp { get; set; }
         public string Message { get; set; } = string.Empty;
@@ -24,6 +24,21 @@ namespace HavenCNCServer.Centroid.Events
             Message = message;
             Level = level;
             Source = source;
+        }
+
+        /// <summary>
+        /// Serialize this event for SignalR transmission
+        /// </summary>
+        public object ToSignalRData()
+        {
+            return new
+            {
+                MessageType = "LOG",
+                Timestamp = Timestamp.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                Message,
+                Level = Level.ToString(),
+                Source
+            };
         }
     }
 
