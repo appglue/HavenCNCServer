@@ -1,0 +1,9 @@
+{
+  "favoriteActionIds": [],
+  "homePageActionIds": [
+    "home_page_home_machine",
+    "home_page_change_fixture"
+  ],
+  "actionUsageStats": [],
+  "userDefinedActions": []
+}

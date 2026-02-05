@@ -171,32 +171,28 @@ namespace HavenCNCServer.Services
 
             try
             {
-                var document = new MachineConfigurationDocument
-                {
-                    MachineName = machineName,
-                    FileName = fileName,
-                    Timestamp = DateTime.UtcNow,
-                    JsonData = jsonData,
-                    Description = description,
-                    Version = 1
-                };
-
                 var filter = Builders<MachineConfigurationDocument>.Filter.And(
                     Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName),
                     Builders<MachineConfigurationDocument>.Filter.Eq(x => x.FileName, fileName)
                 );
 
-                // Check if document exists to increment version
+                // Check if document exists to get current version
                 var existing = await _machineConfigCollection!.Find(filter).FirstOrDefaultAsync();
-                if (existing != null)
-                {
-                    document.Version = existing.Version + 1;
-                }
+                var newVersion = existing != null ? existing.Version + 1 : 1;
 
-                var options = new ReplaceOptions { IsUpsert = true };
-                await _machineConfigCollection!.ReplaceOneAsync(filter, document, options);
+                // Use UpdateOneAsync with $set instead of ReplaceOneAsync to avoid _id issues
+                var update = Builders<MachineConfigurationDocument>.Update
+                    .Set(x => x.MachineName, machineName)
+                    .Set(x => x.FileName, fileName)
+                    .Set(x => x.Timestamp, DateTime.UtcNow)
+                    .Set(x => x.JsonData, jsonData)
+                    .Set(x => x.Version, newVersion)
+                    .Set(x => x.Description, description);
 
-                LogSuccess($"✓ Saved {fileName} for machine '{machineName}' to MongoDB", "MongoDB");
+                var options = new UpdateOptions { IsUpsert = true };
+                await _machineConfigCollection!.UpdateOneAsync(filter, update, options);
+
+                LogSuccess($"✓ Saved {fileName} for machine '{machineName}' to MongoDB (v{newVersion})", "MongoDB");
                 return true;
             }
             catch (Exception ex)

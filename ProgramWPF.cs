@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using HavenCNCServer.Centroid;
@@ -144,6 +145,16 @@ namespace HavenCNCServer
 
             try
             {
+                // Initialize MongoDB and trigger initial sync
+                InitializeMongoDB();
+            }
+            catch (Exception ex)
+            {
+                LogError($"MongoDB initialization failed: {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
                 // Subscribe to CNC connection status changes
                 CNCConnectionManager.ConnectionStatusChanged += OnCNCConnectionStatusChanged;
 
@@ -263,6 +274,154 @@ namespace HavenCNCServer
             {
                 LogWarning($"Error during job file cleanup: {ex.Message}", "Cleanup");
             }
+        }
+
+        /// <summary>
+        /// Initialize MongoDB and perform initial sync if needed
+        /// </summary>
+        private static void InitializeMongoDB()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    // Wait a bit for API to be ready
+                    await Task.Delay(3000);
+
+                    LogInfo("🔄 Initializing MongoDB sync...", "MongoDB");
+
+                    var mongoSettings = SettingsManager.Settings.MongoDB;
+                    if (!mongoSettings.Enabled)
+                    {
+                        LogInfo("MongoDB is disabled in settings", "MongoDB");
+                        return;
+                    }
+
+                    var mongoService = new Services.MongoDbService(mongoSettings);
+
+                    if (!mongoService.IsConnected)
+                    {
+                        LogWarning("MongoDB is offline, skipping initial sync", "MongoDB");
+                        return;
+                    }
+
+                    LogSuccess("MongoDB connected successfully", "MongoDB");
+
+                    // Load local machine settings
+                    var dataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "data");
+                    var localSettingsPath = Path.Combine(dataDirectory, "localMachineSettings.json");
+
+                    if (!System.IO.File.Exists(localSettingsPath))
+                    {
+                        LogInfo("No local machine settings found, skipping sync", "MongoDB");
+                        return;
+                    }
+
+                    var localSettingsJson = System.IO.File.ReadAllText(localSettingsPath);
+                    var localSettings = System.Text.Json.JsonSerializer.Deserialize<Models.LocalMachineSettings>(localSettingsJson);
+
+                    if (localSettings == null || string.IsNullOrEmpty(localSettings.CurrentMachineName))
+                    {
+                        LogInfo("Machine name not set, skipping initial sync", "MongoDB");
+                        return;
+                    }
+
+                    var machineName = localSettings.CurrentMachineName;
+                    LogInfo($"Checking sync status for machine: {machineName}", "MongoDB");
+
+                    // Check if any files exist in MongoDB
+                    var configFiles = new[]
+                    {
+                        "plcSystem.json",
+                        "plcSystemDefault.json",
+                        "configuration.json",
+                        "machine.json",
+                        "machineState.json",
+                        "fixtures.json",
+                        "userActionData.json"
+                    };
+
+                    var hasMongoFiles = false;
+                    foreach (var fileName in configFiles)
+                    {
+                        var mongoDoc = await mongoService.GetMachineConfigurationAsync(machineName, fileName);
+                        if (mongoDoc != null)
+                        {
+                            hasMongoFiles = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasMongoFiles)
+                    {
+                        // Check if we have local files to upload
+                        var hasLocalFiles = false;
+                        foreach (var fileName in configFiles)
+                        {
+                            var localFilePath = Path.Combine(dataDirectory, fileName);
+                            if (System.IO.File.Exists(localFilePath))
+                            {
+                                hasLocalFiles = true;
+                                break;
+                            }
+                        }
+
+                        if (hasLocalFiles)
+                        {
+                            LogInfo($"📤 No MongoDB files found but local files exist. Uploading to MongoDB...", "MongoDB");
+
+                            var uploadCount = 0;
+                            foreach (var fileName in configFiles)
+                            {
+                                var localFilePath = Path.Combine(dataDirectory, fileName);
+                                if (System.IO.File.Exists(localFilePath))
+                                {
+                                    try
+                                    {
+                                        var content = System.IO.File.ReadAllText(localFilePath);
+                                        var success = await mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
+                                        if (success)
+                                        {
+                                            uploadCount++;
+                                            LogInfo($"  ✓ Uploaded {fileName}", "MongoDB");
+                                        }
+                                        else
+                                        {
+                                            LogWarning($"  ✗ Failed to upload {fileName}", "MongoDB");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        LogError($"  ✗ Error uploading {fileName}: {ex.Message}", "MongoDB");
+                                    }
+                                }
+                            }
+
+                            if (uploadCount > 0)
+                            {
+                                localSettings.LastSyncTime = DateTime.UtcNow;
+                                var updatedJson = System.Text.Json.JsonSerializer.Serialize(localSettings,
+                                    new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                                System.IO.File.WriteAllText(localSettingsPath, updatedJson);
+                            }
+
+                            LogSuccess($"✓ Initial sync completed: {uploadCount} files uploaded", "MongoDB");
+                        }
+                        else
+                        {
+                            LogInfo("No local files found to sync", "MongoDB");
+                        }
+                    }
+                    else
+                    {
+                        LogInfo("MongoDB files already exist, no initial sync needed", "MongoDB");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"MongoDB initialization error: {ex.Message}", "MongoDB");
+                }
+            });
         }
 
         private static void DumpActiveThreads()

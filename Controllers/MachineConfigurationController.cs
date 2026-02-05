@@ -50,6 +50,97 @@ namespace HavenCNCServer.Controllers
             Directory.CreateDirectory(_defaultPlcDirectory);
 
             LogInfo("MachineConfigurationController initialized", "MachineConfig");
+
+            // Perform initial sync check on startup
+            _ = Task.Run(async () => await CheckAndPerformInitialSync());
+        }
+
+        /// <summary>
+        /// Check if initial sync is needed and perform it
+        /// </summary>
+        private async Task CheckAndPerformInitialSync()
+        {
+            try
+            {
+                // Wait a bit for services to fully initialize
+                await Task.Delay(2000);
+
+                var localSettings = LoadLocalSettings();
+                var machineName = localSettings.CurrentMachineName;
+
+                // Skip if no machine name set
+                if (string.IsNullOrEmpty(machineName))
+                {
+                    LogInfo("Machine name not set, skipping initial sync check", "MachineConfig");
+                    return;
+                }
+
+                // Skip if sync disabled
+                if (!localSettings.SyncEnabled)
+                {
+                    LogInfo("Sync disabled, skipping initial sync check", "MachineConfig");
+                    return;
+                }
+
+                // Skip if MongoDB is offline
+                if (!_mongoService.IsConnected)
+                {
+                    LogWarning("MongoDB offline, skipping initial sync check", "MachineConfig");
+                    return;
+                }
+
+                LogInfo($"🔍 Checking if initial sync needed for machine '{machineName}'...", "MachineConfig");
+
+                // Check if any configuration files exist in MongoDB for this machine
+                var hasMongoFiles = false;
+                foreach (var fileName in ConfigFiles)
+                {
+                    var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+                    if (mongoDoc != null)
+                    {
+                        hasMongoFiles = true;
+                        break;
+                    }
+                }
+
+                if (!hasMongoFiles)
+                {
+                    // No files in MongoDB, check if we have local files to upload
+                    var hasLocalFiles = false;
+                    foreach (var fileName in ConfigFiles)
+                    {
+                        var localFilePath = Path.Combine(_dataDirectory, fileName);
+                        if (System.IO.File.Exists(localFilePath))
+                        {
+                            hasLocalFiles = true;
+                            break;
+                        }
+                    }
+
+                    if (hasLocalFiles)
+                    {
+                        LogInfo($"📤 No MongoDB files found but local files exist. Performing initial sync...", "MachineConfig");
+                        await SaveAllLocalFilesToMongoAsync(machineName);
+
+                        localSettings.LastSyncTime = DateTime.UtcNow;
+                        SaveLocalSettings(localSettings);
+
+                        LogSuccess($"✓ Initial sync completed for machine '{machineName}'", "MachineConfig");
+                    }
+                    else
+                    {
+                        LogInfo("No local files found to sync", "MachineConfig");
+                    }
+                }
+                else
+                {
+                    LogInfo("MongoDB files already exist, no initial sync needed", "MachineConfig");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error during initial sync check: {ex.Message}", "MachineConfig");
+            }
         }
 
         #region Local Settings Management
@@ -212,11 +303,32 @@ namespace HavenCNCServer.Controllers
                     // Upload current local files to this new machine name
                     await SaveAllLocalFilesToMongoAsync(request.MachineName);
                 }
+                else if (!isFirstTimeSetup && loadedFromMongo)
+                {
+                    LogSuccess($"✓ Switched to existing machine '{request.MachineName}' from MongoDB", "MachineConfig");
+                }
                 else if (!isFirstTimeSetup && !loadedFromMongo)
                 {
-                    LogInfo($"Switching to new machine '{request.MachineName}' with no MongoDB data, uploading current local files", "MachineConfig");
-                    // Upload current local files to this new machine name
-                    await SaveAllLocalFilesToMongoAsync(request.MachineName);
+                    // Switching machines: new machine doesn't exist in MongoDB
+                    // Copy from old machine in MongoDB (not from local files)
+                    LogInfo($"New machine '{request.MachineName}' not found in MongoDB, copying from '{oldMachineName}'", "MachineConfig");
+
+                    var copySuccess = await _mongoService.CopyMachineConfigurationAsync(
+                        oldMachineName,
+                        request.MachineName,
+                        $"Copied from {oldMachineName} on {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}"
+                    );
+
+                    if (copySuccess)
+                    {
+                        LogSuccess($"✓ Copied configuration from '{oldMachineName}' to '{request.MachineName}' in MongoDB", "MachineConfig");
+                        // Now load the copied files from MongoDB to local
+                        await LoadAllFilesFromMongoAsync(request.MachineName);
+                    }
+                    else
+                    {
+                        LogWarning($"Failed to copy from '{oldMachineName}' in MongoDB (may be offline), keeping current local files", "MachineConfig");
+                    }
                 }
 
                 LogSuccess($"✓ Switched to machine '{request.MachineName}'", "MachineConfig");
@@ -272,6 +384,124 @@ namespace HavenCNCServer.Controllers
             {
                 LogError($"Failed to copy machine configuration: {ex.Message}", "MachineConfig");
                 return StatusCode(500, new { message = $"Failed to copy machine configuration: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Sync local files to MongoDB (upload newer local files)
+        /// </summary>
+        /// <returns>Sync status with counts</returns>
+        [HttpPost("SyncLocalToMongo")]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult> SyncLocalToMongo()
+        {
+            try
+            {
+                var localSettings = LoadLocalSettings();
+                var machineName = localSettings.CurrentMachineName;
+
+                if (string.IsNullOrEmpty(machineName))
+                {
+                    return BadRequest(new { message = "Machine name not set. Please set machine name first." });
+                }
+
+                if (!_mongoService.IsConnected)
+                {
+                    return StatusCode(503, new { message = "MongoDB is offline. Cannot sync." });
+                }
+
+                LogInfo($"🔄 Syncing local files to MongoDB for machine '{machineName}'...", "MachineConfig");
+
+                var uploadedCount = 0;
+                var skippedCount = 0;
+                var errorCount = 0;
+
+                foreach (var fileName in ConfigFiles)
+                {
+                    var localFilePath = Path.Combine(_dataDirectory, fileName);
+
+                    if (!System.IO.File.Exists(localFilePath))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+
+                    try
+                    {
+                        var localContent = System.IO.File.ReadAllText(localFilePath);
+                        var localTimestamp = System.IO.File.GetLastWriteTimeUtc(localFilePath);
+
+                        // Check if MongoDB version exists and is older
+                        var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+
+                        if (mongoDoc == null)
+                        {
+                            // File doesn't exist in MongoDB, upload it
+                            LogInfo($"  📤 {fileName} - new file, uploading...", "MachineConfig");
+                            var success = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, localContent);
+                            if (success)
+                            {
+                                uploadedCount++;
+                                LogInfo($"    ✓ Uploaded", "MachineConfig");
+                            }
+                            else
+                            {
+                                errorCount++;
+                                LogWarning($"    ✗ Failed to upload", "MachineConfig");
+                            }
+                        }
+                        else if (localTimestamp > mongoDoc.Timestamp)
+                        {
+                            // Local file is newer, upload it
+                            LogInfo($"  📤 {fileName} - local newer ({localTimestamp:yyyy-MM-dd HH:mm:ss} > {mongoDoc.Timestamp:yyyy-MM-dd HH:mm:ss})", "MachineConfig");
+                            var success = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, localContent);
+                            if (success)
+                            {
+                                uploadedCount++;
+                                LogInfo($"    ✓ Uploaded", "MachineConfig");
+                            }
+                            else
+                            {
+                                errorCount++;
+                                LogWarning($"    ✗ Failed to upload", "MachineConfig");
+                            }
+                        }
+                        else
+                        {
+                            // MongoDB version is same or newer, skip
+                            skippedCount++;
+                            LogInfo($"  ⊘ {fileName} - MongoDB version is current", "MachineConfig");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errorCount++;
+                        LogError($"  ✗ Error syncing {fileName}: {ex.Message}", "MachineConfig");
+                    }
+                }
+
+                if (uploadedCount > 0)
+                {
+                    localSettings.LastSyncTime = DateTime.UtcNow;
+                    SaveLocalSettings(localSettings);
+                }
+
+                var message = $"Sync complete: {uploadedCount} uploaded, {skippedCount} skipped, {errorCount} errors";
+                LogSuccess($"✓ {message}", "MachineConfig");
+
+                return Ok(new
+                {
+                    message,
+                    uploaded = uploadedCount,
+                    skipped = skippedCount,
+                    errors = errorCount,
+                    lastSyncTime = localSettings.LastSyncTime
+                });
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to sync local files to MongoDB: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to sync: {ex.Message}" });
             }
         }
 
@@ -712,14 +942,56 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         private async Task SaveAllLocalFilesToMongoAsync(string machineName)
         {
+            LogInfo($"Uploading all local config files to MongoDB for machine '{machineName}'...", "MachineConfig");
+            var successCount = 0;
+            var failCount = 0;
+
             foreach (var fileName in ConfigFiles)
             {
                 var filePath = Path.Combine(_dataDirectory, fileName);
                 if (System.IO.File.Exists(filePath))
                 {
-                    var content = System.IO.File.ReadAllText(filePath);
-                    await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
+                    try
+                    {
+                        var content = System.IO.File.ReadAllText(filePath);
+                        var success = await _mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
+
+                        if (success)
+                        {
+                            successCount++;
+                            LogInfo($"  ✓ Uploaded {fileName}", "MachineConfig");
+                        }
+                        else
+                        {
+                            failCount++;
+                            LogWarning($"  ✗ Failed to upload {fileName} (MongoDB offline or error)", "MachineConfig");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        failCount++;
+                        LogError($"  ✗ Error uploading {fileName}: {ex.Message}", "MachineConfig");
+                    }
                 }
+                else
+                {
+                    LogInfo($"  ⊘ Skipped {fileName} (not found locally)", "MachineConfig");
+                }
+            }
+
+            if (successCount > 0)
+            {
+                LogSuccess($"✓ Uploaded {successCount} files to MongoDB for '{machineName}'", "MachineConfig");
+            }
+
+            if (failCount > 0)
+            {
+                LogWarning($"⚠ {failCount} files failed to upload to MongoDB", "MachineConfig");
+            }
+
+            if (successCount == 0 && failCount == 0)
+            {
+                LogWarning("No files were uploaded to MongoDB", "MachineConfig");
             }
         }
 
