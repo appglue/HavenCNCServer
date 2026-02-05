@@ -80,7 +80,7 @@ namespace HavenCNCServer.Controllers
         /// <param name="request">Data setting request</param>
         /// <returns>Success response</returns>
         [HttpPost("SetData")]
-        public void SetData([FromBody] ConfigurationDataRequest request)
+        public async Task SetData([FromBody] ConfigurationDataRequest request)
         {
             try
             {
@@ -100,11 +100,86 @@ namespace HavenCNCServer.Controllers
                 System.IO.File.WriteAllText(filePath, request.Content ?? string.Empty);
 
                 Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved to: {filePath}", "Config");
+
+                // Sync to MongoDB if enabled
+                await SyncToMongoDbAsync(request.Name, request.Content ?? string.Empty);
             }
             catch (Exception ex)
             {
                 Services.LoggingService.LogError($"Failed to save data '{request.Name}': {ex.Message}", "Config");
                 throw new InvalidOperationException($"Failed to save data '{request.Name}': {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Sync configuration file to MongoDB
+        /// </summary>
+        private async Task SyncToMongoDbAsync(string fileName, string content)
+        {
+            try
+            {
+                var mongoSettings = SettingsManager.Settings.MongoDB;
+                if (!mongoSettings.Enabled)
+                {
+                    return; // MongoDB disabled, skip sync
+                }
+
+                var mongoService = new Services.MongoDbService(mongoSettings);
+                if (!mongoService.IsConnected)
+                {
+                    Services.LoggingService.LogWarning($"MongoDB offline, skipping sync for {fileName}", "MongoDB");
+                    return;
+                }
+
+                // Load current machine name
+                var localSettingsPath = Path.Combine(_dataDirectory, "localMachineSettings.json");
+                if (!System.IO.File.Exists(localSettingsPath))
+                {
+                    Services.LoggingService.LogInfo("No machine name set, skipping MongoDB sync", "MongoDB");
+                    return;
+                }
+
+                var localSettingsJson = System.IO.File.ReadAllText(localSettingsPath);
+                var localSettings = System.Text.Json.JsonSerializer.Deserialize<Models.LocalMachineSettings>(localSettingsJson);
+
+                if (localSettings == null || string.IsNullOrEmpty(localSettings.CurrentMachineName))
+                {
+                    Services.LoggingService.LogInfo("Machine name not set, skipping MongoDB sync", "MongoDB");
+                    return;
+                }
+
+                // Only sync known configuration files
+                var configFiles = new[]
+                {
+                    "plcSystem.json",
+                    "plcSystemDefault.json",
+                    "configuration.json",
+                    "machine.json",
+                    "machineState.json",
+                    "fixtures.json",
+                    "userActionData.json"
+                };
+
+                if (!configFiles.Contains(fileName))
+                {
+                    return; // Not a config file we sync
+                }
+
+                var success = await mongoService.SaveMachineConfigurationAsync(
+                    localSettings.CurrentMachineName,
+                    fileName,
+                    content
+                );
+
+                if (success)
+                {
+                    Services.LoggingService.LogSuccess($"✓ Synced {fileName} to MongoDB for machine '{localSettings.CurrentMachineName}'", "MongoDB");
+                }
+            }
+            catch (Exception ex)
+            {
+                Services.LoggingService.LogError($"MongoDB sync error for {fileName}: {ex.Message}", "MongoDB");
+                // Don't throw - MongoDB sync failure shouldn't break the save operation
             }
         }
 

@@ -3,7 +3,7 @@
   "description": "",
   "isSystemDefault": true,
   "type": 0,
-  "lastModified": "2026-01-30T18:50:42.218Z",
+  "lastModified": "2026-02-05T15:07:19.146Z",
   "stages": [
     {
       "name": "WATCHDOG_S",
@@ -5167,6 +5167,15 @@
       "description": "",
       "pressedText": "Triggered",
       "notPressedText": "Not Triggered",
+      "addAction": 0,
+      "keybindings": []
+    },
+    {
+      "eventName": "MACHINE_HOMED_UI",
+      "eventNumber": 57,
+      "description": "",
+      "pressedText": "Is Homed",
+      "notPressedText": "Not Homed",
       "addAction": 0,
       "keybindings": []
     }

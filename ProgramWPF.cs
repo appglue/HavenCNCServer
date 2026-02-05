@@ -341,80 +341,69 @@ namespace HavenCNCServer
                         "userActionData.json"
                     };
 
-                    var hasMongoFiles = false;
+                    LogInfo($"📤 Checking for missing files in MongoDB...", "MongoDB");
+
+                    var uploadCount = 0;
+                    var skipCount = 0;
+
                     foreach (var fileName in configFiles)
                     {
-                        var mongoDoc = await mongoService.GetMachineConfigurationAsync(machineName, fileName);
-                        if (mongoDoc != null)
+                        var localFilePath = Path.Combine(dataDirectory, fileName);
+
+                        // Skip if local file doesn't exist
+                        if (!System.IO.File.Exists(localFilePath))
                         {
-                            hasMongoFiles = true;
-                            break;
+                            continue;
+                        }
+
+                        try
+                        {
+                            // Check if file exists in MongoDB
+                            var mongoDoc = await mongoService.GetMachineConfigurationAsync(machineName, fileName);
+
+                            if (mongoDoc == null)
+                            {
+                                // File missing from MongoDB, upload it
+                                LogInfo($"  📤 {fileName} - missing from MongoDB, uploading...", "MongoDB");
+                                var content = System.IO.File.ReadAllText(localFilePath);
+                                var success = await mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
+                                if (success)
+                                {
+                                    uploadCount++;
+                                }
+                                else
+                                {
+                                    LogWarning($"    ✗ Failed to upload {fileName}", "MongoDB");
+                                }
+                            }
+                            else
+                            {
+                                skipCount++;
+                                LogInfo($"  ✓ {fileName} - already exists in MongoDB", "MongoDB");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError($"  ✗ Error checking/uploading {fileName}: {ex.Message}", "MongoDB");
                         }
                     }
 
-                    if (!hasMongoFiles)
+                    if (uploadCount > 0)
                     {
-                        // Check if we have local files to upload
-                        var hasLocalFiles = false;
-                        foreach (var fileName in configFiles)
-                        {
-                            var localFilePath = Path.Combine(dataDirectory, fileName);
-                            if (System.IO.File.Exists(localFilePath))
-                            {
-                                hasLocalFiles = true;
-                                break;
-                            }
-                        }
+                        localSettings.LastSyncTime = DateTime.UtcNow;
+                        var updatedJson = System.Text.Json.JsonSerializer.Serialize(localSettings,
+                            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                        System.IO.File.WriteAllText(localSettingsPath, updatedJson);
 
-                        if (hasLocalFiles)
-                        {
-                            LogInfo($"📤 No MongoDB files found but local files exist. Uploading to MongoDB...", "MongoDB");
-
-                            var uploadCount = 0;
-                            foreach (var fileName in configFiles)
-                            {
-                                var localFilePath = Path.Combine(dataDirectory, fileName);
-                                if (System.IO.File.Exists(localFilePath))
-                                {
-                                    try
-                                    {
-                                        var content = System.IO.File.ReadAllText(localFilePath);
-                                        var success = await mongoService.SaveMachineConfigurationAsync(machineName, fileName, content);
-                                        if (success)
-                                        {
-                                            uploadCount++;
-                                            LogInfo($"  ✓ Uploaded {fileName}", "MongoDB");
-                                        }
-                                        else
-                                        {
-                                            LogWarning($"  ✗ Failed to upload {fileName}", "MongoDB");
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogError($"  ✗ Error uploading {fileName}: {ex.Message}", "MongoDB");
-                                    }
-                                }
-                            }
-
-                            if (uploadCount > 0)
-                            {
-                                localSettings.LastSyncTime = DateTime.UtcNow;
-                                var updatedJson = System.Text.Json.JsonSerializer.Serialize(localSettings,
-                                    new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                                System.IO.File.WriteAllText(localSettingsPath, updatedJson);
-                            }
-
-                            LogSuccess($"✓ Initial sync completed: {uploadCount} files uploaded", "MongoDB");
-                        }
-                        else
-                        {
-                            LogInfo("No local files found to sync", "MongoDB");
-                        }
+                        LogSuccess($"✓ Initial sync completed: {uploadCount} uploaded, {skipCount} already synced", "MongoDB");
+                    }
+                    else if (skipCount > 0)
+                    {
+                        LogInfo($"All {skipCount} files already synced to MongoDB", "MongoDB");
                     }
                     else
                     {
-                        LogInfo("MongoDB files already exist, no initial sync needed", "MongoDB");
+                        LogInfo("No local files found to sync", "MongoDB");
                     }
                 }
                 catch (Exception ex)
