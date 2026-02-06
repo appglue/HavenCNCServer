@@ -39,8 +39,6 @@ namespace HavenCNCServer.Controllers
             // Ensure directories exist
             Directory.CreateDirectory(_dataDirectory);
             Directory.CreateDirectory(_checkpointsDirectory);
-
-            Services.LoggingService.LogInfo($"CNCConfigurationController initialized. Data directory: {_dataDirectory}", "Config");
         }
 
         #region Data Management

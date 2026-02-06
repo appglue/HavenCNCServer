@@ -9,7 +9,7 @@ using static HavenCNCServer.Services.LoggingService;
 namespace HavenCNCServer.Controllers
 {
     [ApiController]
-    [Route("api/configuration")]
+    [Route("api/[controller]")]
     public class MachineConfigurationController : ControllerBase
     {
         private static readonly string DataDirectory = @"C:\havencncdata";
@@ -243,6 +243,212 @@ namespace HavenCNCServer.Controllers
             catch (System.Exception ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get list of available machine names from MongoDB
+        /// </summary>
+        /// <returns>Array of machine names</returns>
+        [HttpGet("GetMachineNames")]
+        [ProducesResponseType(typeof(string[]), 200)]
+        public async Task<ActionResult<string[]>> GetMachineNames()
+        {
+            try
+            {
+                LogInfo("GetMachineNames request", "MachineConfig");
+
+                if (_mongoService == null || !_mongoService.IsConnected)
+                {
+                    LogWarning("MongoDB not connected, returning empty list", "MachineConfig");
+                    return Ok(new string[0]);
+                }
+
+                var machines = await _mongoService.GetMachineNamesAsync();
+
+                // Add current local machine if not in list
+                var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
+                if (System.IO.File.Exists(settingsPath))
+                {
+                    var localSettings = JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath));
+                    if (localSettings != null && !string.IsNullOrEmpty(localSettings.CurrentMachineName) &&
+                        !machines.Contains(localSettings.CurrentMachineName))
+                    {
+                        machines.Add(localSettings.CurrentMachineName);
+                    }
+                }
+
+                machines = machines.Distinct().OrderBy(x => x).ToList();
+                LogSuccess($"✓ Retrieved {machines.Count} machine names", "MachineConfig");
+                return Ok(machines.ToArray());
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to get machine names: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to get machine names: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Get currently active machine name
+        /// </summary>
+        /// <returns>Current machine name</returns>
+        [HttpGet("GetCurrentMachine")]
+        [ProducesResponseType(typeof(string), 200)]
+        public ActionResult<string> GetCurrentMachine()
+        {
+            try
+            {
+                var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
+                if (!System.IO.File.Exists(settingsPath))
+                {
+                    return Ok(string.Empty);
+                }
+
+                var settings = JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath));
+                var machineName = settings?.CurrentMachineName ?? string.Empty;
+                LogInfo($"Current machine: {machineName}", "MachineConfig");
+                return Ok(machineName);
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to get current machine: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to get current machine: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Set current machine
+        /// </summary>
+        /// <param name="request">Machine name to switch to</param>
+        /// <returns>Success response</returns>
+        [HttpPost("SetCurrentMachine")]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult> SetCurrentMachine([FromBody] SetCurrentMachineRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.MachineName))
+                {
+                    return BadRequest(new { message = "Machine name is required" });
+                }
+
+                LogInfo($"💾 SetCurrentMachine request: '{request.MachineName}'", "MachineConfig");
+
+                var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
+                var settings = new LocalMachineSettings
+                {
+                    CurrentMachineName = request.MachineName,
+                    LastSyncTime = System.DateTime.UtcNow
+                };
+                System.IO.File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+
+                // Re-sync with new machine
+                await SyncWithMongoDb();
+
+                return Ok(new { message = $"Machine set to {request.MachineName}" });
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to set current machine: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to set current machine: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Get default PLC (latest version)
+        /// </summary>
+        /// <returns>Default PLC data</returns>
+        [HttpGet("GetDefaultPLC")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<ActionResult<string>> GetDefaultPLC()
+        {
+            try
+            {
+                LogInfo("📖 GetDefaultPLC request", "MachineConfig");
+
+                // Try MongoDB first if connected
+                if (_mongoService != null && _mongoService.IsConnected)
+                {
+                    var result = await _mongoService.GetLatestDefaultPlcAsync();
+                    if (result != null)
+                    {
+                        LogSuccess($"✓ Retrieved default PLC version: '{result.VersionName}'", "MachineConfig");
+                        return Ok(result.JsonData);
+                    }
+                }
+
+                // Fallback to plcSystemDefault.json
+                LogInfo("Using plcSystemDefault.json as default PLC", "MachineConfig");
+                if (_fileManager != null)
+                {
+                    var data = _fileManager.ReadData("plcSystemDefault.json");
+                    if (data != null)
+                    {
+                        return Ok(data);
+                    }
+                }
+
+                LogWarning("Default PLC not found", "MachineConfig");
+                return NotFound(new { message = "Default PLC not found" });
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to get default PLC: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to get default PLC: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Store current system default PLC as a versioned default
+        /// </summary>
+        /// <param name="request">Store request with version name and data</param>
+        /// <returns>Success response</returns>
+        [HttpPost("StoreAsDefaultPLC")]
+        [ProducesResponseType(200)]
+        public async Task<ActionResult> StoreAsDefaultPLC([FromBody] StoreDefaultPlcRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.VersionName))
+                {
+                    return BadRequest(new { message = "Version name is required" });
+                }
+
+                if (string.IsNullOrEmpty(request.JsonData))
+                {
+                    return BadRequest(new { message = "JSON data is required" });
+                }
+
+                LogInfo($"💾 StoreAsDefaultPLC request: '{request.VersionName}'", "MachineConfig");
+
+                if (_mongoService == null || !_mongoService.IsConnected)
+                {
+                    return StatusCode(500, new { message = "MongoDB not connected" });
+                }
+
+                var success = await _mongoService.SaveDefaultPlcAsync(
+                    request.VersionName,
+                    request.JsonData,
+                    request.MarkAsLatest,
+                    request.Description,
+                    request.CreatedBy
+                );
+
+                if (success)
+                {
+                    LogSuccess($"✓ Stored default PLC version: '{request.VersionName}'", "MachineConfig");
+                    return Ok(new { message = $"Default PLC version '{request.VersionName}' stored successfully" });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to store default PLC version" });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to store default PLC: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to store default PLC: {ex.Message}" });
             }
         }
 

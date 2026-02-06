@@ -46,13 +46,13 @@ namespace HavenCNCServer.Controllers
         [HttpGet("GetPLCData/{name}")]
         [ProducesResponseType(typeof(string[]), 200)]
         [ProducesResponseType(404)]
-        public ActionResult<string[]> GetPLCData(string name)
+        public async Task<ActionResult<string[]>> GetPLCData(string name)
         {
             try
             {
                 LogInfo($"📖 GetPLCData request: '{name}'", "PLC");
 
-                var content = _configController.GetData(name);
+                var content = await _configController.GetData(name);
                 if (content == null)
                 {
                     LogWarning($"PLC data '{name}' not found", "PLC");

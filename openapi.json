@@ -4896,6 +4896,19 @@
         }
       }
     },
+    "/api/CNCUI/GetMachineHomedState": {
+      "get": {
+        "tags": [
+          "CNCUI"
+        ],
+        "summary": "Get the current machine homed state",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/CNCUI/MachineHomed": {
       "post": {
         "tags": [
@@ -4998,12 +5011,107 @@
         }
       }
     },
+    "/api/MachineConfiguration/{fileName}": {
+      "get": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Get configuration file (MongoDB first, then local fallback)",
+        "parameters": [
+          {
+            "name": "fileName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Save configuration file (auto-increments version)",
+        "parameters": [
+          {
+            "name": "fileName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/set-machine": {
+      "post": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Set current machine name",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/MachineConfiguration/GetMachineNames": {
       "get": {
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Get all available machine names from MongoDB",
+        "summary": "Get list of available machine names from MongoDB",
         "responses": {
           "200": {
             "description": "Success",
@@ -5072,7 +5180,7 @@
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Set current machine (archives old local data and loads new machine data)",
+        "summary": "Set current machine",
         "requestBody": {
           "description": "Machine name to switch to",
           "content": {
@@ -5100,69 +5208,12 @@
         }
       }
     },
-    "/api/MachineConfiguration/CopyMachineConfiguration": {
-      "post": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Copy machine configuration to a new machine name",
-        "requestBody": {
-          "description": "Copy request with source and new machine names",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CopyMachineConfigurationRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CopyMachineConfigurationRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CopyMachineConfigurationRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/MachineConfiguration/SyncLocalToMongo": {
-      "post": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Sync local files to MongoDB (upload newer local files)",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/MachineConfiguration/GetConfiguration/{fileName}": {
+    "/api/MachineConfiguration/GetDefaultPLC": {
       "get": {
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Get configuration file (checks local vs MongoDB timestamp and returns latest)",
-        "parameters": [
-          {
-            "name": "fileName",
-            "in": "path",
-            "description": "Configuration file name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Get default PLC (latest version)",
         "responses": {
           "200": {
             "description": "Success",
@@ -5183,50 +5234,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/MachineConfiguration/SaveConfiguration/{fileName}": {
-      "post": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Save configuration file (saves both locally and to MongoDB)",
-        "parameters": [
-          {
-            "name": "fileName",
-            "in": "path",
-            "description": "Configuration file name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "File content",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "string"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
           }
         }
       }
@@ -5264,111 +5271,28 @@
         }
       }
     },
-    "/api/MachineConfiguration/GetDefaultPLC": {
+    "/api/MachineConfiguration/sync-status": {
       "get": {
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Get default PLC (latest version or specific version)",
-        "parameters": [
-          {
-            "name": "versionName",
-            "in": "query",
-            "description": "Optional version name (if null, returns latest)",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "Get sync status",
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/MachineConfiguration/ListDefaultPLCVersions": {
-      "get": {
+    "/api/MachineConfiguration/sync": {
+      "post": {
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "List all default PLC versions",
+        "summary": "Manually trigger sync with MongoDB",
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefaultPlcVersionInfo"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefaultPlcVersionInfo"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DefaultPlcVersionInfo"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/MachineConfiguration/GetSyncStatus": {
-      "get": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Get current sync status",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncStatusResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncStatusResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncStatusResponse"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -6302,28 +6226,6 @@
         "additionalProperties": false,
         "description": "Request model for configuration data operations"
       },
-      "CopyMachineConfigurationRequest": {
-        "type": "object",
-        "properties": {
-          "SourceMachineName": {
-            "type": "string",
-            "description": "Source machine name to copy from",
-            "nullable": true
-          },
-          "NewMachineName": {
-            "type": "string",
-            "description": "New machine name to create",
-            "nullable": true
-          },
-          "Description": {
-            "type": "string",
-            "description": "Optional description for the new machine",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for copying machine configuration"
-      },
       "DataItem": {
         "type": "object",
         "properties": {
@@ -6340,42 +6242,6 @@
         },
         "additionalProperties": false,
         "description": "Data item information"
-      },
-      "DefaultPlcVersionInfo": {
-        "type": "object",
-        "properties": {
-          "Id": {
-            "type": "string",
-            "description": "Document ID",
-            "nullable": true
-          },
-          "VersionName": {
-            "type": "string",
-            "description": "Version name",
-            "nullable": true
-          },
-          "Timestamp": {
-            "type": "string",
-            "description": "Timestamp",
-            "format": "date-time"
-          },
-          "Description": {
-            "type": "string",
-            "description": "Description",
-            "nullable": true
-          },
-          "IsLatest": {
-            "type": "boolean",
-            "description": "Is this the latest version"
-          },
-          "CreatedBy": {
-            "type": "string",
-            "description": "Created by user",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Response model for default PLC versions list"
       },
       "GlobalSystemConfiguration": {
         "type": "object",
@@ -7284,12 +7150,10 @@
         "properties": {
           "MachineName": {
             "type": "string",
-            "description": "Machine name to switch to",
             "nullable": true
           }
         },
-        "additionalProperties": false,
-        "description": "Request model for setting current machine"
+        "additionalProperties": false
       },
       "SetOutputRequest": {
         "type": "object",
@@ -7759,63 +7623,26 @@
         "properties": {
           "VersionName": {
             "type": "string",
-            "description": "Version name for this default PLC",
             "nullable": true
           },
           "JsonData": {
             "type": "string",
-            "description": "PLC JSON data to store",
             "nullable": true
           },
           "Description": {
             "type": "string",
-            "description": "Optional description",
             "nullable": true
           },
           "MarkAsLatest": {
-            "type": "boolean",
-            "description": "Mark this as the latest version"
+            "type": "boolean"
           },
           "CreatedBy": {
             "type": "string",
-            "description": "User creating this version",
             "nullable": true
           }
         },
         "additionalProperties": false,
         "description": "Request model for storing default PLC"
-      },
-      "SyncStatusResponse": {
-        "type": "object",
-        "properties": {
-          "MongoDbOnline": {
-            "type": "boolean",
-            "description": "Whether MongoDB is currently online"
-          },
-          "CurrentMachineName": {
-            "type": "string",
-            "description": "Current machine name",
-            "nullable": true
-          },
-          "LastSyncTime": {
-            "type": "string",
-            "description": "Last successful sync time",
-            "format": "date-time",
-            "nullable": true
-          },
-          "PendingChanges": {
-            "type": "integer",
-            "description": "Number of pending local changes",
-            "format": "int32"
-          },
-          "Message": {
-            "type": "string",
-            "description": "Status message",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Response model for machine configuration sync status"
       },
       "SystemHardwareInfo": {
         "type": "object",
