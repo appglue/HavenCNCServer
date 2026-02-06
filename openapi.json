@@ -4013,32 +4013,6 @@
         }
       }
     },
-    "/api/CNCSystem/ResetErrorState": {
-      "post": {
-        "tags": [
-          "CNCSystem"
-        ],
-        "summary": "Reset error state",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCSystem/ResetMachine": {
-      "post": {
-        "tags": [
-          "CNCSystem"
-        ],
-        "summary": "Reset the machine",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCSystem/HasCurrentErrors": {
       "get": {
         "tags": [
@@ -4953,7 +4927,7 @@
         "tags": [
           "CNCUI"
         ],
-        "summary": "Trigger emergency stop and reset (RESET_UI) - clears E-stop condition",
+        "summary": "Trigger emergency stop (ESTOP_UI) - activates emergency stop condition",
         "responses": {
           "200": {
             "description": "Success"

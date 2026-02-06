@@ -227,42 +227,6 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Reset error state
-        /// </summary>
-        [HttpPost("ResetErrorState")]
-        public void ResetErrorState()
-        {
-            try
-            {
-                // TODO: Implement reset error state functionality using CentroidAPI
-                // CNCUtils.ResetErrorState();
-                throw new NotImplementedException("Reset error state functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to reset error state: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Reset the machine
-        /// </summary>
-        [HttpPost("ResetMachine")]
-        public void ResetMachine()
-        {
-            try
-            {
-                // TODO: Implement reset machine functionality using CentroidAPI
-                // CNCUtils.ResetMachine();
-                throw new NotImplementedException("Reset machine functionality not yet implemented");
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to reset machine: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
         /// Check if machine has current errors
         /// </summary>
         /// <returns>Has errors status</returns>

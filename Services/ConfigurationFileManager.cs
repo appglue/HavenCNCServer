@@ -28,7 +28,8 @@ namespace HavenCNCServer.Services
         /// </summary>
         public long GetVersion(string fileName)
         {
-            var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+            var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+            var versionPath = Path.Combine(_dataDirectory, $"{fileNameWithoutExt}.version.json");
 
             if (!File.Exists(versionPath))
                 return 0;
@@ -73,7 +74,8 @@ namespace HavenCNCServer.Services
         public void WriteData(string fileName, string data, long version)
         {
             var dataPath = Path.Combine(_dataDirectory, fileName);
-            var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+            var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+            var versionPath = Path.Combine(_dataDirectory, $"{fileNameWithoutExt}.version.json");
 
             try
             {

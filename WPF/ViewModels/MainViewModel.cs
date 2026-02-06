@@ -27,6 +27,26 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private bool isAlwaysOnTop;
 
+    [ObservableProperty]
+    private bool isToolCheckActive;
+
+    [ObservableProperty]
+    private bool isFeedHoldActive;
+
+    [ObservableProperty]
+    private bool isMachineHomed;
+
+    [ObservableProperty]
+    private string resetButtonLabel = "ESTOP";
+
+    [ObservableProperty]
+    private bool requiresReset;
+
+    partial void OnRequiresResetChanged(bool value)
+    {
+        ResetButtonLabel = value ? "RESET" : "ESTOP";
+    }
+
     public MainViewModel()
     {
         try
@@ -248,25 +268,83 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private async Task ResetButton()
     {
-        await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.ResetButtonPressed));
-        await Task.Delay(100);
-        await Task.Run(() => CNCUtils.StopSkinEvent(SkinEvent.ResetButtonPressed));
+        if (RequiresReset)
+        {
+            // Machine needs reset - trigger RESET_UI (56)
+            await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.ResetButtonPressed));
+            await Task.Delay(100);
+            await Task.Run(() => CNCUtils.StopSkinEvent(SkinEvent.ResetButtonPressed));
+        }
+        else
+        {
+            // Machine is running - trigger ESTOP_UI (58)
+            await Task.Run(() => CNCUtils.StartSkinEvent((SkinEvent)58));
+            await Task.Delay(100);
+            await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)58));
+        }
     }
 
     [RelayCommand]
     private async Task StopButton()
     {
-        await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.CycleCancel));
+        await Task.Run(() => CNCUtils.StartSkinEvent((SkinEvent)47)); // STOP_UI
+        await Task.Delay(100);
+        await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)47));
+    }
+
+    [RelayCommand]
+    private async Task CancelCycleButton()
+    {
+        await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.CycleCancel)); // Event 46
         await Task.Delay(100);
         await Task.Run(() => CNCUtils.StopSkinEvent(SkinEvent.CycleCancel));
     }
 
     [RelayCommand]
-    private async Task StartButton()
+    private async Task StartCycleButton()
     {
-        await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.CycleStart));
+        await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.CycleStart)); // Event 50
         await Task.Delay(100);
         await Task.Run(() => CNCUtils.StopSkinEvent(SkinEvent.CycleStart));
+    }
+
+    [RelayCommand]
+    private async Task ToolCheckToggle()
+    {
+        if (IsToolCheckActive)
+        {
+            await Task.Run(() => CNCUtils.StartSkinEvent((SkinEvent)48)); // TOOL_CHECK_UI
+        }
+        else
+        {
+            await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)48));
+        }
+    }
+
+    [RelayCommand]
+    private async Task FeedHoldToggle()
+    {
+        if (IsFeedHoldActive)
+        {
+            await Task.Run(() => CNCUtils.StartSkinEvent((SkinEvent)49)); // FEED_HOLD_UI
+        }
+        else
+        {
+            await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)49));
+        }
+    }
+
+    [RelayCommand]
+    private async Task HomedToggle()
+    {
+        if (IsMachineHomed)
+        {
+            await Task.Run(() => CNCUtils.StartSkinEvent((SkinEvent)57)); // MACHINE_HOMED_UI
+        }
+        else
+        {
+            await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)57));
+        }
     }
 
     [RelayCommand]

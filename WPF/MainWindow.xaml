@@ -88,31 +88,124 @@
                            FontWeight="Bold"
                            Margin="0,0,0,10"/>
 
-                <UniformGrid Columns="1"
-                             Rows="3">
-                    <Button Content="RESET"
+                <!-- Primary Control Buttons (2x2 Grid) -->
+                <UniformGrid Columns="2"
+                             Rows="2"
+                             Margin="0,0,0,10">
+                    <Button Content="{Binding ResetButtonLabel}"
                             Command="{Binding ResetButtonCommand}"
                             Height="50"
-                            Margin="0,0,0,5"
-                            Background="Orange"
+                            Margin="0,0,2.5,2.5"
+                            Background="Red"
+                            Foreground="White"
                             FontSize="14"
                             FontWeight="Bold"/>
                     <Button Content="STOP"
                             Command="{Binding StopButtonCommand}"
                             Height="50"
-                            Margin="0,0,0,5"
-                            Background="Red"
+                            Margin="2.5,0,0,2.5"
+                            Background="Orange"
+                            FontSize="14"
+                            FontWeight="Bold"/>
+                    <Button Content="CANCEL CYCLE"
+                            Command="{Binding CancelCycleButtonCommand}"
+                            Height="50"
+                            Margin="0,2.5,2.5,0"
+                            Background="Blue"
                             Foreground="White"
                             FontSize="14"
                             FontWeight="Bold"/>
-                    <Button Content="START"
-                            Command="{Binding StartButtonCommand}"
+                    <Button Content="START CYCLE"
+                            Command="{Binding StartCycleButtonCommand}"
                             Height="50"
-                            Margin="0,0,0,5"
+                            Margin="2.5,2.5,0,0"
                             Background="Green"
                             Foreground="White"
                             FontSize="14"
                             FontWeight="Bold"/>
+                </UniformGrid>
+
+                <!-- Secondary Toggle Buttons (1x3 Grid) -->
+                <TextBlock Text="Toggle Controls"
+                           FontSize="12"
+                           Margin="0,5,0,5"/>
+                <UniformGrid Columns="3"
+                             Rows="1">
+                    <ToggleButton Content="TOOL CHECK"
+                                  Command="{Binding ToolCheckToggleCommand}"
+                                  IsChecked="{Binding IsToolCheckActive, Mode=TwoWay}"
+                                  Height="40"
+                                  Margin="0,0,2.5,0"
+                                  FontSize="12"
+                                  FontWeight="Bold">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background"
+                                        Value="White"/>
+                                <Setter Property="Foreground"
+                                        Value="Black"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="DarkGray"/>
+                                        <Setter Property="Foreground"
+                                                Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                    <ToggleButton Content="FEED HOLD"
+                                  Command="{Binding FeedHoldToggleCommand}"
+                                  IsChecked="{Binding IsFeedHoldActive, Mode=TwoWay}"
+                                  Height="40"
+                                  Margin="2.5,0,2.5,0"
+                                  FontSize="12"
+                                  FontWeight="Bold">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background"
+                                        Value="White"/>
+                                <Setter Property="Foreground"
+                                        Value="Black"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="DarkGray"/>
+                                        <Setter Property="Foreground"
+                                                Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                    <ToggleButton Content="HOMED"
+                                  Command="{Binding HomedToggleCommand}"
+                                  IsChecked="{Binding IsMachineHomed, Mode=TwoWay}"
+                                  Height="40"
+                                  Margin="2.5,0,0,0"
+                                  FontSize="12"
+                                  FontWeight="Bold">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Background"
+                                        Value="White"/>
+                                <Setter Property="Foreground"
+                                        Value="Black"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="DarkGray"/>
+                                        <Setter Property="Foreground"
+                                                Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
                 </UniformGrid>
             </StackPanel>
 

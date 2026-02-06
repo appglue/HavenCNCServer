@@ -180,7 +180,7 @@ namespace HavenCNCServer.Controllers
                 }
 
                 // Get version from version file
-                var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+                var versionPath = Path.Combine(_dataDirectory, $"{Path.GetFileNameWithoutExtension(fileName)}.version.json");
                 long version = 1;
                 if (System.IO.File.Exists(versionPath))
                 {
@@ -466,6 +466,17 @@ namespace HavenCNCServer.Controllers
 
                 LoggingService.Log($"Received {configuredAxes.Count} configured axes");
 
+                // Ensure configured axes are visible in DRO (unhide them) BEFORE configuring
+                foreach (var axis in configuredAxes)
+                {
+                    if (!axis.HideFromDRO.HasValue)
+                    {
+                        // If not explicitly set, show it in DRO
+                        axis.HideFromDRO = false;
+                        LoggingService.Log($"  Setting Axis {axis.AxisNumber} ({axis.AxisType}) to show in DRO");
+                    }
+                }
+
                 // Configure the machine with the provided axes
                 var result = CentroidConfigUtil.ConfigureCompleteMachine(
                     configuredAxes,
@@ -480,6 +491,7 @@ namespace HavenCNCServer.Controllers
 
                 if (result)
                 {
+
                     // CNC12 has 6 axis slots - set unused slots to 'N' (None) and hide from DRO
                     // This prevents unconfigured axes from showing as "U" or other default letters
                     int maxAxes = 6;

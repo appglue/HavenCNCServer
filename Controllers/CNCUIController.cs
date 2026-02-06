@@ -755,15 +755,14 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Trigger emergency stop and reset (RESET_UI) - clears E-stop condition
+        /// Trigger emergency stop (ESTOP_UI) - activates emergency stop condition
         /// </summary>
         [HttpPost("EStop")]
         public IActionResult EStop()
         {
-            // E-stop uses the same reset mechanism to clear the condition
-            var result = CNCUtils.TriggerSkinEvent(56);
-            return result ? Ok(new { success = true, message = "E-stop reset triggered" })
-                          : StatusCode(500, new { success = false, message = "Failed to trigger E-stop reset" });
+            var result = CNCUtils.TriggerSkinEvent(58); // ESTOP_UI event
+            return result ? Ok(new { success = true, message = "Emergency stop triggered" })
+                          : StatusCode(500, new { success = false, message = "Failed to trigger emergency stop" });
         }
 
         #endregion
