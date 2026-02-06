@@ -23,6 +23,11 @@ namespace HavenCNCServer.Centroid.Events
         void OnCNCMessage(ICentroidEvent message);
 
         /// <summary>
+        /// Receive server status update (heartbeat, every 2 seconds)
+        /// </summary>
+        void OnServerStatus(ServerStatusEvent status);
+
+        /// <summary>
         /// Specify which event types this subscriber wants to receive
         /// </summary>
         EventTypeFlags GetSubscribedEvents();
@@ -38,6 +43,7 @@ namespace HavenCNCServer.Centroid.Events
         Position = 1,
         Logs = 2,
         Messages = 4,
-        All = Position | Logs | Messages
+        ServerStatus = 8,
+        All = Position | Logs | Messages | ServerStatus
     }
 }

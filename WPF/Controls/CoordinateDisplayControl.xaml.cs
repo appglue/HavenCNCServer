@@ -62,6 +62,11 @@ namespace HavenCNCServer.WPF.Controls
             // Not interested in CNC messages
         }
 
+        public void OnServerStatus(ServerStatusEvent status)
+        {
+            // Not interested in server status
+        }
+
         /// <summary>
         /// Receives and processes CNC events for coordinate updates
         /// </summary>

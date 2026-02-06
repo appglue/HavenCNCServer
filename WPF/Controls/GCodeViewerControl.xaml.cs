@@ -43,6 +43,11 @@ namespace HavenCNCServer.WPF.Controls
             // Not interested in log messages
         }
 
+        public void OnServerStatus(ServerStatusEvent status)
+        {
+            // Not interested in server status
+        }
+
         public void OnCNCMessage(ICentroidEvent message)
         {
             if (message is StepExecutionEvent stepEvent)

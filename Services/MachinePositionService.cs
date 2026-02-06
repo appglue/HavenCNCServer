@@ -182,6 +182,11 @@ namespace HavenCNCServer.Services
                 // Not interested in CNC messages
             }
 
+            public void OnServerStatus(ServerStatusEvent status)
+            {
+                // Not interested in server status
+            }
+
             public void EventReceived(ICentroidEvent centroidEvent)
             {
                 if (centroidEvent is DROEvent droEvent)

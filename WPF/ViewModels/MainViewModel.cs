@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HavenCNCServer.Centroid;
+using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Services;
 using HavenCNCServer.Models;
 using HavenCNCServer.WPF.Views;
@@ -13,7 +15,7 @@ namespace HavenCNCServer.WPF.ViewModels;
 /// <summary>
 /// ViewModel for the main application window
 /// </summary>
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel : BaseViewModel, IEventSubscriber
 {
     [ObservableProperty]
     private bool isConnected;
@@ -53,6 +55,9 @@ public partial class MainViewModel : BaseViewModel
         {
             // Subscribe to CNC connection events
             CNCConnectionManager.ConnectionStatusChanged += OnConnectionStatusChanged;
+
+            // Subscribe to CNCEventBus for server status updates
+            CNCEventBus.Instance.Subscribe(this);
         }
         catch (Exception ex)
         {
@@ -303,6 +308,21 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private async Task StartCycleButton()
     {
+        // Show warning dialog
+        var result = System.Windows.MessageBox.Show(
+            "START CYCLE is generally not used like it is in CNC12 and can cause unexpected side effects.\n\n" +
+            "It is provided here only for special cases where it may be needed.\n\n" +
+            "Do you want to start the cycle anyway?",
+            "Start Cycle Warning",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (result != MessageBoxResult.Yes)
+        {
+            return; // User cancelled
+        }
+
         await Task.Run(() => CNCUtils.StartSkinEvent(SkinEvent.CycleStart)); // Event 50
         await Task.Delay(100);
         await Task.Run(() => CNCUtils.StopSkinEvent(SkinEvent.CycleStart));
@@ -363,6 +383,36 @@ public partial class MainViewModel : BaseViewModel
             // Update CNC12 running status
             IsCnc12Running = CNCConnectionManager.IsCnc12ProcessRunning;
             ConnectionRetryCount = CNCConnectionManager.ConnectionRetryCount;
+        });
+    }
+
+    // IEventSubscriber implementation
+    public EventTypeFlags GetSubscribedEvents()
+    {
+        return EventTypeFlags.ServerStatus;
+    }
+
+    public void OnPositionUpdate(DROEvent position)
+    {
+        // Not interested in position updates
+    }
+
+    public void OnLogMessage(LogEvent log)
+    {
+        // Not interested in log messages
+    }
+
+    public void OnCNCMessage(ICentroidEvent message)
+    {
+        // Not interested in CNC messages
+    }
+
+    public void OnServerStatus(ServerStatusEvent status)
+    {
+        // Update RequiresReset based on server status
+        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+        {
+            RequiresReset = status.RequiresReset;
         });
     }
 }

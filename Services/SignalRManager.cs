@@ -580,6 +580,17 @@ namespace HavenCNCServer.Services
                         Timestamp = DateTime.UtcNow,
                         Data = serverStatus
                     });
+
+                    // Also publish to CNCEventBus for WPF consumption
+                    Centroid.Events.CNCEventBus.Instance.PublishServerStatus(new Centroid.Events.ServerStatusEvent
+                    {
+                        Timestamp = DateTime.UtcNow,
+                        IsConnected = isConnected,
+                        IsApiRestricted = isApiRestricted,
+                        IsJobRunning = isJobRunning,
+                        RequiresReset = requiresReset,
+                        IsHomed = isHomed
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -767,6 +778,14 @@ namespace HavenCNCServer.Services
                 // Queue is full - log and drop the event
                 LogWarning($"SignalR message queue full - dropping {message.GetType().Name} event", "SignalR");
             }
+        }
+
+        /// <summary>
+        /// Receive server status update from event bus
+        /// </summary>
+        public void OnServerStatus(ServerStatusEvent status)
+        {
+            // Not interested - we generate the server status in SendHeartbeat
         }
 
         // LEGACY SUPPORT: Keep ICNCEventListener interface for compatibility during migration

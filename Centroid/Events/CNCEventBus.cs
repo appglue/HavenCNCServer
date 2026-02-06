@@ -23,6 +23,7 @@ namespace HavenCNCServer.Centroid.Events
         private readonly Channel<DROEvent> _positionChannel;
         private readonly Channel<LogEvent> _logChannel;
         private readonly Channel<ICentroidEvent> _messageChannel;
+        private readonly Channel<ServerStatusEvent> _serverStatusChannel;
 
         // Worker threads
         private readonly List<Thread> _workerThreads;
@@ -63,6 +64,14 @@ namespace HavenCNCServer.Centroid.Events
                 new BoundedChannelOptions(500)
                 {
                     FullMode = BoundedChannelFullMode.Wait
+                });
+
+            // ServerStatus: Drop oldest, keep latest (capacity 1)
+            // Low frequency (every 2 seconds), only latest value matters
+            _serverStatusChannel = Channel.CreateBounded<ServerStatusEvent>(
+                new BoundedChannelOptions(1)
+                {
+                    FullMode = BoundedChannelFullMode.DropOldest
                 });
 
             _subscribers = new ConcurrentDictionary<IEventSubscriber, byte>();
@@ -179,6 +188,21 @@ namespace HavenCNCServer.Centroid.Events
             }
         }
 
+        /// <summary>
+        /// Publish a server status update (non-blocking, drops old if channel full)
+        /// </summary>
+        public void PublishServerStatus(ServerStatusEvent status)
+        {
+            try
+            {
+                _serverStatusChannel.Writer.TryWrite(status);
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error publishing server status event: {ex.Message}", "EventBus");
+            }
+        }
+
         #endregion
 
         #region Consumer API (called by WPF components, SignalR, etc.)
@@ -252,6 +276,16 @@ namespace HavenCNCServer.Centroid.Events
                 messageWorker.Start();
                 _workerThreads.Add(messageWorker);
             }
+
+            // ServerStatus worker (low priority) - dedicated thread for status updates
+            var statusWorker = new Thread(() => ServerStatusWorker(_cancellation.Token))
+            {
+                Name = "EventBus-ServerStatus",
+                IsBackground = true,
+                Priority = ThreadPriority.BelowNormal
+            };
+            statusWorker.Start();
+            _workerThreads.Add(statusWorker);
 
             LogInfo($"Started {_workerThreads.Count} worker threads", "EventBus");
         }
@@ -376,6 +410,55 @@ namespace HavenCNCServer.Centroid.Events
             }
         }
 
+        /// <summary>
+        /// Worker thread for server status updates (low priority)
+        /// </summary>
+        private void ServerStatusWorker(CancellationToken ct)
+        {
+            LogInfo("ServerStatus worker started", "EventBus");
+
+            try
+            {
+                while (!ct.IsCancellationRequested)
+                {
+                    // Try to read status from channel (non-blocking)
+                    if (_serverStatusChannel.Reader.TryRead(out var status))
+                    {
+                        foreach (var subscriber in _subscribers.Keys)
+                        {
+                            try
+                            {
+                                if (subscriber.GetSubscribedEvents().HasFlag(EventTypeFlags.ServerStatus))
+                                {
+                                    subscriber.OnServerStatus(status);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                LogError($"Subscriber {subscriber.GetType().Name} error in OnServerStatus: {ex.Message}", "EventBus");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // No status available, wait a bit
+                        if (!ct.WaitHandle.WaitOne(100)) // 100ms wait (status updates are infrequent)
+                        {
+                            // Token was not signaled, continue loop
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                LogInfo("ServerStatus worker cancelled", "EventBus");
+            }
+            catch (Exception ex)
+            {
+                LogError($"ServerStatus worker error: {ex.Message}", "EventBus");
+            }
+        }
+
         #endregion
 
         #region Metrics
@@ -427,6 +510,7 @@ namespace HavenCNCServer.Centroid.Events
             _positionChannel.Writer.Complete();
             _logChannel.Writer.Complete();
             _messageChannel.Writer.Complete();
+            _serverStatusChannel.Writer.Complete();
 
             // Wait for workers to finish
             foreach (var thread in _workerThreads)

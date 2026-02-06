@@ -99,7 +99,25 @@
                             Background="Red"
                             Foreground="White"
                             FontSize="14"
-                            FontWeight="Bold"/>
+                            FontWeight="Bold">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RequiresReset}"
+                                            Value="True">
+                                        <Setter Property="Background"
+                                                Value="White"/>
+                                        <Setter Property="Foreground"
+                                                Value="Red"/>
+                                        <Setter Property="BorderBrush"
+                                                Value="Red"/>
+                                        <Setter Property="BorderThickness"
+                                                Value="3"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button Content="STOP"
                             Command="{Binding StopButtonCommand}"
                             Height="50"
