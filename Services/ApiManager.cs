@@ -173,7 +173,7 @@ namespace HavenCNCServer.Services
                     try
                     {
                         await Task.Delay(1000); // Wait for API to be fully ready
-                        await Controllers.MachineConfigurationController.InitializeAtStartupAsync();
+                        await Controllers.MachineConfigurationController.InitializeAsync();
                     }
                     catch (Exception ex)
                     {

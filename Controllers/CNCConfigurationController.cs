@@ -51,36 +51,32 @@ namespace HavenCNCServer.Controllers
         /// <param name="name">Name of the data to retrieve</param>
         /// <returns>Data content or null if not found</returns>
         [HttpGet("GetData/{name}")]
-        public string? GetData(string name)
+        public async Task<string?> GetData(string name)
         {
             Services.LoggingService.LogInfo($"🔵 GetData ENDPOINT HIT - name parameter: '{name}'", "Config");
             try
             {
                 Services.LoggingService.LogInfo($"📖 GetData request received: '{name}'", "Config");
-                Services.LoggingService.LogDebug($"Data directory: {_dataDirectory}", "Config");
 
-                var dataPath = Path.Combine(_dataDirectory, name);
-                Services.LoggingService.LogDebug($"Looking for data file at: {dataPath}", "Config");
+                // Use MachineConfigurationController which has MongoDB-first logic with local fallback
+                var machineConfigController = new MachineConfigurationController();
+                var result = await machineConfigController.GetConfiguration(name);
 
-                if (!System.IO.File.Exists(dataPath))
+                if (result is OkObjectResult okResult && okResult.Value is string content)
                 {
-                    Services.LoggingService.LogWarning($"❌ Data '{name}' not found at: {dataPath}", "Config");
-                    Services.LoggingService.LogDebug($"File.Exists returned false for: {dataPath}", "Config");
-                    return null; // Return null instead of throwing error
-                }
-
-                Services.LoggingService.LogDebug($"File exists, reading content from: {dataPath}", "Config");
-                var versioned = LoadVersionedFile(name);
-                if (versioned == null)
-                {
-                    // Fallback: read raw file if no version metadata
-                    var content = System.IO.File.ReadAllText(dataPath);
-                    Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} chars (no version metadata)", "Config");
+                    Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned {content.Length} chars", "Config");
                     return content;
                 }
-
-                Services.LoggingService.LogSuccess($"✓ GetData '{name}' returned v{versioned.Metadata.Version} ({versioned.Data.Length} chars)", "Config");
-                return versioned.Data;
+                else if (result is NotFoundResult)
+                {
+                    Services.LoggingService.LogWarning($"❌ Data '{name}' not found", "Config");
+                    return null;
+                }
+                else
+                {
+                    Services.LoggingService.LogWarning($"❌ Unexpected result type for '{name}'", "Config");
+                    return null;
+                }
             }
             catch (Exception ex)
             {
@@ -109,14 +105,6 @@ namespace HavenCNCServer.Controllers
                 Services.LoggingService.LogInfo($"💾 SetData request: '{request.Name}' ({(request.Content?.Length ?? 0)} chars)", "Config");
 
                 var dataPath = Path.Combine(_dataDirectory, request.Name);
-                var versionPath = Path.Combine(_dataDirectory, $"{request.Name}.version.json");
-
-                // Load current version to increment it
-                var currentVersioned = LoadVersionedFile(request.Name);
-                var currentVersion = currentVersioned?.Metadata.Version ?? 0;
-
-                // Create new versioned file with incremented version
-                var newVersioned = VersionedConfigurationFile.Create(request.Name, request.Content ?? string.Empty, currentVersion);
 
                 // Create backup before saving
                 if (System.IO.File.Exists(dataPath))
@@ -124,17 +112,18 @@ namespace HavenCNCServer.Controllers
                     Services.BackupService.CreateBackup(dataPath);
                 }
 
-                // Save data file
-                System.IO.File.WriteAllText(dataPath, newVersioned.Data);
+                // Call MachineConfigurationController.SaveConfiguration which handles versioning and MongoDB sync
+                var machineConfigController = new MachineConfigurationController();
+                var result = await machineConfigController.SaveConfiguration(request.Name, request.Content ?? string.Empty);
 
-                // Save version metadata file
-                var versionJson = System.Text.Json.JsonSerializer.Serialize(newVersioned.Metadata, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                System.IO.File.WriteAllText(versionPath, versionJson);
-
-                Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved v{newVersioned.Metadata.Version} to: {dataPath}", "Config");
-
-                // Sync to MongoDB if enabled
-                await SyncToMongoDbAsync(request.Name, System.Text.Json.JsonSerializer.Serialize(newVersioned));
+                if (result is OkObjectResult okResult)
+                {
+                    Services.LoggingService.LogSuccess($"✓ SetData '{request.Name}' saved successfully", "Config");
+                }
+                else
+                {
+                    throw new InvalidOperationException("Failed to save configuration");
+                }
             }
             catch (Exception ex)
             {
@@ -192,15 +181,26 @@ namespace HavenCNCServer.Controllers
                     return; // Not a config file we sync
                 }
 
-                var success = await mongoService.SaveMachineConfigurationAsync(
+                // Get version from version file
+                var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
+                long version = 1;
+                if (System.IO.File.Exists(versionPath))
+                {
+                    var versionJson = System.IO.File.ReadAllText(versionPath);
+                    var fileVersion = System.Text.Json.JsonSerializer.Deserialize<Services.FileVersion>(versionJson);
+                    version = fileVersion?.Version ?? 1;
+                }
+
+                var success = await mongoService.SaveAsync(
                     localSettings.CurrentMachineName,
                     fileName,
-                    content
+                    content,
+                    version
                 );
 
                 if (success)
                 {
-                    Services.LoggingService.LogSuccess($"✓ Synced {fileName} to MongoDB for machine '{localSettings.CurrentMachineName}'", "MongoDB");
+                    Services.LoggingService.LogSuccess($"✓ Synced {fileName} v{version} to MongoDB for machine '{localSettings.CurrentMachineName}'", "MongoDB");
                 }
             }
             catch (Exception ex)
@@ -886,46 +886,24 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Load a versioned configuration file from disk (data + version metadata)
+        /// Load a configuration file from disk  
         /// </summary>
-        private VersionedConfigurationFile? LoadVersionedFile(string fileName)
+        private string? LoadConfigurationFile(string fileName)
         {
             try
             {
                 var dataPath = Path.Combine(_dataDirectory, fileName);
-                var versionPath = Path.Combine(_dataDirectory, $"{fileName}.version.json");
 
-                // Data file must exist
                 if (!System.IO.File.Exists(dataPath))
                 {
                     return null;
                 }
 
-                var data = System.IO.File.ReadAllText(dataPath);
-
-                // If version file doesn't exist, return null (will trigger sync from MongoDB)
-                if (!System.IO.File.Exists(versionPath))
-                {
-                    return null;
-                }
-
-                var versionJson = System.IO.File.ReadAllText(versionPath);
-                var metadata = System.Text.Json.JsonSerializer.Deserialize<ConfigurationMetadata>(versionJson);
-
-                if (metadata == null)
-                {
-                    return null;
-                }
-
-                return new VersionedConfigurationFile
-                {
-                    Metadata = metadata,
-                    Data = data
-                };
+                return System.IO.File.ReadAllText(dataPath);
             }
             catch (Exception ex)
             {
-                Services.LoggingService.LogError($"Failed to load versioned file {fileName}: {ex.Message}", "Config");
+                Services.LoggingService.LogError($"Failed to load file {fileName}: {ex.Message}", "Config");
                 return null;
             }
         }

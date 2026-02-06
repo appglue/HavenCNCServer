@@ -5,8 +5,7 @@ using System.Text.Json.Serialization;
 namespace HavenCNCServer.Models
 {
     /// <summary>
-    /// Wrapper for configuration files with versioning metadata
-    /// Ensures we can always determine which version is newer
+    /// Wrapper for configuration files with versioning metadata  
     /// </summary>
     public class VersionedConfigurationFile
     {
@@ -23,27 +22,9 @@ namespace HavenCNCServer.Models
         public string Data { get; set; } = "{}";
 
         /// <summary>
-        /// Create a new versioned configuration file
-        /// </summary>
-        public static VersionedConfigurationFile Create(string fileName, string data, long? previousVersion = null)
-        {
-            return new VersionedConfigurationFile
-            {
-                Metadata = new ConfigurationMetadata
-                {
-                    FileName = fileName,
-                    Version = (previousVersion ?? 0) + 1,
-                    Timestamp = DateTime.UtcNow,
-                    Hash = ComputeHash(data)
-                },
-                Data = data
-            };
-        }
-
-        /// <summary>
         /// Compute SHA256 hash of data for integrity checking
         /// </summary>
-        private static string ComputeHash(string data)
+        public static string ComputeHash(string data)
         {
             using var sha256 = System.Security.Cryptography.SHA256.Create();
             var bytes = System.Text.Encoding.UTF8.GetBytes(data);
