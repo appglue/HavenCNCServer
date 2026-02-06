@@ -171,8 +171,13 @@ namespace HavenCNCServer.Controllers
                 {
                     try
                     {
+                        LogInfo($"  🔎 Processing {fileName}...", "MachineConfig");
+                        
                         var localVersioned = LoadVersionedFile(fileName);
+                        LogInfo($"  📁 Local check: {(localVersioned == null ? "NOT FOUND" : $"Found v{localVersioned.Metadata.Version}")}", "MachineConfig");
+                        
                         var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
+                        LogInfo($"  🗄️ MongoDB check: {(mongoDoc == null ? "NOT FOUND" : "FOUND")}", "MachineConfig");
 
                         VersionedConfigurationFile? mongoVersioned = null;
                         if (mongoDoc != null)
@@ -180,11 +185,12 @@ namespace HavenCNCServer.Controllers
                             try
                             {
                                 mongoVersioned = JsonSerializer.Deserialize<VersionedConfigurationFile>(mongoDoc.JsonData);
+                                LogInfo($"  ✅ MongoDB deserialization: SUCCESS v{mongoVersioned.Metadata.Version}", "MachineConfig");
                             }
-                            catch
+                            catch (Exception deserEx)
                             {
                                 // MongoDB has old format - skip for now, will convert on save
-                                LogInfo($"  {fileName}: MongoDB has old format, skipping", "MachineConfig");
+                                LogWarning($"  {fileName}: MongoDB has old format ({deserEx.Message}), skipping", "MachineConfig");
                                 skippedCount++;
                                 continue;
                             }
@@ -222,9 +228,18 @@ namespace HavenCNCServer.Controllers
                         else if (mongoVersioned != null && localVersioned == null)
                         {
                             // Only in MongoDB - download
-                            SaveVersionedFile(mongoVersioned);
-                            LogInfo($"  ✓ {fileName}: Downloaded v{mongoVersioned.Metadata.Version} from MongoDB", "MachineConfig");
-                            syncedCount++;
+                            LogInfo($"  ⬇️ {fileName}: Downloading v{mongoVersioned.Metadata.Version} from MongoDB...", "MachineConfig");
+                            try
+                            {
+                                SaveVersionedFile(mongoVersioned);
+                                LogSuccess($"  ✓ {fileName}: Downloaded v{mongoVersioned.Metadata.Version} from MongoDB", "MachineConfig");
+                                syncedCount++;
+                            }
+                            catch (Exception saveEx)
+                            {
+                                LogError($"  ✗ {fileName}: Failed to save - {saveEx.Message}", "MachineConfig");
+                                throw;
+                            }
                         }
                         else if (localVersioned != null && mongoVersioned == null)
                         {
