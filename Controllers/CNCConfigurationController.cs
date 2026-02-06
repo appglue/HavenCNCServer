@@ -164,7 +164,13 @@ namespace HavenCNCServer.Controllers
                 }
 
                 // Load current machine name
-                var localSettingsPath = Path.Combine(_dataDirectory, "localMachineSettings.json");
+                // Use ONLY the configured data directory from settings - no fallback
+                var dataDirectory = SettingsManager.Settings.Files.DataDirectory;
+                if (string.IsNullOrEmpty(dataDirectory))
+                {
+                    throw new InvalidOperationException("DataDirectory not configured in settings.json");
+                }
+                var localSettingsPath = Path.Combine(dataDirectory, "machineDataStorageSettings.json");
                 if (!System.IO.File.Exists(localSettingsPath))
                 {
                     Services.LoggingService.LogInfo("No machine name set, skipping MongoDB sync", "MongoDB");
@@ -181,18 +187,7 @@ namespace HavenCNCServer.Controllers
                 }
 
                 // Only sync known configuration files
-                var configFiles = new[]
-                {
-                    "plcSystem.json",
-                    "plcSystemDefault.json",
-                    "configuration.json",
-                    "machine.json",
-                    "machineState.json",
-                    "fixtures.json",
-                    "userActionData.json"
-                };
-
-                if (!configFiles.Contains(fileName))
+                if (!ConfigurationFiles.IsSyncedFile(fileName))
                 {
                     return; // Not a config file we sync
                 }

@@ -136,15 +136,18 @@ namespace HavenCNCServer.Services
 
                 _webHost = builder.Build();
 
-                // Start the web host in a background task
+                // Start the web host in a background task with proper naming
                 _ = Task.Run(async () =>
                 {
                     try
                     {
+                        Console.WriteLine("[ApiManager] Web host RunAsync started");
                         await _webHost.RunAsync(_cancellationTokenSource.Token);
+                        Console.WriteLine("[ApiManager] Web host RunAsync completed");
                     }
                     catch (OperationCanceledException)
                     {
+                        Console.WriteLine("[ApiManager] Web host cancelled (expected)");
                         // Expected when cancellation is requested
                     }
                     catch (Exception ex)
@@ -152,7 +155,7 @@ namespace HavenCNCServer.Services
                         LogError($"Error running web host: {ex.Message}", "API");
                         UpdateStatus("API Server Error", Color.Red);
                     }
-                });
+                }, _cancellationTokenSource.Token); // Pass cancellation token to Task.Run
 
                 // Give the server a moment to start
                 await Task.Delay(2000);
@@ -211,11 +214,15 @@ namespace HavenCNCServer.Services
             {
                 UpdateStatus("Stopping API Server...", Color.Orange);
                 LogInfo("Stopping API server...", "API");
+                Console.WriteLine("[ApiManager] StopAsync called");
 
+                // Cancel the cancellation token first
                 _cancellationTokenSource?.Cancel();
+                Console.WriteLine("[ApiManager] Cancellation token cancelled");
 
                 if (_webHost != null)
                 {
+                    Console.WriteLine("[ApiManager] Calling StopAsync on web host...");
                     // Give web host limited time to stop gracefully
                     using var timeoutToken = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                     using var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(
@@ -224,14 +231,18 @@ namespace HavenCNCServer.Services
                     try
                     {
                         await _webHost.StopAsync(combinedToken.Token);
+                        Console.WriteLine("[ApiManager] Web host StopAsync completed");
                     }
                     catch (OperationCanceledException) when (timeoutToken.Token.IsCancellationRequested)
                     {
+                        Console.WriteLine("[ApiManager] Web host stop timed out after 3 seconds");
                         LogWarning("Web host stop operation timed out after 3 seconds", "API");
                     }
 
+                    Console.WriteLine("[ApiManager] Disposing web host...");
                     _webHost.Dispose();
                     _webHost = null;
+                    Console.WriteLine("[ApiManager] Web host disposed");
                 }
 
                 _cancellationTokenSource?.Dispose();

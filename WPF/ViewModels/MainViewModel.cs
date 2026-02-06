@@ -221,7 +221,13 @@ public partial class MainViewModel : BaseViewModel
     {
         try
         {
-            var dataPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
+            // Use centralized data directory from settings
+            var dataPath = Services.SettingsManager.Settings.Files.DataDirectory;
+            if (string.IsNullOrEmpty(dataPath))
+            {
+                dataPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "data");
+            }
+
             if (!System.IO.Directory.Exists(dataPath))
             {
                 System.IO.Directory.CreateDirectory(dataPath);

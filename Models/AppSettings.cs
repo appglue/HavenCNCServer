@@ -60,12 +60,6 @@ namespace HavenCNCServer.Models
         /// Maximum number of temporary files to keep
         /// </summary>
         public int MaxTempFiles { get; set; } = 50;
-
-        /// <summary>
-        /// Directory for detailed job listener log files
-        /// Default: C:/havenlogs
-        /// </summary>
-        public string JobListenerLogsDirectory { get; set; } = @"C:\havenlogs";
     }
 
     /// <summary>
@@ -84,13 +78,10 @@ namespace HavenCNCServer.Models
         public bool EnableFileLogging { get; set; } = true;
 
         /// <summary>
-        /// Log file directory
-        /// Default: %APPDATA%\HavenCNCServer\Logs
+        /// Log file directory (relative to data directory)
+        /// Default: logs
         /// </summary>
-        public string LogDirectory { get; set; } = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "HavenCNCServer",
-            "Logs");
+        public string LogDirectory { get; set; } = "logs";
 
         /// <summary>
         /// Maximum log file size in MB

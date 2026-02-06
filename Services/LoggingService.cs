@@ -406,6 +406,32 @@ namespace HavenCNCServer.Services
 
             var entry = new LogEntry(message, level, source);
 
+            // Write to console immediately (critical for shutdown debugging)
+            var levelPrefix = level switch
+            {
+                LogLevel.Error => "[ERROR]",
+                LogLevel.Warning => "[WARN]",
+                LogLevel.Success => "[OK]",
+                LogLevel.Debug => "[DEBUG]",
+                _ => "[INFO]"
+            };
+            Console.WriteLine($"{entry.Timestamp:HH:mm:ss.fff} {levelPrefix} [{source}] {message}");
+
+            // During shutdown, skip UI updates to avoid blocking
+            if (ShutdownManager.IsShuttingDown)
+            {
+                // Still add to log entries for file logging, but skip UI updates
+                lock (_lock)
+                {
+                    _logEntries.Add(entry);
+                    while (_logEntries.Count > MaxLogEntries)
+                    {
+                        _logEntries.RemoveAt(0);
+                    }
+                }
+                return;
+            }
+
             lock (_lock)
             {
                 // Add the new entry

@@ -43,25 +43,28 @@ public partial class MainWindow : Window
 
         _isShuttingDown = true;
 
-        LogInfo("MainWindow closing...", "System");
+        LogInfo("*** MainWindow closing - starting shutdown sequence ***", "System");
 
-        // Allow window to close immediately - don't block UI thread
-        base.OnClosing(e);
-
-        // Trigger cleanup asynchronously without blocking
-        System.Threading.Tasks.Task.Run(() =>
+        // Run shutdown on background thread to avoid UI thread blocking issues
+        var shutdownThread = new System.Threading.Thread(() =>
         {
             try
             {
-                LogInfo("Starting async cleanup...", "System");
                 ProgramWPF.CleanupBeforeShutdown();
             }
             catch (Exception ex)
             {
-                LogError($"Error during async cleanup: {ex.Message}", "System");
+                LogError($"Error during shutdown: {ex.Message}", "System");
+                Services.ShutdownManager.ForceShutdown();
             }
-        });
+        })
+        {
+            Name = "Shutdown-Thread",
+            IsBackground = false // Not a background thread - we want to wait for it
+        };
 
-        // Let App.Shutdown happen naturally - App_Exit will handle the rest
+        shutdownThread.Start();
+
+        // This code will never be reached because shutdown calls Application.Shutdown()
     }
 }

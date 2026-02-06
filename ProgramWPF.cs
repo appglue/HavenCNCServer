@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HavenCNCServer.Centroid;
@@ -16,6 +17,16 @@ namespace HavenCNCServer
     {
         private static CancellationTokenSource? _cancellationTokenSource;
 
+        // Import AllocConsole from kernel32.dll to create console window
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AllocConsole();
+
+        [DllImport("kernel32.dll")]
+        private static extern bool AttachConsole(int dwProcessId);
+
+        private const int ATTACH_PARENT_PROCESS = -1;
+
         /// <summary>
         /// Cancel all background operations (called during shutdown)
         /// </summary>
@@ -29,10 +40,22 @@ namespace HavenCNCServer
         {
             try
             {
+                // Ensure console is available for logging (WPF apps don't have console by default)
+                if (!AttachConsole(ATTACH_PARENT_PROCESS))
+                {
+                    AllocConsole();
+                }
+
+                Console.WriteLine("==========================================================");
+                Console.WriteLine("HavenCNC Server - Console Output Enabled");
+                Console.WriteLine("==========================================================");
                 Console.WriteLine("Starting HavenCNC Server (WPF UI)...");
 
                 // Create cancellation token for coordinated shutdown
                 _cancellationTokenSource = new CancellationTokenSource();
+
+                // Register with shutdown manager
+                ShutdownManager.RegisterCancellationSource(_cancellationTokenSource);
 
                 // Initialize the same backend services as WinForms
                 Console.WriteLine("Initializing backend services...");
@@ -307,87 +330,36 @@ namespace HavenCNCServer
 
         /// <summary>
         /// Cleanup that must happen BEFORE WPF shutdown to avoid WeakEventTable errors
-        /// Called from MainWindow.OnClosing (async, non-blocking)
+        /// Now uses centralized ShutdownManager
         /// </summary>
         public static void CleanupBeforeShutdown()
         {
+            // Unsubscribe from CNC events to prevent WeakEventTable errors during shutdown
             try
             {
-                LogInfo("CleanupBeforeShutdown starting...", "System");
-
-                // Signal all background operations to stop
-                _cancellationTokenSource?.Cancel();
-
-                // Unsubscribe from CNC events to prevent WeakEventTable errors
                 CNCConnectionManager.ConnectionStatusChanged -= OnCNCConnectionStatusChanged;
-
-                // Stop Centroid Event Bridge with timeout
-                var shutdownToken = new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
-                CentroidEventBridge.Stop(shutdownToken);
-
-                // Dispose CNC Event Bus worker threads
-                CNCEventBus.Instance.Dispose();
-
-                // Disconnect from CNC
-                CNCConnectionManager.Disconnect();
-
-                LogInfo("CleanupBeforeShutdown completed", "System");
             }
             catch (Exception ex)
             {
-                LogError($"Error during pre-shutdown cleanup: {ex.Message}", "System");
+                LogError($"Error unsubscribing CNC events: {ex.Message}", "System");
             }
+
+            // Delegate to centralized shutdown manager
+            ShutdownManager.InitiateShutdown(maxShutdownTimeSeconds: 5);
         }
 
         private static void App_Exit(object? sender, System.Windows.ExitEventArgs e)
         {
-            try
+            // If shutdown already in progress, just exit
+            if (ShutdownManager.IsShuttingDown)
             {
-                LogInfo("Application shutdown (App_Exit)", "System");
-
-                // Set a global timeout for shutdown
-                var shutdownTimer = new System.Timers.Timer(3000); // 3 seconds max
-                shutdownTimer.Elapsed += (s, args) =>
-                {
-                    LogWarning("Shutdown timeout reached, forcing exit", "System");
-                    Environment.Exit(0);
-                };
-                shutdownTimer.AutoReset = false;
-                shutdownTimer.Start();
-
-                // Stop API manager
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                        await ApiManager.StopAsync(timeoutSource.Token);
-                        LogInfo("API manager stopped", "System");
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError($"Error stopping API manager: {ex.Message}", "System");
-                    }
-                }).Wait(2500);
-
-                _cancellationTokenSource?.Dispose();
-                shutdownTimer.Stop();
-                shutdownTimer.Dispose();
-
-                LogSuccess("Application shutdown completed", "System");
-
-                // Give console time to display final messages
-                System.Threading.Thread.Sleep(200);
-
-                // Force process exit
-                Environment.Exit(0);
+                LogInfo("App_Exit: Shutdown already in progress via ShutdownManager", "System");
+                return;
             }
-            catch (Exception ex)
-            {
-                LogError($"Error during App_Exit: {ex.Message}", "System");
-                // Force exit on error
-                Environment.Exit(1);
-            }
+
+            // Initiate shutdown via centralized manager
+            LogInfo("App_Exit: Initiating shutdown via ShutdownManager", "System");
+            ShutdownManager.InitiateShutdown(maxShutdownTimeSeconds: 5);
         }
     }
 }

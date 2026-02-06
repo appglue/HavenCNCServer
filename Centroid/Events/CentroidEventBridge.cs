@@ -74,11 +74,23 @@ namespace HavenCNCServer.Centroid.Events
                     LogInfo("Starting background job listener monitoring...", "JobInfo");
 
                     // Continue monitoring and retry if connection is lost
-                    while (_isMonitoringStarted && !_cancellationTokenSource.Token.IsCancellationRequested)
+                    while (_isMonitoringStarted && !_cancellationTokenSource.Token.IsCancellationRequested && !_isShuttingDown)
                     {
                         try
                         {
-                            // Check for cancellation
+                            // Check for shutdown from centralized ShutdownManager
+                            if (Services.ShutdownManager.IsShuttingDown || _isShuttingDown)
+                            {
+                                LogInfo("Shutdown detected by centralized ShutdownManager, exiting monitoring loop", "JobInfo");
+                                break;
+                            }
+
+                            // Check for cancellation and shutdown first
+                            if (_isShuttingDown)
+                            {
+                                LogInfo("Shutdown detected, exiting monitoring loop", "JobInfo");
+                                break;
+                            }
                             _cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                             // Check if we need to establish or re-establish connection
@@ -86,6 +98,12 @@ namespace HavenCNCServer.Centroid.Events
                             {
                                 if (!CNCConnectionManager.IsConnected)
                                 {
+                                    // Double-check shutdown before connection attempt
+                                    if (_isShuttingDown)
+                                    {
+                                        LogInfo("Shutdown detected, skipping connection attempt", "JobInfo");
+                                        break;
+                                    }
                                     LogInfo("CNC not connected - attempting to establish connection...", "JobInfo");
 
                                     try
@@ -554,15 +572,8 @@ namespace HavenCNCServer.Centroid.Events
         {
             try
             {
-                // Use configured log directory, fallback to application directory
-                var logsDir = SettingsManager.Settings.Files.JobListenerLogsDirectory;
-
-                // If the configured directory is relative or doesn't exist, make it absolute
-                if (!Path.IsPathRooted(logsDir))
-                {
-                    var appDir = AppDomain.CurrentDomain.BaseDirectory;
-                    logsDir = Path.Combine(appDir, logsDir);
-                }
+                // Use configured log directory from settings
+                var logsDir = SettingsManager.Settings.Logging.LogDirectory;
 
                 Directory.CreateDirectory(logsDir);
 

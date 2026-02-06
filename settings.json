@@ -9,7 +9,7 @@
   "logging": {
     "enableDebugLogging": false,
     "enableFileLogging": true,
-    "logDirectory": "%APPDATA%\\HavenCNCServer\\Logs",
+    "logDirectory": "logs",
     "maxLogFileSizeMB": 10,
     "maxLogFiles": 5,
     "logLevel": "Info"

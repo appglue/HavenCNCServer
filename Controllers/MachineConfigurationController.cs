@@ -24,29 +24,20 @@ namespace HavenCNCServer.Controllers
         private readonly string _localSettingsPath;
         private readonly string _archiveDirectory;
         private readonly string _defaultPlcDirectory;
-        private static readonly string[] ConfigFiles = new[]
-        {
-            "plcSystem.json",
-            "plcSystemDefault.json",
-            "configuration.json",
-            "machine.json",
-            "machineState.json",
-            "fixtures.json",
-            "userActionData.json"
-        };
 
         public MachineConfigurationController()
         {
             var mongoSettings = SettingsManager.Settings.MongoDB;
             _mongoService = new MongoDbService(mongoSettings);
 
-            // Use absolute data directory from settings, or fall back to default
-            var dataDirectoryFromSettings = SettingsManager.Settings.Files?.DataDirectory;
-            _dataDirectory = !string.IsNullOrEmpty(dataDirectoryFromSettings)
-                ? dataDirectoryFromSettings
-                : Path.Combine(Directory.GetCurrentDirectory(), "data");
+            // Use ONLY the configured data directory from settings - no fallback
+            _dataDirectory = SettingsManager.Settings.Files.DataDirectory;
+            if (string.IsNullOrEmpty(_dataDirectory))
+            {
+                throw new InvalidOperationException("DataDirectory not configured in settings.json");
+            }
 
-            _localSettingsPath = Path.Combine(_dataDirectory, "localMachineSettings.json");
+            _localSettingsPath = Path.Combine(_dataDirectory, "machineDataStorageSettings.json");
             _archiveDirectory = Path.Combine(_dataDirectory, "machineArchives");
             _defaultPlcDirectory = Path.Combine(_dataDirectory, "defaultPlcVersions");
 
@@ -87,7 +78,7 @@ namespace HavenCNCServer.Controllers
             {
                 LogInfo("Checking for files to migrate to dual-file versioned format...", "MachineConfig");
 
-                foreach (var fileName in ConfigFiles)
+                foreach (var fileName in ConfigurationFiles.SyncedFiles)
                 {
                     var oldVersionedPath = Path.Combine(_dataDirectory, $"{fileName}.versioned");
                     var dataPath = Path.Combine(_dataDirectory, fileName);
@@ -176,7 +167,7 @@ namespace HavenCNCServer.Controllers
                 int syncedCount = 0;
                 int skippedCount = 0;
 
-                foreach (var fileName in ConfigFiles)
+                foreach (var fileName in ConfigurationFiles.SyncedFiles)
                 {
                     try
                     {
@@ -258,7 +249,7 @@ namespace HavenCNCServer.Controllers
                 }
                 else
                 {
-                    LogInfo($"All files in sync ({ConfigFiles.Length} files)", "MachineConfig");
+                    LogInfo($"All files in sync ({ConfigurationFiles.SyncedFiles.Length} files)", "MachineConfig");
                 }
             }
             catch (Exception ex)
@@ -272,7 +263,7 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         private async Task SaveAllLocalFilesToMongoAsync(string machineName)
         {
-            foreach (var fileName in ConfigFiles)
+            foreach (var fileName in ConfigurationFiles.SyncedFiles)
             {
                 try
                 {
@@ -564,7 +555,7 @@ namespace HavenCNCServer.Controllers
                 var skippedCount = 0;
                 var errorCount = 0;
 
-                foreach (var fileName in ConfigFiles)
+                foreach (var fileName in ConfigurationFiles.SyncedFiles)
                 {
                     var localFilePath = Path.Combine(_dataDirectory, fileName);
 
@@ -669,7 +660,7 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                if (!ConfigFiles.Contains(fileName))
+                if (!ConfigurationFiles.IsSyncedFile(fileName))
                 {
                     return BadRequest(new { message = $"Invalid configuration file: {fileName}" });
                 }
@@ -793,7 +784,7 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                if (!ConfigFiles.Contains(fileName))
+                if (!ConfigurationFiles.IsSyncedFile(fileName))
                 {
                     return BadRequest(new { message = $"Invalid configuration file: {fileName}" });
                 }
@@ -1110,7 +1101,7 @@ namespace HavenCNCServer.Controllers
         private async Task<bool> LoadAllFilesFromMongoAsync(string machineName)
         {
             var loadedCount = 0;
-            foreach (var fileName in ConfigFiles)
+            foreach (var fileName in ConfigurationFiles.SyncedFiles)
             {
                 var mongoDoc = await _mongoService.GetMachineConfigurationAsync(machineName, fileName);
                 if (mongoDoc != null)
@@ -1135,7 +1126,7 @@ namespace HavenCNCServer.Controllers
                 var archivePath = Path.Combine(_archiveDirectory, $"{machineName}_{timestamp}");
                 Directory.CreateDirectory(archivePath);
 
-                foreach (var fileName in ConfigFiles)
+                foreach (var fileName in ConfigurationFiles.SyncedFiles)
                 {
                     var sourcePath = Path.Combine(_dataDirectory, fileName);
                     if (System.IO.File.Exists(sourcePath))

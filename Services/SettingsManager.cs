@@ -142,7 +142,13 @@ namespace HavenCNCServer.Services
                 }
             }
 
-            // Ensure log directory exists
+            // Ensure log directory exists (resolve relative to data directory)
+            if (!Path.IsPathRooted(_settings.Logging.LogDirectory))
+            {
+                var dataDir = _settings.Files.DataDirectory ?? Path.Combine(Directory.GetCurrentDirectory(), "data");
+                _settings.Logging.LogDirectory = Path.Combine(dataDir, _settings.Logging.LogDirectory);
+            }
+
             if (!Directory.Exists(_settings.Logging.LogDirectory))
             {
                 try
