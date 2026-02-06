@@ -128,6 +128,29 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
+        /// Get list of file names for a specific machine from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<string>> GetFileNamesForMachineAsync(string machineName)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<string>();
+
+            try
+            {
+                var filter = Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var fileNames = await _machineConfigCollection!
+                    .Distinct<string>("FileName", filter)
+                    .ToListAsync();
+
+                return fileNames;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get file names for machine '{machineName}': {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<string>();
+            }
+        }
+
+        /// <summary>
         /// Save default PLC version to MongoDB
         /// </summary>
         public async Task<bool> SaveDefaultPlcAsync(string versionName, string jsonData, bool markAsLatest, string? description = null, string? createdBy = null)

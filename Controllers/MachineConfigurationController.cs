@@ -77,7 +77,32 @@ namespace HavenCNCServer.Controllers
             var machineName = localSettings.CurrentMachineName;
             LogInfo($"Syncing files for machine '{machineName}'", "MachineConfig");
 
-            foreach (var fileName in ConfigurationFiles.SyncedFiles)
+            // Build unique list of files from both local and MongoDB
+            var filesToSync = new System.Collections.Generic.HashSet<string>(ConfigurationFiles.SyncedFiles);
+
+            // Add all local .json files (excluding .version files and machineDataStorageSettings)
+            if (System.IO.Directory.Exists(DataDirectory))
+            {
+                var localFiles = System.IO.Directory.GetFiles(DataDirectory, "*.json")
+                    .Select(f => System.IO.Path.GetFileName(f))
+                    .Where(f => !f.EndsWith(".version.json") && f != "machineDataStorageSettings.json");
+
+                foreach (var file in localFiles)
+                {
+                    filesToSync.Add(file);
+                }
+            }
+
+            // Add all files from MongoDB for this machine
+            var mongoFiles = await _mongoService.GetFileNamesForMachineAsync(machineName);
+            foreach (var file in mongoFiles)
+            {
+                filesToSync.Add(file);
+            }
+
+            LogInfo($"Found {filesToSync.Count} unique files to sync", "MachineConfig");
+
+            foreach (var fileName in filesToSync.OrderBy(f => f))
             {
                 try
                 {

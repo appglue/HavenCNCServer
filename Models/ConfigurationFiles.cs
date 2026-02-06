@@ -19,6 +19,8 @@ namespace HavenCNCServer.Models
             "machine.json",
             "machineState.json",
             "fixtures.json",
+            "materials.json",
+            "tools.json",
             "userActionData.json"
         };
 
