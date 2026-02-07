@@ -4985,6 +4985,493 @@
         }
       }
     },
+    "/api/JobStorage/jobs/list": {
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "List all jobs with paging and sorting\r\nPOST /api/JobStorage/jobs/list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/jobs/{id}": {
+      "get": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Fetch a specific job by ID\r\nGET /api/JobStorage/jobs/{id}",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Delete a job\r\nDELETE /api/JobStorage/jobs/{id}",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/jobs": {
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Store a job\r\nPOST /api/JobStorage/jobs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreJobRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreJobRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/jobs/last": {
+      "get": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Get the last executed job ID\r\nGET /api/JobStorage/jobs/last",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Save the last executed job ID\r\nPOST /api/JobStorage/jobs/last",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLastJobRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLastJobRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLastJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/JobStorage/gcode/list": {
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "List G-code files from multiple sources (external dirs + managed + MongoDB)\r\nPOST /api/JobStorage/gcode/list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListGCodeFilesRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListGCodeFilesRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListGCodeFilesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/gcode": {
+      "get": {
+        "tags": [
+          "JobStorage"
+        ],
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Store G-code file (creates managed file)\r\nPOST /api/JobStorage/gcode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreGCodeFileRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreGCodeFileRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreGCodeFileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Delete managed G-code file\r\nDELETE /api/JobStorage/gcode?fileId={id}",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/MachineConfiguration/{fileName}": {
       "get": {
         "tags": [
@@ -6217,6 +6704,82 @@
         "additionalProperties": false,
         "description": "Data item information"
       },
+      "GCodeFileMetadata": {
+        "type": "object",
+        "properties": {
+          "FileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Directory": {
+            "type": "string",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialType": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "IsManaged": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "G-Code file metadata (for list operations)\r\nIncludes source indicator (managed vs external)"
+      },
+      "GCodeFileMetadataPagedResult": {
+        "type": "object",
+        "properties": {
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GCodeFileMetadata"
+            },
+            "nullable": true
+          },
+          "TotalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Paged result wrapper"
+      },
       "GlobalSystemConfiguration": {
         "type": "object",
         "properties": {
@@ -6419,6 +6982,84 @@
         "additionalProperties": false,
         "description": "Response model for detailed job information"
       },
+      "JobMetadata": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "ExecutionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "LastRunDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialType": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedTime": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Lightweight job metadata for list operations"
+      },
+      "JobMetadataPagedResult": {
+        "type": "object",
+        "properties": {
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobMetadata"
+            },
+            "nullable": true
+          },
+          "TotalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Paged result wrapper"
+      },
       "JobOperationResponse": {
         "type": "object",
         "properties": {
@@ -6454,6 +7095,23 @@
         "type": "integer",
         "description": "Jog increment speed multiplier",
         "format": "int32"
+      },
+      "ListGCodeFilesRequest": {
+        "type": "object",
+        "properties": {
+          "Directories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "Paging": {
+            "$ref": "#/components/schemas/PageRequest"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to list G-code files"
       },
       "MachinePoint": {
         "type": "object",
@@ -6653,6 +7311,29 @@
         },
         "additionalProperties": false,
         "description": "Represents PWM output configuration"
+      },
+      "PageRequest": {
+        "type": "object",
+        "properties": {
+          "Page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SortBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "SortDirection": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request model for paging and sorting"
       },
       "ParameterInfo": {
         "type": "object",
@@ -7088,6 +7769,17 @@
         },
         "additionalProperties": false,
         "description": "Response model for G-code execution operations"
+      },
+      "SaveLastJobRequest": {
+        "type": "object",
+        "properties": {
+          "JobId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to save last job"
       },
       "SecondSpindleConfiguration": {
         "type": "object",
@@ -7617,6 +8309,77 @@
         },
         "additionalProperties": false,
         "description": "Request model for storing default PLC"
+      },
+      "StoreGCodeFileRequest": {
+        "type": "object",
+        "properties": {
+          "FileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "FileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialType": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedTime": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to store a G-code file"
+      },
+      "StoreJobRequest": {
+        "type": "object",
+        "properties": {
+          "JobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Metadata": {
+            "$ref": "#/components/schemas/JobMetadata"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to store a job"
+      },
+      "StoreResponse": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "type": "boolean"
+          },
+          "Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "Message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response for store operations"
       },
       "SystemHardwareInfo": {
         "type": "object",

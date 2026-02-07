@@ -17,6 +17,8 @@ namespace HavenCNCServer.Services
         private IMongoDatabase? _database;
         private IMongoCollection<MachineConfigurationDocument>? _machineConfigCollection;
         private IMongoCollection<DefaultPlcVersionDocument>? _defaultPlcCollection;
+        private IMongoCollection<JobDocument>? _jobCollection;
+        private IMongoCollection<GCodeFileDocument>? _gcodeCollection;
         private bool _isConnected = false;
 
         public MongoDbService(MongoDbSettings settings)
@@ -38,6 +40,8 @@ namespace HavenCNCServer.Services
                 _database = _client.GetDatabase(_settings.DatabaseName);
                 _machineConfigCollection = _database.GetCollection<MachineConfigurationDocument>("machineConfigurations");
                 _defaultPlcCollection = _database.GetCollection<DefaultPlcVersionDocument>(_settings.DefaultPlcVersionsCollection);
+                _jobCollection = _database.GetCollection<JobDocument>("jobs");
+                _gcodeCollection = _database.GetCollection<GCodeFileDocument>("gcodeFiles");
 
                 _client.GetDatabase("admin").RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
                 _isConnected = true;
@@ -273,6 +277,267 @@ namespace HavenCNCServer.Services
             {
                 LogError($"Failed to list default PLC versions: {ex.Message}", "MongoDB");
                 return new System.Collections.Generic.List<DefaultPlcVersionInfo>();
+            }
+        }
+
+        // ========== Job Storage Methods ==========
+
+        /// <summary>
+        /// Save job to MongoDB
+        /// </summary>
+        public async Task<bool> SaveJobAsync(string jobId, string machineName, string data, long version, JobMetadata? metadata)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<JobDocument>.Filter.And(
+                    Builders<JobDocument>.Filter.Eq(x => x.JobId, jobId),
+                    Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                var update = Builders<JobDocument>.Update
+                    .Set(x => x.JobId, jobId)
+                    .Set(x => x.MachineName, machineName)
+                    .Set(x => x.Data, data)
+                    .Set(x => x.Version, version)
+                    .Set(x => x.Timestamp, DateTime.UtcNow)
+                    .Set(x => x.Metadata, metadata);
+
+                await _jobCollection!.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+                LogInfo($"Saved job {jobId} v{version} to MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save job {jobId} to MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load job from MongoDB
+        /// </summary>
+        public async Task<JobDocument?> LoadJobAsync(string jobId, string machineName)
+        {
+            if (!IsConnected) return null;
+
+            try
+            {
+                var filter = Builders<JobDocument>.Filter.And(
+                    Builders<JobDocument>.Filter.Eq(x => x.JobId, jobId),
+                    Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                return await _jobCollection!.Find(filter).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to load job {jobId} from MongoDB: {ex.Message}", "MongoDB");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete job from MongoDB
+        /// </summary>
+        public async Task<bool> DeleteJobAsync(string jobId, string machineName)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<JobDocument>.Filter.And(
+                    Builders<JobDocument>.Filter.Eq(x => x.JobId, jobId),
+                    Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                await _jobCollection!.DeleteOneAsync(filter);
+                LogInfo($"Deleted job {jobId} from MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete job {jobId} from MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get last N jobs for a machine from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<JobDocument>> GetRecentJobsAsync(string machineName, int limit = 20)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<JobDocument>();
+
+            try
+            {
+                var filter = Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<JobDocument>.Sort.Descending(x => x.Timestamp);
+
+                var jobs = await _jobCollection!.Find(filter).Sort(sort).Limit(limit).ToListAsync();
+                LogInfo($"Retrieved {jobs.Count} recent jobs from MongoDB", "MongoDB");
+                return jobs;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get recent jobs from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<JobDocument>();
+            }
+        }
+
+        /// <summary>
+        /// List all jobs for a machine (metadata only) from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<JobDocument>> ListJobsAsync(string machineName)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<JobDocument>();
+
+            try
+            {
+                var filter = Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<JobDocument>.Sort.Descending(x => x.Timestamp);
+
+                var jobs = await _jobCollection!.Find(filter).Sort(sort).ToListAsync();
+                return jobs;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to list jobs from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<JobDocument>();
+            }
+        }
+
+        // ========== G-Code File Storage Methods ==========
+
+        /// <summary>
+        /// Save G-code file to MongoDB
+        /// </summary>
+        public async Task<bool> SaveGCodeFileAsync(string fileId, string fileName, string machineName, string data, long version, string? category = null, string? description = null, string? materialType = null, string? estimatedTime = null)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<GCodeFileDocument>.Filter.And(
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.FileId, fileId),
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                var update = Builders<GCodeFileDocument>.Update
+                    .Set(x => x.FileId, fileId)
+                    .Set(x => x.FileName, fileName)
+                    .Set(x => x.MachineName, machineName)
+                    .Set(x => x.Data, data)
+                    .Set(x => x.Version, version)
+                    .Set(x => x.Timestamp, DateTime.UtcNow)
+                    .Set(x => x.Size, data.Length)
+                    .Set(x => x.Category, category)
+                    .Set(x => x.Description, description)
+                    .Set(x => x.MaterialType, materialType)
+                    .Set(x => x.EstimatedTime, estimatedTime);
+
+                await _gcodeCollection!.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+                LogInfo($"Saved G-code file {fileId} v{version} to MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save G-code file {fileId} to MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load G-code file from MongoDB
+        /// </summary>
+        public async Task<GCodeFileDocument?> LoadGCodeFileAsync(string fileId, string machineName)
+        {
+            if (!IsConnected) return null;
+
+            try
+            {
+                var filter = Builders<GCodeFileDocument>.Filter.And(
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.FileId, fileId),
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                return await _gcodeCollection!.Find(filter).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to load G-code file {fileId} from MongoDB: {ex.Message}", "MongoDB");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete G-code file from MongoDB
+        /// </summary>
+        public async Task<bool> DeleteGCodeFileAsync(string fileId, string machineName)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<GCodeFileDocument>.Filter.And(
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.FileId, fileId),
+                    Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                await _gcodeCollection!.DeleteOneAsync(filter);
+                LogInfo($"Deleted G-code file {fileId} from MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete G-code file {fileId} from MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get last N G-code files for a machine from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<GCodeFileDocument>> GetRecentGCodeFilesAsync(string machineName, int limit = 20)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<GCodeFileDocument>();
+
+            try
+            {
+                var filter = Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<GCodeFileDocument>.Sort.Descending(x => x.Timestamp);
+
+                var files = await _gcodeCollection!.Find(filter).Sort(sort).Limit(limit).ToListAsync();
+                LogInfo($"Retrieved {files.Count} recent G-code files from MongoDB", "MongoDB");
+                return files;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get recent G-code files from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<GCodeFileDocument>();
+            }
+        }
+
+        /// <summary>
+        /// List all managed G-code files for a machine from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<GCodeFileDocument>> ListGCodeFilesAsync(string machineName)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<GCodeFileDocument>();
+
+            try
+            {
+                var filter = Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<GCodeFileDocument>.Sort.Descending(x => x.Timestamp);
+
+                var files = await _gcodeCollection!.Find(filter).Sort(sort).ToListAsync();
+                return files;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to list G-code files from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<GCodeFileDocument>();
             }
         }
     }

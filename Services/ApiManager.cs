@@ -167,17 +167,18 @@ namespace HavenCNCServer.Services
                 // Auto-generate OpenAPI specification if it doesn't exist
                 await OpenApiManager.AutoGenerateIfNeededAsync(_apiUrl);
 
-                // Trigger one-time MachineConfigurationController startup initialization
+                // Trigger one-time controller startup initialization
                 _ = Task.Run(async () =>
                 {
                     try
                     {
                         await Task.Delay(1000); // Wait for API to be fully ready
                         await Controllers.MachineConfigurationController.InitializeAsync();
+                        await Controllers.JobStorageController.InitializeAsync();
                     }
                     catch (Exception ex)
                     {
-                        LogError($"MachineConfigurationController startup initialization failed: {ex.Message}", "API");
+                        LogError($"Controller startup initialization failed: {ex.Message}", "API");
                     }
                 });
             }
