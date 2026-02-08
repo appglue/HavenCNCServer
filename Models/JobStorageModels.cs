@@ -42,6 +42,7 @@ namespace HavenCNCServer.Models
     /// </summary>
     public class JobMetadata
     {
+        public string JobId { get; set; } = string.Empty;  // Job identifier for fetching
         public string Name { get; set; } = string.Empty;
         public int ExecutionCount { get; set; }
         public DateTime? LastRunDate { get; set; }
@@ -150,6 +151,7 @@ namespace HavenCNCServer.Models
     public class ListGCodeFilesRequest
     {
         public string[] Directories { get; set; } = Array.Empty<string>();
+        public string[] FileExtensions { get; set; } = new[] { ".nc", ".txt", ".tap" };
         public PageRequest Paging { get; set; } = new();
     }
 
@@ -193,5 +195,29 @@ namespace HavenCNCServer.Models
         public bool Success { get; set; }
         public string? Id { get; set; }  // Generated ID for new items
         public string? Message { get; set; }
+    }
+
+    /// <summary>
+    /// Drive information for filesystem navigation
+    /// </summary>
+    public class DriveInfoResponse
+    {
+        public string Name { get; set; } = string.Empty;  // e.g., "C:\"
+        public string Label { get; set; } = string.Empty;  // Volume label
+        public string DriveType { get; set; } = string.Empty;  // Fixed, Removable, Network, etc.
+        public long TotalSize { get; set; }
+        public long AvailableSpace { get; set; }
+        public bool IsReady { get; set; }
+    }
+
+    /// <summary>
+    /// Directory information for filesystem navigation
+    /// </summary>
+    public class DirectoryInfoResponse
+    {
+        public string Name { get; set; } = string.Empty;  // Directory name only
+        public string FullPath { get; set; } = string.Empty;  // Full path
+        public bool HasSubdirectories { get; set; }
+        public DateTime LastModified { get; set; }
     }
 }

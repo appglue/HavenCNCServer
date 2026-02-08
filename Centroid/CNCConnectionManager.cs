@@ -27,6 +27,7 @@ namespace HavenCNCServer.Services
         private static readonly double ProcessCheckIntervalSeconds = 2.0; // Check every 2 seconds
         private static int _isCnc12ProcessRunningFlag = 1; // 1 = true, 0 = false, for Interlocked
         private static bool _lastNotifiedConnectedState = false; // Track last notified state to prevent duplicate notifications
+        private static bool _hasLoggedProcessNotRunning = false; // Track if we've logged process not running message
 
         /// <summary>
         /// Event fired when connection status changes
@@ -195,7 +196,13 @@ namespace HavenCNCServer.Services
                 if (!IsCNC12ProcessRunning())
                 {
                     var processName = SettingsManager.Settings?.Cnc?.Cnc12ProcessName ?? "cncr";
-                    Log($"CNC12 process '{processName}' not running - cannot create pipe", LogLevel.Warning, "CNCConnectionManager");
+
+                    // Only log once until we reconnect
+                    if (!_hasLoggedProcessNotRunning)
+                    {
+                        Log($"CNC12 process '{processName}' not running - cannot create pipe", LogLevel.Warning, "CNCConnectionManager");
+                        _hasLoggedProcessNotRunning = true;
+                    }
 
                     // Clear any existing connection state and stop listeners
                     if (_isConnected || _cncPipe != null)
@@ -209,6 +216,8 @@ namespace HavenCNCServer.Services
                 // Return existing connection if available
                 if (_isConnected)
                 {
+                    // Reset the logged flags when we have a successful connection
+                    _hasLoggedProcessNotRunning = false;
                     return _cncPipe;
                 }
 
@@ -393,6 +402,7 @@ namespace HavenCNCServer.Services
                             Log($"CNCPipe constructed successfully on attempt {attempt}", LogLevel.Info, "CNCConnectionManager");
                             _isConnected = true;
                             _lastNotifiedConnectedState = true;
+                            _hasLoggedProcessNotRunning = false; // Reset the flag on successful connection
                             Interlocked.Exchange(ref _connectionRetryCount, 0); // Reset counter on success
                             NotifyStatusChanged(true, "Connected to CNC successfully");
 

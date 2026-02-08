@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using HavenCNCServer.Models;
 using HavenCNCServer.Services;
 using System;
@@ -20,12 +19,6 @@ namespace HavenCNCServer.Controllers
         private static GCodeFileManager? _gcodeFileManager;
         private static MongoDbService? _mongoDbService;
         private static string? _machineName;
-        private readonly ILogger<JobStorageController> _logger;
-
-        public JobStorageController(ILogger<JobStorageController> logger)
-        {
-            _logger = logger;
-        }
 
         public static async Task InitializeAsync()
         {
@@ -33,8 +26,8 @@ namespace HavenCNCServer.Controllers
             {
                 LogInfo("🔄 JobStorageController.InitializeAsync CALLED", "JobStorage");
 
-                _jobFileManager = new JobFileManager(null);
-                _gcodeFileManager = new GCodeFileManager(null);
+                _jobFileManager = new JobFileManager();
+                _gcodeFileManager = new GCodeFileManager();
                 LogInfo("✓ File managers created", "JobStorage");
 
                 // Load MongoDB settings
@@ -188,7 +181,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error listing jobs");
+                Log($"Error listing jobs: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -228,7 +221,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching job: {JobId}", id);
+                Log($"Error fetching job {id}: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -277,7 +270,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error storing job: {JobId}", request.JobId);
+                Log($"Error storing job {request.JobId}: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new StoreResponse
                 {
                     Success = false,
@@ -324,7 +317,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting job: {JobId}", id);
+                Log($"Error deleting job {id}: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -350,7 +343,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting last job");
+                Log($"Error getting last job: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -376,7 +369,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving last job");
+                Log($"Error saving last job: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -403,7 +396,7 @@ namespace HavenCNCServer.Controllers
                 {
                     foreach (var directory in request.Directories)
                     {
-                        var externalFiles = _gcodeFileManager.ScanExternalDirectory(directory);
+                        var externalFiles = _gcodeFileManager.ScanExternalDirectory(directory, request.FileExtensions);
                         allFiles.AddRange(externalFiles);
                     }
                 }
@@ -468,7 +461,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error listing G-code files");
+                Log($"Error listing G-code files: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -526,7 +519,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching G-code file");
+                Log($"Error fetching G-code file: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -584,7 +577,7 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error storing G-code file");
+                Log($"Error storing G-code file: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new StoreResponse
                 {
                     Success = false,
@@ -636,7 +629,130 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting G-code file: {FileId}", fileId);
+                Log($"Error deleting G-code file {fileId}: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        // ========== Filesystem Navigation Endpoints ==========
+
+        /// <summary>
+        /// Get all available drives
+        /// GET /api/JobStorage/filesystem/drives
+        /// </summary>
+        [HttpGet("filesystem/drives")]
+        [ProducesResponseType(typeof(List<DriveInfoResponse>), 200)]
+        public IActionResult GetDrives()
+        {
+            try
+            {
+                var drives = new List<DriveInfoResponse>();
+                var allDrives = DriveInfo.GetDrives();
+
+                foreach (var drive in allDrives)
+                {
+                    try
+                    {
+                        drives.Add(new DriveInfoResponse
+                        {
+                            Name = drive.Name,
+                            Label = drive.IsReady ? (drive.VolumeLabel ?? string.Empty) : string.Empty,
+                            DriveType = drive.DriveType.ToString(),
+                            TotalSize = drive.IsReady ? drive.TotalSize : 0,
+                            AvailableSpace = drive.IsReady ? drive.AvailableFreeSpace : 0,
+                            IsReady = drive.IsReady
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Error reading drive info {drive.Name}: {ex.Message}", LogLevel.Warning, "JobStorageController");
+                        // Add drive with minimal info
+                        drives.Add(new DriveInfoResponse
+                        {
+                            Name = drive.Name,
+                            DriveType = drive.DriveType.ToString(),
+                            IsReady = false
+                        });
+                    }
+                }
+
+                return Ok(drives);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error getting drives: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get subdirectories for a given path
+        /// GET /api/JobStorage/filesystem/directories?path={path}
+        /// </summary>
+        [HttpGet("filesystem/directories")]
+        [ProducesResponseType(typeof(List<DirectoryInfoResponse>), 200)]
+        public IActionResult GetDirectories([FromQuery] string? path)
+        {
+            try
+            {
+                // If no path provided, return empty (drives should be fetched first)
+                if (string.IsNullOrEmpty(path))
+                {
+                    return BadRequest(new { error = "Path parameter is required" });
+                }
+
+                // Validate path exists
+                if (!Directory.Exists(path))
+                {
+                    return NotFound(new { error = $"Directory not found: {path}" });
+                }
+
+                var directories = new List<DirectoryInfoResponse>();
+                var subdirs = Directory.GetDirectories(path);
+
+                foreach (var dir in subdirs)
+                {
+                    try
+                    {
+                        var dirInfo = new System.IO.DirectoryInfo(dir);
+
+                        // Check if has subdirectories (but don't enumerate for performance)
+                        bool hasSubdirs = false;
+                        try
+                        {
+                            hasSubdirs = dirInfo.EnumerateDirectories().Any();
+                        }
+                        catch
+                        {
+                            // Access denied or other error - assume no subdirs
+                        }
+
+                        directories.Add(new DirectoryInfoResponse
+                        {
+                            Name = dirInfo.Name,
+                            FullPath = dirInfo.FullName,
+                            HasSubdirectories = hasSubdirs,
+                            LastModified = dirInfo.LastWriteTime
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Error reading directory info {dir}: {ex.Message}", LogLevel.Warning, "JobStorageController");
+                    }
+                }
+
+                // Sort by name
+                directories = directories.OrderBy(d => d.Name).ToList();
+
+                return Ok(directories);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(403, new { error = "Access denied to directory" });
+            }
+            catch (Exception ex)
+            {
+                Log($"Error getting directories for path {path}: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -653,6 +769,7 @@ namespace HavenCNCServer.Controllers
 
                 return new JobMetadata
                 {
+                    JobId = jobId,
                     Name = root.TryGetProperty("name", out var name) ? name.GetString() ?? jobId : jobId,
                     ExecutionCount = root.TryGetProperty("executionCount", out var execCount) ? execCount.GetInt32() : 0,
                     LastRunDate = root.TryGetProperty("lastRunDate", out var lastRun) ? lastRun.GetDateTime() : (DateTime?)null,
@@ -667,9 +784,10 @@ namespace HavenCNCServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Error extracting job metadata from {JobId}", jobId);
+                Log($"Error extracting job metadata from {jobId}: {ex.Message}", LogLevel.Warning, "JobStorageController");
                 return new JobMetadata
                 {
+                    JobId = jobId,
                     Name = jobId,
                     Size = jobData.Length,
                     LastModified = DateTime.UtcNow,

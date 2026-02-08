@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Services
 {
@@ -13,20 +13,18 @@ namespace HavenCNCServer.Services
     /// </summary>
     public class JobFileManager
     {
-        private readonly ILogger<JobFileManager>? _logger;
         private readonly string _baseDirectory;
         private const string JobsSubdirectory = "jobs";
 
-        public JobFileManager(ILogger<JobFileManager>? logger)
+        public JobFileManager()
         {
-            _logger = logger;
             _baseDirectory = Path.Combine(@"C:\havencncdata", JobsSubdirectory);
 
             // Ensure directory exists
             if (!Directory.Exists(_baseDirectory))
             {
                 Directory.CreateDirectory(_baseDirectory);
-                _logger?.LogInformation("Created jobs directory: {Directory}", _baseDirectory);
+                Log($"Created jobs directory: {_baseDirectory}", LogLevel.Info, "JobFileManager");
             }
         }
 
@@ -64,17 +62,17 @@ namespace HavenCNCServer.Services
                 var filePath = GetFilePath(jobId);
                 if (!File.Exists(filePath))
                 {
-                    _logger?.LogDebug("Job file not found: {JobId}", jobId);
+                    Log($"Job file not found: {jobId}", LogLevel.Debug, "JobFileManager");
                     return null;
                 }
 
                 var data = await File.ReadAllTextAsync(filePath);
-                _logger?.LogDebug("Read job from local file: {JobId}, {Size} bytes", jobId, data.Length);
+                Log($"Read job from local file: {jobId}, {data.Length} bytes", LogLevel.Debug, "JobFileManager");
                 return data;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error reading job file: {JobId}", jobId);
+                Log($"Error reading job file {jobId}: {ex.Message}", LogLevel.Error, "JobFileManager");
                 return null;
             }
         }
@@ -88,12 +86,12 @@ namespace HavenCNCServer.Services
             {
                 var filePath = GetFilePath(jobId);
                 await File.WriteAllTextAsync(filePath, data);
-                _logger?.LogInformation("Wrote job to local file: {JobId}, {Size} bytes", jobId, data.Length);
+                Log($"Wrote job to local file: {jobId}, {data.Length} bytes", LogLevel.Info, "JobFileManager");
                 return true;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error writing job file: {JobId}", jobId);
+                Log($"Error writing job file {jobId}: {ex.Message}", LogLevel.Error, "JobFileManager");
                 return false;
             }
         }
@@ -118,12 +116,12 @@ namespace HavenCNCServer.Services
                     File.Delete(versionPath);
                 }
 
-                _logger?.LogInformation("Deleted job files: {JobId}", jobId);
+                Log($"Deleted job files: {jobId}", LogLevel.Info, "JobFileManager");
                 return await Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error deleting job files: {JobId}", jobId);
+                Log($"Error deleting job files {jobId}: {ex.Message}", LogLevel.Error, "JobFileManager");
                 return false;
             }
         }
@@ -147,7 +145,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error reading version file for job: {JobId}", jobId);
+                Log($"Error reading version file for job {jobId}: {ex.Message}", LogLevel.Warning, "JobFileManager");
                 return 0;
             }
         }
@@ -167,7 +165,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error writing version file for job: {JobId}", jobId);
+                Log($"Error writing version file for job {jobId}: {ex.Message}", LogLevel.Error, "JobFileManager");
                 return false;
             }
         }
@@ -212,7 +210,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error listing job IDs");
+                Log($"Error listing job IDs: {ex.Message}", LogLevel.Error, "JobFileManager");
                 return Array.Empty<string>();
             }
         }

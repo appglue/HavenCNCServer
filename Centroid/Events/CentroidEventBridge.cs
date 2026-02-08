@@ -104,7 +104,13 @@ namespace HavenCNCServer.Centroid.Events
                                         LogInfo("Shutdown detected, skipping connection attempt", "JobInfo");
                                         break;
                                     }
-                                    LogInfo("CNC not connected - attempting to establish connection...", "JobInfo");
+
+                                    // Only log once until we reconnect
+                                    if (!_hasLoggedDisconnectedState)
+                                    {
+                                        LogInfo("CNC not connected - attempting to establish connection...", "JobInfo");
+                                        _hasLoggedDisconnectedState = true;
+                                    }
 
                                     try
                                     {
@@ -113,6 +119,9 @@ namespace HavenCNCServer.Centroid.Events
                                         {
                                             // IsConstructed check is handled internally by CNCConnectionManager
                                             LogSuccess("CNC pipe reconnected", "JobInfo");
+
+                                            // Reset the logged disconnected state flag
+                                            _hasLoggedDisconnectedState = false;
 
                                             // CRITICAL: After reconnection, we need to restart the listener
                                             // The old pipe reference is stale, so we must unsubscribe and resubscribe

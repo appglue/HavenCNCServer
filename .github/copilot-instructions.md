@@ -15,6 +15,13 @@ This is a C# ASP.NET Core Web API project for HavenCNCServer with REST services 
 - Follow RESTful API conventions
 - Use proper dependency injection patterns
 
+## Logging
+- **DO NOT use ILogger** - Use the static LoggingService instead for consistency
+- Import: `using static HavenCNCServer.Services.LoggingService;`
+- Usage: `Log("message", LogLevel.Info, "ComponentName");`
+- Log levels: Info, Warning, Error, Debug
+- Example: `Log($"Error fetching data: {ex.Message}", LogLevel.Error, "ControllerName");`
+
 ## Important Scope Note
 - **This is BACKEND ONLY**: Do not make changes when user asks about React, frontend, or UI modifications
 - If user mentions frontend/React changes, acknowledge but explain no backend changes are needed

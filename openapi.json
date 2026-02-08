@@ -5472,6 +5472,93 @@
         }
       }
     },
+    "/api/JobStorage/filesystem/drives": {
+      "get": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Get all available drives\r\nGET /api/JobStorage/filesystem/drives",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriveInfoResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriveInfoResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriveInfoResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/filesystem/directories": {
+      "get": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Get subdirectories for a given path\r\nGET /api/JobStorage/filesystem/directories?path={path}",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DirectoryInfoResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DirectoryInfoResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DirectoryInfoResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/MachineConfiguration/{fileName}": {
       "get": {
         "tags": [
@@ -6704,6 +6791,58 @@
         "additionalProperties": false,
         "description": "Data item information"
       },
+      "DirectoryInfoResponse": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "FullPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "HasSubdirectories": {
+            "type": "boolean"
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Directory information for filesystem navigation"
+      },
+      "DriveInfoResponse": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Label": {
+            "type": "string",
+            "nullable": true
+          },
+          "DriveType": {
+            "type": "string",
+            "nullable": true
+          },
+          "TotalSize": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "AvailableSpace": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "IsReady": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Drive information for filesystem navigation"
+      },
       "GCodeFileMetadata": {
         "type": "object",
         "properties": {
@@ -6985,6 +7124,10 @@
       "JobMetadata": {
         "type": "object",
         "properties": {
+          "JobId": {
+            "type": "string",
+            "nullable": true
+          },
           "Name": {
             "type": "string",
             "nullable": true
@@ -7100,6 +7243,13 @@
         "type": "object",
         "properties": {
           "Directories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "FileExtensions": {
             "type": "array",
             "items": {
               "type": "string"

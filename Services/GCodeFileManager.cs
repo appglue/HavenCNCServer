@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
+using static HavenCNCServer.Services.LoggingService;
 
 namespace HavenCNCServer.Services
 {
@@ -16,20 +16,18 @@ namespace HavenCNCServer.Services
     /// </summary>
     public class GCodeFileManager
     {
-        private readonly ILogger<GCodeFileManager>? _logger;
         private readonly string _managedDirectory;
         private const string GCodeSubdirectory = "gcode";
 
-        public GCodeFileManager(ILogger<GCodeFileManager>? logger)
+        public GCodeFileManager()
         {
-            _logger = logger;
             _managedDirectory = Path.Combine(@"C:\havencncdata", GCodeSubdirectory);
 
             // Ensure directory exists
             if (!Directory.Exists(_managedDirectory))
             {
                 Directory.CreateDirectory(_managedDirectory);
-                _logger?.LogInformation("Created gcode directory: {Directory}", _managedDirectory);
+                Log($"Created gcode directory: {_managedDirectory}", LogLevel.Info, "GCodeFileManager");
             }
         }
 
@@ -67,17 +65,17 @@ namespace HavenCNCServer.Services
                 var filePath = GetManagedFilePath(fileId);
                 if (!File.Exists(filePath))
                 {
-                    _logger?.LogDebug("Managed G-code file not found: {FileId}", fileId);
+                    Log($"Managed G-code file not found: {fileId}", LogLevel.Debug, "GCodeFileManager");
                     return null;
                 }
 
                 var data = await File.ReadAllTextAsync(filePath);
-                _logger?.LogDebug("Read managed G-code file: {FileId}, {Size} bytes", fileId, data.Length);
+                Log($"Read managed G-code file: {fileId}, {data.Length} bytes", LogLevel.Debug, "GCodeFileManager");
                 return data;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error reading managed G-code file: {FileId}", fileId);
+                Log($"Error reading managed G-code file {fileId}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return null;
             }
         }
@@ -91,12 +89,12 @@ namespace HavenCNCServer.Services
             {
                 var filePath = GetManagedFilePath(fileId);
                 await File.WriteAllTextAsync(filePath, data);
-                _logger?.LogInformation("Wrote managed G-code file: {FileId}, {Size} bytes", fileId, data.Length);
+                Log($"Wrote managed G-code file: {fileId}, {data.Length} bytes", LogLevel.Info, "GCodeFileManager");
                 return true;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error writing managed G-code file: {FileId}", fileId);
+                Log($"Error writing managed G-code file {fileId}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return false;
             }
         }
@@ -121,12 +119,12 @@ namespace HavenCNCServer.Services
                     File.Delete(versionPath);
                 }
 
-                _logger?.LogInformation("Deleted managed G-code files: {FileId}", fileId);
+                Log($"Deleted managed G-code files: {fileId}", LogLevel.Info, "GCodeFileManager");
                 return await Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error deleting managed G-code files: {FileId}", fileId);
+                Log($"Error deleting managed G-code files {fileId}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return false;
             }
         }
@@ -150,7 +148,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogWarning(ex, "Error reading version file for G-code: {FileId}", fileId);
+                Log($"Error reading version file for G-code {fileId}: {ex.Message}", LogLevel.Warning, "GCodeFileManager");
                 return 0;
             }
         }
@@ -170,7 +168,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error writing version file for G-code: {FileId}", fileId);
+                Log($"Error writing version file for G-code {fileId}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return false;
             }
         }
@@ -190,22 +188,24 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Scan external directory for G-code files (.nc, .gcode)
+        /// Scan external directory for G-code files
         /// Returns metadata for list operations
         /// </summary>
-        public GCodeFileMetadata[] ScanExternalDirectory(string directory)
+        public GCodeFileMetadata[] ScanExternalDirectory(string directory, string[]? fileExtensions = null)
         {
             try
             {
                 if (!Directory.Exists(directory))
                 {
-                    _logger?.LogWarning("External directory not found: {Directory}", directory);
+                    Log($"External directory not found: {directory}", LogLevel.Warning, "GCodeFileManager");
                     return Array.Empty<GCodeFileMetadata>();
                 }
 
-                var extensions = new[] { ".nc", ".gcode", ".NGC", ".GCODE" };
+                // Use provided extensions or defaults
+                var extensions = fileExtensions ?? new[] { ".nc", ".txt", ".tap" };
+
                 var files = Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories)
-                    .Where(f => extensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
+                    .Where(f => extensions.Any(ext => ext.Equals(Path.GetExtension(f), StringComparison.OrdinalIgnoreCase)))
                     .ToArray();
 
                 var metadata = new List<GCodeFileMetadata>();
@@ -214,11 +214,13 @@ namespace HavenCNCServer.Services
                     try
                     {
                         var fileInfo = new FileInfo(file);
+                        var actualDirectory = fileInfo.DirectoryName ?? directory;
+
                         metadata.Add(new GCodeFileMetadata
                         {
                             FileId = null,  // External files don't have IDs
                             Name = fileInfo.Name,
-                            Directory = directory,
+                            Directory = actualDirectory,  // Use actual directory path, not root
                             LastModified = fileInfo.LastWriteTime,
                             Size = fileInfo.Length,
                             IsManaged = false
@@ -226,7 +228,7 @@ namespace HavenCNCServer.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogWarning(ex, "Error reading file info: {File}", file);
+                        Log($"Error reading file info {file}: {ex.Message}", LogLevel.Warning, "GCodeFileManager");
                     }
                 }
 
@@ -234,7 +236,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error scanning external directory: {Directory}", directory);
+                Log($"Error scanning external directory {directory}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return Array.Empty<GCodeFileMetadata>();
             }
         }
@@ -268,7 +270,7 @@ namespace HavenCNCServer.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogWarning(ex, "Error reading managed file info: {File}", file);
+                        Log($"Error reading managed file info {file}: {ex.Message}", LogLevel.Warning, "GCodeFileManager");
                     }
                 }
 
@@ -276,7 +278,7 @@ namespace HavenCNCServer.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error listing managed G-code files");
+                Log($"Error listing managed G-code files: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return Array.Empty<GCodeFileMetadata>();
             }
         }
@@ -291,17 +293,15 @@ namespace HavenCNCServer.Services
                 var filePath = Path.Combine(directory, fileName);
                 if (!File.Exists(filePath))
                 {
-                    _logger?.LogDebug("External G-code file not found: {Path}", filePath);
                     return null;
                 }
 
                 var data = await File.ReadAllTextAsync(filePath);
-                _logger?.LogDebug("Read external G-code file: {Path}, {Size} bytes", filePath, data.Length);
                 return data;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Error reading external G-code file: {Directory}/{FileName}", directory, fileName);
+                Log($"Error reading external G-code file {directory}/{fileName}: {ex.Message}", LogLevel.Error, "GCodeFileManager");
                 return null;
             }
         }

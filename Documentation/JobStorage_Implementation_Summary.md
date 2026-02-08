@@ -1,7 +1,7 @@
 # Job Storage Implementation Summary
 
 ## Overview
-Successfully implemented complete job and G-code file storage system following the configuration storage pattern. The implementation includes local file storage, MongoDB cloud sync, and a RESTful API.
+Successfully implemented complete job and G-code file storage system following the configuration storage pattern. The implementation includes local file storage, MongoDB cloud sync, filesystem navigation for folder selection, and a RESTful API.
 
 ## Implementation Date
 February 7, 2026
@@ -31,10 +31,11 @@ February 7, 2026
    - Recent items sync (last 20 jobs and files)
 
 4. **JobStorageController** (`Controllers/JobStorageController.cs`)
-   - RESTful API with 11 endpoints
+   - RESTful API with 13 endpoints
    - Base route: `/api/JobStorage/`
    - Static initialization pattern (follows MachineConfigurationController)
    - Initialized via ApiManager on startup
+   - Includes filesystem navigation for folder picker UI
 
 ### Data Models (`Models/JobStorageModels.cs`)
 
@@ -44,11 +45,13 @@ February 7, 2026
 - **GCodeFileMetadata**: Metadata including source indicator (managed vs external)
 - **PageRequest**: Paging and sorting parameters
 - **PagedResult<T>**: Generic paged result wrapper
-- **ListGCodeFilesRequest**: Request with directories array and paging
+- **ListGCodeFilesRequest**: Request with directories array, fileExtensions array (defaults: .nc, .txt, .tap), and paging
 - **StoreJobRequest**: Job storage request with optional metadata
 - **StoreGCodeFileRequest**: G-code storage with optional fileId and metadata
 - **SaveLastJobRequest**: Simple last job ID tracker
 - **StoreResponse**: Generic store operation response
+- **DriveInfoResponse**: Drive information for filesystem navigation (name, label, type, sizes)
+- **DirectoryInfoResponse**: Directory information for browsing (name, path, hasSubdirectories)
 
 ## API Endpoints
 
@@ -86,7 +89,8 @@ February 7, 2026
 
 7. **POST** `/api/JobStorage/gcode/list`
    - List G-code files from all sources
-   - Body: `ListGCodeFilesRequest` (directories array, paging)
+   - Body: `ListGCodeFilesRequest` (directories array, fileExtensions array, paging)
+   - FileExtensions defaults to: `[".nc", ".txt", ".tap"]` (case-insensitive)
    - Combines: External directories + Managed files + MongoDB
    - Returns: `PagedResult<GCodeFileMetadata>`
 
@@ -110,6 +114,26 @@ February 7, 2026
     - Delete managed G-code file
     - Deletes from local and MongoDB
     - External files cannot be deleted
+
+### Filesystem Navigation Endpoints
+
+12. **GET** `/api/JobStorage/filesystem/drives`
+    - Get all available drives on the system
+    - Returns: Array of `DriveInfoResponse` with name, label, type, size, available space
+    - Used by frontend to start directory browsing
+    - Drive names returned with trailing backslash: `"C:\"`, `"D:\"`
+
+13. **GET** `/api/JobStorage/filesystem/directories?path={path}`
+    - Get subdirectories for a given path
+    - Query parameter: `path` (required, URL-encoded)
+    - Returns: Array of `DirectoryInfoResponse` with name, fullPath, hasSubdirectories, lastModified
+    - Sorted alphabetically by name
+    - Returns 403 for access denied, 404 if path doesn't exist
+    - **Path Format**: Standard Windows paths (`"C:\Users"`, `"D:\CAD_Output"`)
+      - Accepts backslashes `\` or forward slashes `/` (.NET handles both)
+      - Must be absolute paths, not relative
+      - URL-encode spaces and special characters (`C:\Program%20Files`)
+      - Use `fullPath` from response for next navigation call
 
 ## Storage Strategy
 
@@ -170,9 +194,10 @@ C:\havencncdata\
 
 1. **External Directories** (Read-Only)
    - Frontend specifies directory paths
-   - Backend scans for .nc and .gcode files
+   - Backend scans for specified file extensions (default: .nc, .txt, .tap)
    - Files never moved or modified
    - CAD tool output locations
+   - Case-insensitive extension matching
 
 2. **Managed Directory**
    - Files stored by GUID: `{fileId}.nc`
@@ -297,11 +322,21 @@ Machine name in `C:\havencncdata\machineDataStorageSettings.json`:
 
 1. Import `ICNCJobStorage` TypeScript interface
 2. Implement API client calls to `/api/JobStorage/*` endpoints
-3. Provide external directory paths in `ListGCodeFilesRequest`
-4. Handle paging for large lists
-5. Use `fileId` for managed files, `directory + fileName` for external
-6. Store new G-code files with `POST /api/JobStorage/gcode`
-7. Track last executed job with `/api/JobStorage/jobs/last`
+3. **Use filesystem navigation endpoints to build folder picker**:
+   - Call `GET /api/JobStorage/filesystem/drives` to show available drives
+   - Call `GET /api/JobStorage/filesystem/directories?path={path}` to browse folders
+   - Build tree navigation UI for selecting external G-code directories
+   - **Path handling**: URL-encode paths when making requests, use `fullPath` from responses
+   - **Example flow**: 
+     - Get drives → `[{"name": "C:\\", ...}, {"name": "D:\\", ...}]`
+     - Browse C:\ → `GET /directories?path=C:\` → Returns subdirectories
+     - Navigate deeper → `GET /directories?path=C:\Users` → Returns subdirectories
+     - Select folder → Use selected path in `ListGCodeFilesRequest.directories` array
+4. Provide selected external directory paths in `ListGCodeFilesRequest`
+5. Handle paging for large lists
+6. Use `fileId` for managed files, `directory + fileName` for external
+7. Store new G-code files with `POST /api/JobStorage/gcode`
+8. Track last executed job with `/api/JobStorage/jobs/last`
 
 ## Dependencies
 
