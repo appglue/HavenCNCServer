@@ -313,9 +313,23 @@ namespace HavenCNCServer.Centroid
             var cncPipe = CNCConnectionManager.GetCNCPipe();
             if (cncPipe == null) return;
 
+            // Log incoming data for debugging
+            LoggingService.Log($"    === ConfigureLimitSwitches Debug Info ===");
+            LoggingService.Log($"    PositiveLimitInput: HasValue={config.PositiveLimitInput.HasValue}, Value={config.PositiveLimitInput?.ToString() ?? "null"}");
+            LoggingService.Log($"    NegativeLimitInput: HasValue={config.NegativeLimitInput.HasValue}, Value={config.NegativeLimitInput?.ToString() ?? "null"}");
+            LoggingService.Log($"    HomingDirectionPositive: HasValue={config.HomingDirectionPositive.HasValue}, Value={config.HomingDirectionPositive?.ToString() ?? "null"}");
+
             // Determine which inputs to use based on what's provided
+            // If value is 0 or null, treat as "clear/unset"
             bool hasPositiveInput = config.PositiveLimitInput.HasValue && config.PositiveLimitInput.Value > 0;
             bool hasNegativeInput = config.NegativeLimitInput.HasValue && config.NegativeLimitInput.Value > 0;
+
+            // Check if inputs were explicitly cleared (set to 0 or provided)
+            bool positiveClearedExplicitly = config.PositiveLimitInput.HasValue && config.PositiveLimitInput.Value == 0;
+            bool negativeClearedExplicitly = config.NegativeLimitInput.HasValue && config.NegativeLimitInput.Value == 0;
+
+            LoggingService.Log($"    hasPositiveInput={hasPositiveInput}, hasNegativeInput={hasNegativeInput}");
+            LoggingService.Log($"    positiveClearedExplicitly={positiveClearedExplicitly}, negativeClearedExplicitly={negativeClearedExplicitly}");
 
             // If only one switch is provided, use it as home/limit in the homing direction
             if ((hasPositiveInput || hasNegativeInput) && !(hasPositiveInput && hasNegativeInput))
@@ -334,11 +348,15 @@ namespace HavenCNCServer.Centroid
                 LoggingService.Log($"    Single switch mode: Input {switchInput} as HomeLimit in {direction} direction");
 
                 // Set as both limit and home switch in the homing direction
+                LoggingService.Log($"      -> Setting SetLimit({axisEnum}, {direction}, {switchInput})");
                 cncPipe.axis.SetLimit(axisEnum, direction, switchInput);
+                LoggingService.Log($"      -> Setting SetHomeLimit({axisEnum}, {direction}, {switchInput})");
                 cncPipe.axis.SetHomeLimit(axisEnum, direction, switchInput);
 
-                // Clear the opposite direction
+                // Clear the opposite direction (explicitly unset)
+                LoggingService.Log($"      -> Clearing SetLimit({axisEnum}, {oppositeDirection}, 0)");
                 cncPipe.axis.SetLimit(axisEnum, oppositeDirection, 0);
+                LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, {oppositeDirection}, 0)");
                 cncPipe.axis.SetHomeLimit(axisEnum, oppositeDirection, 0);
             }
             else if (hasPositiveInput && hasNegativeInput)
@@ -349,7 +367,9 @@ namespace HavenCNCServer.Centroid
                 LoggingService.Log($"      Negative limit: Input {config.NegativeLimitInput.Value}");
 
                 // Set limit switches
+                LoggingService.Log($"      -> Setting SetLimit({axisEnum}, PLUS, {config.PositiveLimitInput.Value})");
                 cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PositiveLimitInput.Value);
+                LoggingService.Log($"      -> Setting SetLimit({axisEnum}, MINUS, {config.NegativeLimitInput.Value})");
                 cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.NegativeLimitInput.Value);
 
                 // Set home switch based on homing direction
@@ -359,14 +379,18 @@ namespace HavenCNCServer.Centroid
                     {
                         // Homes in positive direction - use positive limit as home
                         LoggingService.Log($"      Homing: Positive direction (using positive limit as home)");
+                        LoggingService.Log($"      -> Setting SetHomeLimit({axisEnum}, PLUS, {config.PositiveLimitInput.Value})");
                         cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, config.PositiveLimitInput.Value);
+                        LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, MINUS, 0)");
                         cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
                     }
                     else
                     {
                         // Homes in negative direction - use negative limit as home
                         LoggingService.Log($"      Homing: Negative direction (using negative limit as home)");
+                        LoggingService.Log($"      -> Setting SetHomeLimit({axisEnum}, MINUS, {config.NegativeLimitInput.Value})");
                         cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, config.NegativeLimitInput.Value);
+                        LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, PLUS, 0)");
                         cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
                     }
                 }
@@ -374,19 +398,47 @@ namespace HavenCNCServer.Centroid
                 {
                     // No homing configured - clear home switches
                     LoggingService.Log($"      Homing: Disabled (InPlace)");
+                    LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, PLUS, 0)");
                     cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                    LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, MINUS, 0)");
                     cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
                 }
             }
             else
             {
                 // No switches configured - clear all
-                LoggingService.Log($"    No limit switches configured");
+                LoggingService.Log($"    No limit switches configured - clearing all");
+                LoggingService.Log($"      -> Clearing SetLimit({axisEnum}, PLUS, 0)");
                 cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                LoggingService.Log($"      -> Clearing SetLimit({axisEnum}, MINUS, 0)");
                 cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+                LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, PLUS, 0)");
                 cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, MINUS, 0)");
                 cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
             }
+
+            // Explicitly clear any switches that were set to 0 (explicit unsetting)
+            // This handles the case where a switch was previously configured and is now being cleared
+            if (positiveClearedExplicitly && !hasPositiveInput)
+            {
+                LoggingService.Log($"    Explicitly clearing positive limit switch (was set to 0)");
+                LoggingService.Log($"      -> Clearing SetLimit({axisEnum}, PLUS, 0)");
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+                LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, PLUS, 0)");
+                cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.PLUS, 0);
+            }
+
+            if (negativeClearedExplicitly && !hasNegativeInput)
+            {
+                LoggingService.Log($"    Explicitly clearing negative limit switch (was set to 0)");
+                LoggingService.Log($"      -> Clearing SetLimit({axisEnum}, MINUS, 0)");
+                cncPipe.axis.SetLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+                LoggingService.Log($"      -> Clearing SetHomeLimit({axisEnum}, MINUS, 0)");
+                cncPipe.axis.SetHomeLimit(axisEnum, CNCPipe.Axis.Direction.MINUS, 0);
+            }
+
+            LoggingService.Log($"    === End ConfigureLimitSwitches ===");
         }
 
         /// <summary>
