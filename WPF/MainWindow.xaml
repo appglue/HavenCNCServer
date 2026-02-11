@@ -78,11 +78,55 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Large Launch UI Button -->
+            <Button Grid.Row="0"
+                    Content="LAUNCH UI"
+                    Command="{Binding OpenBrowserUICommand}"
+                    Height="60"
+                    Margin="0,0,0,15"
+                    Background="#2196F3"
+                    Foreground="White"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    BorderThickness="0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background"
+                                Value="#2196F3"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderThickness="0"
+                                            CornerRadius="5">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                    Value="True">
+                                <Setter Property="Background"
+                                        Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed"
+                                    Value="True">
+                                <Setter Property="Background"
+                                        Value="#0D47A1"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
             <!-- CNC Control Buttons -->
-            <StackPanel Grid.Row="0">
+            <StackPanel Grid.Row="1">
                 <TextBlock Text="CNC Control"
                            FontSize="16"
                            FontWeight="Bold"
@@ -104,7 +148,7 @@
                             <Style TargetType="Button">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding RequiresReset}"
-                                            Value="True">
+                                                 Value="True">
                                         <Setter Property="Background"
                                                 Value="White"/>
                                         <Setter Property="Foreground"
@@ -228,11 +272,11 @@
             </StackPanel>
 
             <!-- Coordinate Display (DRO) -->
-            <controls:CoordinateDisplayControl Grid.Row="1"
+            <controls:CoordinateDisplayControl Grid.Row="2"
                                                Margin="0,20,0,0"/>
 
             <!-- Tabs for Messages/Logs/GCode -->
-            <TabControl Grid.Row="2"
+            <TabControl Grid.Row="3"
                         Margin="0,20,0,0">
                 <TabItem Header="Messages">
                     <DockPanel>

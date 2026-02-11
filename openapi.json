@@ -3974,6 +3974,32 @@
         }
       }
     },
+    "/api/CNCSystem/EnableSoftLimits": {
+      "post": {
+        "tags": [
+          "CNCSystem"
+        ],
+        "summary": "Enable soft limits (travel limits)",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/CNCSystem/DisableSoftLimits": {
+      "post": {
+        "tags": [
+          "CNCSystem"
+        ],
+        "summary": "Disable soft limits (travel limits)",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/CNCSystem/GetCurrentErrorState": {
       "get": {
         "tags": [

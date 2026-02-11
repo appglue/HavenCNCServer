@@ -208,6 +208,54 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
+        /// Enable soft limits (travel limits)
+        /// </summary>
+        [HttpPost("EnableSoftLimits")]
+        public IActionResult EnableSoftLimits()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                CNCUtils.StartSkinEvent(SkinEvent.LimitDefeat);
+                System.Threading.Thread.Sleep(100);
+                CNCUtils.StopSkinEvent(SkinEvent.LimitDefeat);
+
+                return Ok(new { message = "Soft limits enabled" });
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to enable soft limits: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Disable soft limits (travel limits)
+        /// </summary>
+        [HttpPost("DisableSoftLimits")]
+        public IActionResult DisableSoftLimits()
+        {
+            try
+            {
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                    throw new InvalidOperationException("CNC connection not available");
+
+                CNCUtils.StartSkinEvent(SkinEvent.LimitDefeat);
+                System.Threading.Thread.Sleep(100);
+                CNCUtils.StopSkinEvent(SkinEvent.LimitDefeat);
+
+                return Ok(new { message = "Soft limits disabled" });
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to disable soft limits: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// Get current error state
         /// </summary>
         /// <returns>Current error messages</returns>
