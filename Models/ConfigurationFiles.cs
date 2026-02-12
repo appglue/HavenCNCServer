@@ -21,7 +21,8 @@ namespace HavenCNCServer.Models
             "fixtures.json",
             "materials.json",
             "tools.json",
-            "userActionData.json"
+            "userActionData.json",
+            "setupChecklist.json"
         };
 
         /// <summary>

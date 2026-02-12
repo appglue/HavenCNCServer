@@ -7,38 +7,14 @@
         Height="800"
         Width="1200"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         Background="{DynamicResource MaterialDesign.Brush.Background}"
         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         FontFamily="{DynamicResource MaterialDesignFont}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Toolbar -->
-        <materialDesign:ColorZone Grid.Row="0"
-                                  Mode="PrimaryMid"
-                                  Padding="16"
-                                  materialDesign:ElevationAssist.Elevation="Dp4">
-            <DockPanel>
-                <Button DockPanel.Dock="Right"
-                        Content="REFRESH"
-                        Margin="10,0,0,0"
-                        Click="Refresh_Click"
-                        Style="{StaticResource MaterialDesignRaisedButton}"/>
-                <TextBlock Text="Web UI Browser"
-                           VerticalAlignment="Center"
-                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
-            </DockPanel>
-        </materialDesign:ColorZone>
-
-        <!-- WebView2 -->
-        <wv2:WebView2 Grid.Row="1"
-                      x:Name="webView"
-                      Source="http://localhost:5000"/>
-    </Grid>
+    <!-- WebView2 -->
+    <wv2:WebView2 x:Name="webView"
+                  Source="http://localhost:5000"/>
 </Window>
