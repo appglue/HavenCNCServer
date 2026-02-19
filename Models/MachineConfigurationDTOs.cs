@@ -34,6 +34,12 @@ namespace HavenCNCServer.Models
         /// Includes step frequency, drive fault delay, and other global settings
         /// </summary>
         public GlobalSystemConfiguration? GlobalSystem { get; set; }
+
+        /// <summary>
+        /// Wireless MPG and MPG performance configuration (optional).
+        /// Controls device type (P411), active axes bitmask (P218), and jog performance (P855).
+        /// </summary>
+        public HavenCNCServer.Centroid.Data.MpgConfiguration? Mpg { get; set; }
     }
 
     /// <summary>

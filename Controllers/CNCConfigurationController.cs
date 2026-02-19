@@ -448,7 +448,7 @@ namespace HavenCNCServer.Controllers
             try
             {
                 LoggingService.Log("=== ConfigureCompleteMachine API called ===");
-                LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, GlobalSystem: {config.GlobalSystem != null}");
+                LoggingService.Log($"Configuration contains: {config.Axes?.Count ?? 0} axes, Spindle: {config.Spindle != null}, Probe: {config.Probe != null}, PWM: {config.PWMOutputs?.Count ?? 0}, GlobalSystem: {config.GlobalSystem != null}, Mpg: {config.Mpg != null}");
 
                 // Log GlobalSystem values if present
                 if (config.GlobalSystem != null)
@@ -486,7 +486,8 @@ namespace HavenCNCServer.Controllers
                     atc: null,
                     touchPlate: null,
                     secondSpindle: null,
-                    globalSystem: config.GlobalSystem
+                    globalSystem: config.GlobalSystem,
+                    mpg: config.Mpg
                 );
 
                 if (result)
@@ -611,6 +612,18 @@ namespace HavenCNCServer.Controllers
             {
                 throw new InvalidOperationException($"Failed to configure probe: {ex.Message}", ex);
             }
+        }
+
+        /// <summary>
+        /// Configure wireless MPG device type, active axes, and jog performance mode
+        /// </summary>
+        /// <param name="config">MPG configuration</param>
+        /// <returns>Configuration result</returns>
+        [HttpPost("ConfigureMpg")]
+        [ProducesResponseType(typeof(bool), 200)]
+        public bool ConfigureMpg([FromBody] HavenCNCServer.Centroid.Data.MpgConfiguration config)
+        {
+            return CentroidConfigUtil.ConfigureMpg(config);
         }
 
         /// <summary>

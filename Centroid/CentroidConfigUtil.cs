@@ -1620,7 +1620,8 @@ namespace HavenCNCServer.Centroid
             TouchPlateConfiguration? touchPlate = null,
             SecondSpindleConfiguration? secondSpindle = null,
             GlobalSystemConfiguration? globalSystem = null,
-            RotaryConfiguration? rotary = null)
+            RotaryConfiguration? rotary = null,
+            MpgConfiguration? mpg = null)
         {
             try
             {
@@ -1739,17 +1740,33 @@ namespace HavenCNCServer.Centroid
                 // Step 8: Configure rotary settings if provided
                 if (rotary != null)
                 {
-                    LoggingService.Log("Step 8/8: Configuring rotary settings...");
+                    LoggingService.Log("Step 8/9: Configuring rotary settings...");
                     if (!ConfigureRotary(rotary))
                     {
                         LoggingService.Log("ERROR: Rotary configuration failed", LoggingService.LogLevel.Error);
                         return false;
                     }
-                    LoggingService.Log("Step 8/8: Rotary settings configured successfully");
+                    LoggingService.Log("Step 8/9: Rotary settings configured successfully");
                 }
                 else
                 {
-                    LoggingService.Log("Step 8/8: Skipping rotary configuration (not provided)");
+                    LoggingService.Log("Step 8/9: Skipping rotary configuration (not provided)");
+                }
+
+                // Step 9: Configure MPG if provided
+                if (mpg != null)
+                {
+                    LoggingService.Log("Step 9/9: Configuring MPG...");
+                    if (!ConfigureMpg(mpg))
+                    {
+                        LoggingService.Log("ERROR: MPG configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 9/9: MPG configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 9/9: Skipping MPG configuration (not provided)");
                 }
 
                 LoggingService.Log("=== Complete Machine Configuration Finished Successfully ===");
@@ -1759,6 +1776,51 @@ namespace HavenCNCServer.Centroid
             {
                 LoggingService.Log($"CRITICAL ERROR in ConfigureCompleteMachine: {ex.Message}", LoggingService.LogLevel.Error);
                 LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Configures wireless MPG type, active axes, and jog performance mode.
+        /// P411 = device type, P218 = active axes bitmask, P855 = performance mode.
+        /// When WirelessMpgType is None, P218 is zeroed to disable the MPG.
+        /// </summary>
+        /// <param name="config">MPG configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureMpg(MpgConfiguration config)
+        {
+            try
+            {
+                LoggingService.Log("Configuring MPG...");
+
+                if (config.WirelessMpgType == WirelessMpgType.None)
+                {
+                    // Disable USB MPG — zero the active axes bitmask
+                    CNCUtils.SetParameterValue(CentroidParameters.USB_MPG_OPTIONS_PARM, 0);
+                    LoggingService.Log("  Wireless MPG disabled (P218 = 0)");
+                }
+                else
+                {
+                    // Set device type (P411)
+                    CNCUtils.SetParameterValue(CentroidParameters.MPG_TYPE_PARM, (int)config.WirelessMpgType);
+                    LoggingService.Log($"  MPG type: {config.WirelessMpgType} (P411 = {(int)config.WirelessMpgType})");
+
+                    // Set active axes bitmask (P218) — always 3-axis: X(1) + Y(2) + Z(4) = 7
+                    const int threeAxisBitmask = 7;
+                    CNCUtils.SetParameterValue(CentroidParameters.USB_MPG_OPTIONS_PARM, threeAxisBitmask);
+                    LoggingService.Log($"  Active axes: 3-axis (X+Y+Z), P218 = {threeAxisBitmask}");
+                }
+
+                // Set MPG performance mode (P855)
+                CNCUtils.SetParameterValue(CentroidParameters.MPG_PERFORMANCE_MODE_PARAM, (int)config.Performance);
+                LoggingService.Log($"  MPG performance: {config.Performance} (P855 = {(int)config.Performance})");
+
+                LoggingService.Log("MPG configuration completed successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Log($"EXCEPTION in ConfigureMpg: {ex.Message}", LoggingService.LogLevel.Error);
                 return false;
             }
         }

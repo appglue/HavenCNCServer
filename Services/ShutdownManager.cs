@@ -95,78 +95,108 @@ namespace HavenCNCServer.Services
                 LogInfo("Starting shutdown sequence...", "Shutdown");
 
                 // Step 1: Cancel all background operations
-                LogInfo("[1/6] Cancelling background operations...", "Shutdown");
+                LogInfo("[1/7] Cancelling background operations...", "Shutdown");
                 try
                 {
                     _shutdownCancellationSource?.Cancel();
                     Thread.Sleep(100); // Brief pause to let cancellation propagate
-                    LogSuccess("[1/6] ✓ Background operations cancelled", "Shutdown");
+                    LogSuccess("[1/7] ✓ Background operations cancelled", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[1/6] ✗ Error cancelling operations: {ex.Message}", "Shutdown");
+                    LogError($"[1/7] ✗ Error cancelling operations: {ex.Message}", "Shutdown");
                 }
 
                 // Step 2: Stop Centroid Event Bridge (stops CNC connection monitoring)
-                LogInfo("[2/6] Stopping Centroid Event Bridge...", "Shutdown");
+                LogInfo("[2/7] Stopping Centroid Event Bridge...", "Shutdown");
                 try
                 {
                     var bridgeTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
                     CentroidEventBridge.Stop(bridgeTimeout);
-                    LogSuccess("[2/6] ✓ Centroid Event Bridge stopped", "Shutdown");
+                    LogSuccess("[2/7] ✓ Centroid Event Bridge stopped", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[2/6] ✗ Event Bridge error: {ex.Message}", "Shutdown");
+                    LogError($"[2/7] ✗ Event Bridge error: {ex.Message}", "Shutdown");
                 }
 
                 // Step 3: Stop API Manager (ASP.NET Core Web API)
-                LogInfo("[3/6] Stopping API Manager...", "Shutdown");
+                LogInfo("[3/7] Stopping API Manager...", "Shutdown");
                 try
                 {
                     var apiTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                     ApiManager.StopAsync(apiTimeout.Token).Wait(3500);
-                    LogSuccess("[3/6] ✓ API Manager stopped", "Shutdown");
+                    LogSuccess("[3/7] ✓ API Manager stopped", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[3/6] ✗ API Manager error: {ex.Message}", "Shutdown");
+                    LogError($"[3/7] ✗ API Manager error: {ex.Message}", "Shutdown");
                 }
 
                 // Step 4: Dispose CNC Event Bus (worker threads)
-                LogInfo("[4/6] Disposing CNC Event Bus...", "Shutdown");
+                LogInfo("[4/7] Disposing CNC Event Bus...", "Shutdown");
                 try
                 {
                     CNCEventBus.Instance.Dispose();
-                    LogSuccess("[4/6] ✓ CNC Event Bus disposed", "Shutdown");
+                    LogSuccess("[4/7] ✓ CNC Event Bus disposed", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[4/6] ✗ Event Bus error: {ex.Message}", "Shutdown");
+                    LogError($"[4/7] ✗ Event Bus error: {ex.Message}", "Shutdown");
                 }
 
                 // Step 5: Disconnect from CNC
-                LogInfo("[5/6] Disconnecting from CNC...", "Shutdown");
+                LogInfo("[5/7] Disconnecting from CNC...", "Shutdown");
                 try
                 {
                     CNCConnectionManager.Disconnect();
-                    LogSuccess("[5/6] ✓ CNC disconnected", "Shutdown");
+                    LogSuccess("[5/7] ✓ CNC disconnected", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[5/6] ✗ CNC disconnect error: {ex.Message}", "Shutdown");
+                    LogError($"[5/7] ✗ CNC disconnect error: {ex.Message}", "Shutdown");
                 }
 
-                // Step 6: Dispose cancellation source
-                LogInfo("[6/6] Cleaning up resources...", "Shutdown");
+                // Step 6: Exit CNC12 gracefully if it's running
+                LogInfo("[6/7] Exiting CNC12...", "Shutdown");
+                try
+                {
+                    // Check if CNC12 is running by checking the process directly (not cached)
+                    var cnc12ProcessName = SettingsManager.Settings?.Cnc?.Cnc12ProcessName ?? "cncr";
+                    var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
+                    bool isCnc12Running = processes.Length > 0;
+
+                    // Clean up process handles
+                    foreach (var p in processes)
+                    {
+                        try { p.Dispose(); } catch { }
+                    }
+
+                    if (isCnc12Running)
+                    {
+                        CNCUtils.ExitCNC12();
+                        LogSuccess("[6/7] ✓ CNC12 exit command sent", "Shutdown");
+                    }
+                    else
+                    {
+                        LogInfo("[6/7] ⊘ CNC12 not running, skipping exit", "Shutdown");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError($"[6/7] ✗ CNC12 exit error: {ex.Message}", "Shutdown");
+                }
+
+                // Step 7: Dispose cancellation source
+                LogInfo("[7/7] Cleaning up resources...", "Shutdown");
                 try
                 {
                     _shutdownCancellationSource?.Dispose();
-                    LogSuccess("[6/6] ✓ Resources cleaned up", "Shutdown");
+                    LogSuccess("[7/7] ✓ Resources cleaned up", "Shutdown");
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[6/6] ✗ Cleanup error: {ex.Message}", "Shutdown");
+                    LogError($"[7/7] ✗ Cleanup error: {ex.Message}", "Shutdown");
                 }
 
                 _shutdownComplete = true;

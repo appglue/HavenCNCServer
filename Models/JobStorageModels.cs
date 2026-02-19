@@ -42,7 +42,7 @@ namespace HavenCNCServer.Models
     /// </summary>
     public class JobMetadata
     {
-        public string JobId { get; set; } = string.Empty;  // Job identifier for fetching
+        public string Id { get; set; } = string.Empty;  // Job identifier for fetching
         public string Name { get; set; } = string.Empty;
         public int ExecutionCount { get; set; }
         public DateTime? LastRunDate { get; set; }
@@ -120,39 +120,87 @@ namespace HavenCNCServer.Models
         public DateTime LastModified { get; set; }
         public long Size { get; set; }
         public bool IsManaged { get; set; }  // True if in MongoDB/managed directory
+        public int LineCount { get; set; }   // Number of non-empty lines
     }
 
     /// <summary>
-    /// Request model for paging and sorting
+    /// Request to list jobs — replaces old paged PageRequest
     /// </summary>
-    public class PageRequest
+    public class ListJobsRequest
     {
-        public int Page { get; set; }
-        public int PageSize { get; set; } = 20;
+        public int? MaxCount { get; set; }       // Null = all (capped at 500)
         public string? SortBy { get; set; }
         public string? SortDirection { get; set; }
     }
 
     /// <summary>
-    /// Paged result wrapper
-    /// </summary>
-    public class PagedResult<T>
-    {
-        public List<T> Items { get; set; } = new();
-        public int TotalCount { get; set; }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
-        public int TotalPages { get; set; }
-    }
-
-    /// <summary>
-    /// Request to list G-code files
+    /// Request to list G-code files (no paging)
     /// </summary>
     public class ListGCodeFilesRequest
     {
         public string[] Directories { get; set; } = Array.Empty<string>();
         public string[] FileExtensions { get; set; } = new[] { ".nc", ".txt", ".tap" };
-        public PageRequest Paging { get; set; } = new();
+        public string? SortBy { get; set; }
+        public string? SortDirection { get; set; }
+    }
+
+    /// <summary>
+    /// Full G-code file: metadata + content combined
+    /// Returned by GET /gcode
+    /// </summary>
+    public class GCodeFileData
+    {
+        public string? FileId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Directory { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public string? Category { get; set; }
+        public string? Description { get; set; }
+        public string? MaterialType { get; set; }
+        public string? EstimatedTime { get; set; }
+        public DateTime LastModified { get; set; }
+        public long Size { get; set; }
+        public int LineCount { get; set; }
+        public bool IsManaged { get; set; }
+    }
+
+    /// <summary>
+    /// Request to update a job's category
+    /// </summary>
+    public class UpdateJobCategoryRequest
+    {
+        public string Category { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Request to update a G-code file's category
+    /// </summary>
+    public class UpdateGCodeCategoryRequest
+    {
+        public string? FileId { get; set; }       // For managed files
+        public string? Directory { get; set; }    // For external files
+        public string? FileName { get; set; }     // For external files
+        public string Category { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Request to search jobs
+    /// </summary>
+    public class JobSearchRequest
+    {
+        public string Query { get; set; } = string.Empty;
+        public int MaxCount { get; set; } = 20;
+    }
+
+    /// <summary>
+    /// Request to search G-code files
+    /// </summary>
+    public class GCodeSearchRequest
+    {
+        public string Query { get; set; } = string.Empty;
+        public string[]? Directories { get; set; }
+        public string[]? FileExtensions { get; set; }
+        public int MaxCount { get; set; } = 20;
     }
 
     /// <summary>
