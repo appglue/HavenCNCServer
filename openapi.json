@@ -1554,92 +1554,41 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Reset all outputs to normal (remove all forced states)",
+        "summary": "Reset specified outputs to normal (remove forced state)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/IsInputAvailable/{inputNumber}": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Check if input is available",
-        "parameters": [
-          {
-            "name": "inputNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCIO/IsOutputAvailable/{outputNumber}": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Check if output is available",
-        "parameters": [
-          {
-            "name": "outputNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
           }
         }
       }
@@ -5951,7 +5900,39 @@
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Set current machine name",
+        "summary": "Set current machine name.\r\n- New machine: seeds MongoDB with current local config under the new name, then syncs.\r\n- Existing machine: archives current data to zip, seeds new-machine config in MongoDB,\r\n  wipes local jobs/gcode, then syncs down from the new machine.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/SetCurrentMachine": {
+      "post": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Set current machine name.\r\n- New machine: seeds MongoDB with current local config under the new name, then syncs.\r\n- Existing machine: archives current data to zip, seeds new-machine config in MongoDB,\r\n  wipes local jobs/gcode, then syncs down from the new machine.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6047,39 +6028,6 @@
         }
       }
     },
-    "/api/MachineConfiguration/SetCurrentMachine": {
-      "post": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Set current machine",
-        "requestBody": {
-          "description": "Machine name to switch to",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/MachineConfiguration/GetDefaultPLC": {
       "get": {
         "tags": [
@@ -6139,6 +6087,59 @@
         "responses": {
           "200": {
             "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/DeleteMachine/{machineName}": {
+      "delete": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Delete all MongoDB data for a machine (configs, jobs, G-code files).\r\nDoes NOT touch local files — only removes the machine from the cloud.\r\nIf deleting the currently active machine, provide switchToMachine to switch first.",
+        "parameters": [
+          {
+            "name": "machineName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "switchToMachine",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
           }
         }
       }

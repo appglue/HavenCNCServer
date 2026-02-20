@@ -110,6 +110,31 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
+        /// Delete a single configuration file from MongoDB for a given machine.
+        /// </summary>
+        public async Task<bool> DeleteFileAsync(string machineName, string fileName)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<MachineConfigurationDocument>.Filter.And(
+                    Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName),
+                    Builders<MachineConfigurationDocument>.Filter.Eq(x => x.FileName, fileName)
+                );
+
+                await _machineConfigCollection!.DeleteOneAsync(filter);
+                LogInfo($"Deleted {fileName} from MongoDB for machine '{machineName}'", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete {fileName} from MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Get list of distinct machine names from MongoDB
         /// </summary>
         public async Task<System.Collections.Generic.List<string>> GetMachineNamesAsync()
@@ -539,6 +564,56 @@ namespace HavenCNCServer.Services
                 LogError($"Failed to list G-code files from MongoDB: {ex.Message}", "MongoDB");
                 return new System.Collections.Generic.List<GCodeFileDocument>();
             }
+        }
+
+        /// <summary>
+        /// Delete ALL documents for a given machine name across all collections:
+        /// machine configurations, jobs, and G-code files.
+        /// Returns counts of deleted documents per collection.
+        /// </summary>
+        public async Task<(long configs, long jobs, long gcode)> DeleteAllForMachineAsync(string machineName)
+        {
+            if (!IsConnected) return (0, 0, 0);
+
+            long configs = 0, jobs = 0, gcode = 0;
+
+            try
+            {
+                var configFilter = Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var configResult = await _machineConfigCollection!.DeleteManyAsync(configFilter);
+                configs = configResult.DeletedCount;
+                LogInfo($"Deleted {configs} config document(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete configs for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
+                var jobFilter = Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var jobResult = await _jobCollection!.DeleteManyAsync(jobFilter);
+                jobs = jobResult.DeletedCount;
+                LogInfo($"Deleted {jobs} job(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete jobs for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
+                var gcodeFilter = Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var gcodeResult = await _gcodeCollection!.DeleteManyAsync(gcodeFilter);
+                gcode = gcodeResult.DeletedCount;
+                LogInfo($"Deleted {gcode} G-code file(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete G-code files for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            return (configs, jobs, gcode);
         }
     }
 }

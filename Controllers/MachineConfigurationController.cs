@@ -3,6 +3,7 @@ using HavenCNCServer.Services;
 using HavenCNCServer.Models;
 using System.Threading.Tasks;
 using System.IO;
+using System.IO.Compression;
 using System.Text.Json;
 using static HavenCNCServer.Services.LoggingService;
 
@@ -245,29 +246,154 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Set current machine name
+        /// Set current machine name.
+        /// - New machine: seeds MongoDB with current local config under the new name, then syncs.
+        /// - Existing machine: archives current data to zip, seeds new-machine config in MongoDB,
+        ///   wipes local jobs/gcode, then syncs down from the new machine.
         /// </summary>
         [HttpPost("set-machine")]
-        public async Task<IActionResult> SetMachine([FromBody] SetCurrentMachineRequest request)
+        [HttpPost("SetCurrentMachine")]
+        public async Task<IActionResult> SetCurrentMachine([FromBody] SetCurrentMachineRequest request)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.MachineName))
+                    return BadRequest(new { message = "Machine name is required" });
+
+                LogInfo($"💾 SetCurrentMachine request: '{request.MachineName}'", "MachineConfig");
+
+                // ── Read current machine name ──────────────────────────────────────────
                 var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
-                var settings = new LocalMachineSettings
+                var currentSettings = System.IO.File.Exists(settingsPath)
+                    ? JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath))
+                    : null;
+                var oldMachineName = currentSettings?.CurrentMachineName ?? string.Empty;
+
+                // ── Determine if the target machine already exists in MongoDB ──────────
+                bool isExistingMachine = false;
+                if (_mongoService != null && _mongoService.IsConnected && !string.IsNullOrEmpty(request.MachineName))
+                {
+                    var knownMachines = await _mongoService.GetMachineNamesAsync();
+                    isExistingMachine = knownMachines.Contains(request.MachineName, System.StringComparer.OrdinalIgnoreCase);
+                }
+
+                LogInfo($"Target machine '{request.MachineName}' is {(isExistingMachine ? "EXISTING" : "NEW")}", "MachineConfig");
+
+                if (isExistingMachine)
+                {
+                    // ── Step 1: Archive current data directory to a zip ────────────────
+                    var timestamp = System.DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
+                    var safeName = string.IsNullOrEmpty(oldMachineName) ? "unknown" : oldMachineName;
+                    var zipName = $"backup_{safeName}_{timestamp}.zip";
+                    var zipPath = Path.Combine(DataDirectory, zipName);
+
+                    LogInfo($"Creating archive: {zipName}", "MachineConfig");
+                    try
+                    {
+                        using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create);
+                        foreach (var file in System.IO.Directory.GetFiles(DataDirectory, "*", SearchOption.AllDirectories))
+                        {
+                            // Skip any existing zip files to avoid nesting archives
+                            if (file.EndsWith(".zip", System.StringComparison.OrdinalIgnoreCase)) continue;
+                            var relativePath = Path.GetRelativePath(DataDirectory, file);
+                            zip.CreateEntryFromFile(file, relativePath, CompressionLevel.Optimal);
+                        }
+                        LogSuccess($"✓ Archive created: {zipName}", "MachineConfig");
+                    }
+                    catch (System.Exception ex)
+                    {
+                        LogError($"Archive creation failed: {ex.Message}", "MachineConfig");
+                        return StatusCode(500, new { message = $"Archive failed: {ex.Message}" });
+                    }
+
+                    // ── Step 2: Delete old backup zips (keep only the new one) ────────
+                    foreach (var oldZip in System.IO.Directory.GetFiles(DataDirectory, "*.zip"))
+                    {
+                        if (oldZip == zipPath) continue;
+                        try { System.IO.File.Delete(oldZip); } catch { /* best effort */ }
+                    }
+
+                    // ── Step 3: Delete all local config files so sync starts fresh at version 0 ──
+                    // This ensures SyncWithMongoDb downloads the existing machine's config from
+                    // MongoDB rather than comparing against stale old-machine versions.
+                    LogInfo("Clearing local config files to force fresh download...", "MachineConfig");
+                    foreach (var file in System.IO.Directory.GetFiles(DataDirectory, "*.json"))
+                    {
+                        var fname = Path.GetFileName(file);
+                        if (fname == "machineDataStorageSettings.json") continue;
+                        try { System.IO.File.Delete(file); } catch { /* best effort */ }
+                    }
+                    LogSuccess("✓ Local config files cleared", "MachineConfig");
+
+                    // ── Step 4: Wipe local jobs and gcode ─────────────────────────────
+                    WipeDirectory(Path.Combine(DataDirectory, "jobs"));
+                    WipeDirectory(Path.Combine(DataDirectory, "gcode"));
+                    LogSuccess("✓ Local jobs and gcode cleared", "MachineConfig");
+                }
+                else
+                {
+                    // New machine: seed all current local config to MongoDB under the new name
+                    if (_mongoService != null && _mongoService.IsConnected && _fileManager != null)
+                    {
+                        LogInfo($"Seeding config for new machine '{request.MachineName}' in MongoDB...", "MachineConfig");
+                        var configFiles = System.IO.Directory.GetFiles(DataDirectory, "*.json")
+                            .Select(f => Path.GetFileName(f))
+                            .Where(f => !f.EndsWith(".version.json", System.StringComparison.OrdinalIgnoreCase)
+                                     && f != "machineDataStorageSettings.json");
+
+                        foreach (var fileName in configFiles)
+                        {
+                            try
+                            {
+                                var data = _fileManager.ReadData(fileName);
+                                if (data == null) continue;
+                                var version = _fileManager.GetVersion(fileName);
+                                await _mongoService.SaveAsync(request.MachineName, fileName, data, version);
+                                LogInfo($"  ✓ Seeded {fileName}", "MachineConfig");
+                            }
+                            catch (System.Exception ex)
+                            {
+                                LogWarning($"  ✗ Could not seed {fileName}: {ex.Message}", "MachineConfig");
+                            }
+                        }
+                    }
+                }
+
+                // ── Write new machine name to settings ────────────────────────────────
+                var newSettings = new LocalMachineSettings
                 {
                     CurrentMachineName = request.MachineName,
                     LastSyncTime = System.DateTime.UtcNow
                 };
-                System.IO.File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+                System.IO.File.WriteAllText(settingsPath, JsonSerializer.Serialize(newSettings,
+                    new JsonSerializerOptions { WriteIndented = true }));
 
-                // Re-sync with new machine
+                // ── Sync machine config files for new machine name ────────────────────
                 await SyncWithMongoDb();
 
-                return Ok(new { message = $"Machine set to {request.MachineName}" });
+                // ── Reinitialize job storage for the new machine ──────────────────────
+                await JobStorageController.ReinitializeAsync();
+
+                LogSuccess($"✓ Machine switched to '{request.MachineName}'", "MachineConfig");
+                return Ok(new { message = $"Machine set to {request.MachineName}", isExistingMachine });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                LogError($"Failed to set current machine: {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to set current machine: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Delete all files in a directory without removing the directory itself.
+        /// </summary>
+        private static void WipeDirectory(string directory)
+        {
+            if (!System.IO.Directory.Exists(directory)) return;
+            foreach (var file in System.IO.Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                try { System.IO.File.Delete(file); }
+                catch (System.Exception ex) { LogWarning($"Could not delete {file}: {ex.Message}", "MachineConfig"); }
             }
         }
 
@@ -339,44 +465,6 @@ namespace HavenCNCServer.Controllers
             {
                 LogError($"Failed to get current machine: {ex.Message}", "MachineConfig");
                 return StatusCode(500, new { message = $"Failed to get current machine: {ex.Message}" });
-            }
-        }
-
-        /// <summary>
-        /// Set current machine
-        /// </summary>
-        /// <param name="request">Machine name to switch to</param>
-        /// <returns>Success response</returns>
-        [HttpPost("SetCurrentMachine")]
-        [ProducesResponseType(200)]
-        public async Task<ActionResult> SetCurrentMachine([FromBody] SetCurrentMachineRequest request)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(request.MachineName))
-                {
-                    return BadRequest(new { message = "Machine name is required" });
-                }
-
-                LogInfo($"💾 SetCurrentMachine request: '{request.MachineName}'", "MachineConfig");
-
-                var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
-                var settings = new LocalMachineSettings
-                {
-                    CurrentMachineName = request.MachineName,
-                    LastSyncTime = System.DateTime.UtcNow
-                };
-                System.IO.File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
-
-                // Re-sync with new machine
-                await SyncWithMongoDb();
-
-                return Ok(new { message = $"Machine set to {request.MachineName}" });
-            }
-            catch (System.Exception ex)
-            {
-                LogError($"Failed to set current machine: {ex.Message}", "MachineConfig");
-                return StatusCode(500, new { message = $"Failed to set current machine: {ex.Message}" });
             }
         }
 
@@ -474,6 +562,69 @@ namespace HavenCNCServer.Controllers
             {
                 LogError($"Failed to store default PLC: {ex.Message}", "MachineConfig");
                 return StatusCode(500, new { message = $"Failed to store default PLC: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Delete all MongoDB data for a machine (configs, jobs, G-code files).
+        /// Does NOT touch local files — only removes the machine from the cloud.
+        /// If deleting the currently active machine, provide switchToMachine to switch first.
+        /// </summary>
+        [HttpDelete("DeleteMachine/{machineName}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteMachine(string machineName, [FromQuery] string? switchToMachine = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(machineName))
+                    return BadRequest(new { message = "Machine name is required" });
+
+                if (_mongoService == null || !_mongoService.IsConnected)
+                    return StatusCode(500, new { message = "MongoDB not connected" });
+
+                // Check if we are deleting the currently active machine
+                var settingsPath = Path.Combine(DataDirectory, "machineDataStorageSettings.json");
+                var current = System.IO.File.Exists(settingsPath)
+                    ? JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath))
+                    : null;
+                bool isDeletingActive = string.Equals(current?.CurrentMachineName, machineName, System.StringComparison.OrdinalIgnoreCase);
+
+                if (isDeletingActive)
+                {
+                    if (string.IsNullOrWhiteSpace(switchToMachine))
+                        return BadRequest(new { message = $"'{machineName}' is the active machine. Provide switchToMachine to switch before deleting." });
+
+                    if (string.Equals(switchToMachine, machineName, System.StringComparison.OrdinalIgnoreCase))
+                        return BadRequest(new { message = "switchToMachine must be a different machine than the one being deleted." });
+
+                    LogInfo($"Switching from '{machineName}' to '{switchToMachine}' before delete...", "MachineConfig");
+                    var switchResult = await SetCurrentMachine(new SetCurrentMachineRequest { MachineName = switchToMachine });
+                    if (switchResult is not OkObjectResult)
+                        return StatusCode(500, new { message = $"Failed to switch to '{switchToMachine}' before deleting '{machineName}'." });
+
+                    LogSuccess($"✓ Switched to '{switchToMachine}'", "MachineConfig");
+                }
+
+                LogInfo($"🗑️ Deleting all MongoDB data for machine '{machineName}'", "MachineConfig");
+
+                var (configs, jobs, gcode) = await _mongoService.DeleteAllForMachineAsync(machineName);
+
+                LogSuccess($"✓ Deleted machine '{machineName}': {configs} config(s), {jobs} job(s), {gcode} G-code file(s)", "MachineConfig");
+                return Ok(new
+                {
+                    message = $"Machine '{machineName}' deleted from MongoDB",
+                    switchedTo = isDeletingActive ? switchToMachine : null,
+                    deletedConfigs = configs,
+                    deletedJobs = jobs,
+                    deletedGCodeFiles = gcode
+                });
+            }
+            catch (System.Exception ex)
+            {
+                LogError($"Failed to delete machine '{machineName}': {ex.Message}", "MachineConfig");
+                return StatusCode(500, new { message = $"Failed to delete machine: {ex.Message}" });
             }
         }
 

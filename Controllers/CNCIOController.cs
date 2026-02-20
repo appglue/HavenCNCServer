@@ -472,33 +472,23 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Reset all outputs to normal (remove all forced states)
+        /// Reset specified outputs to normal (remove forced state)
         /// </summary>
         [HttpPost("ResetAllOutputs")]
-        public void ResetAllOutputs()
+        public IActionResult ResetAllOutputs([FromBody] int[] outputNumbers)
         {
             try
             {
+                if (outputNumbers == null || outputNumbers.Length == 0)
+                    return BadRequest(new { message = "Output numbers array is required" });
+
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
-                    throw new InvalidOperationException("CNC connection not available");
-
-                var availableOutputsResult = GetAvailableOutputs();
-                int[] availableOutputs;
-
-                if (availableOutputsResult.Result is OkObjectResult okResult && okResult.Value is int[] outputs)
-                {
-                    availableOutputs = outputs;
-                }
-                else
-                {
-                    // Fallback to default range
-                    availableOutputs = Enumerable.Range(1, 16).ToArray();
-                }
+                    return StatusCode(500, new { message = "CNC connection not available" });
 
                 var errors = new List<string>();
 
-                foreach (var outputNumber in availableOutputs)
+                foreach (var outputNumber in outputNumbers)
                 {
                     try
                     {
@@ -508,9 +498,7 @@ namespace HavenCNCServer.Controllers
                             CentroidAPI.CNCPipe.Plc.ForceState.NotForced);
 
                         if (result != CentroidAPI.CNCPipe.ReturnCode.SUCCESS)
-                        {
                             errors.Add($"Output {outputNumber}: {result}");
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -518,58 +506,28 @@ namespace HavenCNCServer.Controllers
                     }
                 }
 
-                if (errors.Count > 0)
-                {
-                    throw new InvalidOperationException($"Failed to reset some outputs: {string.Join(", ", errors)}");
-                }
-
-                // Clear all tracked forced outputs
+                // Clear tracked forced outputs for the requested numbers
                 lock (_forcedOutputsLock)
                 {
-                    _forcedOutputs.Clear();
+                    foreach (var n in outputNumbers)
+                        _forcedOutputs.Remove(n);
                 }
+
+                if (errors.Count > 0)
+                    return StatusCode(500, new { message = $"Failed to reset some outputs: {string.Join(", ", errors)}" });
+
+                return Ok(new { message = $"Reset {outputNumbers.Length} output(s)" });
             }
-            catch (Exception ex) when (ex is not InvalidOperationException)
+            catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to reset all outputs: {ex.Message}", ex);
+                LogError($"Failed to reset outputs: {ex.Message}", "IO");
+                return StatusCode(500, new { message = $"Failed to reset outputs: {ex.Message}" });
             }
         }
 
         #endregion
 
         #region I/O Port Information
-
-        /// <summary>
-        /// Check if input is available
-        /// </summary>
-        [HttpGet("IsInputAvailable/{inputNumber}")]
-        public bool IsInputAvailable(int inputNumber)
-        {
-            try
-            {
-                return CNCUtils.IsInputAvailable(inputNumber);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to check input availability: {ex.Message}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Check if output is available
-        /// </summary>
-        [HttpGet("IsOutputAvailable/{outputNumber}")]
-        public bool IsOutputAvailable(int outputNumber)
-        {
-            try
-            {
-                return CNCUtils.IsOutputAvailable(outputNumber);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to check output availability: {ex.Message}", ex);
-            }
-        }
 
         /// <summary>
         /// Get system information

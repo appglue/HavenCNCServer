@@ -74,6 +74,44 @@ namespace HavenCNCServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Called after a machine switch. Reloads the machine name from settings,
+        /// clears the in-memory cache, and re-syncs jobs/gcode from MongoDB.
+        /// </summary>
+        public static async Task ReinitializeAsync()
+        {
+            try
+            {
+                LogInfo("🔄 JobStorageController.ReinitializeAsync — reloading for new machine", "JobStorage");
+
+                // Clear in-memory cache
+                _jobMetadataCache.Clear();
+
+                // Recreate file managers (pointing at same directories — contents were wiped by caller)
+                _jobFileManager = new JobFileManager();
+                _gcodeFileManager = new GCodeFileManager();
+
+                // Reload machine name from settings
+                var settingsPath = Path.Combine(@"C:\havencncdata", "machineDataStorageSettings.json");
+                if (System.IO.File.Exists(settingsPath))
+                {
+                    var localSettings = JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath));
+                    _machineName = localSettings?.CurrentMachineName ?? Environment.MachineName;
+                }
+
+                LogInfo($"New machine name: {_machineName}", "JobStorage");
+
+                // Sync jobs and gcode for the new machine
+                await SyncRecentItemsAsync();
+
+                LogSuccess($"✓ JobStorageController reinitialized for machine '{_machineName}'", "JobStorage");
+            }
+            catch (Exception ex)
+            {
+                LogError($"JobStorageController reinitialization failed: {ex.Message}", "JobStorage");
+            }
+        }
+
         private static async Task SyncRecentItemsAsync()
         {
             if (_mongoDbService == null || !_mongoDbService.IsConnected || _jobFileManager == null || _gcodeFileManager == null || _machineName == null)
