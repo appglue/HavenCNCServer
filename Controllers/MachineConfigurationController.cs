@@ -290,11 +290,18 @@ namespace HavenCNCServer.Controllers
                     LogInfo($"Creating archive: {zipName}", "MachineConfig");
                     try
                     {
+                        // Resolve the logs directory so we can skip it (log files are locked)
+                        var logDir = Services.SettingsManager.Settings?.Logging?.LogDirectory ?? string.Empty;
+                        if (!string.IsNullOrEmpty(logDir))
+                            logDir = Path.GetFullPath(logDir);
+
                         using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create);
                         foreach (var file in System.IO.Directory.GetFiles(DataDirectory, "*", SearchOption.AllDirectories))
                         {
-                            // Skip any existing zip files to avoid nesting archives
+                            // Skip existing zip files to avoid nesting archives
                             if (file.EndsWith(".zip", System.StringComparison.OrdinalIgnoreCase)) continue;
+                            // Skip log files — they are locked by the running process
+                            if (!string.IsNullOrEmpty(logDir) && Path.GetFullPath(file).StartsWith(logDir, System.StringComparison.OrdinalIgnoreCase)) continue;
                             var relativePath = Path.GetRelativePath(DataDirectory, file);
                             zip.CreateEntryFromFile(file, relativePath, CompressionLevel.Optimal);
                         }

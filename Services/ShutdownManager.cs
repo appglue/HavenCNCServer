@@ -145,46 +145,40 @@ namespace HavenCNCServer.Services
                     LogError($"[4/7] ✗ Event Bus error: {ex.Message}", "Shutdown");
                 }
 
-                // Step 5: Disconnect from CNC
-                LogInfo("[5/7] Disconnecting from CNC...", "Shutdown");
+                // Step 5: Exit CNC12 gracefully BEFORE disconnecting (needs the pipe)
+                LogInfo("[5/7] Exiting CNC12...", "Shutdown");
                 try
                 {
-                    CNCConnectionManager.Disconnect();
-                    LogSuccess("[5/7] ✓ CNC disconnected", "Shutdown");
-                }
-                catch (Exception ex)
-                {
-                    LogError($"[5/7] ✗ CNC disconnect error: {ex.Message}", "Shutdown");
-                }
-
-                // Step 6: Exit CNC12 gracefully if it's running
-                LogInfo("[6/7] Exiting CNC12...", "Shutdown");
-                try
-                {
-                    // Check if CNC12 is running by checking the process directly (not cached)
                     var cnc12ProcessName = SettingsManager.Settings?.Cnc?.Cnc12ProcessName ?? "cncr";
                     var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
                     bool isCnc12Running = processes.Length > 0;
-
-                    // Clean up process handles
-                    foreach (var p in processes)
-                    {
-                        try { p.Dispose(); } catch { }
-                    }
+                    foreach (var p in processes) { try { p.Dispose(); } catch { } }
 
                     if (isCnc12Running)
                     {
                         CNCUtils.ExitCNC12();
-                        LogSuccess("[6/7] ✓ CNC12 exit command sent", "Shutdown");
+                        LogSuccess("[5/7] ✓ CNC12 exit command sent", "Shutdown");
                     }
                     else
                     {
-                        LogInfo("[6/7] ⊘ CNC12 not running, skipping exit", "Shutdown");
+                        LogInfo("[5/7] ⊘ CNC12 not running, skipping exit", "Shutdown");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogError($"[6/7] ✗ CNC12 exit error: {ex.Message}", "Shutdown");
+                    LogError($"[5/7] ✗ CNC12 exit error: {ex.Message}", "Shutdown");
+                }
+
+                // Step 6: Disconnect from CNC (after CNC12 has been told to exit)
+                LogInfo("[6/7] Disconnecting from CNC...", "Shutdown");
+                try
+                {
+                    CNCConnectionManager.Disconnect();
+                    LogSuccess("[6/7] ✓ CNC disconnected", "Shutdown");
+                }
+                catch (Exception ex)
+                {
+                    LogError($"[6/7] ✗ CNC disconnect error: {ex.Message}", "Shutdown");
                 }
 
                 // Step 7: Dispose cancellation source

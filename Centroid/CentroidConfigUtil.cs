@@ -1658,6 +1658,87 @@ namespace HavenCNCServer.Centroid
                 }
                 LoggingService.Log($"Step 2/9: All {axes.Count} axes configured successfully");
 
+                // Step 2b: Slave axis pairing — must run after ALL axes are configured so that
+                // (a) master axis parameters are already written and (b) we can resolve names to numbers.
+                // Per Centroid wizard behaviour, ALL motion parameters must be copied from master → slave
+                // (CNC12 will not sync them automatically just because P554 is set).
+                var slaveAxes = axes.Where(a => !string.IsNullOrEmpty(a.MasterAxisName)).ToList();
+                if (slaveAxes.Count > 0)
+                {
+                    LoggingService.Log($"Step 2b: Configuring {slaveAxes.Count} slave axis pairing(s)...");
+                    var cncPipeForPairing = CNCConnectionManager.GetCNCPipe();
+
+                    foreach (var slaveConfig in slaveAxes)
+                    {
+                        // Resolve master axis name to number
+                        var masterConfig = axes.FirstOrDefault(a =>
+                            string.Equals(a.AxisType, slaveConfig.MasterAxisName, System.StringComparison.OrdinalIgnoreCase));
+                        if (masterConfig == null)
+                        {
+                            LoggingService.Log($"  WARNING: Could not find master axis named '{slaveConfig.MasterAxisName}' — skipping pairing for Axis {slaveConfig.AxisNumber}", LoggingService.LogLevel.Warning);
+                            continue;
+                        }
+                        int masterAxisNumber = masterConfig.AxisNumber;
+                        LoggingService.Log($"  Resolved master axis name '{slaveConfig.MasterAxisName}' → Axis {masterAxisNumber}");
+
+                        // ── 1. Set the pairing parameter (P554 / P555) ────────────────────
+                        ConfigureAxisPairing(slaveConfig.AxisNumber, masterAxisNumber);
+                        LoggingService.Log($"  ✓ Paired Axis {slaveConfig.AxisNumber} ({slaveConfig.AxisType}) → master Axis {masterAxisNumber}");
+
+                        if (cncPipeForPairing == null)
+                        {
+                            LoggingService.Log("  WARNING: CNC pipe unavailable — cannot copy master parameters to slave", LoggingService.LogLevel.Warning);
+                            continue;
+                        }
+
+                        var slaveEnum = (CNCPipe.Axes)(slaveConfig.AxisNumber - 1);
+                        var masterEnum = (CNCPipe.Axes)(masterAxisNumber - 1);
+
+                        // ── 2. Apply motion parameters: slave value takes priority, master fills gaps ──
+                        // If the slave was sent with its own values, those are used.
+                        // If a value is null on the slave, it falls back to the master's value.
+
+                        var stepsPerRev = slaveConfig.StepsPerRevolution ?? masterConfig.StepsPerRevolution;
+                        var turnsRatio = slaveConfig.OverallTurnsRatio ?? masterConfig.OverallTurnsRatio;
+                        var lash = slaveConfig.LashCompensation ?? masterConfig.LashCompensation;
+                        var maxRate = slaveConfig.MaxRate ?? masterConfig.MaxRate;
+                        var fastJogPlus = slaveConfig.FastJogPlusDirection ?? masterConfig.FastJogPlusDirection;
+                        var fastJogMinus = slaveConfig.FastJogMinusDirection ?? masterConfig.FastJogMinusDirection;
+                        var fastJog = slaveConfig.FastJogRate ?? masterConfig.FastJogRate;
+                        var slowJog = slaveConfig.SlowJogRate ?? masterConfig.SlowJogRate;
+                        var accel = slaveConfig.AccelDecel ?? masterConfig.AccelDecel;
+                        var plusLimit = slaveConfig.PlusTravelLimit ?? masterConfig.PlusTravelLimit;
+                        var minusLimit = slaveConfig.MinusTravelLimit ?? masterConfig.MinusTravelLimit;
+                        var isRotary = slaveConfig.IsRotary ?? masterConfig.IsRotary;
+
+                        if (stepsPerRev.HasValue) { cncPipeForPairing.axis.SetCountsPerTurn(slaveEnum, stepsPerRev.Value); LoggingService.Log($"    StepsPerRevolution → {stepsPerRev.Value}"); }
+                        if (turnsRatio.HasValue) { cncPipeForPairing.axis.SetScrewPitch(slaveEnum, turnsRatio.Value); LoggingService.Log($"    ScrewPitch → {turnsRatio.Value}"); }
+                        if (lash.HasValue) { cncPipeForPairing.axis.SetLashComp(slaveEnum, lash.Value); LoggingService.Log($"    LashCompensation → {lash.Value}"); }
+                        if (maxRate.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.MAX, maxRate.Value); LoggingService.Log($"    MaxRate → {maxRate.Value}"); }
+                        if (fastJogPlus.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS, fastJogPlus.Value); LoggingService.Log($"    FastJogPlus → {fastJogPlus.Value}"); }
+                        if (fastJogMinus.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS, fastJogMinus.Value); LoggingService.Log($"    FastJogMinus → {fastJogMinus.Value}"); }
+                        if (fastJog.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG, fastJog.Value); LoggingService.Log($"    FastJogRate → {fastJog.Value}"); }
+                        if (slowJog.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.SLOW_JOG, slowJog.Value); LoggingService.Log($"    SlowJogRate → {slowJog.Value}"); }
+                        if (accel.HasValue) { cncPipeForPairing.axis.SetAccelTime(slaveEnum, accel.Value); LoggingService.Log($"    AccelDecel → {accel.Value}"); }
+                        if (plusLimit.HasValue) { cncPipeForPairing.axis.SetTravelLimit(slaveEnum, CNCPipe.Axis.Direction.PLUS, plusLimit.Value); LoggingService.Log($"    PlusTravelLimit → {plusLimit.Value}"); }
+                        if (minusLimit.HasValue) { cncPipeForPairing.axis.SetTravelLimit(slaveEnum, CNCPipe.Axis.Direction.MINUS, minusLimit.Value); LoggingService.Log($"    MinusTravelLimit → {minusLimit.Value}"); }
+                        if (isRotary.HasValue)
+                        {
+                            ConfigureAxisProperties(new AxisConfiguration { AxisNumber = slaveConfig.AxisNumber, IsRotary = isRotary });
+                            LoggingService.Log($"    IsRotary → {isRotary.Value}");
+                        }
+
+                        // ── 3. Compute and apply slave reversal relative to master ─────────
+                        // DirectionReversal on the slave means "run opposite to master".
+                        bool masterReversed = masterConfig.DirectionReversal ?? false;
+                        bool wantOpposite = slaveConfig.DirectionReversal ?? false;
+                        bool slaveReversed = wantOpposite ? !masterReversed : masterReversed;
+                        cncPipeForPairing.axis.SetAxisReversal(slaveEnum, slaveReversed);
+                        LoggingService.Log($"  ✓ Slave Axis {slaveConfig.AxisNumber} reversal = {slaveReversed} (master={masterReversed}, opposite={wantOpposite})");
+                    }
+                    LoggingService.Log("Step 2b: Slave axis pairing complete");
+                }
+
                 // Step 3: Configure spindle
                 LoggingService.Log("Step 3/9: Configuring primary spindle...");
                 if (!ConfigureSpindle(spindle))

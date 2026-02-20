@@ -86,9 +86,11 @@ namespace HavenCNCServer.Centroid.Data
         public bool? DirectionReversal { get; set; }
 
         /// <summary>
-        /// Master axis for pairing (0 = none, 1-8 = master axis number)
+        /// Master axis label (e.g. "X", "Y", "Z") — resolved to an axis number at configure time
+        /// by matching against the AxisType of other axes in the same configuration call.
+        /// Set to null or omit for no pairing.
         /// </summary>
-        public int? MasterAxis { get; set; }
+        public string? MasterAxisName { get; set; }
 
         /// <summary>
         /// Whether this is a rotary axis (Parameter bit 0)

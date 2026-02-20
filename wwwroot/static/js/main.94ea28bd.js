@@ -4562,12 +4562,12 @@ fontWeight:'bold'},title:"Go to Work Home (0,0,0)",children:"H"}),/*#__PURE__*/(
  */class DefaultPLCOutputs{/**
      * Get default output configurations
      */static getDefaults(){const outputs=[];// Safety & Emergency Output (4 functions)
-const noFaultOut=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();noFaultOut.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.NoFaultOut;noFaultOut.name='No Fault Output';noFaultOut.category='Safety';noFaultOut.activeText='System OK';noFaultOut.inactiveText='System Fault';outputs.push(noFaultOut);const driveResetOut=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();driveResetOut.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DriveResetOut;driveResetOut.name='Drive Reset Output';driveResetOut.category='Safety';driveResetOut.activeText='Active';driveResetOut.inactiveText='Inactive';outputs.push(driveResetOut);// Spindle Control (7 functions)
-const spinFWD=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spinFWD.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpinFWD;spinFWD.name='Spindle Forward';spinFWD.category='Spindle';spinFWD.activeText='On';spinFWD.inactiveText='Stopped';outputs.push(spinFWD);const spinREV=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spinREV.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpinREV;spinREV.name='Spindle Reverse';spinREV.category='Spindle';spinREV.activeText='On';spinREV.inactiveText='Stopped';outputs.push(spinREV);const spindleBrakeRelease=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spindleBrakeRelease.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpindleBrakeRelease;spindleBrakeRelease.name='Spindle Brake Release';spindleBrakeRelease.category='Spindle';spindleBrakeRelease.activeText='Released';spindleBrakeRelease.inactiveText='Engaged';outputs.push(spindleBrakeRelease);// Tool Management & ATC (3 functions)
-const unclampTool=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();unclampTool.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.UnclampTool;unclampTool.name='Unclamp Tool';unclampTool.category='Tool Management';unclampTool.activeText='Unclamped';unclampTool.inactiveText='Clamped';outputs.push(unclampTool);const drawBarUpO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();drawBarUpO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DrawBarUp_O;drawBarUpO.name='Draw Bar Up';drawBarUpO.category='Tool Management';drawBarUpO.activeText='Up';drawBarUpO.inactiveText='Down';outputs.push(drawBarUpO);const atcAirBlowActivate=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();atcAirBlowActivate.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.ATCAirBlowActivate;atcAirBlowActivate.name='ATC Air Blow';atcAirBlowActivate.category='Tool Management';atcAirBlowActivate.activeText='On';atcAirBlowActivate.inactiveText='Off';outputs.push(atcAirBlowActivate);// Coolant & Auxiliary (6 functions)
-const flood=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();flood.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.Flood;flood.name='Flood Coolant';flood.category='Coolant & Auxiliary';flood.activeText='On (M8)';flood.inactiveText='Off (M9)';outputs.push(flood);const mist=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();mist.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.Mist;mist.name='Mist Coolant';mist.category='Coolant & Auxiliary';mist.activeText='On (M7)';mist.inactiveText='Off (M9)';outputs.push(mist);const lubePump=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();lubePump.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LubePump;lubePump.name='Lubrication Pump';lubePump.category='Coolant & Auxiliary';lubePump.activeText='On';lubePump.inactiveText='Off';outputs.push(lubePump);const routerVacuumHoldDown=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();routerVacuumHoldDown.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.RouterVacuumHoldDown;routerVacuumHoldDown.name='Router Vacuum Hold Down';routerVacuumHoldDown.category='Coolant & Auxiliary';routerVacuumHoldDown.activeText='On';routerVacuumHoldDown.inactiveText='Off';outputs.push(routerVacuumHoldDown);const dustCollectionOn=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();dustCollectionOn.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DustCollectionOn;dustCollectionOn.name='Dust Collection On';dustCollectionOn.category='Coolant & Auxiliary';dustCollectionOn.activeText='On';dustCollectionOn.inactiveText='Off';outputs.push(dustCollectionOn);// Router/Mill Specific (5 functions)
-const dustFootActivate=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();dustFootActivate.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DustFootActivate;dustFootActivate.name='Dust Foot Activate';dustFootActivate.category='Router/Mill';dustFootActivate.activeText='Up';dustFootActivate.inactiveText='Down';outputs.push(dustFootActivate);const laserAlignActivate=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserAlignActivate.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserAlignActivate;laserAlignActivate.name='Laser Alignment';laserAlignActivate.category='Router/Mill';laserAlignActivate.activeText='On';laserAlignActivate.inactiveText='Off';outputs.push(laserAlignActivate);const airBlowNozzle=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();airBlowNozzle.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.AirBlowNozzle;airBlowNozzle.name='Air Blow Nozzle';airBlowNozzle.category='Router/Mill';airBlowNozzle.activeText='On';airBlowNozzle.inactiveText='Off';outputs.push(airBlowNozzle);const laserPointer=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserPointer.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserPointer;laserPointer.name='Laser Pointer';laserPointer.category='Router/Mill';laserPointer.activeText='On';laserPointer.inactiveText='Off';outputs.push(laserPointer);const positioningPins=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();positioningPins.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.PositioningPins;positioningPins.name='Positioning Pins';positioningPins.category='Router/Mill';positioningPins.activeText='Up';positioningPins.inactiveText='Down';outputs.push(positioningPins);// Laser Functions (8 functions)
-const laserEnable=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserEnable.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserEnable;laserEnable.name='Laser Enable';laserEnable.category='Laser';laserEnable.activeText='Enabled';laserEnable.inactiveText='Disabled';outputs.push(laserEnable);const laserReset=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserReset.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserReset;laserReset.name='Laser Reset';laserReset.category='Laser';laserReset.activeText='Active';laserReset.inactiveText='Inactive';outputs.push(laserReset);const alignmentLaserEnableO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();alignmentLaserEnableO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.AlignmentLaserEnable_O;alignmentLaserEnableO.name='Alignment Laser Enable';alignmentLaserEnableO.category='Laser';alignmentLaserEnableO.activeText='On';alignmentLaserEnableO.inactiveText='Off';outputs.push(alignmentLaserEnableO);const laserStandbyO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserStandbyO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserStandby_O;laserStandbyO.name='Laser Standby';laserStandbyO.category='Laser';laserStandbyO.activeText='Standby';laserStandbyO.inactiveText='Active';outputs.push(laserStandbyO);const fiberLaserResetO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();fiberLaserResetO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.FiberLaserReset_O;fiberLaserResetO.name='Fiber Laser Reset';fiberLaserResetO.category='Laser';fiberLaserResetO.activeText='Active';fiberLaserResetO.inactiveText='Inactive';outputs.push(fiberLaserResetO);const laserDeployO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserDeployO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserDeploy_O;laserDeployO.name='Laser Deploy';laserDeployO.category='Laser';laserDeployO.activeText='Deployed';laserDeployO.inactiveText='Retracted';outputs.push(laserDeployO);// PWM and Special Outputs (1 function)
+const noFaultOut=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();noFaultOut.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.NoFaultOut;noFaultOut.name='No Fault';noFaultOut.category='Safety';noFaultOut.activeText='System OK';noFaultOut.inactiveText='System Fault';outputs.push(noFaultOut);const driveResetOut=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();driveResetOut.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DriveResetOut;driveResetOut.name='Drive Reset';driveResetOut.category='Safety';driveResetOut.activeText='Active';driveResetOut.inactiveText='Inactive';outputs.push(driveResetOut);// Spindle Control (7 functions)
+const spinFWD=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spinFWD.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpinFWD;spinFWD.name='Spindle FWD';spinFWD.category='Spindle';spinFWD.activeText='On';spinFWD.inactiveText='Stopped';outputs.push(spinFWD);const spinREV=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spinREV.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpinREV;spinREV.name='Spindle REV';spinREV.category='Spindle';spinREV.activeText='On';spinREV.inactiveText='Stopped';outputs.push(spinREV);const spindleBrakeRelease=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();spindleBrakeRelease.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.SpindleBrakeRelease;spindleBrakeRelease.name='Spindle Brake Release';spindleBrakeRelease.category='Spindle';spindleBrakeRelease.activeText='Released';spindleBrakeRelease.inactiveText='Engaged';outputs.push(spindleBrakeRelease);// Tool Management & ATC (3 functions)
+const unclampTool=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();unclampTool.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.UnclampTool;unclampTool.name='Unclamp Tool';unclampTool.category='Tool Management';unclampTool.activeText='Unclamped';unclampTool.inactiveText='Clamped';outputs.push(unclampTool);const drawBarUpO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();drawBarUpO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DrawBarUp_O;drawBarUpO.name='Draw Bar Up';drawBarUpO.category='Tool Management';drawBarUpO.activeText='Up';drawBarUpO.inactiveText='Down';outputs.push(drawBarUpO);// Coolant & Auxiliary (6 functions)
+const flood=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();flood.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.Flood;flood.name='Flood Coolant';flood.category='Coolant & Auxiliary';flood.activeText='On (M8)';flood.inactiveText='Off (M9)';outputs.push(flood);const mist=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();mist.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.Mist;mist.name='Mist Coolant';mist.category='Coolant & Auxiliary';mist.activeText='On (M7)';mist.inactiveText='Off (M9)';outputs.push(mist);const lubePump=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();lubePump.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LubePump;lubePump.name='Lubrication Pump';lubePump.category='Coolant & Auxiliary';lubePump.activeText='On';lubePump.inactiveText='Off';outputs.push(lubePump);const routerVacuumHoldDown=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();routerVacuumHoldDown.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.RouterVacuumHoldDown;routerVacuumHoldDown.name='Vacuum Hold Down';routerVacuumHoldDown.category='Coolant & Auxiliary';routerVacuumHoldDown.activeText='On';routerVacuumHoldDown.inactiveText='Off';outputs.push(routerVacuumHoldDown);const dustCollectionOn=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();dustCollectionOn.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DustCollectionOn;dustCollectionOn.name='Dust Collection';dustCollectionOn.category='Coolant & Auxiliary';dustCollectionOn.activeText='On';dustCollectionOn.inactiveText='Off';outputs.push(dustCollectionOn);// Router/Mill Specific (5 functions)
+const dustFootActivate=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();dustFootActivate.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.DustFootActivate;dustFootActivate.name='Dust Foot';dustFootActivate.category='Router/Mill';dustFootActivate.activeText='Up';dustFootActivate.inactiveText='Down';outputs.push(dustFootActivate);const laserAlignActivate=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserAlignActivate.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserAlignActivate;laserAlignActivate.name='Laser Alignment';laserAlignActivate.category='Router/Mill';laserAlignActivate.activeText='On';laserAlignActivate.inactiveText='Off';outputs.push(laserAlignActivate);const airBlowNozzle=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();airBlowNozzle.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.AirBlowNozzle;airBlowNozzle.name='Air Blow Nozzle';airBlowNozzle.category='Router/Mill';airBlowNozzle.activeText='On';airBlowNozzle.inactiveText='Off';outputs.push(airBlowNozzle);const laserPointer=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserPointer.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserPointer;laserPointer.name='Laser Pointer';laserPointer.category='Router/Mill';laserPointer.activeText='On';laserPointer.inactiveText='Off';outputs.push(laserPointer);const positioningPins=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();positioningPins.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.PositioningPins;positioningPins.name='Positioning Pins';positioningPins.category='Router/Mill';positioningPins.activeText='Up';positioningPins.inactiveText='Down';outputs.push(positioningPins);// Laser Functions (8 functions)
+const laserEnable=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserEnable.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserEnable;laserEnable.name='Laser Enable';laserEnable.category='Laser';laserEnable.activeText='Enabled';laserEnable.inactiveText='Disabled';outputs.push(laserEnable);const laserReset=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserReset.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserReset;laserReset.name='Laser Reset';laserReset.category='Laser';laserReset.activeText='Active';laserReset.inactiveText='Inactive';outputs.push(laserReset);const alignmentLaserEnableO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();alignmentLaserEnableO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.AlignmentLaserEnable_O;alignmentLaserEnableO.name='Alignment Laser';alignmentLaserEnableO.category='Laser';alignmentLaserEnableO.activeText='On';alignmentLaserEnableO.inactiveText='Off';outputs.push(alignmentLaserEnableO);const laserStandbyO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserStandbyO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserStandby_O;laserStandbyO.name='Laser Standby';laserStandbyO.category='Laser';laserStandbyO.activeText='Standby';laserStandbyO.inactiveText='Active';outputs.push(laserStandbyO);const fiberLaserResetO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();fiberLaserResetO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.FiberLaserReset_O;fiberLaserResetO.name='Fiber Laser Reset';fiberLaserResetO.category='Laser';fiberLaserResetO.activeText='Active';fiberLaserResetO.inactiveText='Inactive';outputs.push(fiberLaserResetO);const laserDeployO=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();laserDeployO.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.LaserDeploy_O;laserDeployO.name='Laser Deploy';laserDeployO.category='Laser';laserDeployO.activeText='Deployed';laserDeployO.inactiveText='Retracted';outputs.push(laserDeployO);// PWM and Special Outputs (1 function)
 const pwmSelect=new _PLCOutput__WEBPACK_IMPORTED_MODULE_1__/* .PLCOutput */ .V();pwmSelect.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCOutputName */ .C.PWMSelect;pwmSelect.name='PWM Select';pwmSelect.category='Special';pwmSelect.activeText='Enabled';pwmSelect.inactiveText='Disabled';outputs.push(pwmSelect);return outputs;}/**
      * Get default output by centroid name
      */static getDefaultByCentroidName(centroidName){return this.getDefaults().find(output=>output.centroidName===centroidName);}}
@@ -9773,8 +9773,8 @@ const program=this._parentElement;if(program&&'notifyValidationChanged'in progra
 const eStopOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();eStopOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.EStopOk;eStopOk.name='E-Stop';eStopOk.category='Safety';eStopOk.activeText='EStop Released';eStopOk.inactiveText='EStop Pressed';inputs.push(eStopOk);const eStopOk2=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();eStopOk2.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.EStopOk2;eStopOk2.name='E-Stop 2';eStopOk2.category='Safety';eStopOk2.activeText='EStop2 Released';eStopOk2.inactiveText='EStop2 Pressed';inputs.push(eStopOk2);const atcAirPressureOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();atcAirPressureOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ATC_AirPressureOk;atcAirPressureOk.name='ATC Air';atcAirPressureOk.category='Safety';atcAirPressureOk.activeText='Pressure Ok';atcAirPressureOk.inactiveText='Low Pressure';inputs.push(atcAirPressureOk);// Spindle Control & Monitoring (1 function)
 const spindleOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();spindleOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.SpindleOk;spindleOk.name='Spindle Drive';spindleOk.category='Spindle';spindleOk.activeText='Spindle OK';spindleOk.inactiveText='Spindle Fault';inputs.push(spindleOk);// Tool Management & ATC (7 functions)
 const toolIsUnclamped=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();toolIsUnclamped.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ToolIsUnclamped;toolIsUnclamped.name='Tool Unclamped';toolIsUnclamped.category='Tool Management';toolIsUnclamped.activeText='Unclamped';toolIsUnclamped.inactiveText='Clamped';inputs.push(toolIsUnclamped);const toolUnclampButton=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();toolUnclampButton.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ToolUnclampButton;toolUnclampButton.name='Tool Unclamp Button';toolUnclampButton.category='Tool Management';toolUnclampButton.activeText='Pressed';toolUnclampButton.inactiveText='Released';inputs.push(toolUnclampButton);const toolClampedI=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();toolClampedI.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ToolIsClamped;toolClampedI.name='Tool Clamped Input';toolClampedI.category='Tool Management';toolClampedI.activeText='Clamped';toolClampedI.inactiveText='Not Clamped';inputs.push(toolClampedI);const toolIsPresentI=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();toolIsPresentI.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ToolIsPresent_I;toolIsPresentI.name='Tool Present';toolIsPresentI.category='Tool Management';toolIsPresentI.activeText='Tool Present';toolIsPresentI.inactiveText='No Tool';inputs.push(toolIsPresentI);const drawBarReleased=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();drawBarReleased.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.DrawBarReleased;drawBarReleased.name='Draw Bar';drawBarReleased.category='Tool Management';drawBarReleased.activeText='Released';drawBarReleased.inactiveText='Engaged';inputs.push(drawBarReleased);const drawBarIsUpI=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();drawBarIsUpI.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.DrawBarIsUp;drawBarIsUpI.name='Draw Bar  Up';drawBarIsUpI.category='Tool Management';drawBarIsUpI.activeText='Is Up';drawBarIsUpI.inactiveText='Is Down';inputs.push(drawBarIsUpI);const drawBarIsDownI=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();drawBarIsDownI.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.DrawBarIsDown;drawBarIsDownI.name='Draw Bar Down';drawBarIsDownI.category='Tool Management';drawBarIsDownI.activeText='Is Down';drawBarIsDownI.inactiveText='Is Up';inputs.push(drawBarIsDownI);// Axis Control & Limits (8 functions)
-const firstAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();firstAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.XAxisHomeLimitOk;firstAxisHomeLimitOk.name='X Axis Home/Limit';firstAxisHomeLimitOk.category='Axis Control';firstAxisHomeLimitOk.activeText='At Limit';firstAxisHomeLimitOk.inactiveText='Inactive';inputs.push(firstAxisHomeLimitOk);const secondAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();secondAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.YAxisHomeLimitOk;secondAxisHomeLimitOk.name='Y Axis Home/Limit';secondAxisHomeLimitOk.category='Axis Control';secondAxisHomeLimitOk.activeText='At Limit';secondAxisHomeLimitOk.inactiveText='Inactive';inputs.push(secondAxisHomeLimitOk);const thirdAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();thirdAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ZAxisHomeLimitOk;thirdAxisHomeLimitOk.name='Z Axis Home/Limit';thirdAxisHomeLimitOk.category='Axis Control';thirdAxisHomeLimitOk.activeText='At Limit';thirdAxisHomeLimitOk.inactiveText='Inactive';inputs.push(thirdAxisHomeLimitOk);const homeLimitAll=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();homeLimitAll.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.HomeLimitAll;homeLimitAll.name='Home/Limit All Axes';homeLimitAll.category='Axis Control';homeLimitAll.activeText='Active';homeLimitAll.inactiveText='Inactive';inputs.push(homeLimitAll);const slavedHomeInput=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();slavedHomeInput.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.SlavedHomeInput;slavedHomeInput.name='Slaved Home Input';slavedHomeInput.category='Axis Control';slavedHomeInput.activeText='Active';slavedHomeInput.inactiveText='Inactive';inputs.push(slavedHomeInput);const driveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();driveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.DriveOk;driveOk.name='Drive Check';driveOk.category='Axis Control';driveOk.activeText='OK';driveOk.inactiveText='Fault';inputs.push(driveOk);// Individual Axis Drive Status (4 functions)
-const axis1DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis1DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.Axis1DriveOk;axis1DriveOk.name='X-Axis Drive';axis1DriveOk.category='Axis Control';axis1DriveOk.activeText='OK';axis1DriveOk.inactiveText='Fault';inputs.push(axis1DriveOk);const axis2DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis2DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.Axis2DriveOk;axis2DriveOk.name='Y-Axis Drive';axis2DriveOk.category='Axis Control';axis2DriveOk.activeText='OK';axis2DriveOk.inactiveText='Fault';inputs.push(axis2DriveOk);const axis3DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis3DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.Axis3DriveOk;axis3DriveOk.name='Z-Axis Drive';axis3DriveOk.category='Axis Control';axis3DriveOk.activeText='OK';axis3DriveOk.inactiveText='Fault';inputs.push(axis3DriveOk);const axis4DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis4DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.Axis4DriveOk;axis4DriveOk.name='4th Axis Drive';axis4DriveOk.category='Axis Control';axis4DriveOk.activeText='OK';axis4DriveOk.inactiveText='Fault';inputs.push(axis4DriveOk);// Limit-Only Switches (3 functions)
+const firstAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();firstAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.XAxisHomeLimitOk;firstAxisHomeLimitOk.name='X Axis Home/Limit';firstAxisHomeLimitOk.category='Axis Control';firstAxisHomeLimitOk.activeText='At Limit';firstAxisHomeLimitOk.inactiveText='Inactive';inputs.push(firstAxisHomeLimitOk);const secondAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();secondAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.YAxisHomeLimitOk;secondAxisHomeLimitOk.name='Y Axis Home/Limit';secondAxisHomeLimitOk.category='Axis Control';secondAxisHomeLimitOk.activeText='At Limit';secondAxisHomeLimitOk.inactiveText='Inactive';inputs.push(secondAxisHomeLimitOk);const thirdAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();thirdAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ZAxisHomeLimitOk;thirdAxisHomeLimitOk.name='Z Axis Home/Limit';thirdAxisHomeLimitOk.category='Axis Control';thirdAxisHomeLimitOk.activeText='At Limit';thirdAxisHomeLimitOk.inactiveText='Inactive';inputs.push(thirdAxisHomeLimitOk);const homeLimitAll=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();homeLimitAll.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.HomeLimitAll;homeLimitAll.name='Home/Limit All Axes';homeLimitAll.category='Axis Control';homeLimitAll.activeText='Active';homeLimitAll.inactiveText='Inactive';inputs.push(homeLimitAll);const slavedHomeInput=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();slavedHomeInput.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.SlavedHomeInput;slavedHomeInput.name='Slaved Home Input';slavedHomeInput.category='Axis Control';slavedHomeInput.activeText='Active';slavedHomeInput.inactiveText='Inactive';inputs.push(slavedHomeInput);const driveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();driveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.DriveFault;driveOk.name='Drive Fault';driveOk.category='Axis Control';driveOk.activeText='OK';driveOk.inactiveText='Fault';inputs.push(driveOk);// Individual Axis Drive Status (4 functions)
+const axis1DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis1DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.XAxisFault;axis1DriveOk.name='X-Axis Fault';axis1DriveOk.category='Axis Control';axis1DriveOk.activeText='OK';axis1DriveOk.inactiveText='Fault';inputs.push(axis1DriveOk);const axis2DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis2DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.YAxisFault;axis2DriveOk.name='Y-Axis Fault';axis2DriveOk.category='Axis Control';axis2DriveOk.activeText='OK';axis2DriveOk.inactiveText='Fault';inputs.push(axis2DriveOk);const axis3DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis3DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ZAxisFault;axis3DriveOk.name='Z-Axis Fault';axis3DriveOk.category='Axis Control';axis3DriveOk.activeText='OK';axis3DriveOk.inactiveText='Fault';inputs.push(axis3DriveOk);const axis4DriveOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();axis4DriveOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.AAxisFault;axis4DriveOk.name='A-Axis Fault';axis4DriveOk.category='Axis Control';axis4DriveOk.activeText='OK';axis4DriveOk.inactiveText='Fault';inputs.push(axis4DriveOk);// Limit-Only Switches (3 functions)
 const xAxisLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();xAxisLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.XAxisLimitOk;xAxisLimitOk.name='X Axis Limit';xAxisLimitOk.category='Axis Control';xAxisLimitOk.activeText='At Limit';xAxisLimitOk.inactiveText='Inactive';inputs.push(xAxisLimitOk);const yAxisLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();yAxisLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.YAxisLimitOk;yAxisLimitOk.name='Y Axis Limit';yAxisLimitOk.category='Axis Control';yAxisLimitOk.activeText='At Limit';yAxisLimitOk.inactiveText='Inactive';inputs.push(yAxisLimitOk);const zAxisLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();zAxisLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ZAxisLimitOk;zAxisLimitOk.name='Z Axis Limit';zAxisLimitOk.category='Axis Control';zAxisLimitOk.activeText='At Limit';zAxisLimitOk.inactiveText='Inactive';inputs.push(zAxisLimitOk);// A-Axis (Rotary) Controls (2 functions)
 const aAxisHomeLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();aAxisHomeLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.AAxisHomeLimitOk;aAxisHomeLimitOk.name='A Axis Home/Limit';aAxisHomeLimitOk.category='Axis Control';aAxisHomeLimitOk.activeText='At Limit';aAxisHomeLimitOk.inactiveText='Inactive';inputs.push(aAxisHomeLimitOk);const aAxisLimitOk=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();aAxisLimitOk.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.AAxisLimitOk;aAxisLimitOk.name='A Axis Limit';aAxisLimitOk.category='Axis Control';aAxisLimitOk.activeText='At Limit';aAxisLimitOk.inactiveText='Inactive';inputs.push(aAxisLimitOk);// Probe Functions (2 functions)
 const probeDetect=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();probeDetect.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ProbeDetect;probeDetect.name='Probe Detect';probeDetect.category='Probes';probeDetect.activeText='Connected';probeDetect.inactiveText='No Probe';inputs.push(probeDetect);const probeTripped=new _PLCInput__WEBPACK_IMPORTED_MODULE_1__/* .PLCInput */ .I();probeTripped.centroidName=_data_PLCIONames__WEBPACK_IMPORTED_MODULE_0__/* .PLCInputName */ .L.ProbeTripped;probeTripped.name='Probe Tripped';probeTripped.category='Probes';probeTripped.activeText='Contacted';probeTripped.inactiveText='Open';inputs.push(probeTripped);// Coolant & Air Pressure (3 functions)
@@ -17916,7 +17916,8 @@ var _DataManager;/**
 this.AUTO_SAVE_DELAY=5000;// 5 seconds
 this.scheduledSaves=new Map();// Track PLC files that failed to load
 this.plcLoadFailures=new Map();// filename -> error message
-// Core data class mappings for initialization
+// Guard against concurrent reloads (e.g. double-call from machine switch)
+this._isReloading=false;// Core data class mappings for initialization
 this.DATA_CLASSES={[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.CONFIGURATION]:()=>_ConfigurationData__WEBPACK_IMPORTED_MODULE_14__/* .ConfigurationData */ .J.Instance,'configuration-colors.json':()=>_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_15__/* .ConfigurationDataColors */ .f.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.MACHINE]:()=>_Machine_MachineData__WEBPACK_IMPORTED_MODULE_18__/* .MachineData */ .O.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.MACHINE_STATE]:()=>_MachineStateData__WEBPACK_IMPORTED_MODULE_19__.MachineStateData.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.USER_ACTION_DATA]:()=>_UserActionData__WEBPACK_IMPORTED_MODULE_20__/* .UserActionData */ .e.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.FIXTURES]:()=>_Common_FixtureLibrary__WEBPACK_IMPORTED_MODULE_11__/* .FixtureLibrary */ .f3.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.MATERIALS]:()=>_Common_MaterialLibrary__WEBPACK_IMPORTED_MODULE_12__/* .MaterialLibrary */ .Jf.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.TOOLS]:()=>_Common_ToolLibrary__WEBPACK_IMPORTED_MODULE_13__/* .ToolLibrary */ .a.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.CLAMPS]:()=>_Common_ClampLibrary__WEBPACK_IMPORTED_MODULE_10__/* .ClampLibrary */ .b.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.SETUP_CHECKLIST]:()=>_Checklist_SetupChecklistLibrary__WEBPACK_IMPORTED_MODULE_9__/* .SetupChecklistLibrary */ .d.Instance,[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM_DEFAULT]:()=>_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.SystemDefault),[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM]:()=>_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.System)};}/**
    * Get the singleton instance
    */static get Instance(){if(!DataManager._instance){DataManager._instance=new DataManager();}return DataManager._instance;}/**
@@ -17928,9 +17929,10 @@ this.DATA_CLASSES={[_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFile
    */getPLCLoadError(filename){return this.plcLoadFailures.get(filename);}/**
    * Clear a PLC load error (called after user resolves the issue)
    */clearPLCLoadError(filename){this.plcLoadFailures.delete(filename);}/**
-   * Reload all data from server (useful after detecting backend restart)
-   * Public wrapper for initializeOnStartup that can be called programmatically
-   */async reloadAllData(){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.log(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Reloading all data from server...');await this.initializeOnStartup();}/**
+   * Reload all data from server (useful after detecting backend restart or switching machines)
+   * Public wrapper for initializeOnStartup that can be called programmatically.
+   * Concurrent calls are ignored — only one reload runs at a time.
+   */async reloadAllData(){if(this._isReloading){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.log(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'reloadAllData() skipped — a reload is already in progress');return;}this._isReloading=true;try{_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.log(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Reloading all data from server...');await this.initializeOnStartup();}finally{this._isReloading=false;}}/**
    * Initialize all core data classes on startup
    * Loads all registered data classes using their IStorable interfaces
    */async initializeOnStartup(){const appState=_AppStateData__WEBPACK_IMPORTED_MODULE_8__/* .AppStateData */ .L.Instance;try{// Initialize each core data class
@@ -18059,24 +18061,18 @@ await _UserActionData__WEBPACK_IMPORTED_MODULE_20__/* .UserActionData */ .e.Inst
 _utils_userActions_DefaultUserActions__WEBPACK_IMPORTED_MODULE_7__/* .DefaultUserActions */ .C.initialize();// Notify UI that properties have changed after adding default home actions
 _utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.changed(_UserActionData__WEBPACK_IMPORTED_MODULE_20__/* .UserActionData */ .e.Instance);}/**
    * Reset system default PLC program to defaults
-   * Fetches from backend API if available, otherwise falls back to public file
-   */async resetPLCSystemDefaultOnly(){const backendAvailable=await _utils_BackendAvailabilityChecker__WEBPACK_IMPORTED_MODULE_3__/* .BackendAvailabilityChecker */ .V.isBackendAvailable();const program=_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.SystemDefault);try{if(backendAvailable){// Try to get from backend API
-try{const jsonText=await _machine_Machine__WEBPACK_IMPORTED_MODULE_2__/* .Machine */ .u5.getInstance().setup.GetDefaultPLC();const json=JSON.parse(jsonText);program.fromJSON(json);// Save to file
-await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM_DEFAULT,program);// Trigger state update
-_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System Default program reset from backend (use Install to apply changes)');return;}catch(apiError){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to get default from backend API, falling back to public file:',apiError);}}// Fallback: Load from public file
-const response=await fetch('/systemdefault.json');if(!response.ok){throw new Error('Failed to fetch systemdefault.json');}const json=await response.json();program.fromJSON(json);// Save to file
-await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM_DEFAULT,program);// Trigger state update
-_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System Default program reset from public file (simulator mode)');}catch(error){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to reset PLC System Default program:',error);_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('❌ Failed to reset PLC System Default program');throw error;}}/**
-   * Reset system PLC program to defaults
-   * Fetches from backend API if available, otherwise falls back to public file
-   */async resetPLCSystemOnly(){const backendAvailable=await _utils_BackendAvailabilityChecker__WEBPACK_IMPORTED_MODULE_3__/* .BackendAvailabilityChecker */ .V.isBackendAvailable();const program=_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.System);try{if(backendAvailable){// Try to get from backend API (System uses same defaults as SystemDefault)
-try{const jsonText=await _machine_Machine__WEBPACK_IMPORTED_MODULE_2__/* .Machine */ .u5.getInstance().setup.GetDefaultPLC();const json=JSON.parse(jsonText);program.fromJSON(json);// Save to file
-await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM,program);// Trigger state update
-_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System program reset from backend (use Install to apply changes)');return;}catch(apiError){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to get default from backend API, falling back to public file:',apiError);}}// Fallback: Load from public file (system.json or fallback to systemdefault.json)
-let json;try{const response=await fetch('/system.json');if(response.ok){json=await response.json();}else{// Fallback to systemdefault.json if system.json doesn't exist
-const fallbackResponse=await fetch('/systemdefault.json');if(!fallbackResponse.ok){throw new Error('Failed to fetch system.json or systemdefault.json');}json=await fallbackResponse.json();}}catch(fetchError){throw new Error('Failed to fetch default PLC files');}program.fromJSON(json);// Save to file
-await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM,program);// Trigger state update
-_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System program reset from public file (simulator mode)');}catch(error){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to reset PLC System program:',error);_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('❌ Failed to reset PLC System program');throw error;}}/**
+   * Always fetches the stored default from the backend API - this is the machine's
+   * authoritative default PLC. Falls back to embedded public file only when backend
+   * is completely offline.
+   */async resetPLCSystemDefaultOnly(){const backendAvailable=await _utils_BackendAvailabilityChecker__WEBPACK_IMPORTED_MODULE_3__/* .BackendAvailabilityChecker */ .V.isBackendAvailable();const program=_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.SystemDefault);try{if(backendAvailable){// Always use the API - it holds the machine's stored default PLC
+const jsonText=await _machine_Machine__WEBPACK_IMPORTED_MODULE_2__/* .Machine */ .u5.getInstance().setup.GetDefaultPLC();const json=JSON.parse(jsonText);program.fromJSON(json);await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM_DEFAULT,program);_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System Default program reset from backend (use Install to apply changes)');return;}// Fallback: embedded public file only when backend is completely offline
+const response=await fetch('/systemdefault.json');if(!response.ok){throw new Error('Failed to fetch systemdefault.json');}const json=await response.json();program.fromJSON(json);await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM_DEFAULT,program);_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System Default program reset from embedded file (backend offline)');}catch(error){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to reset PLC System Default program:',error);_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('❌ Failed to reset PLC System Default program');throw error;}}/**
+   * Reset system PLC program to a blank state.
+   * The System PLC is the user's working program and is always reset to empty -
+   * it is NOT derived from the System Default PLC.
+   */async resetPLCSystemOnly(){const program=_centroid_plc_data_PLCProgram__WEBPACK_IMPORTED_MODULE_0__.PLCProgram.Instance(_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.System);try{// Reset to a blank program by loading an empty structure
+// type must be included so _type is preserved as System after fromJSON
+program.fromJSON({name:'System PLC',description:'',type:_centroid_plc_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_1__/* .PLCProgramType */ .wM.System,stages:[],inputs:[],outputs:[],uiTriggers:[],m94m95Triggers:[]});await this.store(_DataFileConstants__WEBPACK_IMPORTED_MODULE_16__/* .DataFileConstants */ .Y.PLC_SYSTEM,program);_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_6__.StateManager.propertyChanged(program,'stages');_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('✓ PLC System program reset to blank');}catch(error){_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .Logger */ .Vy.Instance.logError(_utils_Logger__WEBPACK_IMPORTED_MODULE_5__/* .LogCategory */ .nh.DataManager,'Failed to reset PLC System program:',error);_UserMessageQueue__WEBPACK_IMPORTED_MODULE_21__.UserMessageQueue.Instance.addMessage('❌ Failed to reset PLC System program');throw error;}}/**
    * Reset all data to defaults
    */async resetAllData(){await this.clearAll();}/**
    * Save tool library individually
@@ -37866,7 +37862,1791 @@ function useFormControl() {
 
 /***/ }),
 
-/***/ 5246:
+/***/ 5252:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+var __webpack_unused_export__;
+/**
+ * @license React
+ * react-reconciler-constants.production.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+exports.ConcurrentRoot = 1;
+exports.ContinuousEventPriority = 8;
+exports.DefaultEventPriority = 32;
+exports.DiscreteEventPriority = 2;
+__webpack_unused_export__ = 268435456;
+__webpack_unused_export__ = 0;
+__webpack_unused_export__ = 0;
+
+/***/ }),
+
+/***/ 5292:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  Q: () => (/* binding */ NumberInput),
+  A: () => (/* binding */ Common_NumberInput)
+});
+
+// EXTERNAL MODULE: ./node_modules/@mui/material/Box/Box.js + 2 modules
+var Box = __webpack_require__(7353);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Tooltip/Tooltip.js + 1 modules
+var Tooltip = __webpack_require__(7739);
+// EXTERNAL MODULE: ./node_modules/@mui/material/TextField/TextField.js + 3 modules
+var TextField = __webpack_require__(5795);
+// EXTERNAL MODULE: ./node_modules/react/index.js
+var react = __webpack_require__(5043);
+// EXTERNAL MODULE: ./src/data/ConfigurationData.ts
+var ConfigurationData = __webpack_require__(7677);
+;// ./src/utils/NumberInputUtil.ts
+/**
+ * Number input parsing utilities for handling fractions, mixed numbers, math expressions, and units
+ * Extracted from CoordinateUtil for better code organization
+ */class NumberInputUtil{/**
+   * Parse text input to number supporting fractions, mixed numbers, math expressions, and units
+   * @param text Input text to parse
+   * @param defaultUnit Default unit ('in' or 'mm')
+   * @param allowNegative Whether negative numbers are allowed
+   * @param allowPositive Whether positive numbers are allowed
+   * @param allowFractions Whether fractions are allowed
+   * @param precision Number of decimal places for result
+   * @param min Minimum allowed value
+   * @param max Maximum allowed value
+   * @returns Object with parsed value and validity flag
+   */static parseNumberInput(text){let defaultUnit=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'in';let allowNegative=arguments.length>2&&arguments[2]!==undefined?arguments[2]:true;let allowPositive=arguments.length>3&&arguments[3]!==undefined?arguments[3]:true;let allowFractions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:true;let precision=arguments.length>5&&arguments[5]!==undefined?arguments[5]:3;let min=arguments.length>6?arguments[6]:undefined;let max=arguments.length>7?arguments[7]:undefined;let currentValue=arguments.length>8?arguments[8]:undefined;if(!text||text.trim()===''){return{value:0,isValid:true};}const trimmedText=text.trim().toLowerCase();// Check for incremental moves: ++value or --value
+if(trimmedText.startsWith('++')||trimmedText.startsWith('--')){const isPositiveIncrement=trimmedText.startsWith('++');const incrementText=trimmedText.substring(2).trim();// Parse the increment value
+const incrementResult=NumberInputUtil.parseNumberInput(incrementText,defaultUnit,true,// Allow negative for the increment value itself
+true,allowFractions,precision,undefined,// No min/max for increment
+undefined,undefined// No current value for recursive call
+);if(!incrementResult.isValid){return{value:0,isValid:false};}const incrementValue=isPositiveIncrement?incrementResult.value:-incrementResult.value;const newValue=(currentValue!==undefined?currentValue:0)+incrementValue;return{value:newValue,isValid:true,isIncremental:true};}// Normalize decimal numbers that start with a decimal point (e.g., ".5" or "-.5")
+// Also handle single + prefix (e.g., "+5" should be treated as "5")
+let normalizedText=trimmedText;if(/^\+[^+]/.test(normalizedText)){normalizedText=normalizedText.substring(1);// Remove single + prefix: +5 -> 5
+}if(/^\./.test(normalizedText)){normalizedText='0'+normalizedText;// .5 -> 0.5
+}else if(/^-\./.test(normalizedText)){normalizedText='-0.'+normalizedText.substring(2);// -.5 -> -0.5
+}// Extract unit if present
+let unitMultiplier=1;let numberPart=normalizedText;if(trimmedText.endsWith('mm')){numberPart=trimmedText.slice(0,-2).trim();unitMultiplier=defaultUnit==='in'?1/25.4:1;// Convert mm to inches if default is inches
+}else if(trimmedText.endsWith('in')||trimmedText.endsWith('"')){numberPart=trimmedText.replace(/in$|"$/,'').trim();unitMultiplier=defaultUnit==='mm'?25.4:1;// Convert inches to mm if default is mm
+}// Handle math expressions (e.g., "10 + 4 1/2", "14 + 2", "10 - 1.5")
+// Exclude simple negative numbers, negative fractions, and negative mixed numbers
+if(/[+-]/.test(numberPart)&&!numberPart.match(/^-?\d+(\.\d+)?$/)&&!numberPart.match(/^-?\d+\/\d+$/)&&!numberPart.match(/^-?\d+\s+\d+\/\d+$/)){const result=NumberInputUtil.parseSimpleMath(numberPart,unitMultiplier,allowFractions,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Handle mixed numbers with space (e.g., "14 1/2")
+if(allowFractions&&/^-?\d+\s+\d+\/\d+$/.test(numberPart)){const result=NumberInputUtil.parseMixedNumber(numberPart,unitMultiplier,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Check for malformed mixed numbers (numbers with space but no fraction)
+if(/^-?\d+\s+\d+$/.test(numberPart)){return{value:0,isValid:false};}// Handle fractions
+if(allowFractions&&numberPart.includes('/')&&!numberPart.includes(' ')){const result=NumberInputUtil.parseFraction(numberPart,unitMultiplier,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Handle decimal numbers
+const parsed=parseFloat(numberPart);if(isNaN(parsed)){return{value:0,isValid:false};}const result=parsed*unitMultiplier;return NumberInputUtil.validateConstraints(result,allowNegative,allowPositive,min,max,precision);}/**
+   * Parse fraction text (e.g., "3/4", "-1/8")
+   */static parseFraction(text,unitMultiplier,precision){const parts=text.split('/');if(parts.length!==2){return{value:0,isValid:false};}const numerator=parseFloat(parts[0].trim());const denominator=parseFloat(parts[1].trim());if(isNaN(numerator)||isNaN(denominator)||denominator===0){return{value:0,isValid:false};}const result=numerator/denominator*unitMultiplier;return{value:parseFloat(result.toFixed(precision)),isValid:true};}/**
+   * Parse mixed number text (e.g., "14 1/2", "-2 3/8")
+   */static parseMixedNumber(text,unitMultiplier,precision){const match=text.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);if(!match){return{value:0,isValid:false};}const wholeNumber=parseFloat(match[1]);const numerator=parseFloat(match[2]);const denominator=parseFloat(match[3]);if(isNaN(wholeNumber)||isNaN(numerator)||isNaN(denominator)||denominator===0){return{value:0,isValid:false};}const fraction=numerator/denominator;// For mixed numbers, the fraction is always added to the whole number
+// The sign of the whole number determines the overall sign
+const result=(Math.abs(wholeNumber)+fraction)*(wholeNumber>=0?1:-1)*unitMultiplier;return{value:parseFloat(result.toFixed(precision)),isValid:true};}/**
+   * Parse simple math expressions (e.g., "10 + 4 1/2", "14 + 2", "10 - 1.5")
+   */static parseSimpleMath(text,unitMultiplier,allowFractions,precision){// Split on + or - operators, but preserve the operator
+const parts=[];const operators=[];let currentPart='';let i=0;while(i<text.length){const char=text[i];if((char==='+'||char==='-')&&i>0){// Found an operator (not a negative sign at the start)
+parts.push(currentPart.trim());operators.push(char);currentPart='';}else{currentPart+=char;}i++;}// Add the last part
+if(currentPart.trim()){parts.push(currentPart.trim());}if(parts.length<2||operators.length!==parts.length-1){return{value:0,isValid:false};}// Parse the first value
+let result=NumberInputUtil.parseNumberPart(parts[0],allowFractions,precision);if(!result.isValid)return result;let accumulator=result.value;// Process each subsequent part with its operator
+for(let j=1;j<parts.length;j++){const operator=operators[j-1];const partResult=NumberInputUtil.parseNumberPart(parts[j],allowFractions,precision);if(!partResult.isValid)return partResult;if(operator==='+'){accumulator+=partResult.value;}else if(operator==='-'){accumulator-=partResult.value;}}const finalResult=accumulator*unitMultiplier;return{value:parseFloat(finalResult.toFixed(precision)),isValid:true};}/**
+   * Parse a single number part (decimal, fraction, or mixed number)
+   */static parseNumberPart(text,allowFractions,precision){const trimmed=text.trim();// Handle mixed numbers with space (e.g., "4 1/2")
+if(allowFractions&&/^-?\d+\s+\d+\/\d+$/.test(trimmed)){return NumberInputUtil.parseMixedNumber(trimmed,1,precision);}// Handle fractions
+if(allowFractions&&trimmed.includes('/')&&!trimmed.includes(' ')){return NumberInputUtil.parseFraction(trimmed,1,precision);}// Handle decimal numbers
+const parsed=parseFloat(trimmed);if(isNaN(parsed)){return{value:0,isValid:false};}return{value:parseFloat(parsed.toFixed(precision)),isValid:true};}/**
+   * Validate constraints on a parsed number
+   */static validateConstraints(value,allowNegative,allowPositive,min,max,precision){// Validate constraints
+if(!allowNegative&&value<0){return{value:0,isValid:false};}if(!allowPositive&&value>0){return{value:0,isValid:false};}if(min!==undefined&&value<min){return{value:min,isValid:false};}if(max!==undefined&&value>max){return{value:max,isValid:false};}const finalValue=precision!==undefined?parseFloat(value.toFixed(precision)):value;return{value:finalValue,isValid:true};}}
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(579);
+;// ./src/components/Common/NumberInput.tsx
+const NumberInput=_ref=>{let{value,onChange,allowNegative=true,allowPositive=true,allowFractions=true,defaultUnit='in',precision=3,min,max,showHelperText=true,beforeText='',afterText='',textColor,onEditStart,...textFieldProps}=_ref;const[textValue,setTextValue]=(0,react.useState)('');const[isValid,setIsValid]=(0,react.useState)(true);const[isEditing,setIsEditing]=(0,react.useState)(false);const[isFocused,setIsFocused]=(0,react.useState)(false);const[tooltipOpen,setTooltipOpen]=(0,react.useState)(false);const[userInteracted,setUserInteracted]=(0,react.useState)(false);// Get configuration instance
+const config=ConfigurationData/* ConfigurationData */.J.Instance;// Convert number to text on value change (only when not editing and user has interacted)
+(0,react.useEffect)(()=>{if(!isEditing&&!isFocused&&userInteracted){const newText=value.toFixed(precision);setTextValue(newText);}else if(!userInteracted){// On first render before user interaction, show the external value
+const newText=value.toFixed(precision);setTextValue(newText);}},[value,isEditing,isFocused,precision,userInteracted]);const parseTextToNumber=text=>{return NumberInputUtil.parseNumberInput(text,defaultUnit,allowNegative,allowPositive,allowFractions,precision,min,max,value// Pass current value for incremental operations
+);};const handleTextChange=newText=>{setTextValue(newText);setIsEditing(true);setUserInteracted(true);// Notify parent that editing has started
+if(onEditStart){onEditStart();}// Parse to check validity but DON'T auto-replace incremental syntax
+// Let the user finish typing before we evaluate
+const{isValid:valid}=parseTextToNumber(newText);setIsValid(valid);};const evaluateAndCommit=()=>{const{value:parsedValue,isValid:valid}=parseTextToNumber(textValue);if(valid&&parsedValue!==value){onChange(parsedValue);}if(!valid){// Reset to current value if invalid
+const newText=value.toFixed(precision);setTextValue(newText);setIsValid(true);}else{// Format the text nicely
+const newText=parsedValue.toFixed(precision);setTextValue(newText);}setIsEditing(false);};const handleBlur=()=>{evaluateAndCommit();setIsFocused(false);};const handleFocus=e=>{setIsFocused(true);setUserInteracted(true);// Select all text when the input is focused
+e.target.select();};const handleKeyDown=e=>{if(e.key==='Enter'||e.key==='Tab'){evaluateAndCommit();}};// Create tooltip content
+const tooltipContent=/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{children:[beforeText&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{marginBottom:1},children:beforeText}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{fontWeight:'bold',marginBottom:0.5},children:"Input Options:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{component:"ul",sx:{margin:0,paddingLeft:2.5,fontSize:'0.875rem'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Decimals: 1.5, -2.75"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Fractions: 1/8, 3/4"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Mixed numbers: 1 1/2, 2 3/8"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Math: 14 + 2, 10 - 1.5"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Units: 25mm, 1.5in, 2\""}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Incremental: ++1, --0.5"})]}),afterText&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{marginTop:1},children:afterText})]});// Handle mouse enter/leave for hover behavior
+const handleMouseEnter=()=>{if(config.shouldShowNumberInputTooltip()){config.decrementTooltipCount();setTooltipOpen(true);}};const handleMouseLeave=()=>{setTooltipOpen(false);};return/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:tooltipContent,arrow:true,placement:"left",open:tooltipOpen,onClose:()=>setTooltipOpen(false),disableHoverListener:!config.shouldShowNumberInputTooltip(),disableFocusListener:!config.shouldShowNumberInputTooltip(),disableTouchListener:!config.shouldShowNumberInputTooltip(),children:/*#__PURE__*/(0,jsx_runtime.jsx)(TextField/* default */.A,{...textFieldProps,value:textValue,onChange:e=>handleTextChange(e.target.value),onBlur:handleBlur,onFocus:handleFocus,onKeyDown:handleKeyDown,onMouseEnter:handleMouseEnter,onMouseLeave:handleMouseLeave,error:!isValid||textFieldProps.error,helperText:showHelperText?!isValid?'Invalid number format':textFieldProps.helperText:undefined,placeholder:allowFractions?'e.g., 1.5, 14 1/2, 14 + 2, 25mm':'e.g., 1.5, 14 + 2, 25mm',sx:{...textFieldProps.sx,'& .MuiOutlinedInput-input':{textAlign:isFocused?'left':'right',transition:'text-align 0.2s ease',color:textColor||'inherit',// Apply custom text color if provided
+fontFamily:'"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',fontVariantNumeric:'slashed-zero'}}})});};/* harmony default export */ const Common_NumberInput = (NumberInput);
+
+/***/ }),
+
+/***/ 5316:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  A: () => (/* binding */ DialogContent_DialogContent)
+});
+
+// EXTERNAL MODULE: ./node_modules/react/index.js
+var react = __webpack_require__(5043);
+// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
+var clsx = __webpack_require__(8387);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
+var composeClasses = __webpack_require__(8610);
+// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
+var styled = __webpack_require__(4535);
+// EXTERNAL MODULE: ./node_modules/@mui/material/utils/memoTheme.js + 1 modules
+var memoTheme = __webpack_require__(6262);
+// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
+var DefaultPropsProvider = __webpack_require__(8206);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
+var generateUtilityClasses = __webpack_require__(2532);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
+var generateUtilityClass = __webpack_require__(2372);
+;// ./node_modules/@mui/material/DialogContent/dialogContentClasses.js
+
+
+function getDialogContentUtilityClass(slot) {
+  return (0,generateUtilityClass/* default */.Ay)('MuiDialogContent', slot);
+}
+const dialogContentClasses = (0,generateUtilityClasses/* default */.A)('MuiDialogContent', ['root', 'dividers']);
+/* harmony default export */ const DialogContent_dialogContentClasses = ((/* unused pure expression or super */ null && (dialogContentClasses)));
+// EXTERNAL MODULE: ./node_modules/@mui/material/DialogTitle/dialogTitleClasses.js
+var dialogTitleClasses = __webpack_require__(7034);
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(579);
+;// ./node_modules/@mui/material/DialogContent/DialogContent.js
+'use client';
+
+
+
+
+
+
+
+
+
+
+
+const useUtilityClasses = ownerState => {
+  const {
+    classes,
+    dividers
+  } = ownerState;
+  const slots = {
+    root: ['root', dividers && 'dividers']
+  };
+  return (0,composeClasses/* default */.A)(slots, getDialogContentUtilityClass, classes);
+};
+const DialogContentRoot = (0,styled/* default */.Ay)('div', {
+  name: 'MuiDialogContent',
+  slot: 'Root',
+  overridesResolver: (props, styles) => {
+    const {
+      ownerState
+    } = props;
+    return [styles.root, ownerState.dividers && styles.dividers];
+  }
+})((0,memoTheme/* default */.A)(_ref => {
+  let {
+    theme
+  } = _ref;
+  return {
+    flex: '1 1 auto',
+    // Add iOS momentum scrolling for iOS < 13.0
+    WebkitOverflowScrolling: 'touch',
+    overflowY: 'auto',
+    padding: '20px 24px',
+    variants: [{
+      props: _ref2 => {
+        let {
+          ownerState
+        } = _ref2;
+        return ownerState.dividers;
+      },
+      style: {
+        padding: '16px 24px',
+        borderTop: `1px solid ${(theme.vars || theme).palette.divider}`,
+        borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`
+      }
+    }, {
+      props: _ref3 => {
+        let {
+          ownerState
+        } = _ref3;
+        return !ownerState.dividers;
+      },
+      style: {
+        [`.${dialogTitleClasses/* default */.A.root} + &`]: {
+          paddingTop: 0
+        }
+      }
+    }]
+  };
+}));
+const DialogContent = /*#__PURE__*/react.forwardRef(function DialogContent(inProps, ref) {
+  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
+    props: inProps,
+    name: 'MuiDialogContent'
+  });
+  const {
+    className,
+    dividers = false,
+    ...other
+  } = props;
+  const ownerState = {
+    ...props,
+    dividers
+  };
+  const classes = useUtilityClasses(ownerState);
+  return /*#__PURE__*/(0,jsx_runtime.jsx)(DialogContentRoot, {
+    className: (0,clsx/* default */.A)(classes.root, className),
+    ownerState: ownerState,
+    ref: ref,
+    ...other
+  });
+});
+ false ? 0 : void 0;
+/* harmony default export */ const DialogContent_DialogContent = (DialogContent);
+
+/***/ }),
+
+/***/ 5422:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6734);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(579);
+"use client";
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("path", {
+  d: "M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4m8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7"
+}), 'GpsFixed'));
+
+/***/ }),
+
+/***/ 5434:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   Y: () => (/* binding */ getListItemButtonUtilityClass)
+/* harmony export */ });
+/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
+/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
+
+
+function getListItemButtonUtilityClass(slot) {
+  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiListItemButton', slot);
+}
+const listItemButtonClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiListItemButton', ['root', 'focusVisible', 'dense', 'alignItemsFlexStart', 'disabled', 'divider', 'gutters', 'selected']);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (listItemButtonClasses);
+
+/***/ }),
+
+/***/ 5502:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Pf: () => (/* binding */ TextApiResponse),
+/* harmony export */   Q0: () => (/* binding */ RequiredError),
+/* harmony export */   Vk: () => (/* binding */ Configuration),
+/* harmony export */   cK: () => (/* binding */ VoidApiResponse),
+/* harmony export */   ko: () => (/* binding */ JSONApiResponse),
+/* harmony export */   yi: () => (/* binding */ BaseAPI)
+/* harmony export */ });
+/* unused harmony exports BASE_PATH, DefaultConfig, ResponseError, FetchError, COLLECTION_FORMATS, querystring, exists, mapValues, canConsumeForm, BlobApiResponse */
+/* tslint:disable *//* eslint-disable *//**
+ * HavenCNC Server API
+ * REST API for CNC server management hosted within WinForms application
+ *
+ * The version of the OpenAPI document: v1
+ * 
+ *
+ * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).
+ * https://openapi-generator.tech
+ * Do not edit the class manually.
+ */const BASE_PATH="http://localhost".replace(/\/+$/,"");class Configuration{constructor(){let configuration=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};this.configuration=configuration;}set config(configuration){this.configuration=configuration;}get basePath(){return this.configuration.basePath!=null?this.configuration.basePath:BASE_PATH;}get fetchApi(){return this.configuration.fetchApi;}get middleware(){return this.configuration.middleware||[];}get queryParamsStringify(){return this.configuration.queryParamsStringify||querystring;}get username(){return this.configuration.username;}get password(){return this.configuration.password;}get apiKey(){const apiKey=this.configuration.apiKey;if(apiKey){return typeof apiKey==='function'?apiKey:()=>apiKey;}return undefined;}get accessToken(){const accessToken=this.configuration.accessToken;if(accessToken){return typeof accessToken==='function'?accessToken:async()=>accessToken;}return undefined;}get headers(){return this.configuration.headers;}get credentials(){return this.configuration.credentials;}}const DefaultConfig=new Configuration();/**
+ * This is the base class for all generated API classes.
+ */class BaseAPI{constructor(){let configuration=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DefaultConfig;this.configuration=configuration;this.middleware=void 0;this.fetchApi=async(url,init)=>{let fetchParams={url,init};for(const middleware of this.middleware){if(middleware.pre){fetchParams=(await middleware.pre({fetch:this.fetchApi,...fetchParams}))||fetchParams;}}let response=undefined;try{response=await(this.configuration.fetchApi||fetch)(fetchParams.url,fetchParams.init);}catch(e){for(const middleware of this.middleware){if(middleware.onError){response=(await middleware.onError({fetch:this.fetchApi,url:fetchParams.url,init:fetchParams.init,error:e,response:response?response.clone():undefined}))||response;}}if(response===undefined){if(e instanceof Error){throw new FetchError(e,'The request failed and the interceptors did not return an alternative response');}else{throw e;}}}for(const middleware of this.middleware){if(middleware.post){response=(await middleware.post({fetch:this.fetchApi,url:fetchParams.url,init:fetchParams.init,response:response.clone()}))||response;}}return response;};this.middleware=configuration.middleware;}withMiddleware(){const next=this.clone();next.middleware=next.middleware.concat(...arguments);return next;}withPreMiddleware(){for(var _len=arguments.length,preMiddlewares=new Array(_len),_key=0;_key<_len;_key++){preMiddlewares[_key]=arguments[_key];}const middlewares=preMiddlewares.map(pre=>({pre}));return this.withMiddleware(...middlewares);}withPostMiddleware(){for(var _len2=arguments.length,postMiddlewares=new Array(_len2),_key2=0;_key2<_len2;_key2++){postMiddlewares[_key2]=arguments[_key2];}const middlewares=postMiddlewares.map(post=>({post}));return this.withMiddleware(...middlewares);}/**
+     * Check if the given MIME is a JSON MIME.
+     * JSON MIME examples:
+     *   application/json
+     *   application/json; charset=UTF8
+     *   APPLICATION/JSON
+     *   application/vnd.company+json
+     * @param mime - MIME (Multipurpose Internet Mail Extensions)
+     * @return True if the given MIME is JSON, false otherwise.
+     */isJsonMime(mime){if(!mime){return false;}return BaseAPI.jsonRegex.test(mime);}async request(context,initOverrides){const{url,init}=await this.createFetchParams(context,initOverrides);const response=await this.fetchApi(url,init);if(response&&response.status>=200&&response.status<300){return response;}throw new ResponseError(response,'Response returned an error code');}async createFetchParams(context,initOverrides){let url=this.configuration.basePath+context.path;if(context.query!==undefined&&Object.keys(context.query).length!==0){// only add the querystring to the URL if there are query parameters.
+// this is done to avoid urls ending with a "?" character which buggy webservers
+// do not handle correctly sometimes.
+url+='?'+this.configuration.queryParamsStringify(context.query);}const headers=Object.assign({},this.configuration.headers,context.headers);Object.keys(headers).forEach(key=>headers[key]===undefined?delete headers[key]:{});const initOverrideFn=typeof initOverrides==="function"?initOverrides:async()=>initOverrides;const initParams={method:context.method,headers,body:context.body,credentials:this.configuration.credentials};const overriddenInit={...initParams,...(await initOverrideFn({init:initParams,context}))};let body;if(isFormData(overriddenInit.body)||overriddenInit.body instanceof URLSearchParams||isBlob(overriddenInit.body)){body=overriddenInit.body;}else if(this.isJsonMime(headers['Content-Type'])){body=JSON.stringify(overriddenInit.body);}else{body=overriddenInit.body;}const init={...overriddenInit,body};return{url,init};}/**
+     * Create a shallow clone of `this` by constructing a new instance
+     * and then shallow cloning data members.
+     */clone(){const constructor=this.constructor;const next=new constructor(this.configuration);next.middleware=this.middleware.slice();return next;}}BaseAPI.jsonRegex=new RegExp('^(:?application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(:?;.*)?$','i');;function isBlob(value){return typeof Blob!=='undefined'&&value instanceof Blob;}function isFormData(value){return typeof FormData!=="undefined"&&value instanceof FormData;}class ResponseError extends Error{constructor(response,msg){super(msg);this.response=response;this.name="ResponseError";}}class FetchError extends Error{constructor(cause,msg){super(msg);this.cause=cause;this.name="FetchError";}}class RequiredError extends Error{constructor(field,msg){super(msg);this.field=field;this.name="RequiredError";}}const COLLECTION_FORMATS={csv:",",ssv:" ",tsv:"\t",pipes:"|"};function querystring(params){let prefix=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';return Object.keys(params).map(key=>querystringSingleKey(key,params[key],prefix)).filter(part=>part.length>0).join('&');}function querystringSingleKey(key,value){let keyPrefix=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';const fullKey=keyPrefix+(keyPrefix.length?`[${key}]`:key);if(value instanceof Array){const multiValue=value.map(singleValue=>encodeURIComponent(String(singleValue))).join(`&${encodeURIComponent(fullKey)}=`);return`${encodeURIComponent(fullKey)}=${multiValue}`;}if(value instanceof Set){const valueAsArray=Array.from(value);return querystringSingleKey(key,valueAsArray,keyPrefix);}if(value instanceof Date){return`${encodeURIComponent(fullKey)}=${encodeURIComponent(value.toISOString())}`;}if(value instanceof Object){return querystring(value,fullKey);}return`${encodeURIComponent(fullKey)}=${encodeURIComponent(String(value))}`;}function exists(json,key){const value=json[key];return value!==null&&value!==undefined;}function mapValues(data,fn){const result={};for(const key of Object.keys(data)){result[key]=fn(data[key]);}return result;}function canConsumeForm(consumes){for(const consume of consumes){if('multipart/form-data'===consume.contentType){return true;}}return false;}class JSONApiResponse{constructor(raw){let transformer=arguments.length>1&&arguments[1]!==undefined?arguments[1]:jsonValue=>jsonValue;this.raw=raw;this.transformer=transformer;}async value(){return this.transformer(await this.raw.json());}}class VoidApiResponse{constructor(raw){this.raw=raw;}async value(){return undefined;}}class BlobApiResponse{constructor(raw){this.raw=raw;}async value(){return await this.raw.blob();}}class TextApiResponse{constructor(raw){this.raw=raw;}async value(){return await this.raw.text();}}
+
+/***/ }),
+
+/***/ 5516:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5043);
+/* harmony import */ var _mui_utils_deepmerge__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9172);
+/* harmony import */ var _mui_utils_composeClasses__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8610);
+/* harmony import */ var _InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2559);
+/* harmony import */ var _styles_rootShouldForwardProp_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1475);
+/* harmony import */ var _zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(4535);
+/* harmony import */ var _utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(6262);
+/* harmony import */ var _utils_createSimplePaletteValueFilter_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(2445);
+/* harmony import */ var _DefaultPropsProvider_index_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8206);
+/* harmony import */ var _filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4569);
+/* harmony import */ var _utils_index_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(6803);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(579);
+'use client';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const useUtilityClasses = ownerState => {
+  const {
+    classes,
+    disableUnderline,
+    startAdornment,
+    endAdornment,
+    size,
+    hiddenLabel,
+    multiline
+  } = ownerState;
+  const slots = {
+    root: ['root', !disableUnderline && 'underline', startAdornment && 'adornedStart', endAdornment && 'adornedEnd', size === 'small' && `size${(0,_utils_index_js__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .A)(size)}`, hiddenLabel && 'hiddenLabel', multiline && 'multiline'],
+    input: ['input']
+  };
+  const composedClasses = (0,_mui_utils_composeClasses__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A)(slots, _filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* .getFilledInputUtilityClass */ .N, classes);
+  return {
+    ...classes,
+    // forward classes to the InputBase
+    ...composedClasses
+  };
+};
+const FilledInputRoot = (0,_zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Ay)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .InputBaseRoot */ .Sh, {
+  shouldForwardProp: prop => (0,_styles_rootShouldForwardProp_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A)(prop) || prop === 'classes',
+  name: 'MuiFilledInput',
+  slot: 'Root',
+  overridesResolver: (props, styles) => {
+    const {
+      ownerState
+    } = props;
+    return [...(0,_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .rootOverridesResolver */ .WC)(props, styles), !ownerState.disableUnderline && styles.underline];
+  }
+})((0,_utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A)(_ref => {
+  let {
+    theme
+  } = _ref;
+  const light = theme.palette.mode === 'light';
+  const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
+  const backgroundColor = light ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.09)';
+  const hoverBackground = light ? 'rgba(0, 0, 0, 0.09)' : 'rgba(255, 255, 255, 0.13)';
+  const disabledBackground = light ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)';
+  return {
+    position: 'relative',
+    backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor,
+    borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
+    borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
+    transition: theme.transitions.create('background-color', {
+      duration: theme.transitions.duration.shorter,
+      easing: theme.transitions.easing.easeOut
+    }),
+    '&:hover': {
+      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.hoverBg : hoverBackground,
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
+      }
+    },
+    [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.focused}`]: {
+      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
+    },
+    [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}`]: {
+      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.disabledBg : disabledBackground
+    },
+    variants: [{
+      props: _ref2 => {
+        let {
+          ownerState
+        } = _ref2;
+        return !ownerState.disableUnderline;
+      },
+      style: {
+        '&::after': {
+          left: 0,
+          bottom: 0,
+          content: '""',
+          position: 'absolute',
+          right: 0,
+          transform: 'scaleX(0)',
+          transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shorter,
+            easing: theme.transitions.easing.easeOut
+          }),
+          pointerEvents: 'none' // Transparent to the hover style.
+        },
+        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.focused}:after`]: {
+          // translateX(0) is a workaround for Safari transform scale bug
+          // See https://github.com/mui/material-ui/issues/31766
+          transform: 'scaleX(1) translateX(0)'
+        },
+        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.error}`]: {
+          '&::before, &::after': {
+            borderBottomColor: (theme.vars || theme).palette.error.main
+          }
+        },
+        '&::before': {
+          borderBottom: `1px solid ${theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})` : bottomLineColor}`,
+          left: 0,
+          bottom: 0,
+          content: '"\\00a0"',
+          position: 'absolute',
+          right: 0,
+          transition: theme.transitions.create('border-bottom-color', {
+            duration: theme.transitions.duration.shorter
+          }),
+          pointerEvents: 'none' // Transparent to the hover style.
+        },
+        [`&:hover:not(.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}, .${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.error}):before`]: {
+          borderBottom: `1px solid ${(theme.vars || theme).palette.text.primary}`
+        },
+        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}:before`]: {
+          borderBottomStyle: 'dotted'
+        }
+      }
+    }, ...Object.entries(theme.palette).filter((0,_utils_createSimplePaletteValueFilter_js__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .A)()) // check all the used fields in the style below
+    .map(_ref3 => {
+      let [color] = _ref3;
+      return {
+        props: {
+          disableUnderline: false,
+          color
+        },
+        style: {
+          '&::after': {
+            borderBottom: `2px solid ${(theme.vars || theme).palette[color]?.main}`
+          }
+        }
+      };
+    }), {
+      props: _ref4 => {
+        let {
+          ownerState
+        } = _ref4;
+        return ownerState.startAdornment;
+      },
+      style: {
+        paddingLeft: 12
+      }
+    }, {
+      props: _ref5 => {
+        let {
+          ownerState
+        } = _ref5;
+        return ownerState.endAdornment;
+      },
+      style: {
+        paddingRight: 12
+      }
+    }, {
+      props: _ref6 => {
+        let {
+          ownerState
+        } = _ref6;
+        return ownerState.multiline;
+      },
+      style: {
+        padding: '25px 12px 8px'
+      }
+    }, {
+      props: _ref7 => {
+        let {
+          ownerState,
+          size
+        } = _ref7;
+        return ownerState.multiline && size === 'small';
+      },
+      style: {
+        paddingTop: 21,
+        paddingBottom: 4
+      }
+    }, {
+      props: _ref8 => {
+        let {
+          ownerState
+        } = _ref8;
+        return ownerState.multiline && ownerState.hiddenLabel;
+      },
+      style: {
+        paddingTop: 16,
+        paddingBottom: 17
+      }
+    }, {
+      props: _ref9 => {
+        let {
+          ownerState
+        } = _ref9;
+        return ownerState.multiline && ownerState.hiddenLabel && ownerState.size === 'small';
+      },
+      style: {
+        paddingTop: 8,
+        paddingBottom: 9
+      }
+    }]
+  };
+}));
+const FilledInputInput = (0,_zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Ay)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .InputBaseInput */ .ck, {
+  name: 'MuiFilledInput',
+  slot: 'Input',
+  overridesResolver: _InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .inputOverridesResolver */ .Oj
+})((0,_utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A)(_ref0 => {
+  let {
+    theme
+  } = _ref0;
+  return {
+    paddingTop: 25,
+    paddingRight: 12,
+    paddingBottom: 8,
+    paddingLeft: 12,
+    ...(!theme.vars && {
+      '&:-webkit-autofill': {
+        WebkitBoxShadow: theme.palette.mode === 'light' ? null : '0 0 0 100px #266798 inset',
+        WebkitTextFillColor: theme.palette.mode === 'light' ? null : '#fff',
+        caretColor: theme.palette.mode === 'light' ? null : '#fff',
+        borderTopLeftRadius: 'inherit',
+        borderTopRightRadius: 'inherit'
+      }
+    }),
+    ...(theme.vars && {
+      '&:-webkit-autofill': {
+        borderTopLeftRadius: 'inherit',
+        borderTopRightRadius: 'inherit'
+      },
+      [theme.getColorSchemeSelector('dark')]: {
+        '&:-webkit-autofill': {
+          WebkitBoxShadow: '0 0 0 100px #266798 inset',
+          WebkitTextFillColor: '#fff',
+          caretColor: '#fff'
+        }
+      }
+    }),
+    variants: [{
+      props: {
+        size: 'small'
+      },
+      style: {
+        paddingTop: 21,
+        paddingBottom: 4
+      }
+    }, {
+      props: _ref1 => {
+        let {
+          ownerState
+        } = _ref1;
+        return ownerState.hiddenLabel;
+      },
+      style: {
+        paddingTop: 16,
+        paddingBottom: 17
+      }
+    }, {
+      props: _ref10 => {
+        let {
+          ownerState
+        } = _ref10;
+        return ownerState.startAdornment;
+      },
+      style: {
+        paddingLeft: 0
+      }
+    }, {
+      props: _ref11 => {
+        let {
+          ownerState
+        } = _ref11;
+        return ownerState.endAdornment;
+      },
+      style: {
+        paddingRight: 0
+      }
+    }, {
+      props: _ref12 => {
+        let {
+          ownerState
+        } = _ref12;
+        return ownerState.hiddenLabel && ownerState.size === 'small';
+      },
+      style: {
+        paddingTop: 8,
+        paddingBottom: 9
+      }
+    }, {
+      props: _ref13 => {
+        let {
+          ownerState
+        } = _ref13;
+        return ownerState.multiline;
+      },
+      style: {
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 0,
+        paddingRight: 0
+      }
+    }]
+  };
+}));
+const FilledInput = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function FilledInput(inProps, ref) {
+  const props = (0,_DefaultPropsProvider_index_js__WEBPACK_IMPORTED_MODULE_8__/* .useDefaultProps */ .b)({
+    props: inProps,
+    name: 'MuiFilledInput'
+  });
+  const {
+    disableUnderline = false,
+    components = {},
+    componentsProps: componentsPropsProp,
+    fullWidth = false,
+    hiddenLabel,
+    // declare here to prevent spreading to DOM
+    inputComponent = 'input',
+    multiline = false,
+    slotProps,
+    slots = {},
+    type = 'text',
+    ...other
+  } = props;
+  const ownerState = {
+    ...props,
+    disableUnderline,
+    fullWidth,
+    inputComponent,
+    multiline,
+    type
+  };
+  const classes = useUtilityClasses(props);
+  const filledInputComponentsProps = {
+    root: {
+      ownerState
+    },
+    input: {
+      ownerState
+    }
+  };
+  const componentsProps = slotProps ?? componentsPropsProp ? (0,_mui_utils_deepmerge__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)(filledInputComponentsProps, slotProps ?? componentsPropsProp) : filledInputComponentsProps;
+  const RootSlot = slots.root ?? components.Root ?? FilledInputRoot;
+  const InputSlot = slots.input ?? components.Input ?? FilledInputInput;
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_11__.jsx)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Ay, {
+    slots: {
+      root: RootSlot,
+      input: InputSlot
+    },
+    slotProps: componentsProps,
+    fullWidth: fullWidth,
+    inputComponent: inputComponent,
+    multiline: multiline,
+    ref: ref,
+    type: type,
+    ...other,
+    classes: classes
+  });
+});
+ false ? 0 : void 0;
+FilledInput.muiName = 'Input';
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilledInput);
+
+/***/ }),
+
+/***/ 5521:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   k: () => (/* binding */ Condition)
+/* harmony export */ });
+/* harmony import */ var _utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2331);
+/* harmony import */ var _utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(342);
+/* harmony import */ var _IPLCElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7806);
+/* harmony import */ var _PLCUtilities__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1319);
+/**
+ * Abstract base class for PLC conditions
+ * Conditions are used in logic operations to determine when actions execute
+ */class Condition{constructor(){this._comment='';this._enabled=true;this._plcSource=undefined;this._parentElement=undefined;}// Parent statement that contains this condition
+/**
+     * Get the type of condition - must be implemented by derived classes
+     *//**
+     * Comment or description for this condition
+     */get comment(){return this._comment;}set comment(value){this._comment=value;_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__.StateManager.propertyChanged(this,'comment');}/**
+     * Whether this condition is enabled
+     */get enabled(){return this._enabled;}set enabled(value){this._enabled=value;_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__.StateManager.propertyChanged(this,'enabled');}get plcSource(){const resolved=_PLCUtilities__WEBPACK_IMPORTED_MODULE_3__/* .PLCUtilities */ .iz.resolvePLCSource(this,false);return resolved!==null?resolved:undefined;}/**
+     * Get the type of this PLC element
+     * Base class returns 'condition', but ConditionGroup overrides to return 'condition-group'
+     */getElementType(){return'condition';}/**
+     * Reset cached state before rendering or code generation
+     * Default implementation does nothing - override in subclasses that need it
+     */preRenderReset(){// Default: no-op
+}/**
+     * Get unique identifier for this condition
+     */getElementId(){return`condition-${this.conditionType}`;}/**
+     * Get the parent element (statement) that contains this condition
+     */getParentElement(){return this._parentElement;}/**
+     * Set the parent element (statement) that contains this condition
+     */setParentElement(parent){this._parentElement=parent;// Clear cached plcSource - will be resolved on next access
+this._plcSource=undefined;}/**
+     * Render the condition to JSX - must be implemented by derived classes
+     * @param mode Rendering mode (Edit, ReadOnly, or Disabled)
+     * @param targetProgramType The program type context for rendering
+     *//**
+     * Get declarations that are used/referenced by this condition - must be implemented by derived classes
+     *//**
+     * Get declarations that are added/defined by this condition - must be implemented by derived classes
+     *//**
+     * Get the PLC logic code for this condition - must be implemented by derived classes
+     *//**
+     * Get validation issues for this condition - must be implemented by derived classes
+     *//**
+     * Get all data elements used by this condition - must be implemented by derived classes
+     *//**
+     * Check if this condition is disabled
+     * Must be implemented by derived classes
+     * @param mode The rendering mode being used
+     * @param targetProgramType The target program type context for checking declaration availability
+     * @returns True if condition should be treated as disabled
+     *//**
+     * Get a short, single-line description of this condition for display in tree views
+     * Example: "havenreset is set" or "spindle_speed > 100"
+     * @returns A human-readable summary of the condition
+     *//**
+     * Determine whether this condition should be output
+     * @param outputType The type of output (Render or PLCCode)
+     * @param availableDeclarations Optional array of available declaration names
+     * @returns OutputState indicating how this condition should be handled
+     */shouldOutput(outputType,availableDeclarations){// TODO: Define proper output logic later
+return _IPLCElement__WEBPACK_IMPORTED_MODULE_2__/* .OutputState */ .J8.Output;}/**
+     * Serialize to JSON
+     */toJSON(){const data=_PLCUtilities__WEBPACK_IMPORTED_MODULE_3__/* .PLCSerializationHelper */ .uH.getStorageData(this);data.conditionType=this.conditionType;return data;}/**
+     * Load from JSON
+     */fromJSON(data){_utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_1__/* .DataUtilities */ .T.loadStorageData(this,data);}}
+
+/***/ }),
+
+/***/ 5540:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  A: () => (/* binding */ _inheritsLoose)
+});
+
+;// ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
+function _setPrototypeOf(t, e) {
+  return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+    return t.__proto__ = e, t;
+  }, _setPrototypeOf(t, e);
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js
+
+function _inheritsLoose(t, o) {
+  t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
+}
+
+
+/***/ }),
+
+/***/ 5563:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  S: () => (/* binding */ AxisCoordinateDisplay)
+});
+
+// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/ArrowForward.js
+var ArrowForward = __webpack_require__(8994);
+// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Clear.js
+var Clear = __webpack_require__(79);
+// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Save.js
+var Save = __webpack_require__(7141);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Box/Box.js + 2 modules
+var Box = __webpack_require__(7353);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Typography/Typography.js
+var Typography = __webpack_require__(4496);
+// EXTERNAL MODULE: ./node_modules/@mui/material/ButtonGroup/ButtonGroup.js + 1 modules
+var ButtonGroup = __webpack_require__(7567);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Tooltip/Tooltip.js + 1 modules
+var Tooltip = __webpack_require__(7739);
+// EXTERNAL MODULE: ./node_modules/@mui/material/IconButton/IconButton.js + 1 modules
+var IconButton = __webpack_require__(7392);
+// EXTERNAL MODULE: ./node_modules/@mui/material/ToggleButton/ToggleButton.js + 1 modules
+var ToggleButton = __webpack_require__(4511);
+// EXTERNAL MODULE: ./src/utils/CoordinateUtil.ts + 2 modules
+var CoordinateUtil = __webpack_require__(7961);
+// EXTERNAL MODULE: ./src/utils/statemanager/StateManager.tsx
+var StateManager = __webpack_require__(2331);
+// EXTERNAL MODULE: ./src/data/ConfigurationState.ts
+var ConfigurationState = __webpack_require__(5011);
+// EXTERNAL MODULE: ./src/data/Common/CoordinateType.ts
+var CoordinateType = __webpack_require__(623);
+// EXTERNAL MODULE: ./src/data/MachineStateData.ts
+var MachineStateData = __webpack_require__(6465);
+;// ./src/data/AxisCoordinateState.ts
+var _AxisCoordinateState;/**
+ * Display mode for axis coordinates
+ */let CoordinateDisplayType=/*#__PURE__*/function(CoordinateDisplayType){/** Display work coordinates (relative to work zero with tool offsets) */CoordinateDisplayType["Work"]="Work";/** Display machine zero coordinates (absolute machine position) */CoordinateDisplayType["Machine"]="Machine";return CoordinateDisplayType;}({});/**
+ * Tracks the state of a single axis coordinate input
+ */class AxisState{constructor(){this._userEnteredValue=null;this._isUserEditing=false;this._showButtons='none';}/**
+     * User's entered value (null if not edited)
+     */get userEnteredValue(){return this._userEnteredValue;}set userEnteredValue(value){this._userEnteredValue=value;}/**
+     * Whether user is currently editing this axis
+     */get isUserEditing(){return this._isUserEditing;}set isUserEditing(value){this._isUserEditing=value;}/**
+     * Which buttons to show for this axis
+     */get showButtons(){return this._showButtons;}set showButtons(value){this._showButtons=value;}/**
+     * Clear user input and reset to default state
+     */clear(){this._userEnteredValue=null;this._isUserEditing=false;this._showButtons='none';}}/**
+ * Singleton class to manage coordinate display state across all axes
+ * Computes display values from machine state and user input
+ */class AxisCoordinateState{get X(){return this._X;}set X(value){this._X=value;}get Y(){return this._Y;}set Y(value){this._Y=value;}get Z(){return this._Z;}set Z(value){this._Z=value;}get A(){return this._A;}set A(value){this._A=value;}/**
+     * Get/set the coordinate display type (Work or Machine)
+     */get displayType(){return this._displayType;}set displayType(value){this._displayType=value;StateManager.StateManager.propertyChanged(this,'displayType');// Notify all axes to trigger recalculation of display values
+StateManager.StateManager.propertyChanged(this,'X');StateManager.StateManager.propertyChanged(this,'Y');StateManager.StateManager.propertyChanged(this,'Z');StateManager.StateManager.propertyChanged(this,'A');}/**
+     * Get/set the timestamp when machine mode was activated (null if not in machine mode)
+     */get machineModeStartTime(){return this._machineModeStartTime;}set machineModeStartTime(value){this._machineModeStartTime=value;StateManager.StateManager.propertyChanged(this,'machineModeStartTime');}constructor(){this._axisStates=new Map();this._displayType=CoordinateDisplayType.Work;this._machineModeStartTime=null;// Timestamp when machine mode was activated
+// Define actual properties for state observation
+this._X=0;this._Y=0;this._Z=0;this._A=0;// Initialize common axes
+this.getAxisState('X');this.getAxisState('Y');this.getAxisState('Z');this.getAxisState('A');}static get Instance(){if(!AxisCoordinateState._instance){AxisCoordinateState._instance=new AxisCoordinateState();}return AxisCoordinateState._instance;}/**
+     * Get the state for a specific axis (creates if doesn't exist)
+     */getAxisState(axis){const axisKey=axis.toUpperCase();if(!this._axisStates.has(axisKey)){this._axisStates.set(axisKey,new AxisState());}return this._axisStates.get(axisKey);}/**
+     * Get the display value for an axis
+     * Priority: user entered value > proposed value > current value
+     * Computes coordinates based on displayType (Work or Machine)
+     */getDisplayValue(axis){const state=this.getAxisState(axis);const axisKey=axis.toUpperCase();// Priority 1: User entered value
+if(state.userEnteredValue!==null){return state.userEnteredValue;}const machineState=MachineStateData.MachineStateData.Instance;// Priority 2: Proposed value (from drag or other operations)
+const proposedPos=ConfigurationState.ConfigurationState.Instance.proposedSpindlePosition;if(proposedPos){const coordinates=this._displayType===CoordinateDisplayType.Work?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(proposedPos):CoordinateUtil.CoordinateUtil.toMachineZero(proposedPos);let proposedValue;switch(axisKey){case'X':proposedValue=coordinates.x;break;case'Y':proposedValue=coordinates.y;break;case'Z':proposedValue=coordinates.z;break;case'A':proposedValue=0;break;// A-axis not implemented yet
+default:proposedValue=0;}return proposedValue;}// Priority 3: Current value
+const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const coordinates=this._displayType===CoordinateDisplayType.Work?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos):CoordinateUtil.CoordinateUtil.toMachineZero(currentMachinePos);let currentValue;switch(axisKey){case'X':currentValue=coordinates.x;break;case'Y':currentValue=coordinates.y;break;case'Z':currentValue=coordinates.z;break;case'A':currentValue=0;break;// A-axis not implemented yet
+default:currentValue=0;}return currentValue;}/**
+     * Set user-entered value for an axis
+     */setUserValue(axis,value){const state=this.getAxisState(axis);state.userEnteredValue=value;state.isUserEditing=false;// No longer editing once value is committed
+state.showButtons='go';// Update dummy property to trigger observation
+const axisKey=axis.toUpperCase();if(axisKey==='X')this._X=value;else if(axisKey==='Y')this._Y=value;else if(axisKey==='Z')this._Z=value;else if(axisKey==='A')this._A=value;StateManager.StateManager.propertyChanged(this,axisKey);}/**
+     * Mark that user started editing (but hasn't committed yet)
+     */startEditing(axis){const state=this.getAxisState(axis);state.isUserEditing=true;state.showButtons='go';const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
+     * Stop editing without committing
+     */stopEditing(axis){const state=this.getAxisState(axis);state.isUserEditing=false;const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
+     * Clear user value for an axis
+     */clearAxis(axis){const state=this.getAxisState(axis);state.clear();// Update dummy property to trigger observation
+const axisKey=axis.toUpperCase();if(axisKey==='X')this._X=0;else if(axisKey==='Y')this._Y=0;else if(axisKey==='Z')this._Z=0;else if(axisKey==='A')this._A=0;StateManager.StateManager.propertyChanged(this,axisKey);}/**
+     * Clear all axes
+     */clearAll(){for(const[axis]of this._axisStates){this.clearAxis(axis);}}/**
+     * Set which buttons to show for an axis
+     */setButtonMode(axis,mode){const state=this.getAxisState(axis);state.showButtons=mode;const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
+     * Check if axis has user-entered value
+     */hasUserValue(axis){const state=this.getAxisState(axis);return state.userEnteredValue!==null;}/**
+     * Create a MoveAction for a specific axis, using the display value
+     * Returns the MoveAction that should be added to ActionBus
+     */createMoveActionForAxis(axis){// WORKAROUND: Dynamic require to break circular dependency (MoveAction -> CollisionDetection -> MachineData -> ... -> AxisCoordinateState)
+const{MoveAction,MoveType}=__webpack_require__(1178);// Get current coordinates in the selected display type
+const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const machineZeroPos=CoordinateUtil.CoordinateUtil.toMachineZero(currentMachinePos);const isMachineMode=this._displayType===CoordinateDisplayType.Machine;const coordType=isMachineMode?CoordinateType/* CoordinateType */.t.MachineZero:CoordinateType/* CoordinateType */.t.WorkZeroWithOffsets;// Build coordinate with only the specified axis changed
+// Other axes will be undefined so MoveAction will use current position
+let x;let y;let z;switch(axis.toUpperCase()){case'X':x=this.getDisplayValue('X');break;case'Y':y=this.getDisplayValue('Y');break;case'Z':z=this.getDisplayValue('Z');break;case'A':// A-axis not yet implemented
+break;}// Create MoveAction with only the changed axis specified
+// ActionBus will automatically combine this with any existing MoveAction
+return new MoveAction(coordType,x,y,z,undefined,MoveType.Coordinates);}}_AxisCoordinateState=AxisCoordinateState;AxisCoordinateState._instance=void 0;
+// EXTERNAL MODULE: ./src/data/CNCPoint.ts
+var CNCPoint = __webpack_require__(9271);
+// EXTERNAL MODULE: ./src/data/ConfigurationData.ts
+var ConfigurationData = __webpack_require__(7677);
+// EXTERNAL MODULE: ./src/data/ConfigurationDataColors.ts
+var ConfigurationDataColors = __webpack_require__(2561);
+// EXTERNAL MODULE: ./src/data/UserMessageQueue.ts
+var UserMessageQueue = __webpack_require__(3598);
+// EXTERNAL MODULE: ./src/machine/Machine.ts + 2 modules
+var Machine = __webpack_require__(1899);
+// EXTERNAL MODULE: ./src/utils/actions/ActionBus.ts
+var ActionBus = __webpack_require__(8020);
+// EXTERNAL MODULE: ./src/utils/statemanager/ObserveMultiProperties.tsx + 1 modules
+var ObserveMultiProperties = __webpack_require__(9578);
+// EXTERNAL MODULE: ./src/components/Common/NumberInput.tsx + 1 modules
+var NumberInput = __webpack_require__(5292);
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(579);
+;// ./src/components/Common/AxisCoordinateDisplay.tsx
+// Module-level state for machine mode timer
+let machineTimerHandle=null;let machineTimerUpdateHandle=null;/**
+ * Props for AxisCoordinateDisplay component
+ *//**
+ * Reusable component for displaying and editing axis coordinates
+ * Shows work coordinates with NumberInput controls and Set/Go buttons
+ * 
+ * Set button: Appears when work coordinate is not at zero - sets work zero to current position
+ * Go button: Appears when user has entered a proposed position - moves to that position
+ * 
+ * @example
+ * // Basic usage with X, Y, Z axes
+ * <AxisCoordinateDisplay axes={['X', 'Y', 'Z']} />
+ * 
+ * @example
+ * // Custom styling without buttons
+ * <AxisCoordinateDisplay 
+ *   axes={['X', 'Y']} 
+ *   showButtons={false}
+ *   inputWidth="150px"
+ *   valueFontSize="2rem"
+ * />
+ */function AxisCoordinateDisplay(_ref){let{axes=['X','Y','Z','A'],showButtons=true,showSetButton=true,reserveButtonSpace=false,inputWidth='150px',labelFontSize='1.5rem',valueFontSize='2.5rem',buttonWidth='80px',buttonHeight='56px',gap=2,axisGap=2,getLabelText=axis=>`${axis}:`,onCoordinateChange,onSetWorkZero,onGoToPosition,instanceKey='axis-coordinate-display',showSpeedToggle=false,showCoordinateTypeToggle=false}=_ref;const colors=ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;const machineState=MachineStateData.MachineStateData.Instance;const axisState=AxisCoordinateState.Instance;const handleCoordinateChange=(axis,value)=>{// This is called when user commits value (Enter/Tab/Blur)
+axisState.setUserValue(axis,value);if(onCoordinateChange){onCoordinateChange(axis,value);}};const handleEditStart=axis=>{// This is called when user starts typing
+axisState.startEditing(axis);};const getButtonType=axis=>{if(!showButtons)return'none';const state=axisState.getAxisState(axis);// If user has entered a value or is editing, show Go buttons
+if(state.userEnteredValue!==null||state.isUserEditing){return'go';}// Check if we should show Set button based on work coordinate value
+const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const workCoordinates=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// Get the work coordinate for the axis
+let workCoordinate;switch(axis.toUpperCase()){case'X':workCoordinate=workCoordinates.x;break;case'Y':workCoordinate=workCoordinates.y;break;case'Z':workCoordinate=workCoordinates.z;break;case'A':workCoordinate=0;// A-axis placeholder
+break;default:return'none';}// If work coordinate is close to 0, don't show Set button
+const tolerance=0.001;const isAtWorkZero=Math.abs(workCoordinate)<tolerance;return isAtWorkZero||!showSetButton?'none':'set';};const handleSetWorkZero=async axis=>{if(onSetWorkZero){onSetWorkZero(axis);}else{// Set work zero to current machine position for this axis
+const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const currentWorkZero=machineState.currentWorkZero;const currentWorkCoords=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// To make current tool tip position become 0, we need to adjust currentWorkZero
+// by the current work coordinate value
+// Formula: newWorkZero = currentWorkZero + currentWorkCoords
+let newWorkZero;switch(axis.toUpperCase()){case'X':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x+currentWorkCoords.x,currentWorkZero.y,currentWorkZero.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'Y':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x,currentWorkZero.y+currentWorkCoords.y,currentWorkZero.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'Z':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x,currentWorkZero.y,currentWorkZero.z+currentWorkCoords.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'A':// A-axis placeholder - for now just keep current work zero
+newWorkZero=currentWorkZero;break;default:newWorkZero=currentWorkZero;}// Update the machine state (updates local fixture data)
+machineState.currentWorkZero=newWorkZero;// Notify the server about the fixture point change
+try{await Machine/* Machine */.u5.getInstance().movement.SetCurrentFixturePoint();// Note: Fixture auto-save is triggered by StateManager.propertyChanged in Fixture setters
+}catch(error){UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ Failed to update fixture on server: ${error}`);}}axisState.clearAxis(axis);};const handleGoToPosition=axis=>{if(onGoToPosition){onGoToPosition(axis);}else{// Create MoveAction using AxisCoordinateState method
+// ActionBus will automatically combine this with any existing MoveAction
+const moveAction=axisState.createMoveActionForAxis(axis);ActionBus/* ActionBus */.B.Instance.addAction(moveAction);}// Clear only the axis that was moved
+axisState.clearAxis(axis);};const handleClear=()=>{axisState.clearAll();};const handleJogSpeedChange=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.movement.SetFastJog(!ConfigurationState.ConfigurationState.Instance.jogFastMode);}catch(error){console.error('Failed to set jog speed:',error);}};const handleCoordinateTypeChange=()=>{const isCurrentlyWork=axisState.displayType===CoordinateDisplayType.Work;const newType=isCurrentlyWork?CoordinateDisplayType.Machine:CoordinateDisplayType.Work;// Clear any existing timer
+if(machineTimerHandle){clearTimeout(machineTimerHandle);machineTimerHandle=null;}if(machineTimerUpdateHandle){clearInterval(machineTimerUpdateHandle);machineTimerUpdateHandle=null;}// If switching to Machine mode, start countdown timer
+if(isCurrentlyWork){const duration=ConfigurationData/* ConfigurationData */.J.Instance.machineModeDuration*1000;// Convert seconds to milliseconds
+axisState.machineModeStartTime=Date.now();// Update progress every 50ms for smooth animation
+machineTimerUpdateHandle=setInterval(()=>{// Force re-render by notifying state change
+StateManager.StateManager.propertyChanged(axisState,'machineModeStartTime');},50);// Auto-switch back to Work mode after duration
+machineTimerHandle=setTimeout(()=>{if(machineTimerUpdateHandle){clearInterval(machineTimerUpdateHandle);machineTimerUpdateHandle=null;}machineTimerHandle=null;axisState.machineModeStartTime=null;axisState.displayType=CoordinateDisplayType.Work;},duration);}else{axisState.machineModeStartTime=null;}axisState.displayType=newType;};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:axisGap},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ObserveMultiProperties/* ObserveMultiProperties */.P,{listenTo:[{object:machineState,properties:['currentWorkZero','currentToolOffsets','currentToolNumber']},{object:ConfigurationState.ConfigurationState.Instance,properties:['isHomed','proposedSpindlePosition','currentMachinePoint']},{object:axisState,properties:['X','Y','Z','A']}],control:()=>{return/*#__PURE__*/(0,jsx_runtime.jsx)(jsx_runtime.Fragment,{children:axes.map(axis=>{const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const workCoordinates=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// Get proposed position if it exists
+const proposedPos=ConfigurationState.ConfigurationState.Instance.proposedSpindlePosition;// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const proposedWorkCoordinates=proposedPos?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(proposedPos):null;// let currentWorkValue: number;
+// let proposedWorkValue: number | null = null;
+switch(axis.toUpperCase()){case'X':// currentWorkValue = workCoordinates.x;
+// proposedWorkValue = proposedWorkCoordinates?.x ?? null;
+break;case'Y':// currentWorkValue = workCoordinates.y;
+// proposedWorkValue = proposedWorkCoordinates?.y ?? null;
+break;case'Z':// currentWorkValue = workCoordinates.z;
+// proposedWorkValue = proposedWorkCoordinates?.z || null;
+break;case'A':// currentWorkValue = 0;
+// proposedWorkValue = null; // A-axis not implemented yet
+break;default:// currentWorkValue = 0;
+// proposedWorkValue = null;
+break;}const displayValue=axisState.getDisplayValue(axis);const buttonType=getButtonType(axis);const hasUserValue=axisState.hasUserValue(axis);return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography/* default */.A,{sx:{minWidth:'40px',fontSize:labelFontSize,fontWeight:'bold'},children:getLabelText(axis)}),ConfigurationState.ConfigurationState.Instance.isHomed?/*#__PURE__*/(0,jsx_runtime.jsx)(NumberInput/* NumberInput */.Q,{value:displayValue,onChange:value=>handleCoordinateChange(axis,value),onEditStart:()=>handleEditStart(axis),precision:3,allowNegative:true,allowPositive:true,allowFractions:true,showHelperText:false,beforeText:`${axisState.displayType===CoordinateDisplayType.Machine?'Machine':'Work'} coordinate ${axis} - position relative to ${axisState.displayType===CoordinateDisplayType.Machine?'machine zero':'work zero'}`,afterText:"Press Enter/Tab to move, or use Set button to set work zero to current position.",size:"medium",variant:"outlined",textColor:hasUserValue?colors.successColor:undefined,sx:{width:inputWidth,'& .MuiOutlinedInput-input':{fontFamily:'monospace',fontSize:valueFontSize,fontWeight:'bold',padding:'12px 16px',textAlign:'right'},'& .MuiOutlinedInput-root':{backgroundColor:axisState.displayType===CoordinateDisplayType.Machine?`${colors.primaryColor}15`:colors.lightTextColor,'& fieldset':{borderWidth:'2px',borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor},'&:hover fieldset':{borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor},'&.Mui-focused fieldset':{borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor}}}}):/*#__PURE__*/(0,jsx_runtime.jsx)(Typography/* default */.A,{sx:{width:inputWidth,fontFamily:'monospace',fontSize:'1.2rem',fontWeight:'bold',padding:'12px 16px',textAlign:'right',backgroundColor:colors.lightBackgroundColor,border:`2px solid ${colors.borderColor}`,borderRadius:'4px',color:colors.borderColor,display:'flex',alignItems:'center',justifyContent:'flex-end',lineHeight:1,whiteSpace:'nowrap'},children:"---.--"}),ConfigurationState.ConfigurationState.Instance.isHomed&&(showButtons||reserveButtonSpace)&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{minWidth:reserveButtonSpace?'180px':'auto',display:'flex',alignItems:'center',justifyContent:'flex-start'},children:[buttonType==='go'&&/*#__PURE__*/(0,jsx_runtime.jsxs)(ButtonGroup/* default */.A,{variant:"contained",sx:{height:buttonHeight},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Go to position",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleGoToPosition(axis),tabIndex:-1,sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,borderRadius:'4px 0 0 4px','&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ArrowForward/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Clear",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleClear(),tabIndex:-1,sx:{backgroundColor:colors.secondaryColor,color:colors.lightTextColor,borderRadius:'0 4px 4px 0','&:hover':{backgroundColor:colors.secondaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Clear/* default */.A,{})})})]}),buttonType==='set'&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Set work zero",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleSetWorkZero(axis),tabIndex:-1,sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,borderRadius:'4px','&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Save/* default */.A,{})})})]})]},axis);})});}},instanceKey),(showSpeedToggle||showCoordinateTypeToggle)&&/*#__PURE__*/(0,jsx_runtime.jsx)(ObserveMultiProperties/* ObserveMultiProperties */.P,{listenTo:[{object:ConfigurationState.ConfigurationState.Instance,properties:['jogFastMode']},{object:axisState,properties:['displayType','machineModeStartTime']}],control:()=>{const isFast=ConfigurationState.ConfigurationState.Instance.jogFastMode;const isWork=axisState.displayType===CoordinateDisplayType.Work;// Calculate progress percentage
+let progressPercent=0;if(!isWork&&axisState.machineModeStartTime){const elapsed=Date.now()-axisState.machineModeStartTime;const duration=ConfigurationData/* ConfigurationData */.J.Instance.machineModeDuration*1000;// Convert seconds to milliseconds
+progressPercent=Math.min(100,elapsed/duration*100);}return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{mt:1,display:'flex',gap:1},children:[showSpeedToggle&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:isFast?'Click to switch to Slow Jog':'Click to switch to Fast Jog',arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(ToggleButton/* default */.A,{value:"fast",selected:isFast,onChange:handleJogSpeedChange,sx:{minWidth:'60px',fontWeight:'bold',fontSize:'0.75rem',padding:'4px 8px',backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,color:colors.lightTextColor,border:'none','&:hover':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,opacity:0.85},'&.Mui-selected':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,opacity:0.85}}},children:["Speed: ",isFast?'Fast':'Slow']})}),showCoordinateTypeToggle&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:isWork?'Click to switch to Machine Coordinates':'Click to switch to Work Coordinates',arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{position:'relative',display:'inline-block'},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(ToggleButton/* default */.A,{value:"work",selected:isWork,onChange:handleCoordinateTypeChange,sx:{minWidth:'70px',fontWeight:'bold',fontSize:'0.75rem',padding:'4px 8px',backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,color:colors.lightTextColor,border:'none',position:'relative',overflow:'hidden','&:hover':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,opacity:0.85},'&.Mui-selected':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,opacity:0.85}}},children:[!isWork&&axisState.machineModeStartTime&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{position:'absolute',top:0,left:0,height:'100%',width:`${progressPercent}%`,backgroundColor:colors.secondaryColor,transition:'width 50ms linear',pointerEvents:'none'}}),/*#__PURE__*/(0,jsx_runtime.jsxs)("span",{style:{position:'relative',zIndex:1},children:["Display: ",isWork?'Work':'Machine']})]})})})]});}},`${instanceKey}-toggle-buttons`)]});}
+
+/***/ }),
+
+/***/ 5599:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (/* binding */ ConditionGroupEditor)
+/* harmony export */ });
+/* harmony import */ var _mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(141);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7353);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7392);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4496);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2518);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(2143);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(688);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(5043);
+/* harmony import */ var _data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(2561);
+/* harmony import */ var _utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3740);
+/* harmony import */ var _utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1392);
+/* harmony import */ var _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8132);
+/* harmony import */ var _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3251);
+/* harmony import */ var _data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(7806);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(579);
+/**
+ * ConditionGroupEditor - UI component for editing condition groups
+ * Supports recursive nested groups with AND/OR/XOR operations
+ */function ConditionGroupEditor(props){const{conditionGroup,onChanged,depth=0,isRoot=false,renderMode=_data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__/* .PLCRenderMode */ .LH.Edit,targetProgramType}=props;const[addMenuAnchor,setAddMenuAnchor]=(0,react__WEBPACK_IMPORTED_MODULE_7__.useState)(null);const isReadOnly=renderMode===_data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__/* .PLCRenderMode */ .LH.ReadOnly;const[groupTypeMenuAnchor,setGroupTypeMenuAnchor]=(0,react__WEBPACK_IMPORTED_MODULE_7__.useState)(null);const colors=_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance;const handleAddCondition=type=>{let newCondition;if(type==='single'){newCondition=new _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__/* .DataCondition */ .i();}else{const newGroup=new _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .ConditionGroup */ .Z(_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.And);// Add a default DataCondition to the new group
+const defaultCondition=new _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__/* .DataCondition */ .i();newGroup.addCondition(defaultCondition);newCondition=newGroup;}conditionGroup.addCondition(newCondition);setAddMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();};const handleRemoveCondition=condition=>{conditionGroup.removeCondition(condition);onChanged===null||onChanged===void 0?void 0:onChanged();};// TODO: Implement condition reordering UI
+// const handleMoveConditionUp = (condition: Condition) => {
+//     const index = conditionGroup.conditions.indexOf(condition);
+//     if (index > 0) {
+//         conditionGroup.conditions.splice(index, 1);
+//         conditionGroup.conditions.splice(index - 1, 0, condition);
+//         onChanged?.();
+//     }
+// };
+// const handleMoveConditionDown = (condition: Condition) => {
+//     const index = conditionGroup.conditions.indexOf(condition);
+//     if (index >= 0 && index < conditionGroup.conditions.length - 1) {
+//         conditionGroup.conditions.splice(index, 1);
+//         conditionGroup.conditions.splice(index + 1, 0, condition);
+//         onChanged?.();
+//     }
+// };
+const handleConditionChanged=()=>{onChanged===null||onChanged===void 0?void 0:onChanged();};return/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.Fragment,{children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__/* .ObserveState */ .Q,{listenTo:conditionGroup,properties:['groupType','conditions'],control:()=>{// All groups use flex layout with braces that span content height
+return/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'inline-flex',alignItems:'stretch',borderTop:`0.75px dashed ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.borderColor}`,borderBottom:`0.75px dashed ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{fontFamily:'monospace',fontSize:'24px',mr:0.5,width:'10px',borderLeft:`1.5px solid ${colors.secondaryBorderColor}`,borderTop:`1.5px solid ${colors.secondaryBorderColor}`,borderBottom:`1.5px solid ${colors.secondaryBorderColor}`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',gap:0.5,py:isRoot?0:0.5},children:conditionGroup.conditions.length===0?!isReadOnly?/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A,{size:"small",onClick:e=>setAddMenuAnchor(e.currentTarget),sx:{color:colors.primaryColor,fontSize:'12px',px:1,py:0.5,borderRadius:1,border:`1px dashed ${colors.borderColor}`,'&:hover':{backgroundColor:`${colors.primaryColor}20`,borderColor:colors.primaryColor}},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A,{fontSize:"small",sx:{mr:0.5}}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{variant:"caption",sx:{fontFamily:'monospace'},children:"pick"})]}):/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{variant:"caption",sx:{fontFamily:'monospace',fontStyle:'italic',color:colors.mutedTextColor},children:"empty"}):(()=>{// Separate inline conditions from nested groups
+const inlineConditions=[];const nestedGroups=[];conditionGroup.conditions.forEach(condition=>{if(condition instanceof _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .ConditionGroup */ .Z){nestedGroups.push(condition);}else{inlineConditions.push(condition);}});const rows=[];// Render all inline conditions first as a single row
+if(inlineConditions.length>0){const inlineElements=[];inlineConditions.forEach((condition,idx)=>{const originalIndex=conditionGroup.conditions.indexOf(condition);if(idx>0){inlineElements.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(react__WEBPACK_IMPORTED_MODULE_7__.Fragment,{children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{component:"span",sx:{mx:0.5},children:" "}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:isReadOnly?undefined:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",disabled:isReadOnly,sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{component:"span",sx:{mx:0.5},children:" "})]},`combiner-${originalIndex}`));}inlineElements.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{component:"span",onMouseEnter:e=>{if(!isReadOnly){const rect=e.currentTarget.getBoundingClientRect();_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.showTooltip(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',minWidth:150,bgcolor:'background.paper',borderRadius:1,boxShadow:2,border:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('single');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Data Element"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('group');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Group"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleRemoveCondition(condition);_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px',color:'error.main','&:hover':{backgroundColor:'error.main',color:colors.lightTextColor}},children:"Delete Element"})]}),{top:rect.top,left:rect.right+5});}},onMouseLeave:()=>{if(!isReadOnly){_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltipWithDelay(300);}},sx:{display:'inline-flex',alignItems:'center',gap:0.5,'&:hover':{backgroundColor:`${colors.primaryColor}10`,borderRadius:1,px:0.5}},children:/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__/* .ObserveState */ .Q,{listenTo:condition,properties:['dataElement','comparisonOperator','memoryBitState','useConstant','comparisonValue','comparisonElement'],control:()=>condition.render(renderMode,targetProgramType)},`data-condition-${originalIndex}`)},originalIndex));});rows.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',alignItems:'center',gap:1},children:[inlineElements,nestedGroups.length>0&&/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:isReadOnly?undefined:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",disabled:isReadOnly,sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()})]},"inline-conditions"));}// Render nested groups, each on its own row with combiner
+nestedGroups.forEach((group,idx)=>{const originalIndex=conditionGroup.conditions.indexOf(group);const isLastGroup=idx===nestedGroups.length-1;rows.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',alignItems:'center',gap:1},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{onMouseEnter:e=>{if(!isReadOnly){const rect=e.currentTarget.getBoundingClientRect();_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.showTooltip(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',minWidth:150,bgcolor:'background.paper',borderRadius:1,boxShadow:2,border:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('single');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Data Element"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('group');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Group"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleRemoveCondition(group);_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px',color:'error.main','&:hover':{backgroundColor:'error.main',color:colors.lightTextColor}},children:"Delete Group"})]}),{top:rect.top,left:rect.right+5});}},onMouseLeave:()=>{if(!isReadOnly){_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltipWithDelay(300);}},sx:{ml:2,'&:hover':{backgroundColor:`${colors.primaryColor}10`,borderRadius:1,px:0.5}},children:/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(ConditionGroupEditor,{conditionGroup:group,onChanged:handleConditionChanged,depth:depth+1,isRoot:false,renderMode:renderMode,targetProgramType:targetProgramType})}),!isLastGroup&&/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()})]},originalIndex));});return rows;})()}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{fontFamily:'monospace',fontSize:'24px',ml:0.5,width:'10px',borderRight:`1.5px solid ${colors.secondaryBorderColor}`,borderTop:`1.5px solid ${colors.secondaryBorderColor}`,borderBottom:`1.5px solid ${colors.secondaryBorderColor}`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}})]});}},`condition-group-editor-${depth}`),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A,{anchorEl:groupTypeMenuAnchor,open:Boolean(groupTypeMenuAnchor),onClose:()=>setGroupTypeMenuAnchor(null),anchorOrigin:{vertical:'bottom',horizontal:'left'},transformOrigin:{vertical:'top',horizontal:'left'},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.And;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"and"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.Or;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"or"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.Xor;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"xor"})]}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A,{anchorEl:addMenuAnchor,open:Boolean(addMenuAnchor),onClose:()=>{setAddMenuAnchor(null);},anchorOrigin:{vertical:'bottom',horizontal:'right'},transformOrigin:{vertical:'top',horizontal:'right'},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>handleAddCondition('single'),children:"Single Condition"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>handleAddCondition('group'),children:"Condition Group"})]})]});}
+
+/***/ }),
+
+/***/ 5658:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   K: () => (/* binding */ getDividerUtilityClass)
+/* harmony export */ });
+/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
+/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
+
+
+function getDividerUtilityClass(slot) {
+  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiDivider', slot);
+}
+const dividerClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiDivider', ['root', 'absolute', 'fullWidth', 'inset', 'middle', 'flexItem', 'light', 'vertical', 'withChildren', 'withChildrenVertical', 'textAlignRight', 'textAlignLeft', 'wrapper', 'wrapperVertical']);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dividerClasses);
+
+/***/ }),
+
+/***/ 5671:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   b: () => (/* binding */ getListItemTextUtilityClass)
+/* harmony export */ });
+/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
+/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
+
+
+function getListItemTextUtilityClass(slot) {
+  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiListItemText', slot);
+}
+const listItemTextClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiListItemText', ['root', 'multiline', 'dense', 'inset', 'primary', 'secondary']);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (listItemTextClasses);
+
+/***/ }),
+
+/***/ 5701:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6734);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(579);
+"use client";
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("path", {
+  d: "m18.25 7.6-5.5-3.18c-.46-.27-1.04-.27-1.5 0L5.75 7.6c-.46.27-.75.76-.75 1.3v6.35c0 .54.29 1.03.75 1.3l5.5 3.18c.46.27 1.04.27 1.5 0l5.5-3.18c.46-.27.75-.76.75-1.3V8.9c0-.54-.29-1.03-.75-1.3M7 14.96v-4.62l4 2.32v4.61zm5-4.03L8 8.61l4-2.31 4 2.31zm1 6.34v-4.61l4-2.32v4.62zM7 2H3.5C2.67 2 2 2.67 2 3.5V7h2V4h3zm10 0h3.5c.83 0 1.5.67 1.5 1.5V7h-2V4h-3zM7 22H3.5c-.83 0-1.5-.67-1.5-1.5V17h2v3h3zm10 0h3.5c.83 0 1.5-.67 1.5-1.5V17h-2v3h-3z"
+}), 'ViewInAr'));
+
+/***/ }),
+
+/***/ 5721:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  A: () => (/* binding */ List_List)
+});
+
+// EXTERNAL MODULE: ./node_modules/react/index.js
+var react = __webpack_require__(5043);
+// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
+var clsx = __webpack_require__(8387);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
+var composeClasses = __webpack_require__(8610);
+// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
+var styled = __webpack_require__(4535);
+// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
+var DefaultPropsProvider = __webpack_require__(8206);
+// EXTERNAL MODULE: ./node_modules/@mui/material/List/ListContext.js
+var ListContext = __webpack_require__(1347);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
+var generateUtilityClasses = __webpack_require__(2532);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
+var generateUtilityClass = __webpack_require__(2372);
+;// ./node_modules/@mui/material/List/listClasses.js
+
+
+function getListUtilityClass(slot) {
+  return (0,generateUtilityClass/* default */.Ay)('MuiList', slot);
+}
+const listClasses = (0,generateUtilityClasses/* default */.A)('MuiList', ['root', 'padding', 'dense', 'subheader']);
+/* harmony default export */ const List_listClasses = ((/* unused pure expression or super */ null && (listClasses)));
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(579);
+;// ./node_modules/@mui/material/List/List.js
+'use client';
+
+
+
+
+
+
+
+
+
+
+const useUtilityClasses = ownerState => {
+  const {
+    classes,
+    disablePadding,
+    dense,
+    subheader
+  } = ownerState;
+  const slots = {
+    root: ['root', !disablePadding && 'padding', dense && 'dense', subheader && 'subheader']
+  };
+  return (0,composeClasses/* default */.A)(slots, getListUtilityClass, classes);
+};
+const ListRoot = (0,styled/* default */.Ay)('ul', {
+  name: 'MuiList',
+  slot: 'Root',
+  overridesResolver: (props, styles) => {
+    const {
+      ownerState
+    } = props;
+    return [styles.root, !ownerState.disablePadding && styles.padding, ownerState.dense && styles.dense, ownerState.subheader && styles.subheader];
+  }
+})({
+  listStyle: 'none',
+  margin: 0,
+  padding: 0,
+  position: 'relative',
+  variants: [{
+    props: _ref => {
+      let {
+        ownerState
+      } = _ref;
+      return !ownerState.disablePadding;
+    },
+    style: {
+      paddingTop: 8,
+      paddingBottom: 8
+    }
+  }, {
+    props: _ref2 => {
+      let {
+        ownerState
+      } = _ref2;
+      return ownerState.subheader;
+    },
+    style: {
+      paddingTop: 0
+    }
+  }]
+});
+const List = /*#__PURE__*/react.forwardRef(function List(inProps, ref) {
+  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
+    props: inProps,
+    name: 'MuiList'
+  });
+  const {
+    children,
+    className,
+    component = 'ul',
+    dense = false,
+    disablePadding = false,
+    subheader,
+    ...other
+  } = props;
+  const context = react.useMemo(() => ({
+    dense
+  }), [dense]);
+  const ownerState = {
+    ...props,
+    component,
+    dense,
+    disablePadding
+  };
+  const classes = useUtilityClasses(ownerState);
+  return /*#__PURE__*/(0,jsx_runtime.jsx)(ListContext/* default */.A.Provider, {
+    value: context,
+    children: /*#__PURE__*/(0,jsx_runtime.jsxs)(ListRoot, {
+      as: component,
+      className: (0,clsx/* default */.A)(classes.root, className),
+      ref: ref,
+      ownerState: ownerState,
+      ...other,
+      children: [subheader, children]
+    })
+  });
+});
+ false ? 0 : void 0;
+/* harmony default export */ const List_List = (List);
+
+/***/ }),
+
+/***/ 5760:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   W: () => (/* binding */ InputMappingStatement)
+/* harmony export */ });
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7353);
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4496);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5043);
+/* harmony import */ var _data_ConfigurationData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7677);
+/* harmony import */ var _data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2561);
+/* harmony import */ var _utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(342);
+/* harmony import */ var _data_PLCProgram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9561);
+/* harmony import */ var _data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1319);
+/* harmony import */ var _BasePLCStatement__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1569);
+/**
+ * Input Mapping Statement
+ * System-only statement with no UI that outputs input mapping code
+ * Maps raw hardware inputs to processed memory bits with optional inversion
+ * Only available in SystemDefault PLC programs
+ */class InputMappingStatement extends _BasePLCStatement__WEBPACK_IMPORTED_MODULE_8__/* .BasePLCStatement */ .e{/**
+     * Get a short, single-line description for display in tree views
+     * @returns A human-readable summary
+     */getShortDescription(){return'Map hardware inputs';}/**
+     * Validate the statement
+     */validate(){return undefined;// Always valid
+}/**
+     * Render the statement (informational display only, no editable properties)
+     */render(mode){const config=_data_ConfigurationData__WEBPACK_IMPORTED_MODULE_3__/* .ConfigurationData */ .J.Instance;const colors=_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__/* .ConfigurationDataColors */ .f.Instance;return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A,{sx:{padding:2,backgroundColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__/* .ConfigurationDataColors */ .f.Instance.selectionColor,// Light blue background for system-only statements
+border:`1px solid ${colors.borderColor}`,borderRadius:1,opacity:this._enabled?1:0.5}},[/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{key:'title',variant:'subtitle2',sx:{color:colors.primaryColor,fontWeight:'bold'}},'Input Mapping'),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{key:'description',variant:'body2',sx:{marginTop:0.5}},'Maps raw hardware inputs to processed memory bits with inversion (system only)')]);}/**
+     * Get declarations used by this statement
+     */getUsedDeclarations(){return[];}/**
+     * Get declarations added by this statement
+     */getAddedDeclarations(){// Validate that this statement has a valid plcSource
+if(!this.plcSource){throw new Error('InputMappingStatement: plcSource is not set. Statement must be added to a program before calling getAddedDeclarations()');}// CRITICAL: InputMappingStatement should ONLY be used in SystemDefault program
+const myProgramType=this.plcSource.getProgramType();if(myProgramType!==_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__/* .PLCProgramType */ .wM.SystemDefault){throw new Error(`InputMappingStatement can only be used in SystemDefault program, but found in ${myProgramType} program`);}return[];}/**
+     * Get PLC logic code
+     * Generates input mapping code for all defined inputs with inversion support
+     */getPLCLogic(availableDeclarations){if(!this._enabled){return[];}const lines=[];// Get the System PLC program to access user-defined inputs
+const program=_data_PLCProgram__WEBPACK_IMPORTED_MODULE_6__.PLCProgram.Instance(_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__/* .PLCProgramType */ .wM.System);const inputs=program.inputs;if(inputs.length===0){return['; Input Mapping - Standard handling','; (No inputs defined)'];}lines.push('; Input Mapping - Standard handling');for(const input of inputs){const inputName=input.centroidName;// Add _RAW suffix to get hardware input name (ESTOPOK_I -> ESTOPOK_I_RAW)
+// Memory bit keeps original name (ESTOPOK_I)
+const hwName=`${inputName}_RAW`;// Generate the IF statement based on inversion
+if(input.isInverted){// Inverted: IF NOT hardware input THEN set memory bit
+lines.push(`IF (!${hwName}) THEN (${inputName}) ; Inverted`);}else{// Normal: IF hardware input THEN set memory bit
+lines.push(`IF ${hwName} THEN (${inputName})`);}}lines.push('; End Input Mapping');return lines;}/**
+     * Get validation issues
+     */getValidationIssues(){return[];}/**
+     * Get all data elements (none for this statement)
+     */getDataElements(){return[];}/**
+     * Clone the statement
+     */clone(){const cloned=new InputMappingStatement();cloned._comment=this._comment;cloned._enabled=this._enabled;return cloned;}/**
+     * Serialize to JSON
+     */toJSON(){return{type:'InputMappingStatement',..._utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__/* .DataUtilities */ .T.getStorageData(this,['_parentElement','_plcSource'])};}/**
+     * Deserialize from JSON
+     */fromJSON(data){_utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__/* .DataUtilities */ .T.loadStorageData(this,data,['_parentElement','_plcSource']);}}
+
+/***/ }),
+
+/***/ 5795:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  A: () => (/* binding */ TextField_TextField)
+});
+
+// EXTERNAL MODULE: ./node_modules/react/index.js
+var react = __webpack_require__(5043);
+// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
+var clsx = __webpack_require__(8387);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
+var composeClasses = __webpack_require__(8610);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/useId/useId.js
+var useId = __webpack_require__(5844);
+// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
+var styled = __webpack_require__(4535);
+// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
+var DefaultPropsProvider = __webpack_require__(8206);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Input/Input.js
+var Input = __webpack_require__(3360);
+// EXTERNAL MODULE: ./node_modules/@mui/material/FilledInput/FilledInput.js
+var FilledInput = __webpack_require__(5516);
+// EXTERNAL MODULE: ./node_modules/@mui/material/OutlinedInput/OutlinedInput.js + 1 modules
+var OutlinedInput = __webpack_require__(4050);
+// EXTERNAL MODULE: ./node_modules/@mui/material/InputLabel/InputLabel.js + 3 modules
+var InputLabel = __webpack_require__(9190);
+// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/FormControl.js + 1 modules
+var FormControl = __webpack_require__(3193);
+// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/formControlState.js
+var formControlState = __webpack_require__(4827);
+// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/useFormControl.js
+var useFormControl = __webpack_require__(5213);
+// EXTERNAL MODULE: ./node_modules/@mui/material/utils/memoTheme.js + 1 modules
+var memoTheme = __webpack_require__(6262);
+// EXTERNAL MODULE: ./node_modules/@mui/material/utils/capitalize.js
+var capitalize = __webpack_require__(6803);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
+var generateUtilityClasses = __webpack_require__(2532);
+// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
+var generateUtilityClass = __webpack_require__(2372);
+;// ./node_modules/@mui/material/FormHelperText/formHelperTextClasses.js
+
+
+function getFormHelperTextUtilityClasses(slot) {
+  return (0,generateUtilityClass/* default */.Ay)('MuiFormHelperText', slot);
+}
+const formHelperTextClasses = (0,generateUtilityClasses/* default */.A)('MuiFormHelperText', ['root', 'error', 'disabled', 'sizeSmall', 'sizeMedium', 'contained', 'focused', 'filled', 'required']);
+/* harmony default export */ const FormHelperText_formHelperTextClasses = (formHelperTextClasses);
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(579);
+;// ./node_modules/@mui/material/FormHelperText/FormHelperText.js
+'use client';
+
+var _span;
+
+
+
+
+
+
+
+
+
+
+
+
+const useUtilityClasses = ownerState => {
+  const {
+    classes,
+    contained,
+    size,
+    disabled,
+    error,
+    filled,
+    focused,
+    required
+  } = ownerState;
+  const slots = {
+    root: ['root', disabled && 'disabled', error && 'error', size && `size${(0,capitalize/* default */.A)(size)}`, contained && 'contained', focused && 'focused', filled && 'filled', required && 'required']
+  };
+  return (0,composeClasses/* default */.A)(slots, getFormHelperTextUtilityClasses, classes);
+};
+const FormHelperTextRoot = (0,styled/* default */.Ay)('p', {
+  name: 'MuiFormHelperText',
+  slot: 'Root',
+  overridesResolver: (props, styles) => {
+    const {
+      ownerState
+    } = props;
+    return [styles.root, ownerState.size && styles[`size${(0,capitalize/* default */.A)(ownerState.size)}`], ownerState.contained && styles.contained, ownerState.filled && styles.filled];
+  }
+})((0,memoTheme/* default */.A)(_ref => {
+  let {
+    theme
+  } = _ref;
+  return {
+    color: (theme.vars || theme).palette.text.secondary,
+    ...theme.typography.caption,
+    textAlign: 'left',
+    marginTop: 3,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    [`&.${FormHelperText_formHelperTextClasses.disabled}`]: {
+      color: (theme.vars || theme).palette.text.disabled
+    },
+    [`&.${FormHelperText_formHelperTextClasses.error}`]: {
+      color: (theme.vars || theme).palette.error.main
+    },
+    variants: [{
+      props: {
+        size: 'small'
+      },
+      style: {
+        marginTop: 4
+      }
+    }, {
+      props: _ref2 => {
+        let {
+          ownerState
+        } = _ref2;
+        return ownerState.contained;
+      },
+      style: {
+        marginLeft: 14,
+        marginRight: 14
+      }
+    }]
+  };
+}));
+const FormHelperText = /*#__PURE__*/react.forwardRef(function FormHelperText(inProps, ref) {
+  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
+    props: inProps,
+    name: 'MuiFormHelperText'
+  });
+  const {
+    children,
+    className,
+    component = 'p',
+    disabled,
+    error,
+    filled,
+    focused,
+    margin,
+    required,
+    variant,
+    ...other
+  } = props;
+  const muiFormControl = (0,useFormControl/* default */.A)();
+  const fcs = (0,formControlState/* default */.A)({
+    props,
+    muiFormControl,
+    states: ['variant', 'size', 'disabled', 'error', 'filled', 'focused', 'required']
+  });
+  const ownerState = {
+    ...props,
+    component,
+    contained: fcs.variant === 'filled' || fcs.variant === 'outlined',
+    variant: fcs.variant,
+    size: fcs.size,
+    disabled: fcs.disabled,
+    error: fcs.error,
+    filled: fcs.filled,
+    focused: fcs.focused,
+    required: fcs.required
+  };
+
+  // This issue explains why this is required: https://github.com/mui/material-ui/issues/42184
+  delete ownerState.ownerState;
+  const classes = useUtilityClasses(ownerState);
+  return /*#__PURE__*/(0,jsx_runtime.jsx)(FormHelperTextRoot, {
+    as: component,
+    className: (0,clsx/* default */.A)(classes.root, className),
+    ref: ref,
+    ...other,
+    ownerState: ownerState,
+    children: children === ' ' ?
+    // notranslate needed while Google Translate will not fix zero-width space issue
+    _span || (_span = /*#__PURE__*/(0,jsx_runtime.jsx)("span", {
+      className: "notranslate",
+      "aria-hidden": true,
+      children: "\u200B"
+    })) : children
+  });
+});
+ false ? 0 : void 0;
+/* harmony default export */ const FormHelperText_FormHelperText = (FormHelperText);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Select/Select.js + 4 modules
+var Select = __webpack_require__(2221);
+;// ./node_modules/@mui/material/TextField/textFieldClasses.js
+
+
+function getTextFieldUtilityClass(slot) {
+  return (0,generateUtilityClass/* default */.Ay)('MuiTextField', slot);
+}
+const textFieldClasses = (0,generateUtilityClasses/* default */.A)('MuiTextField', ['root']);
+/* harmony default export */ const TextField_textFieldClasses = ((/* unused pure expression or super */ null && (textFieldClasses)));
+// EXTERNAL MODULE: ./node_modules/@mui/material/utils/useSlot.js
+var useSlot = __webpack_require__(4162);
+;// ./node_modules/@mui/material/TextField/TextField.js
+'use client';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const variantComponent = {
+  standard: Input/* default */.A,
+  filled: FilledInput/* default */.A,
+  outlined: OutlinedInput/* default */.A
+};
+const TextField_useUtilityClasses = ownerState => {
+  const {
+    classes
+  } = ownerState;
+  const slots = {
+    root: ['root']
+  };
+  return (0,composeClasses/* default */.A)(slots, getTextFieldUtilityClass, classes);
+};
+const TextFieldRoot = (0,styled/* default */.Ay)(FormControl/* default */.A, {
+  name: 'MuiTextField',
+  slot: 'Root',
+  overridesResolver: (props, styles) => styles.root
+})({});
+
+/**
+ * The `TextField` is a convenience wrapper for the most common cases (80%).
+ * It cannot be all things to all people, otherwise the API would grow out of control.
+ *
+ * ## Advanced Configuration
+ *
+ * It's important to understand that the text field is a simple abstraction
+ * on top of the following components:
+ *
+ * - [FormControl](/material-ui/api/form-control/)
+ * - [InputLabel](/material-ui/api/input-label/)
+ * - [FilledInput](/material-ui/api/filled-input/)
+ * - [OutlinedInput](/material-ui/api/outlined-input/)
+ * - [Input](/material-ui/api/input/)
+ * - [FormHelperText](/material-ui/api/form-helper-text/)
+ *
+ * If you wish to alter the props applied to the `input` element, you can do so as follows:
+ *
+ * ```jsx
+ * const inputProps = {
+ *   step: 300,
+ * };
+ *
+ * return <TextField id="time" type="time" inputProps={inputProps} />;
+ * ```
+ *
+ * For advanced cases, please look at the source of TextField by clicking on the
+ * "Edit this page" button above. Consider either:
+ *
+ * - using the upper case props for passing values directly to the components
+ * - using the underlying components directly as shown in the demos
+ */
+const TextField = /*#__PURE__*/react.forwardRef(function TextField(inProps, ref) {
+  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
+    props: inProps,
+    name: 'MuiTextField'
+  });
+  const {
+    autoComplete,
+    autoFocus = false,
+    children,
+    className,
+    color = 'primary',
+    defaultValue,
+    disabled = false,
+    error = false,
+    FormHelperTextProps: FormHelperTextPropsProp,
+    fullWidth = false,
+    helperText,
+    id: idOverride,
+    InputLabelProps: InputLabelPropsProp,
+    inputProps: inputPropsProp,
+    InputProps: InputPropsProp,
+    inputRef,
+    label,
+    maxRows,
+    minRows,
+    multiline = false,
+    name,
+    onBlur,
+    onChange,
+    onFocus,
+    placeholder,
+    required = false,
+    rows,
+    select = false,
+    SelectProps: SelectPropsProp,
+    slots = {},
+    slotProps = {},
+    type,
+    value,
+    variant = 'outlined',
+    ...other
+  } = props;
+  const ownerState = {
+    ...props,
+    autoFocus,
+    color,
+    disabled,
+    error,
+    fullWidth,
+    multiline,
+    required,
+    select,
+    variant
+  };
+  const classes = TextField_useUtilityClasses(ownerState);
+  if (false) // removed by dead control flow
+{}
+  const id = (0,useId/* default */.A)(idOverride);
+  const helperTextId = helperText && id ? `${id}-helper-text` : undefined;
+  const inputLabelId = label && id ? `${id}-label` : undefined;
+  const InputComponent = variantComponent[variant];
+  const externalForwardedProps = {
+    slots,
+    slotProps: {
+      input: InputPropsProp,
+      inputLabel: InputLabelPropsProp,
+      htmlInput: inputPropsProp,
+      formHelperText: FormHelperTextPropsProp,
+      select: SelectPropsProp,
+      ...slotProps
+    }
+  };
+  const inputAdditionalProps = {};
+  const inputLabelSlotProps = externalForwardedProps.slotProps.inputLabel;
+  if (variant === 'outlined') {
+    if (inputLabelSlotProps && typeof inputLabelSlotProps.shrink !== 'undefined') {
+      inputAdditionalProps.notched = inputLabelSlotProps.shrink;
+    }
+    inputAdditionalProps.label = label;
+  }
+  if (select) {
+    // unset defaults from textbox inputs
+    if (!SelectPropsProp || !SelectPropsProp.native) {
+      inputAdditionalProps.id = undefined;
+    }
+    inputAdditionalProps['aria-describedby'] = undefined;
+  }
+  const [RootSlot, rootProps] = (0,useSlot/* default */.A)('root', {
+    elementType: TextFieldRoot,
+    shouldForwardComponentProp: true,
+    externalForwardedProps: {
+      ...externalForwardedProps,
+      ...other
+    },
+    ownerState,
+    className: (0,clsx/* default */.A)(classes.root, className),
+    ref,
+    additionalProps: {
+      disabled,
+      error,
+      fullWidth,
+      required,
+      color,
+      variant
+    }
+  });
+  const [InputSlot, inputProps] = (0,useSlot/* default */.A)('input', {
+    elementType: InputComponent,
+    externalForwardedProps,
+    additionalProps: inputAdditionalProps,
+    ownerState
+  });
+  const [InputLabelSlot, inputLabelProps] = (0,useSlot/* default */.A)('inputLabel', {
+    elementType: InputLabel/* default */.A,
+    externalForwardedProps,
+    ownerState
+  });
+  const [HtmlInputSlot, htmlInputProps] = (0,useSlot/* default */.A)('htmlInput', {
+    elementType: 'input',
+    externalForwardedProps,
+    ownerState
+  });
+  const [FormHelperTextSlot, formHelperTextProps] = (0,useSlot/* default */.A)('formHelperText', {
+    elementType: FormHelperText_FormHelperText,
+    externalForwardedProps,
+    ownerState
+  });
+  const [SelectSlot, selectProps] = (0,useSlot/* default */.A)('select', {
+    elementType: Select/* default */.A,
+    externalForwardedProps,
+    ownerState
+  });
+  const InputElement = /*#__PURE__*/(0,jsx_runtime.jsx)(InputSlot, {
+    "aria-describedby": helperTextId,
+    autoComplete: autoComplete,
+    autoFocus: autoFocus,
+    defaultValue: defaultValue,
+    fullWidth: fullWidth,
+    multiline: multiline,
+    name: name,
+    rows: rows,
+    maxRows: maxRows,
+    minRows: minRows,
+    type: type,
+    value: value,
+    id: id,
+    inputRef: inputRef,
+    onBlur: onBlur,
+    onChange: onChange,
+    onFocus: onFocus,
+    placeholder: placeholder,
+    inputProps: htmlInputProps,
+    slots: {
+      input: slots.htmlInput ? HtmlInputSlot : undefined
+    },
+    ...inputProps
+  });
+  return /*#__PURE__*/(0,jsx_runtime.jsxs)(RootSlot, {
+    ...rootProps,
+    children: [label != null && label !== '' && /*#__PURE__*/(0,jsx_runtime.jsx)(InputLabelSlot, {
+      htmlFor: id,
+      id: inputLabelId,
+      ...inputLabelProps,
+      children: label
+    }), select ? /*#__PURE__*/(0,jsx_runtime.jsx)(SelectSlot, {
+      "aria-describedby": helperTextId,
+      id: id,
+      labelId: inputLabelId,
+      value: value,
+      input: InputElement,
+      ...selectProps,
+      children: children
+    }) : InputElement, helperText && /*#__PURE__*/(0,jsx_runtime.jsx)(FormHelperTextSlot, {
+      id: helperTextId,
+      ...formHelperTextProps,
+      children: helperText
+    })]
+  });
+});
+ false ? 0 : void 0;
+/* harmony default export */ const TextField_TextField = (TextField);
+
+/***/ }),
+
+/***/ 5829:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -43649,6 +45429,8 @@ var CloudUpload = __webpack_require__(3374);
 }), 'ExpandLess'));
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/ExpandMore.js
 var esm_ExpandMore = __webpack_require__(8293);
+// EXTERNAL MODULE: ./node_modules/@mui/material/Chip/Chip.js + 2 modules
+var Chip_Chip = __webpack_require__(3845);
 // EXTERNAL MODULE: ./node_modules/@mui/material/Tooltip/Tooltip.js + 1 modules
 var Tooltip_Tooltip = __webpack_require__(7739);
 // EXTERNAL MODULE: ./node_modules/@mui/material/List/List.js + 1 modules
@@ -43714,8 +45496,6 @@ const tooltipContent=/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{s
  */function getIncompleteChecklistCount(checklistItemNames){const library=SetupChecklistLibrary.Instance;let itemsToCheck;if(checklistItemNames&&checklistItemNames.length>0){itemsToCheck=checklistItemNames.map(name=>library.getItemByName(name)).filter(item=>item!==undefined&&item.shouldInclude());}else{itemsToCheck=library.items;}return itemsToCheck.filter(item=>!item.isCompleted()).length;}
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/RadioButtonUnchecked.js
 var RadioButtonUnchecked = __webpack_require__(3485);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Chip/Chip.js + 2 modules
-var Chip_Chip = __webpack_require__(3845);
 ;// ./src/components/Common/SetupChecklistIndicator.tsx
 /**
  * Setup Checklist Indicator Component
@@ -44680,6 +46460,8 @@ var ToggleButton = __webpack_require__(4511);
 var MachineNameAndBoardChecklistItem = __webpack_require__(3670);
 // EXTERNAL MODULE: ./src/data/Common/UnitOfMeasure.ts
 var UnitOfMeasure = __webpack_require__(4004);
+// EXTERNAL MODULE: ./src/data/DataManager.ts
+var data_DataManager = __webpack_require__(3348);
 // EXTERNAL MODULE: ./src/data/Machine/BoardType.ts
 var BoardType = __webpack_require__(8833);
 // EXTERNAL MODULE: ./src/data/Machine/XDirection.ts
@@ -44693,8 +46475,11 @@ const[availableMachines,setAvailableMachines]=(0,react.useState)([]);const[curre
 if(!library.getItemByName(checklistItemName)){const checklistItem=new MachineNameAndBoardChecklistItem/* MachineNameAndBoardChecklistItem */.P();library.addItem(checklistItem);}},[]);// Load available machines on mount
 (0,react.useEffect)(()=>{const loadMachines=async()=>{try{const machines=await Machine/* Machine */.u5.getInstance().setup.GetMachineNames();const current=await Machine/* Machine */.u5.getInstance().setup.GetCurrentMachineName();setAvailableMachines(machines);setCurrentMachine(current||'');// If no current machine set, show error
 if(!current||current.trim()===''){setMachineNameError('Machine name is required');}}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to load machine names:',error);}};loadMachines();},[]);// Handle machine selection change
-const handleMachineChange=async machineName=>{if(loadingMachines)return;try{setLoadingMachines(true);setMachineNameError('');await Machine/* Machine */.u5.getInstance().setup.SetCurrentMachine(machineName);setCurrentMachine(machineName);setIsCustomMachine(false);setCustomMachineName('');data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Switched to machine: ${machineName} - Data reloaded`);}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to change machine:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ Failed to switch machine: ${error}`);}finally{setLoadingMachines(false);}};// Handle custom machine name save
-const handleSaveCustomMachine=async()=>{const machineName=customMachineName.trim();if(!machineName){setMachineNameError('Machine name cannot be empty');return;}if(machineName.length<3){setMachineNameError('Machine name must be at least 3 characters');return;}await handleMachineChange(machineName);};// Toggle between dropdown and custom input
+const handleMachineChange=async function(machineName){let isNewMachine=arguments.length>1&&arguments[1]!==undefined?arguments[1]:false;if(loadingMachines)return;const operation=ConfigurationState.ConfigurationState.Instance.startLongRunningOperation(isNewMachine?'Initializing New Machine':'Switching Machine',`Setting machine to "${machineName}"...`);try{setLoadingMachines(true);setMachineNameError('');await Machine/* Machine */.u5.getInstance().setup.SetCurrentMachine(machineName);// Refresh the machine names list so new machines appear in the dropdown immediately
+const updatedMachines=await Machine/* Machine */.u5.getInstance().setup.GetMachineNames();setAvailableMachines(updatedMachines);// New machine: reset all manually-confirmed checklist items so the
+// checklist starts fresh for the new machine's configuration.
+if(isNewMachine){Checklist_SetupChecklistLibrary/* SetupChecklistLibrary */.d.Instance.resetAllManualConfirmations();}ConfigurationState.ConfigurationState.Instance.updateLongRunningOperationMessage('Reloading all data from backend...');await data_DataManager.DataManager.Instance.reloadAllData();setCurrentMachine(machineName);setIsCustomMachine(false);setCustomMachineName('');const action=isNewMachine?'initialized':'loaded';data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Machine "${machineName}" ${action}. To reset data for this machine, go to Settings → Data Reset.`);}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to change machine:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ Failed to switch machine: ${error}`);}finally{ConfigurationState.ConfigurationState.Instance.completeLongRunningOperation();setLoadingMachines(false);}};// Handle custom machine name save
+const handleSaveCustomMachine=async()=>{const machineName=customMachineName.trim();if(!machineName){setMachineNameError('Machine name cannot be empty');return;}if(machineName.length<3){setMachineNameError('Machine name must be at least 3 characters');return;}const confirmed=await ConfirmDialogManager/* ConfirmDialogManager */.E.Instance.showConfirm({title:'Initialize New Machine',message:`Creating a new machine "${machineName}" will initialize a fresh configuration and reload all data from the backend.\n\nTo reset specific data (PLC programs, tools, fixtures, materials, etc.), go to Settings → Data Reset after initialization.\n\nThis cannot be undone.`,confirmText:'Initialize Machine',severity:'warning'});if(!confirmed)return;await handleMachineChange(machineName,true);};// Toggle between dropdown and custom input
 const handleToggleCustomMachine=()=>{setIsCustomMachine(!isCustomMachine);setCustomMachineName('');setMachineNameError('');};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Grid_Grid/* default */.Ay,{container:true,spacing:3,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Machine Name and Board Type"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Turn Off Test Mode"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,md:6,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3,height:'100%'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",gutterBottom:true,children:"Machine Name"}),!isCustomMachine?/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,disabled:loadingMachines,error:!!machineNameError&&!currentMachine,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"Select Machine"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Select/* default */.A,{value:currentMachine,onChange:e=>handleMachineChange(e.target.value),label:"Select Machine",children:availableMachines.map(machine=>/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:machine,children:machine},machine))})]}),machineNameError&&!currentMachine&&/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"error",sx:{mt:1,display:'block'},children:machineNameError})]}):/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{fullWidth:true,label:"New Machine Name",value:customMachineName,onChange:e=>{setCustomMachineName(e.target.value);setMachineNameError('');},onKeyPress:e=>{if(e.key==='Enter'){handleSaveCustomMachine();}},error:!!machineNameError,helperText:machineNameError||'Enter a name for the new machine configuration',disabled:loadingMachines}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"contained",onClick:handleSaveCustomMachine,disabled:loadingMachines||!customMachineName.trim(),fullWidth:true,sx:{mt:2},children:"Save New Machine"})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"text",onClick:handleToggleCustomMachine,disabled:loadingMachines,fullWidth:true,sx:{mt:2},children:isCustomMachine?'Select Existing Machine':'Create New Machine'}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"text.secondary",sx:{mt:2,display:'block'},children:isCustomMachine?'Enter a unique name for this machine configuration.':'Select from existing machines or create a new one. Changing machines will reload all data.'})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,md:6,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3,height:'100%'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",gutterBottom:true,children:"Control Board Setup"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:3},children:"Configure the CNC control board type and expansion boards. This determines available I/O ports and features."}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['boardType','expansionBoardCount'],control:()=>{const machine=Machine_MachineData/* MachineData */.O.Instance;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"Board Type"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{value:machine.boardType,onChange:e=>machine.boardType=e.target.value,label:"Board Type",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:BoardType/* BoardType */.j.Acorn,children:"Acorn"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:BoardType/* BoardType */.j.Acorn6,children:"Acorn6"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:BoardType/* BoardType */.j.Oak,children:"Oak"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:BoardType/* BoardType */.j.Hickory,children:"Hickory"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:BoardType/* BoardType */.j.Allin1DC,children:"Allin1DC"})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:1},children:"Expansion Boards"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ToggleButtonGroup/* default */.A,{value:machine.expansionBoardCount,exclusive:true,onChange:(e,value)=>{if(value!==null){machine.expansionBoardCount=value;}},fullWidth:true,sx:{mb:0.5,'& .MuiToggleButton-root.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleButton/* default */.A,{value:0,children:"0"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleButton/* default */.A,{value:1,children:"1"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleButton/* default */.A,{value:2,children:"2"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleButton/* default */.A,{value:3,children:"3"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleButton/* default */.A,{value:4,children:"4"})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"text.secondary",children:"Number of expansion boards connected"})]})]});}},"board-configuration-observer")]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",gutterBottom:true,children:"Coordinate System Settings"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:2},children:"General machine configuration settings that apply globally to all machine operations. These settings define the fundamental coordinate system orientation and units of measurement."}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Grid_Grid/* default */.Ay,{container:true,spacing:3,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Grid_Grid/* default */.Ay,{item:true,xs:12,md:6,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['unitOfMeasure'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,margin:"normal",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"Unit of Measure"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{value:Machine_MachineData/* MachineData */.O.Instance.unitOfMeasure,onChange:e=>Machine_MachineData/* MachineData */.O.Instance.unitOfMeasure=e.target.value,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:UnitOfMeasure/* UnitOfMeasure */.y.Inches,children:"Inches"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:UnitOfMeasure/* UnitOfMeasure */.y.Millimeters,children:"Millimeters"})]})]})},"general-unit-of-measure"),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['zLocation'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,margin:"normal",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"Z Zero Location"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{value:Machine_MachineData/* MachineData */.O.Instance.zLocation,onChange:e=>Machine_MachineData/* MachineData */.O.Instance.zLocation=e.target.value,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:ZZeroLocation/* ZZeroLocation */.C.Top,children:"Top"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:ZZeroLocation/* ZZeroLocation */.C.Bed,children:"Bed"})]})]})},"general-z-location")]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,md:6,children:/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['xDirection'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,margin:"normal",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"X Direction"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{value:Machine_MachineData/* MachineData */.O.Instance.xDirection,onChange:e=>Machine_MachineData/* MachineData */.O.Instance.xDirection=e.target.value,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:XDirection/* XDirection */.g.Across,children:"Across"}),/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:XDirection/* XDirection */.g.Side,children:"Side"})]})]})},"general-x-direction")})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",gutterBottom:true,children:"G-Code Settings"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:2},children:"Configure how G-code programs are handled and executed."}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:data_ConfigurationData/* ConfigurationData */.J.Instance,properties:['previewGCode'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsx)(FormControlLabel_FormControlLabel/* default */.A,{control:/*#__PURE__*/(0,jsx_runtime.jsx)(Switch_Switch/* default */.A,{checked:data_ConfigurationData/* ConfigurationData */.J.Instance.previewGCode,onChange:e=>data_ConfigurationData/* ConfigurationData */.J.Instance.previewGCode=e.target.checked}),label:"Preview G-Code Before Execution"})},"general-preview-gcode"),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"text.secondary",sx:{mt:1,display:'block'},children:"When enabled, displays a preview dialog before running G-code programs, allowing you to review the code and make any necessary adjustments."})]})})]});}
 ;// ./src/components/Views/Settings/sections/InputTooltipsSection.tsx
 function InputTooltipsSection(){const config=data_ConfigurationData/* ConfigurationData */.J.Instance;return/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{container:true,spacing:3,children:/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,md:6,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",gutterBottom:true,children:"Tooltip Settings"}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:config,properties:['showNumberInputTooltips','numberInputTooltipCount'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(FormControlLabel_FormControlLabel/* default */.A,{control:/*#__PURE__*/(0,jsx_runtime.jsx)(Switch_Switch/* default */.A,{checked:config.showNumberInputTooltips,onChange:e=>config.showNumberInputTooltips=e.target.checked}),label:"Show Number Input Tooltips"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{mt:2},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",gutterBottom:true,children:["Remaining tooltip shows: ",config.numberInputTooltipCount]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"outlined",onClick:()=>config.resetNumberInputTooltipCount(),sx:{mt:1},children:"Reset Tooltip Count"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",display:"block",sx:{mt:1,color:'text.secondary'},children:"Tooltips will stop showing after being displayed 10 times. Use this button to reset the counter."})]})]})},"input-tooltips-settings")]})})});}
@@ -44846,6 +46631,22 @@ function VerticalTableSection(){const machine=Machine_MachineData/* MachineData 
 ;// ./src/components/Views/Settings/MachineDataTab.tsx
 const MachineDataTab=()=>{const[simulatorViewData]=(0,react.useState)(()=>ViewDataFactory/* ViewDataFactory */.W.createForContext(ViewDataFactory/* ViewNames */.A.MACHINE_SETTINGS));// State for managing which accordion sections are expanded
 const[expandedSections,setExpandedSections]=(0,react.useState)({features:true,base:false,railing:false,bed:false,verticalTable:false,spindle:false,gantry:false,laser:false,laserPointer:false,drillHead:false,atcSetup:false,manualToolSetup:false,rotary:false,touchpad:false});const handleSectionToggle=section=>{setExpandedSections(prev=>({...prev,[section]:!prev[section]}));};return/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveMultiProperties/* ObserveMultiProperties */.P,{listenTo:[{object:Machine_MachineData/* MachineData */.O.Instance,properties:['hasVerticalTable','hasLaser','hasLaserPointer','hasDrillHead','hasATC','hasFixedTouchPlate','rotaryAxis']}],control:()=>{const machine=Machine_MachineData/* MachineData */.O.Instance;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:3,height:'calc(100vh - 200px)'},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1,overflowY:'auto',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Simulator Setup"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{container:true,spacing:3,sx:{mb:3},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Simulator Configuration"})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",sx:{mb:3},children:"Machine Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.base,onChange:()=>handleSectionToggle('base'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Base"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Machine foundation/base platform dimensions measured from the base origin point. These dimensions define the physical footprint and height of the machine's base structure that all other components mount to."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(BaseSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.railing,onChange:()=>handleSectionToggle('railing'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Railing"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Guide rail dimensions measured from the base. These rails define the X and Y axis travel paths for the gantry system. Position can be inside or outside the bed area."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(RailingSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.bed,onChange:()=>handleSectionToggle('bed'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Bed"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Work surface dimensions measured from the base platform. The bed is the work surface where materials are mounted and machined. These dimensions define the usable work area."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(BedSection,{})]})]}),machine.hasVerticalTable&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.verticalTable,onChange:()=>handleSectionToggle('verticalTable'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Vertical Table"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Vertical work holding table dimensions measured from the bed surface. The vertical table allows for side mounting of workpieces and can be positioned at various angles for complex machining operations."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(VerticalTableSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.spindle,onChange:()=>handleSectionToggle('spindle'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Spindle"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Spindle assembly dimensions measured from the gantry mounting point. These settings define the cutting tool spindle size and position, including the tool holder that holds cutting tools."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(SpindleSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.gantry,onChange:()=>handleSectionToggle('gantry'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Gantry"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Moving gantry assembly dimensions. Gantry Height is measured from the top of the bed. The gantry carries the spindle and moves along the X and Y axes above the work surface. Extension values define how far the gantry bar extends beyond the outside edges of the railings."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(GantrySection,{})]})]}),machine.hasLaser&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.laser,onChange:()=>handleSectionToggle('laser'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Laser"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Laser attachment with box-shaped housing. Configure the laser offset from the spindle and its physical dimensions for collision detection."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(LaserSection,{})]})]}),machine.hasLaserPointer&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.laserPointer,onChange:()=>handleSectionToggle('laserPointer'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Laser Pointer"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Laser pointer with cylindrical shape. Configure the laser pointer offset from the spindle and its physical dimensions for collision detection."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(LaserPointerSection,{})]})]}),machine.hasDrillHead&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.drillHead,onChange:()=>handleSectionToggle('drillHead'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Drill Head"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Multi-bit drill head attachment. Configure the drill head offset from spindle to the back left corner, its physical dimensions, and drill bit positions."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(DrillHeadSection,{})]})]}),machine.hasATC&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.atcSetup,onChange:()=>handleSectionToggle('atcSetup'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"ATC Setup"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(ATCSetupSection,{})})]}),machine.rotaryAxis!==RotaryAxis/* RotaryAxis */.t.None&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.rotary,onChange:()=>handleSectionToggle('rotary'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Rotary"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(RotarySection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{expanded:expandedSections.touchpad,onChange:()=>handleSectionToggle('touchpad'),sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Touch Pad"})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Reference Point:"})," Touch probe/touch pad assembly dimensions measured from the bed surface. The touch pad is used for tool length measurement and workpiece height detection during setup and operation."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(TouchPadSection,{})]})]})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{flex:1,minHeight:0,display:'flex',flexDirection:'column'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(FullSizeCNCViewer/* FullSizeCNCViewer */.j,{simulatorViewData:simulatorViewData,machineState:data_MachineStateData.MachineStateData.Instance,machineData:machine,job:ConfigurationState.ConfigurationState.Instance.currentJob||Job.Job.createTestJob()})})]});}},"machine-data-tab");};
+;// ./node_modules/@mui/icons-material/esm/Computer.js
+"use client";
+
+
+
+/* harmony default export */ const Computer = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
+  d: "M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2zM4 6h16v10H4z"
+}), 'Computer'));
+// EXTERNAL MODULE: ./node_modules/@mui/material/ListItem/ListItem.js + 1 modules
+var ListItem = __webpack_require__(7918);
+;// ./src/components/Views/Settings/MachineManagerTab.tsx
+function MachineManagerTab(){const colors=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;const[machines,setMachines]=(0,react.useState)([]);const[currentMachine,setCurrentMachine]=(0,react.useState)('');const[loadingList,setLoadingList]=(0,react.useState)(false);// Delete dialog state
+const[deleteDialogOpen,setDeleteDialogOpen]=(0,react.useState)(false);const[machineToDelete,setMachineToDelete]=(0,react.useState)('');const[switchToMachine,setSwitchToMachine]=(0,react.useState)('');const[deleting,setDeleting]=(0,react.useState)(false);(0,react.useEffect)(()=>{loadMachines();},[]);const loadMachines=async()=>{try{setLoadingList(true);const names=await Machine/* Machine */.u5.getInstance().setup.GetMachineNames();const current=await Machine/* Machine */.u5.getInstance().setup.GetCurrentMachineName();setMachines(names);setCurrentMachine(current||'');}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to load machine names:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to load machine list');}finally{setLoadingList(false);}};const handleDeleteClick=machineName=>{setMachineToDelete(machineName);// Pre-select a different machine to switch to if deleting the active one
+const others=machines.filter(m=>m!==machineName);setSwitchToMachine(others[0]||'');setDeleteDialogOpen(true);};const isDeletingCurrentMachine=machineToDelete===currentMachine;const otherMachines=machines.filter(m=>m!==machineToDelete);const canConfirm=!isDeletingCurrentMachine||isDeletingCurrentMachine&&switchToMachine!=='';const handleConfirmDelete=async()=>{setDeleteDialogOpen(false);setDeleting(true);const operation=ConfigurationState.ConfigurationState.Instance.startLongRunningOperation('Deleting Machine',`Deleting machine "${machineToDelete}"...`);try{await Machine/* Machine */.u5.getInstance().setup.DeleteMachine(machineToDelete,isDeletingCurrentMachine?switchToMachine:undefined);if(isDeletingCurrentMachine){ConfigurationState.ConfigurationState.Instance.updateLongRunningOperationMessage('Reloading data for new machine...');await data_DataManager.DataManager.Instance.reloadAllData();}// Refresh machine list
+const updatedNames=await Machine/* Machine */.u5.getInstance().setup.GetMachineNames();const updatedCurrent=await Machine/* Machine */.u5.getInstance().setup.GetCurrentMachineName();setMachines(updatedNames);setCurrentMachine(updatedCurrent||'');data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Machine "${machineToDelete}" deleted`);}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to delete machine:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ Failed to delete machine "${machineToDelete}"`);// Reload list to ensure consistent state
+await loadMachines();}finally{ConfigurationState.ConfigurationState.Instance.completeLongRunningOperation();setDeleting(false);setMachineToDelete('');}};const handleCancelDelete=()=>{setDeleteDialogOpen(false);setMachineToDelete('');setSwitchToMachine('');};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Machine Manager"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:3},children:"Manage machine configurations stored on the backend. Deleting a machine removes all its data from the cloud (configs, jobs, G-code files) but does not affect local files."}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",children:"Available Machines"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"outlined",size:"small",onClick:loadMachines,disabled:loadingList||deleting,children:"Refresh"})]}),machines.length===0&&!loadingList&&/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{color:"text.secondary",sx:{py:3,textAlign:'center'},children:"No machines found"}),/*#__PURE__*/(0,jsx_runtime.jsx)(List/* default */.A,{disablePadding:true,children:machines.map((machineName,index)=>{const isActive=machineName===currentMachine;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[index>0&&/*#__PURE__*/(0,jsx_runtime.jsx)(Divider_Divider/* default */.A,{}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItem/* default */.Ay,{sx:{py:1.5,backgroundColor:isActive?`${colors.primaryColor}10`:undefined,borderLeft:isActive?`4px solid ${colors.primaryColor}`:'4px solid transparent'},secondaryAction:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{edge:"end",color:"error",onClick:()=>handleDeleteClick(machineName),disabled:deleting||machines.length<=1,title:machines.length<=1?'Cannot delete the only machine':`Delete "${machineName}"`,children:/*#__PURE__*/(0,jsx_runtime.jsx)(Delete/* default */.A,{})}),children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemIcon/* default */.A,{sx:{minWidth:40},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Computer,{sx:{color:isActive?colors.primaryColor:'text.secondary'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body1",fontWeight:isActive?600:400,children:machineName}),isActive&&/*#__PURE__*/(0,jsx_runtime.jsx)(Chip_Chip/* default */.A,{label:"Active",size:"small",sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,height:20,fontSize:'0.7rem'}})]})})]})]},machineName);})}),machines.length<=1&&machines.length>0&&/*#__PURE__*/(0,jsx_runtime.jsx)(Alert_Alert/* default */.A,{severity:"info",sx:{mt:2},children:"You must have at least one machine. Create another machine before deleting this one."})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:deleteDialogOpen,onClose:handleCancelDelete,maxWidth:"sm",fullWidth:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogTitle_DialogTitle/* default */.A,{sx:{display:'flex',alignItems:'center',gap:1,backgroundColor:'#d32f2f',color:'white',py:2,px:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Warning/* default */.A,{}),"Delete Machine"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(DialogContent_DialogContent/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{mt:3,display:'flex',flexDirection:'column',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body1",children:["Are you sure you want to delete ",/*#__PURE__*/(0,jsx_runtime.jsxs)("strong",{children:["\"",machineToDelete,"\""]}),"?"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Alert_Alert/* default */.A,{severity:"warning",children:"This will permanently delete all backend data for this machine \u2014 configurations, jobs, and G-code files stored in the cloud. Local files are not affected. This cannot be undone."}),isDeletingCurrentMachine&&/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Alert_Alert/* default */.A,{severity:"error",children:"This is the currently active machine. You must select another machine to switch to before deleting it."}),/*#__PURE__*/(0,jsx_runtime.jsxs)(FormControl/* default */.A,{fullWidth:true,required:true,error:switchToMachine==='',children:[/*#__PURE__*/(0,jsx_runtime.jsx)(InputLabel/* default */.A,{children:"Switch to Machine"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Select/* default */.A,{value:switchToMachine,onChange:e=>setSwitchToMachine(e.target.value),label:"Switch to Machine",children:otherMachines.map(name=>/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:name,children:name},name))})]})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{sx:{p:2,gap:1,justifyContent:'flex-end',borderTop:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleCancelDelete,variant:"outlined",children:"Cancel"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleConfirmDelete,variant:"contained",color:"error",disabled:!canConfirm,startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(Delete/* default */.A,{}),children:"Delete Machine"})]})]})]});}
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Clear.js
 var Clear = __webpack_require__(79);
 // EXTERNAL MODULE: ./node_modules/@mui/material/ButtonGroup/ButtonGroup.js + 1 modules
@@ -44961,8 +46762,6 @@ const FormGroup_FormGroup = /*#__PURE__*/react.forwardRef(function FormGroup(inP
 });
  false ? 0 : void 0;
 /* harmony default export */ const material_FormGroup_FormGroup = (FormGroup_FormGroup);
-// EXTERNAL MODULE: ./src/data/DataManager.ts
-var data_DataManager = __webpack_require__(3348);
 // EXTERNAL MODULE: ./src/data/Common/SimulatorView.ts
 var SimulatorView = __webpack_require__(7866);
 // EXTERNAL MODULE: ./src/data/DataFileConstants.ts
@@ -45039,8 +46838,6 @@ var esm_Settings = __webpack_require__(2069);
 }), 'DriveFileMove'));
 // EXTERNAL MODULE: ./node_modules/@mui/material/Menu/Menu.js + 3 modules
 var Menu = __webpack_require__(688);
-// EXTERNAL MODULE: ./node_modules/@mui/material/ListItem/ListItem.js + 1 modules
-var ListItem = __webpack_require__(7918);
 ;// ./node_modules/@mui/icons-material/esm/LocationOn.js
 "use client";
 
@@ -45238,13 +47035,10 @@ stage.collapsed=false;block.collapsed=false;// Expand parent blocks if this is a
 const expandParents=(blocks,targetBlock)=>{for(const b of blocks){if(b.subBlocks&&b.subBlocks.length>0){if(b.subBlocks.includes(targetBlock)){b.collapsed=false;return true;}if(expandParents(b.subBlocks,targetBlock)){b.collapsed=false;return true;}}}return false;};expandParents(stage.blocks,block);// Trigger state update to reload UI
 StateManager.StateManager.propertyChanged(program,'stages');// Flash highlight effect on the block without scrolling
 setTimeout(()=>{const blockId=`plc-block-${stageName}-${blockName}`;const element=document.getElementById(blockId);if(element){// Flash highlight effect without scrolling
-element.style.transition='box-shadow 0.3s';element.style.boxShadow=`0 0 15px 5px ${data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.primaryColor}`;setTimeout(()=>{element.style.boxShadow='';},1000);}},100);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Navigated to ${stageName} › ${blockName}`);};// Load default program from server or public files
-const loadDefaultProgram=async()=>{try{// Try to get from server API first (Centroid mode)
-try{utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,'Attempting to load default PLC from backend API...');const machine=Machine/* Machine */.u5.getInstance();const jsonText=await machine.setup.GetDefaultPLC();const json=JSON.parse(jsonText);program.fromJSON(json);utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,'✓ Successfully loaded default PLC from backend API');// Trigger state update to reload UI
-StateManager.StateManager.propertyChanged(program,'stages');data_UserMessageQueue.UserMessageQueue.Instance.addMessage('✓ PLC program reset from backend API');return;}catch(apiError){// Fall back to public files if API fails (simulator mode)
-utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,'Backend API unavailable, falling back to public files. Reason:',apiError);}// Fallback: Load from public files
-const filename=programType===PLCUtilities/* PLCProgramType */.wM.SystemDefault?'systemdefault.json':'system.json';utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,`Loading default PLC from public file: ${filename}`);const response=await fetch(`/${filename}`);if(!response.ok){throw new Error(`Failed to fetch ${filename}`);}const json=await response.json();program.fromJSON(json);utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,`✓ Successfully loaded default PLC from public file: ${filename}`);// Trigger state update to reload UI
-StateManager.StateManager.propertyChanged(program,'stages');data_UserMessageQueue.UserMessageQueue.Instance.addMessage('✓ PLC program reset from public file (simulator mode)');}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to load default PLC program from both backend API and public files:',error);throw error;}};// Reset program to defaults
+element.style.transition='box-shadow 0.3s';element.style.boxShadow=`0 0 15px 5px ${data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.primaryColor}`;setTimeout(()=>{element.style.boxShadow='';},1000);}},100);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Navigated to ${stageName} › ${blockName}`);};// Load default program — delegates to DataManager based on program type:
+// SystemDefault → fetch from backend API (falls back to embedded file when offline)
+// System        → reset to a blank program (never fetches from API)
+const loadDefaultProgram=async()=>{if(programType===PLCUtilities/* PLCProgramType */.wM.SystemDefault){await data_DataManager.DataManager.Instance.resetPLCSystemDefaultOnly();}else{await data_DataManager.DataManager.Instance.resetPLCSystemOnly();}};// Reset program to defaults
 const handleResetProgram=async()=>{const programName=programType===PLCUtilities/* PLCProgramType */.wM.SystemDefault?'System Default':'System';const confirmed=await ConfirmDialogManager/* ConfirmDialogManager */.E.Instance.showConfirm({title:'Reset Program',message:`Are you sure you want to reset the ${programName} PLC program to factory defaults? This will remove all your custom stages, blocks, and statements. This action cannot be undone.`,confirmText:'Reset to Defaults',severity:'warning'});if(confirmed){try{await loadDefaultProgram();}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to reset PLC program:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to reset PLC program');}}};// Save as default PLC (only for SystemDefault program)
 const handleSaveAsDefault=async()=>{if(programType!==PLCUtilities/* PLCProgramType */.wM.SystemDefault){data_UserMessageQueue.UserMessageQueue.Instance.addMessage('⚠ Only System Default PLC can be saved as default');return;}try{// Get current program JSON
 const jsonData=JSON.stringify(program.toJSON(),null,2);// Store via Machine API with hardcoded values
@@ -45310,6 +47104,31 @@ parentBlock.addSubBlock(newSubBlock);}
 function DefaultPLCTab(){return/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{height:'100%',display:'flex',flexDirection:'column'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(PLCEditor,{programType:PLCUtilities/* PLCProgramType */.wM.SystemDefault})});}
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Edit.js
 var Edit = __webpack_require__(3560);
+;// ./src/utils/IONumberCalculator.ts
+/**
+ * Centroid board I/O layout constants
+ * Acorn  base board: pins 1-8   (gap 9-32,  expansion boards start at 33, 16 pins each)
+ * Acorn6 base board: pins 1-16  (gap 17-64, expansion boards start at 65, 16 pins each)
+ * Each expansion board adds 16 I/O pins
+ */const ACORN_BASE_END=8;const ACORN_EXPANSION_START=33;const ACORN6_BASE_END=16;const ACORN6_EXPANSION_START=65;const PINS_PER_EXPANSION_BOARD=16;/**
+ * Compute the full list of available I/O pin numbers for the given board type
+ * and number of installed expansion boards.
+ *
+ * Acorn:
+ *   base          → 1-8
+ *   + 1 exp board → 33-48   (gap: 9-32)
+ *   + 2 exp boards→ 33-64
+ *   ...
+ *
+ * Acorn6:
+ *   base          → 1-16
+ *   + 1 exp board → 65-80   (gap: 17-64)
+ *   ...
+ *
+ * All other board types return only the base range (1-8).
+ */function getAvailableIONumbers(boardType,expansionBoardCount){const isAcorn6=boardType===BoardType/* BoardType */.j.Acorn6;const baseEnd=isAcorn6?ACORN6_BASE_END:ACORN_BASE_END;const expansionStart=isAcorn6?ACORN6_EXPANSION_START:ACORN_EXPANSION_START;const numbers=[];// Base board pins
+for(let i=1;i<=baseEnd;i++){numbers.push(i);}// Expansion board pins
+const count=Math.max(0,Math.floor(expansionBoardCount));for(let board=0;board<count;board++){const start=expansionStart+board*PINS_PER_EXPANSION_BOARD;for(let pin=start;pin<start+PINS_PER_EXPANSION_BOARD;pin++){numbers.push(pin);}}return numbers;}
 // EXTERNAL MODULE: ./src/centroid/plc/data/DeclarationTooltipBuilder.tsx
 var DeclarationTooltipBuilder = __webpack_require__(9120);
 ;// ./src/centroid/plc/components/SymbolNameWithUsageTooltip.tsx
@@ -45343,7 +47162,7 @@ onClose();}}})]});}function CustomInputDialog(_ref2){let{open,input,availableInp
 let name=input.centroidName;if(name.endsWith('_I')){name=name.slice(0,-2);}setEditingCentroidName(name);setInputNumber(input.number);}else{setWorkingInput(new PLCInput/* PLCInput */.I());setEditingCentroidName('');setInputNumber(null);}}},[open,input]);const handleCentroidNameFocus=()=>{// Remove _I suffix when focusing
 let name=editingCentroidName;if(name.endsWith('_I')){name=name.slice(0,-2);}setEditingCentroidName(name);};const handleCentroidNameBlur=()=>{// Add _I suffix and uppercase when leaving field
 let name=editingCentroidName.trim();if(name){name=name.toUpperCase();if(!name.endsWith('_I')){name=name+'_I';}workingInput.centroidName=name;setEditingCentroidName(name);}};const handleSave=()=>{if(!workingInput.name.trim()){return;}if(!editingCentroidName.trim()){return;}// Ensure centroid name has _I suffix
-let finalName=editingCentroidName.trim().toUpperCase();if(!finalName.endsWith('_I')){finalName=finalName+'_I';}workingInput.centroidName=finalName;onSave(workingInput,inputNumber);};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:onClose,maxWidth:"sm",fullWidth:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogTitle_DialogTitle/* default */.A,{children:input?'Edit Custom Input':'Add Custom Input'}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:workingInput,properties:['centroidName','name','activeText','inactiveText','isInverted'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogContent_DialogContent/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:2,mt:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Centroid Name",value:editingCentroidName,onChange:e=>setEditingCentroidName(e.target.value),onFocus:handleCentroidNameFocus,onBlur:handleCentroidNameBlur,fullWidth:true,required:true,helperText:"PLC variable name. _I suffix will be added automatically."}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Display Name",value:workingInput.name,onChange:e=>workingInput.name=e.target.value,fullWidth:true,required:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Active Text",value:workingInput.activeText,onChange:e=>workingInput.activeText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Inactive Text",value:workingInput.inactiveText,onChange:e=>workingInput.inactiveText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(FormControlLabel_FormControlLabel/* default */.A,{control:/*#__PURE__*/(0,jsx_runtime.jsx)(Checkbox_Checkbox/* default */.A,{checked:workingInput.isInverted,onChange:e=>workingInput.isInverted=e.target.checked}),label:"Inverted"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",gutterBottom:true,children:"Assign Input Number:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{fullWidth:true,value:inputNumber!==null&&inputNumber!==void 0?inputNumber:'',displayEmpty:true,onChange:e=>setInputNumber(e.target.value===''?null:Number(e.target.value)),children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableInputs.map(num=>{const isAssigned=plcProgram.inputs.some(i=>i.number===num&&i.centroidName!==(input===null||input===void 0?void 0:input.centroidName));return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:onClose,children:"Cancel"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleSave,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Save"})]})]})},"custom-input-dialog-form")]});}function InputsTab(){const[dialogOpen,setDialogOpen]=(0,react.useState)(false);const[editingInput,setEditingInput]=(0,react.useState)(null);const[availableInputs,setAvailableInputs]=(0,react.useState)([]);const[bulkIOStates,setBulkIOStates]=(0,react.useState)(null);const[isRefreshing,setIsRefreshing]=(0,react.useState)(false);(0,react.useEffect)(()=>{loadAvailableInputs();loadBulkIOStates();},[]);const loadAvailableInputs=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();const availableNumbers=await machine.io.GetAvailableInputs();setAvailableInputs(availableNumbers);}catch(error){console.error('Failed to load available inputs:',error);setAvailableInputs([]);}};const loadBulkIOStates=async()=>{setIsRefreshing(true);try{const machine=Machine/* Machine */.u5.getInstance();const states=await machine.io.GetBulkIOStates();setBulkIOStates(states);// Update IOStateData with the bulk states
+let finalName=editingCentroidName.trim().toUpperCase();if(!finalName.endsWith('_I')){finalName=finalName+'_I';}workingInput.centroidName=finalName;onSave(workingInput,inputNumber);};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:onClose,maxWidth:"sm",fullWidth:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogTitle_DialogTitle/* default */.A,{children:input?'Edit Custom Input':'Add Custom Input'}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:workingInput,properties:['centroidName','name','activeText','inactiveText','isInverted'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogContent_DialogContent/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:2,mt:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Centroid Name",value:editingCentroidName,onChange:e=>setEditingCentroidName(e.target.value),onFocus:handleCentroidNameFocus,onBlur:handleCentroidNameBlur,fullWidth:true,required:true,helperText:"PLC variable name. _I suffix will be added automatically."}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Display Name",value:workingInput.name,onChange:e=>workingInput.name=e.target.value,fullWidth:true,required:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Active Text",value:workingInput.activeText,onChange:e=>workingInput.activeText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Inactive Text",value:workingInput.inactiveText,onChange:e=>workingInput.inactiveText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(FormControlLabel_FormControlLabel/* default */.A,{control:/*#__PURE__*/(0,jsx_runtime.jsx)(Checkbox_Checkbox/* default */.A,{checked:workingInput.isInverted,onChange:e=>workingInput.isInverted=e.target.checked}),label:"Inverted"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",gutterBottom:true,children:"Assign Input Number:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{fullWidth:true,value:inputNumber!==null&&inputNumber!==void 0?inputNumber:'',displayEmpty:true,onChange:e=>setInputNumber(e.target.value===''?null:Number(e.target.value)),children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableInputs.map(num=>{const isAssigned=plcProgram.inputs.some(i=>i.number===num&&i.centroidName!==(input===null||input===void 0?void 0:input.centroidName));return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:onClose,children:"Cancel"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleSave,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Save"})]})]})},"custom-input-dialog-form")]});}function InputsTab(){const[dialogOpen,setDialogOpen]=(0,react.useState)(false);const[editingInput,setEditingInput]=(0,react.useState)(null);const availableInputs=getAvailableIONumbers(Machine_MachineData/* MachineData */.O.Instance.boardType,Machine_MachineData/* MachineData */.O.Instance.expansionBoardCount);const[bulkIOStates,setBulkIOStates]=(0,react.useState)(null);const[isRefreshing,setIsRefreshing]=(0,react.useState)(false);(0,react.useEffect)(()=>{loadBulkIOStates();},[]);const loadBulkIOStates=async()=>{setIsRefreshing(true);try{const machine=Machine/* Machine */.u5.getInstance();const states=await machine.io.GetBulkIOStates();setBulkIOStates(states);// Update IOStateData with the bulk states
 const ioStateData=IOStateData/* IOStateData */.Em.Instance;Object.entries(states.inputs).forEach(_ref3=>{let[num,isOn]=_ref3;const input=ioStateData.getInputByNumber(parseInt(num));if(input){input.isActive=isOn;}});Object.entries(states.outputs).forEach(_ref4=>{let[num,isOn]=_ref4;const output=ioStateData.getOutputByNumber(parseInt(num));if(output){output.isActive=isOn;}});}catch(error){data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to load I/O states');}finally{setIsRefreshing(false);}};const plcProgram=PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System);const handleAddInput=()=>{setEditingInput(null);setDialogOpen(true);};const handleDeleteInput=async input=>{const confirmed=await ConfirmDialogManager/* ConfirmDialogManager */.E.Instance.showDeleteConfirm(`input "${input.name}"`);if(confirmed&&plcProgram){const index=plcProgram.inputs.indexOf(input);if(index>-1){plcProgram.inputs.splice(index,1);StateManager.StateManager.propertyChanged(plcProgram,'inputs');}}};const getAssignedInputs=()=>{if(!plcProgram)return[];return plcProgram.inputs.filter(input=>input.number!==null).sort((a,b)=>{var _a$number,_b$number;return((_a$number=a.number)!==null&&_a$number!==void 0?_a$number:0)-((_b$number=b.number)!==null&&_b$number!==void 0?_b$number:0);});};const getUnassignedInputs=()=>{if(!plcProgram)return[];return plcProgram.inputs.filter(input=>input.number===null);};const isNumberAssigned=(num,currentInputCentroidName)=>{if(!plcProgram)return false;return plcProgram.inputs.some(input=>input.number===num&&input.centroidName!==currentInputCentroidName);};return/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:plcProgram,properties:['inputs'],control:()=>{const assignedInputs=getAssignedInputs();const unassignedInputs=getUnassignedInputs();return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Grid_Grid/* default */.Ay,{container:true,spacing:2,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Inputs Configuration"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',justifyContent:'space-between',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",children:"PLC Inputs"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"outlined",color:"primary",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(Refresh/* default */.A,{}),onClick:loadBulkIOStates,disabled:isRefreshing,children:isRefreshing?'Refreshing...':'Refresh I/O States'}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"contained",color:"primary",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(Add/* default */.A,{}),onClick:handleAddInput,children:"Add Input"})]})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"subtitle1",gutterBottom:true,sx:{fontWeight:'bold'},children:["Unassigned Inputs (",unassignedInputs.length,")"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableContainer_TableContainer,{component:Paper_Paper/* default */.A,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Table_Table,{size:"small",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableHead_TableHead,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(TableRow_TableRow,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{sx:{width:'150px'},children:"Assign Number"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Centroid Name"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Display Name"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Active Text"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Inactive Text"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{align:"right",children:"Actions"})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableBody_TableBody,{children:unassignedInputs.length===0?/*#__PURE__*/(0,jsx_runtime.jsx)(TableRow_TableRow,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{colSpan:6,align:"center",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:"No unassigned inputs"})})}):unassignedInputs.map(input=>{var _input$number;return/*#__PURE__*/(0,jsx_runtime.jsxs)(TableRow_TableRow,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{size:"small",displayEmpty:true,value:(_input$number=input.number)!==null&&_input$number!==void 0?_input$number:'',onChange:e=>{const value=e.target.value;if(value===''){input.number=null;}else{const num=Number(value);// Check if this number is already assigned
 const existingInput=plcProgram.inputs.find(i=>i.number===num&&i.centroidName!==input.centroidName);if(existingInput){existingInput.number=null;}input.number=num;}StateManager.StateManager.propertyChanged(plcProgram,'inputs');},sx:{width:'120px'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableInputs.map(num=>{const isAssigned=isNumberAssigned(num,input.centroidName);return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:input.centroidName}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:input.name}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:input.activeText}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:input.inactiveText}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{align:"right",children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:1,justifyContent:'flex-end'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>{setEditingInput(input);setDialogOpen(true);},title:"Edit input",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Edit/* default */.A,{fontSize:"small"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>handleDeleteInput(input),title:"Delete input",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Delete/* default */.A,{fontSize:"small"})})]})})]},input.centroidName);})})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"subtitle1",gutterBottom:true,sx:{fontWeight:'bold'},children:["Assigned Inputs (",assignedInputs.length,")"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:1},children:assignedInputs.length===0?/*#__PURE__*/(0,jsx_runtime.jsx)(Paper_Paper/* default */.A,{sx:{p:3},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",align:"center",children:"No assigned inputs"})}):assignedInputs.map(input=>{var _bulkIOStates$inputs,_input$number2;// Get current state from bulk I/O states
 const rawState=(_bulkIOStates$inputs=bulkIOStates===null||bulkIOStates===void 0?void 0:bulkIOStates.inputs[input.number||0])!==null&&_bulkIOStates$inputs!==void 0?_bulkIOStates$inputs:false;// Apply inversion logic - if inverted, flip the display
@@ -47849,7 +49668,7 @@ const sortedCategories=Object.keys(outputsByCategory).sort();return/*#__PURE__*/
 let name=output.centroidName;if(name.endsWith('_O')){name=name.slice(0,-2);}setEditingCentroidName(name);setOutputNumber(output.number);}else{setWorkingOutput(new PLCOutput/* PLCOutput */.V());setEditingCentroidName('');setOutputNumber(null);}}},[open,output]);const handleCentroidNameFocus=()=>{// Remove _O suffix when focusing
 let name=editingCentroidName;if(name.endsWith('_O')){name=name.slice(0,-2);}setEditingCentroidName(name);};const handleCentroidNameBlur=()=>{// Add _O suffix and uppercase when leaving field
 let name=editingCentroidName.trim();if(name){name=name.toUpperCase();if(!name.endsWith('_O')){name=name+'_O';}workingOutput.centroidName=name;setEditingCentroidName(name);}};const handleSave=()=>{if(!workingOutput.name.trim()){return;}if(!editingCentroidName.trim()){return;}// Ensure centroid name has _O suffix
-let finalName=editingCentroidName.trim().toUpperCase();if(!finalName.endsWith('_O')){finalName=finalName+'_O';}workingOutput.centroidName=finalName;onSave(workingOutput,outputNumber);};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:onClose,maxWidth:"sm",fullWidth:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogTitle_DialogTitle/* default */.A,{children:output?'Edit Custom Output':'Add Custom Output'}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:workingOutput,properties:['centroidName','name','activeText','inactiveText','onCommand','offCommand'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogContent_DialogContent/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:2,mt:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Centroid Name",value:editingCentroidName,onChange:e=>setEditingCentroidName(e.target.value),onFocus:handleCentroidNameFocus,onBlur:handleCentroidNameBlur,fullWidth:true,required:true,helperText:"PLC variable name. _O suffix will be added automatically."}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Display Name",value:workingOutput.name,onChange:e=>workingOutput.name=e.target.value,fullWidth:true,required:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Active Text",value:workingOutput.activeText,onChange:e=>workingOutput.activeText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Inactive Text",value:workingOutput.inactiveText,onChange:e=>workingOutput.inactiveText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(Divider_Divider/* default */.A,{sx:{my:1}}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"subtitle2",gutterBottom:true,children:"Custom G-Code Commands (Optional)"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"textSecondary",gutterBottom:true,sx:{display:'block',mb:1},children:"Leave empty to use standard M94/M95 commands. Use custom commands for outputs like spindle (M3/M5) or coolant (M7/M9)."}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"ON Command",value:workingOutput.onCommand,onChange:e=>workingOutput.onCommand=e.target.value.toUpperCase(),fullWidth:true,placeholder:"M3",helperText:"G-code to turn ON"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"OFF Command",value:workingOutput.offCommand,onChange:e=>workingOutput.offCommand=e.target.value.toUpperCase(),fullWidth:true,placeholder:"M5",helperText:"G-code to turn OFF"})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",gutterBottom:true,children:"Assign Output Number:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{fullWidth:true,value:outputNumber!==null&&outputNumber!==void 0?outputNumber:'',displayEmpty:true,onChange:e=>setOutputNumber(e.target.value===''?null:Number(e.target.value)),children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableOutputs.map(num=>{const isAssigned=plcProgram.outputs.some(o=>o.number===num&&o.centroidName!==(output===null||output===void 0?void 0:output.centroidName));return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:onClose,children:"Cancel"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleSave,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Save"})]})]})},"custom-output-dialog-form")]});}function OutputsTab(){const[dialogOpen,setDialogOpen]=(0,react.useState)(false);const[editingOutput,setEditingOutput]=(0,react.useState)(null);const[availableOutputs,setAvailableOutputs]=(0,react.useState)([]);const[bulkIOStates,setBulkIOStates]=(0,react.useState)(null);const[isRefreshing,setIsRefreshing]=(0,react.useState)(false);(0,react.useEffect)(()=>{loadAvailableOutputs();loadBulkIOStates();},[]);const loadAvailableOutputs=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();const availableNumbers=await machine.io.GetAvailableOutputs();setAvailableOutputs(availableNumbers);}catch(error){console.error('Failed to load available outputs:',error);setAvailableOutputs([]);}};const loadBulkIOStates=async()=>{setIsRefreshing(true);try{const machine=Machine/* Machine */.u5.getInstance();const states=await machine.io.GetBulkIOStates();setBulkIOStates(states);// Update IOStateData with the bulk states
+let finalName=editingCentroidName.trim().toUpperCase();if(!finalName.endsWith('_O')){finalName=finalName+'_O';}workingOutput.centroidName=finalName;onSave(workingOutput,outputNumber);};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:onClose,maxWidth:"sm",fullWidth:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogTitle_DialogTitle/* default */.A,{children:output?'Edit Custom Output':'Add Custom Output'}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:workingOutput,properties:['centroidName','name','activeText','inactiveText','onCommand','offCommand'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(DialogContent_DialogContent/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:2,mt:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Centroid Name",value:editingCentroidName,onChange:e=>setEditingCentroidName(e.target.value),onFocus:handleCentroidNameFocus,onBlur:handleCentroidNameBlur,fullWidth:true,required:true,helperText:"PLC variable name. _O suffix will be added automatically."}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Display Name",value:workingOutput.name,onChange:e=>workingOutput.name=e.target.value,fullWidth:true,required:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Active Text",value:workingOutput.activeText,onChange:e=>workingOutput.activeText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"Inactive Text",value:workingOutput.inactiveText,onChange:e=>workingOutput.inactiveText=e.target.value,fullWidth:true}),/*#__PURE__*/(0,jsx_runtime.jsx)(Divider_Divider/* default */.A,{sx:{my:1}}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"subtitle2",gutterBottom:true,children:"Custom G-Code Commands (Optional)"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"textSecondary",gutterBottom:true,sx:{display:'block',mb:1},children:"Leave empty to use standard M94/M95 commands. Use custom commands for outputs like spindle (M3/M5) or coolant (M7/M9)."}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"ON Command",value:workingOutput.onCommand,onChange:e=>workingOutput.onCommand=e.target.value.toUpperCase(),fullWidth:true,placeholder:"M3",helperText:"G-code to turn ON"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TextField_TextField/* default */.A,{label:"OFF Command",value:workingOutput.offCommand,onChange:e=>workingOutput.offCommand=e.target.value.toUpperCase(),fullWidth:true,placeholder:"M5",helperText:"G-code to turn OFF"})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",gutterBottom:true,children:"Assign Output Number:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{fullWidth:true,value:outputNumber!==null&&outputNumber!==void 0?outputNumber:'',displayEmpty:true,onChange:e=>setOutputNumber(e.target.value===''?null:Number(e.target.value)),children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableOutputs.map(num=>{const isAssigned=plcProgram.outputs.some(o=>o.number===num&&o.centroidName!==(output===null||output===void 0?void 0:output.centroidName));return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:onClose,children:"Cancel"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleSave,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Save"})]})]})},"custom-output-dialog-form")]});}function OutputsTab(){const[dialogOpen,setDialogOpen]=(0,react.useState)(false);const[editingOutput,setEditingOutput]=(0,react.useState)(null);const availableOutputs=getAvailableIONumbers(Machine_MachineData/* MachineData */.O.Instance.boardType,Machine_MachineData/* MachineData */.O.Instance.expansionBoardCount);const[bulkIOStates,setBulkIOStates]=(0,react.useState)(null);const[isRefreshing,setIsRefreshing]=(0,react.useState)(false);(0,react.useEffect)(()=>{loadBulkIOStates();},[]);const loadBulkIOStates=async()=>{setIsRefreshing(true);try{const machine=Machine/* Machine */.u5.getInstance();const states=await machine.io.GetBulkIOStates();setBulkIOStates(states);// Update IOStateData with the bulk states
 const ioStateData=IOStateData/* IOStateData */.Em.Instance;Object.entries(states.inputs).forEach(_ref3=>{let[num,isOn]=_ref3;const input=ioStateData.getInputByNumber(parseInt(num));if(input){input.isActive=isOn;}});Object.entries(states.outputs).forEach(_ref4=>{let[num,isOn]=_ref4;const output=ioStateData.getOutputByNumber(parseInt(num));if(output){output.isActive=isOn;}});}catch(error){console.error('Failed to load bulk I/O states:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to load I/O states');}finally{setIsRefreshing(false);}};const plcProgram=PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System);const handleAddOutput=()=>{setEditingOutput(null);setDialogOpen(true);};const handleDeleteOutput=async output=>{const confirmed=await ConfirmDialogManager/* ConfirmDialogManager */.E.Instance.showDeleteConfirm(`output "${output.name}"`);if(confirmed&&plcProgram){const index=plcProgram.outputs.indexOf(output);if(index>-1){plcProgram.outputs.splice(index,1);StateManager.StateManager.propertyChanged(plcProgram,'outputs');}}};const isNumberAssigned=(num,currentOutputCentroidName)=>{if(!plcProgram)return false;return plcProgram.outputs.some(output=>output.number===num&&output.centroidName!==currentOutputCentroidName);};const getAssignedOutputs=()=>{if(!plcProgram)return[];return plcProgram.outputs.filter(output=>output.number!==null).sort((a,b)=>{var _a$number,_b$number;return((_a$number=a.number)!==null&&_a$number!==void 0?_a$number:0)-((_b$number=b.number)!==null&&_b$number!==void 0?_b$number:0);});};const getUnassignedOutputs=()=>{if(!plcProgram)return[];return plcProgram.outputs.filter(output=>output.number===null);};return/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:plcProgram,properties:['outputs'],control:()=>{const assignedOutputs=getAssignedOutputs();const unassignedOutputs=getUnassignedOutputs();return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Grid_Grid/* default */.Ay,{container:true,spacing:2,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Outputs Configuration"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',justifyContent:'space-between',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",children:"PLC Outputs"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"outlined",color:"primary",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(Refresh/* default */.A,{}),onClick:loadBulkIOStates,disabled:isRefreshing,children:isRefreshing?'Refreshing...':'Refresh I/O States'}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{variant:"contained",color:"primary",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(Add/* default */.A,{}),onClick:handleAddOutput,children:"Add Output"})]})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"subtitle1",gutterBottom:true,sx:{fontWeight:'bold'},children:["Unassigned Outputs (",unassignedOutputs.length,")"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableContainer_TableContainer,{component:Paper_Paper/* default */.A,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Table_Table,{size:"small",children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableHead_TableHead,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(TableRow_TableRow,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{sx:{width:'150px'},children:"Assign Number"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Centroid Name"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Display Name"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Active Text"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:"Inactive Text"}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{align:"right",children:"Actions"})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableBody_TableBody,{children:unassignedOutputs.length===0?/*#__PURE__*/(0,jsx_runtime.jsx)(TableRow_TableRow,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{colSpan:6,align:"center",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:"No unassigned outputs"})})}):unassignedOutputs.map(output=>{var _output$number;return/*#__PURE__*/(0,jsx_runtime.jsxs)(TableRow_TableRow,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{size:"small",displayEmpty:true,value:(_output$number=output.number)!==null&&_output$number!==void 0?_output$number:'',onChange:e=>{const value=e.target.value;if(value===''){output.number=null;}else{const num=Number(value);const existingOutput=plcProgram.outputs.find(o=>o.number===num&&o.centroidName!==output.centroidName);if(existingOutput){existingOutput.number=null;}output.number=num;}StateManager.StateManager.propertyChanged(plcProgram,'outputs');},sx:{width:'120px'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableOutputs.map(num=>{const isAssigned=isNumberAssigned(num,output.centroidName);return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:output.centroidName}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:output.name}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:output.activeText}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{children:output.inactiveText}),/*#__PURE__*/(0,jsx_runtime.jsx)(TableCell_TableCell,{align:"right",children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:1,justifyContent:'flex-end'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>{setEditingOutput(output);setDialogOpen(true);},title:"Edit output",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Edit/* default */.A,{fontSize:"small"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>handleDeleteOutput(output),title:"Delete output",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Delete/* default */.A,{fontSize:"small"})})]})})]},output.centroidName);})})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"subtitle1",gutterBottom:true,sx:{fontWeight:'bold'},children:["Assigned Outputs (",assignedOutputs.length,")"]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:1},children:assignedOutputs.length===0?/*#__PURE__*/(0,jsx_runtime.jsx)(Paper_Paper/* default */.A,{sx:{p:3},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",align:"center",children:"No assigned outputs"})}):assignedOutputs.map(output=>{var _bulkIOStates$outputs,_output$number2;// Get current state from bulk I/O states
 const isActive=(_bulkIOStates$outputs=bulkIOStates===null||bulkIOStates===void 0?void 0:bulkIOStates.outputs[output.number||0])!==null&&_bulkIOStates$outputs!==void 0?_bulkIOStates$outputs:false;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Paper_Paper/* default */.A,{sx:{p:2,display:'flex',alignItems:'center',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Select/* default */.A,{size:"small",value:(_output$number2=output.number)!==null&&_output$number2!==void 0?_output$number2:'',displayEmpty:true,onChange:e=>{const value=e.target.value;if(value===''){output.number=null;}else{const num=Number(value);const existingOutput=plcProgram.outputs.find(o=>o.number===num&&o.centroidName!==output.centroidName);if(existingOutput){existingOutput.number=null;}output.number=num;}StateManager.StateManager.propertyChanged(plcProgram,'outputs');},sx:{width:'120px'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(MenuItem/* default */.A,{value:"",children:/*#__PURE__*/(0,jsx_runtime.jsx)("em",{children:"Unassigned"})}),availableOutputs.map(num=>{const isAssigned=isNumberAssigned(num,output.centroidName);return/*#__PURE__*/(0,jsx_runtime.jsxs)(MenuItem/* default */.A,{value:num,sx:{color:isAssigned?'text.disabled':'text.primary',fontStyle:isAssigned?'italic':'normal'},children:[num,isAssigned?' (in use)':'']},num);})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{flex:'0 0 200px'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(SymbolNameWithUsageTooltip,{centroidName:output.centroidName,programType:PLCUtilities/* PLCProgramType */.wM.System,children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body1",sx:{fontWeight:500},children:output.name})})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:1,flex:'0 0 150px'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:"Current:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:10,height:10,borderRadius:'50%',backgroundColor:isActive?data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.successColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.errorColor}}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",sx:{fontWeight:'bold',color:isActive?'success.main':'error.main'},children:isActive?'Active':'Inactive'})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1,display:'flex',alignItems:'center',gap:2},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",sx:{fontWeight:500},children:"Active:"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",children:output.activeText})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",sx:{fontWeight:500},children:"Inactive:"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",children:output.inactiveText})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",sx:{fontWeight:500},children:"G-Code (on/off):"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",sx:{fontFamily:'monospace',fontSize:'0.85rem'},children:[output.getOnGCode()||/*#__PURE__*/(0,jsx_runtime.jsx)("em",{style:{color:'gray'},children:"none"}),' / ',output.getOffGCode()||/*#__PURE__*/(0,jsx_runtime.jsx)("em",{style:{color:'gray'},children:"none"})]})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>{setEditingOutput(output);setDialogOpen(true);},title:"Edit output",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Edit/* default */.A,{fontSize:"small"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:()=>handleDeleteOutput(output),title:"Delete output",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Delete/* default */.A,{fontSize:"small"})})]})]},output.centroidName);})})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(OutputDialog,{open:dialogOpen,output:editingOutput,availableOutputs:availableOutputs,onClose:()=>{setDialogOpen(false);setEditingOutput(null);},onSave:()=>{setEditingOutput(null);}})]});}},"plc-outputs-tab");}
 ;// ./src/centroid/plc/editor/PLCCompilationResultsWithSourceDialog.tsx
@@ -48028,7 +49847,7 @@ let currentParent=element.getParentElement();let blockName='Unknown Block';let s
  */var PLCEditorTab=/*#__PURE__*/function(PLCEditorTab){// Setup tabs
 PLCEditorTab[PLCEditorTab["SetupMachine"]=0]="SetupMachine";PLCEditorTab[PLCEditorTab["SetupSpeedsHomingMeasuring"]=1]="SetupSpeedsHomingMeasuring";PLCEditorTab[PLCEditorTab["SetupUI"]=2]="SetupUI";PLCEditorTab[PLCEditorTab["SetupATC"]=3]="SetupATC";PLCEditorTab[PLCEditorTab["SetupMachineData"]=4]="SetupMachineData";PLCEditorTab[PLCEditorTab["SetupAxis"]=5]="SetupAxis";PLCEditorTab[PLCEditorTab["SetupSpindle1"]=6]="SetupSpindle1";PLCEditorTab[PLCEditorTab["SetupSpindle2"]=7]="SetupSpindle2";PLCEditorTab[PLCEditorTab["SetupLaser"]=8]="SetupLaser";PLCEditorTab[PLCEditorTab["SetupMPG"]=9]="SetupMPG";// System tabs
 PLCEditorTab[PLCEditorTab["SystemInputs"]=10]="SystemInputs";PLCEditorTab[PLCEditorTab["SystemOutputs"]=11]="SystemOutputs";PLCEditorTab[PLCEditorTab["DefaultProgram"]=12]="DefaultProgram";PLCEditorTab[PLCEditorTab["SystemProgram"]=13]="SystemProgram";PLCEditorTab[PLCEditorTab["DefaultUITriggers"]=14]="DefaultUITriggers";PLCEditorTab[PLCEditorTab["DefaultM94M95Triggers"]=15]="DefaultM94M95Triggers";PLCEditorTab[PLCEditorTab["DefaultMappings"]=16]="DefaultMappings";PLCEditorTab[PLCEditorTab["SystemUITriggers"]=17]="SystemUITriggers";PLCEditorTab[PLCEditorTab["SystemM94M95Triggers"]=18]="SystemM94M95Triggers";// Data/API tabs
-PLCEditorTab[PLCEditorTab["DataAPICheckpoints"]=19]="DataAPICheckpoints";PLCEditorTab[PLCEditorTab["DataAPIIconInventory"]=20]="DataAPIIconInventory";PLCEditorTab[PLCEditorTab["DataAPIDataManagement"]=21]="DataAPIDataManagement";PLCEditorTab[PLCEditorTab["DataAPIProfiler"]=22]="DataAPIProfiler";PLCEditorTab[PLCEditorTab["DataAPIReset"]=23]="DataAPIReset";return PLCEditorTab;}(PLCEditorTab||{});/**
+PLCEditorTab[PLCEditorTab["DataAPICheckpoints"]=19]="DataAPICheckpoints";PLCEditorTab[PLCEditorTab["DataAPIIconInventory"]=20]="DataAPIIconInventory";PLCEditorTab[PLCEditorTab["DataAPIDataManagement"]=21]="DataAPIDataManagement";PLCEditorTab[PLCEditorTab["DataAPIProfiler"]=22]="DataAPIProfiler";PLCEditorTab[PLCEditorTab["DataAPIReset"]=23]="DataAPIReset";PLCEditorTab[PLCEditorTab["DataAPIMachineManager"]=24]="DataAPIMachineManager";return PLCEditorTab;}(PLCEditorTab||{});/**
  * Main PLC Editor Application Component
  * 
  * This is a standalone React application for developing the PLC editor feature.
@@ -48049,7 +49868,7 @@ const timestamp=new Date();setCompilationResult(result);setCompilationTimestamp(
 if(!result.success){var _result$issues;const errorCount=((_result$issues=result.issues)===null||_result$issues===void 0?void 0:_result$issues.length)||0;data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ PLC compilation failed with ${errorCount} error(s)`);}return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to compile PLC:',error);// Show error in dialog if possible
 const errorResult={success:false,issues:[`Error calling compilation service: ${error}`],compilerOutput:[]};setCompilationResult(errorResult);setCompilationTimestamp(new Date());setCompilationResultsOpen(true);data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to compile PLC - see console for details');throw error;}};const handleViewPLC=()=>{setViewerDialogOpen(true);};const handleSaveAll=async()=>{try{// Save all data classes (configuration, machine data, PLC programs, libraries, etc.)
 await data_DataManager.DataManager.Instance.saveAllData();data_UserMessageQueue.UserMessageQueue.Instance.addMessage('✓ All data saved successfully');}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.DataManager,'Failed to save all data:',error);data_UserMessageQueue.UserMessageQueue.Instance.addMessage('❌ Failed to save all data');}};// Use ConfigurationData for consistent theming
-const config=data_ConfigurationData/* ConfigurationData */.J.Instance;const colors=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{height:'100%',width:'100%',backgroundColor:'background.default',display:'flex',flexDirection:'column'},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',px:3,py:2,borderBottom:1,borderColor:'divider',backgroundColor:colors.primaryColor},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",sx:{fontWeight:'bold'},children:"Setup Editor"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2,alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["PLC Version: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:plcVersion})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:ConfigurationState.ConfigurationState.Instance,properties:['installedPLCVersion'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["System PLC: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:installedPLCVersion||'Not Installed'})]})},"plc-editor-installed-version"),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['boardType'],control:()=>{const boardType=Machine_MachineData/* MachineData */.O.Instance.boardType;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["Board: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:boardType})]});}},"plc-editor-board-type"),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['expansionBoardCount'],control:()=>{const expansionBoardCount=Machine_MachineData/* MachineData */.O.Instance.expansionBoardCount;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["Expansion Boards: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:expansionBoardCount})]});}},"plc-editor-expansion-boards")]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:1,alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Save All PLC Programs",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleSaveAll,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Save/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"View PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleViewPLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_Visibility/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Compile PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleCompilePLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Build/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Install PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleInstallPLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(CloudUpload/* default */.A,{})})}),onClose&&/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onClose,size:"large",color:"inherit",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Close/* default */.A,{})})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flex:1,overflow:'hidden'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:290,borderRight:1,borderColor:'divider',backgroundColor:'background.paper',display:'flex',flexDirection:'column',overflow:'auto'},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"nav",sx:{py:1},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSetupOpen(!setupOpen);if(!setupOpen){setSystemDefaultOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Setup",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type','Turn Off Test Mode','Machine Features','Machine Zero Coordinates','Soft Limits','Spoil Board','File Monitoring Configuration','Feed Rate Speeds','Homing Configuration','Manual Tool Change Location','Simulator Configuration','Measurement Setup','Movable Touch Plate Height','Fixed Touch Plate Position','Fixed Tool Measurement Position','Spoilboard Tool Measurement Position','Machine Bed Tool Measurement Position'],showCount:true}),setupOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:setupOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMachine,onClick:()=>setSelectedTab(PLCEditorTab.SetupMachine),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Machine",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type','Turn Off Test Mode','Machine Features','Machine Zero Coordinates','Soft Limits','Spoil Board','File Monitoring Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpeedsHomingMeasuring,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpeedsHomingMeasuring),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Speeds/Homing/Measuring",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Feed Rate Speeds','Homing Configuration','Manual Tool Change Location','Measurement Setup','Movable Touch Plate Height','Fixed Touch Plate Position','Fixed Tool Measurement Position','Spoilboard Tool Measurement Position','Machine Bed Tool Measurement Position'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupUI,onClick:()=>setSelectedTab(PLCEditorTab.SetupUI),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMachineData,onClick:()=>setSelectedTab(PLCEditorTab.SetupMachineData),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Simulator",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Simulator Configuration'],showCount:true})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>setHardwareConfigOpen(!hardwareConfigOpen),sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Hardware Config",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['ATC Setup','Axis Configuration','Axis Calibration','Spindle Configuration'],showCount:true}),hardwareConfigOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:hardwareConfigOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupATC,onClick:()=>setSelectedTab(PLCEditorTab.SetupATC),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"ATC",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['ATC Setup'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupAxis,onClick:()=>setSelectedTab(PLCEditorTab.SetupAxis),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Axis",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Axis Configuration','Axis Calibration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpindle1,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpindle1),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Spindle 1",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spindle Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpindle2,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpindle2),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Spindle 2",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupLaser,onClick:()=>setSelectedTab(PLCEditorTab.SetupLaser),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Laser",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMPG,onClick:()=>setSelectedTab(PLCEditorTab.SetupMPG),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"MPG",primaryTypographyProps:{fontSize:'0.875rem'}})})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSystemDefaultOpen(!systemDefaultOpen);if(!systemDefaultOpen){setSetupOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"System Default PLC",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.SystemDefault),showCount:true}),systemDefaultOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:systemDefaultOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultUITriggers,onClick:()=>setSelectedTab(PLCEditorTab.DefaultUITriggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI Triggers",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultM94M95Triggers,onClick:()=>setSelectedTab(PLCEditorTab.DefaultM94M95Triggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"API Triggers (M94/95)",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultProgram,onClick:()=>setSelectedTab(PLCEditorTab.DefaultProgram),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"PLC Program",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.SystemDefault),showCount:true})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSystemPLCOpen(!systemPLCOpen);if(!systemPLCOpen){setSetupOpen(false);setSystemDefaultOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"System PLC",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(UnifiedValidationIndicator,{plcElement:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System),checklistItemNames:['Inputs Configuration','Outputs Configuration']}),systemPLCOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:systemPLCOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemInputs,onClick:()=>setSelectedTab(PLCEditorTab.SystemInputs),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Inputs",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Inputs Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemOutputs,onClick:()=>setSelectedTab(PLCEditorTab.SystemOutputs),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Outputs",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Outputs Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemUITriggers,onClick:()=>setSelectedTab(PLCEditorTab.SystemUITriggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI Triggers",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemM94M95Triggers,onClick:()=>setSelectedTab(PLCEditorTab.SystemM94M95Triggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"API Triggers (M94/95)",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemProgram,onClick:()=>setSelectedTab(PLCEditorTab.SystemProgram),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"PLC Program",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System),showCount:true})]})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setDataAPIOpen(!dataAPIOpen);if(!dataAPIOpen){setSetupOpen(false);setSystemDefaultOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Data/API",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),dataAPIOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:dataAPIOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultMappings,onClick:()=>setSelectedTab(PLCEditorTab.DefaultMappings),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Default Mappings",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPICheckpoints,onClick:()=>setSelectedTab(PLCEditorTab.DataAPICheckpoints),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Configuration Checkpoints",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIIconInventory,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIIconInventory),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Icon Inventory",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIDataManagement,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIDataManagement),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Data Management",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIProfiler,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIProfiler),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Profiler",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIReset,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIReset),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Reset",primaryTypographyProps:{fontSize:'0.875rem'}})})]})})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1,overflow:'auto',p:3},children:[selectedTab===PLCEditorTab.SetupMachine&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Machine Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"General"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(GeneralSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Machine Features"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Features'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Feature Configuration:"})," Enable or disable optional machine features and attachments. Disabling a feature will hide its configuration section and prevent it from being rendered in the 3D viewer."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(MachineFeaturesSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Machine Zero Coordinates (from Machine Home)"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Zero Coordinates'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MachineZeroSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Soft Limits"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Soft Limits'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SoftLimitsSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Spoil Board"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spoil Board'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SpoilBoardSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"File Monitoring Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['File Monitoring Configuration'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FilesSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"PLC Parameters"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(PLCParametersSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Machine State"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:"Machine state configuration moved to Setup Editor \u2192 Machine \u2192 General"})})]})]}),selectedTab===PLCEditorTab.SetupSpeedsHomingMeasuring&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Speeds/Homing/Measuring"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Feed Rate Speeds"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Feed Rate Speeds'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FeedRateSpeedsSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Homing"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Homing Configuration'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(HomingSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Collision Detection & Safety"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(CollisionDetectionSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Change Location"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Manual Tool Change Location'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(ManualToolChangeSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',mt:4,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",sx:{fontWeight:'bold'},children:"Measurement Setup"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Measurement Setup'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{container:true,spacing:3,sx:{mb:3},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Measurement Setup"})})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Fixed Touch Plate"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Fixed Touch Plate Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FixedTouchPlateSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Movable Touch Plate"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Movable Touch Plate Height'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MovableTouchPlateSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Fixed Point"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Fixed Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FixedToolMeasurementSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Spoilboard"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spoilboard Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SpoilboardToolMeasurementSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Machine Bed"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Bed Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MachineBedToolMeasurementSection,{})})]})]}),selectedTab===PLCEditorTab.SetupUI&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"UI Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Portal Colors"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(UIConfigurationSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Simulator Colors"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SimulatorSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Safety Delays"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(DelaysSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Feature Visibility"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FeaturesSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Input Tooltips"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(InputTooltipsSection,{})})]})]}),selectedTab===PLCEditorTab.SetupATC&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"ATC Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:3},children:"Configure basic ATC settings including whether the machine has an ATC, the number of tool holders, and individual tool holder positions. Tool holder positions are automatically arranged in a linear pattern, but can be individually adjusted."}),/*#__PURE__*/(0,jsx_runtime.jsx)(ATCConfigurationSection,{})]}),selectedTab===PLCEditorTab.SetupAxis&&/*#__PURE__*/(0,jsx_runtime.jsx)(AxisSetupTab,{}),selectedTab===PLCEditorTab.SetupSpindle1&&/*#__PURE__*/(0,jsx_runtime.jsx)(Spindle1SetupTab,{}),selectedTab===PLCEditorTab.SetupSpindle2&&/*#__PURE__*/(0,jsx_runtime.jsx)(Spindle2SetupTab,{}),selectedTab===PLCEditorTab.SetupLaser&&/*#__PURE__*/(0,jsx_runtime.jsx)(LaserSetupTab,{}),selectedTab===PLCEditorTab.SetupMPG&&/*#__PURE__*/(0,jsx_runtime.jsx)(MPGSetupTab,{}),selectedTab===PLCEditorTab.SetupMachineData&&/*#__PURE__*/(0,jsx_runtime.jsx)(MachineDataTab,{}),selectedTab===PLCEditorTab.SystemInputs&&/*#__PURE__*/(0,jsx_runtime.jsx)(InputsTab,{}),selectedTab===PLCEditorTab.SystemOutputs&&/*#__PURE__*/(0,jsx_runtime.jsx)(OutputsTab,{}),selectedTab===PLCEditorTab.DefaultProgram&&/*#__PURE__*/(0,jsx_runtime.jsx)(DefaultPLCTab,{}),selectedTab===PLCEditorTab.SystemProgram&&/*#__PURE__*/(0,jsx_runtime.jsx)(SystemPLCTab,{}),selectedTab===PLCEditorTab.DefaultUITriggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(UITriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.SystemDefault}),selectedTab===PLCEditorTab.DefaultM94M95Triggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(M94M95TriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.SystemDefault}),selectedTab===PLCEditorTab.DefaultMappings&&/*#__PURE__*/(0,jsx_runtime.jsx)(DefaultMappingsTab,{}),selectedTab===PLCEditorTab.SystemUITriggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(UITriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.System}),selectedTab===PLCEditorTab.SystemM94M95Triggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(M94M95TriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.System}),selectedTab===PLCEditorTab.DataAPICheckpoints&&/*#__PURE__*/(0,jsx_runtime.jsx)(ConfigCheckpointsTab,{},"plc-editor-checkpoints"),selectedTab===PLCEditorTab.DataAPIIconInventory&&/*#__PURE__*/(0,jsx_runtime.jsx)(IconInventoryTab,{},"plc-editor-icon-inventory"),selectedTab===PLCEditorTab.DataAPIDataManagement&&/*#__PURE__*/(0,jsx_runtime.jsx)(DataManagementTab,{}),selectedTab===PLCEditorTab.DataAPIProfiler&&/*#__PURE__*/(0,jsx_runtime.jsx)(ProfilerTab,{}),selectedTab===PLCEditorTab.DataAPIReset&&/*#__PURE__*/(0,jsx_runtime.jsx)(SystemResetComponent,{},"plc-editor-reset")]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:320,borderLeft:1,borderColor:'divider',backgroundColor:'background.paper',display:'flex',flexDirection:'column',overflow:'auto',p:2},children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCViewerDialog,{open:viewerDialogOpen,onClose:()=>setViewerDialogOpen(false)}),/*#__PURE__*/(0,jsx_runtime.jsx)(MachineInstallationDialog,{open:installDialogOpen,onClose:()=>setInstallDialogOpen(false),onSuccess:()=>{setInstallDialogOpen(false);}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCCompilationResultsWithSourceDialog,{open:compilationResultsOpen,onClose:()=>setCompilationResultsOpen(false),result:compilationResult,timestamp:compilationTimestamp,sourceCode:compiledSourceCode,messageFile:compiledMessageFile}),/*#__PURE__*/(0,jsx_runtime.jsx)(ValidationConfirmDialog,{open:validationConfirmOpen,onClose:()=>setValidationConfirmOpen(false),onConfirm:async()=>{if(pendingAction){await pendingAction();setPendingAction(null);}},issues:validationIssues,action:validationAction}),/*#__PURE__*/(0,jsx_runtime.jsx)(TooltipDisplay,{})]});}
+const config=data_ConfigurationData/* ConfigurationData */.J.Instance;const colors=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{height:'100%',width:'100%',backgroundColor:'background.default',display:'flex',flexDirection:'column'},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',px:3,py:2,borderBottom:1,borderColor:'divider',backgroundColor:colors.primaryColor},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",sx:{fontWeight:'bold'},children:"Setup Editor"}),MachineInterfaceManager/* MachineInterfaceManager */.y.Instance.isUsingSimulator()&&/*#__PURE__*/(0,jsx_runtime.jsx)(Chip_Chip/* default */.A,{label:"Simulator Mode",size:"small",sx:{bgcolor:'warning.main',color:'warning.contrastText',fontWeight:'bold',fontSize:'0.7rem'}})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2,alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["PLC Version: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:plcVersion})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:ConfigurationState.ConfigurationState.Instance,properties:['installedPLCVersion'],control:()=>/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["System PLC: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:installedPLCVersion||'Not Installed'})]})},"plc-editor-installed-version"),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['boardType'],control:()=>{const boardType=Machine_MachineData/* MachineData */.O.Instance.boardType;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["Board: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:boardType})]});}},"plc-editor-board-type"),/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState */.Q,{listenTo:Machine_MachineData/* MachineData */.O.Instance,properties:['expansionBoardCount'],control:()=>{const expansionBoardCount=Machine_MachineData/* MachineData */.O.Instance.expansionBoardCount;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"textSecondary",children:["Expansion Boards: ",/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:expansionBoardCount})]});}},"plc-editor-expansion-boards")]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:1,alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Save All PLC Programs",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleSaveAll,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Save/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"View PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleViewPLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_Visibility/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Compile PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleCompilePLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Build/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Install PLC",arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:handleInstallPLC,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:`${colors.lightTextColor}1A`}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(CloudUpload/* default */.A,{})})}),onClose&&/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onClose,size:"large",color:"inherit",children:/*#__PURE__*/(0,jsx_runtime.jsx)(Close/* default */.A,{})})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flex:1,overflow:'hidden'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:290,borderRight:1,borderColor:'divider',backgroundColor:'background.paper',display:'flex',flexDirection:'column',overflow:'auto'},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"nav",sx:{py:1},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSetupOpen(!setupOpen);if(!setupOpen){setSystemDefaultOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Setup",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type','Turn Off Test Mode','Machine Features','Machine Zero Coordinates','Soft Limits','Spoil Board','File Monitoring Configuration','Feed Rate Speeds','Homing Configuration','Manual Tool Change Location','Simulator Configuration','Measurement Setup','Movable Touch Plate Height','Fixed Touch Plate Position','Fixed Tool Measurement Position','Spoilboard Tool Measurement Position','Machine Bed Tool Measurement Position'],showCount:true}),setupOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:setupOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMachine,onClick:()=>setSelectedTab(PLCEditorTab.SetupMachine),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Machine",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type','Turn Off Test Mode','Machine Features','Machine Zero Coordinates','Soft Limits','Spoil Board','File Monitoring Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpeedsHomingMeasuring,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpeedsHomingMeasuring),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Speeds/Homing/Measuring",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Feed Rate Speeds','Homing Configuration','Manual Tool Change Location','Measurement Setup','Movable Touch Plate Height','Fixed Touch Plate Position','Fixed Tool Measurement Position','Spoilboard Tool Measurement Position','Machine Bed Tool Measurement Position'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupUI,onClick:()=>setSelectedTab(PLCEditorTab.SetupUI),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMachineData,onClick:()=>setSelectedTab(PLCEditorTab.SetupMachineData),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Simulator",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Simulator Configuration'],showCount:true})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>setHardwareConfigOpen(!hardwareConfigOpen),sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Hardware Config",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['ATC Setup','Axis Configuration','Axis Calibration','Spindle Configuration'],showCount:true}),hardwareConfigOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:hardwareConfigOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupATC,onClick:()=>setSelectedTab(PLCEditorTab.SetupATC),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"ATC",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['ATC Setup'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupAxis,onClick:()=>setSelectedTab(PLCEditorTab.SetupAxis),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Axis",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Axis Configuration','Axis Calibration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpindle1,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpindle1),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Spindle 1",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spindle Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupSpindle2,onClick:()=>setSelectedTab(PLCEditorTab.SetupSpindle2),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Spindle 2",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupLaser,onClick:()=>setSelectedTab(PLCEditorTab.SetupLaser),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Laser",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SetupMPG,onClick:()=>setSelectedTab(PLCEditorTab.SetupMPG),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"MPG",primaryTypographyProps:{fontSize:'0.875rem'}})})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSystemDefaultOpen(!systemDefaultOpen);if(!systemDefaultOpen){setSetupOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"System Default PLC",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.SystemDefault),showCount:true}),systemDefaultOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:systemDefaultOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultUITriggers,onClick:()=>setSelectedTab(PLCEditorTab.DefaultUITriggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI Triggers",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultM94M95Triggers,onClick:()=>setSelectedTab(PLCEditorTab.DefaultM94M95Triggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"API Triggers (M94/95)",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultProgram,onClick:()=>setSelectedTab(PLCEditorTab.DefaultProgram),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"PLC Program",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.SystemDefault),showCount:true})]})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(jsx_runtime.Fragment,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setSystemPLCOpen(!systemPLCOpen);if(!systemPLCOpen){setSetupOpen(false);setSystemDefaultOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"System PLC",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(UnifiedValidationIndicator,{plcElement:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System),checklistItemNames:['Inputs Configuration','Outputs Configuration']}),systemPLCOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:systemPLCOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemInputs,onClick:()=>setSelectedTab(PLCEditorTab.SystemInputs),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Inputs",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Inputs Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemOutputs,onClick:()=>setSelectedTab(PLCEditorTab.SystemOutputs),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Outputs",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Outputs Configuration'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemUITriggers,onClick:()=>setSelectedTab(PLCEditorTab.SystemUITriggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"UI Triggers",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemM94M95Triggers,onClick:()=>setSelectedTab(PLCEditorTab.SystemM94M95Triggers),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"API Triggers (M94/95)",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.SystemProgram,onClick:()=>setSelectedTab(PLCEditorTab.SystemProgram),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"PLC Program",primaryTypographyProps:{fontSize:'0.875rem'}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCValidationIndicator,{element:PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType */.wM.System),showCount:true})]})]})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{onClick:()=>{setDataAPIOpen(!dataAPIOpen);if(!dataAPIOpen){setSetupOpen(false);setSystemDefaultOpen(false);setSystemPLCOpen(false);}},sx:{py:1.5,px:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,'&:hover':{backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.borderColor}},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Data/API",primaryTypographyProps:{fontWeight:600,fontSize:'0.95rem'}}),dataAPIOpen?/*#__PURE__*/(0,jsx_runtime.jsx)(ExpandLess,{}):/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Collapse/* default */.A,{in:dataAPIOpen,timeout:"auto",unmountOnExit:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(List/* default */.A,{component:"div",disablePadding:true,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DefaultMappings,onClick:()=>setSelectedTab(PLCEditorTab.DefaultMappings),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Default Mappings",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPICheckpoints,onClick:()=>setSelectedTab(PLCEditorTab.DataAPICheckpoints),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Configuration Checkpoints",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIIconInventory,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIIconInventory),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Icon Inventory",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIDataManagement,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIDataManagement),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Data Management",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIProfiler,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIProfiler),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Profiler",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIReset,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIReset),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Reset",primaryTypographyProps:{fontSize:'0.875rem'}})}),/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemButton/* default */.A,{selected:selectedTab===PLCEditorTab.DataAPIMachineManager,onClick:()=>setSelectedTab(PLCEditorTab.DataAPIMachineManager),sx:{pl:4,py:1,'&.Mui-selected':{backgroundColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:colors.primaryColor}}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ListItemText/* default */.A,{primary:"Machines",primaryTypographyProps:{fontSize:'0.875rem'}})})]})})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1,overflow:'auto',p:3},children:[selectedTab===PLCEditorTab.SetupMachine&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Machine Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"General"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Name and Board Type'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(GeneralSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Machine Features"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Features'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(AccordionDetails_AccordionDetails/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:2,p:2,backgroundColor:data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.lightBackgroundColor,borderRadius:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:[/*#__PURE__*/(0,jsx_runtime.jsx)("strong",{children:"Feature Configuration:"})," Enable or disable optional machine features and attachments. Disabling a feature will hide its configuration section and prevent it from being rendered in the 3D viewer."]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(MachineFeaturesSection,{})]})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Machine Zero Coordinates (from Machine Home)"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Zero Coordinates'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MachineZeroSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Soft Limits"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Soft Limits'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SoftLimitsSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"Spoil Board"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spoil Board'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SpoilBoardSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main',flex:1},children:"File Monitoring Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['File Monitoring Configuration'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FilesSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"PLC Parameters"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(PLCParametersSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Machine State"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",children:"Machine state configuration moved to Setup Editor \u2192 Machine \u2192 General"})})]})]}),selectedTab===PLCEditorTab.SetupSpeedsHomingMeasuring&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"Speeds/Homing/Measuring"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Feed Rate Speeds"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Feed Rate Speeds'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FeedRateSpeedsSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Homing"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Homing Configuration'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(HomingSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Collision Detection & Safety"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(CollisionDetectionSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Change Location"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Manual Tool Change Location'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(ManualToolChangeSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',mt:4,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",sx:{fontWeight:'bold'},children:"Measurement Setup"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Measurement Setup'],showCount:true})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{container:true,spacing:3,sx:{mb:3},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Grid_Grid/* default */.Ay,{item:true,xs:12,children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistIndicator,{name:"Measurement Setup"})})}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Fixed Touch Plate"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Fixed Touch Plate Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FixedTouchPlateSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Movable Touch Plate"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Movable Touch Plate Height'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MovableTouchPlateSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Fixed Point"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Fixed Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FixedToolMeasurementSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Spoilboard"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Spoilboard Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SpoilboardToolMeasurementSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',pr:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Manual Tool Measurement - Machine Bed"}),/*#__PURE__*/(0,jsx_runtime.jsx)(ChecklistValidationIndicator,{checklistItemNames:['Machine Bed Tool Measurement Position'],showCount:true})]})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(MachineBedToolMeasurementSection,{})})]})]}),selectedTab===PLCEditorTab.SetupUI&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"UI Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Portal Colors"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(UIConfigurationSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Simulator Colors"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(SimulatorSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Safety Delays"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(DelaysSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Feature Visibility"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(FeaturesSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Accordion_Accordion/* default */.A,{sx:{mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionSummary_AccordionSummary/* default */.A,{expandIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(esm_ExpandMore/* default */.A,{}),children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h5",sx:{color:'primary.main'},children:"Input Tooltips"})}),/*#__PURE__*/(0,jsx_runtime.jsx)(AccordionDetails_AccordionDetails/* default */.A,{children:/*#__PURE__*/(0,jsx_runtime.jsx)(InputTooltipsSection,{})})]})]}),selectedTab===PLCEditorTab.SetupATC&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",gutterBottom:true,children:"ATC Configuration"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"text.secondary",sx:{mb:3},children:"Configure basic ATC settings including whether the machine has an ATC, the number of tool holders, and individual tool holder positions. Tool holder positions are automatically arranged in a linear pattern, but can be individually adjusted."}),/*#__PURE__*/(0,jsx_runtime.jsx)(ATCConfigurationSection,{})]}),selectedTab===PLCEditorTab.SetupAxis&&/*#__PURE__*/(0,jsx_runtime.jsx)(AxisSetupTab,{}),selectedTab===PLCEditorTab.SetupSpindle1&&/*#__PURE__*/(0,jsx_runtime.jsx)(Spindle1SetupTab,{}),selectedTab===PLCEditorTab.SetupSpindle2&&/*#__PURE__*/(0,jsx_runtime.jsx)(Spindle2SetupTab,{}),selectedTab===PLCEditorTab.SetupLaser&&/*#__PURE__*/(0,jsx_runtime.jsx)(LaserSetupTab,{}),selectedTab===PLCEditorTab.SetupMPG&&/*#__PURE__*/(0,jsx_runtime.jsx)(MPGSetupTab,{}),selectedTab===PLCEditorTab.SetupMachineData&&/*#__PURE__*/(0,jsx_runtime.jsx)(MachineDataTab,{}),selectedTab===PLCEditorTab.SystemInputs&&/*#__PURE__*/(0,jsx_runtime.jsx)(InputsTab,{}),selectedTab===PLCEditorTab.SystemOutputs&&/*#__PURE__*/(0,jsx_runtime.jsx)(OutputsTab,{}),selectedTab===PLCEditorTab.DefaultProgram&&/*#__PURE__*/(0,jsx_runtime.jsx)(DefaultPLCTab,{}),selectedTab===PLCEditorTab.SystemProgram&&/*#__PURE__*/(0,jsx_runtime.jsx)(SystemPLCTab,{}),selectedTab===PLCEditorTab.DefaultUITriggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(UITriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.SystemDefault}),selectedTab===PLCEditorTab.DefaultM94M95Triggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(M94M95TriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.SystemDefault}),selectedTab===PLCEditorTab.DefaultMappings&&/*#__PURE__*/(0,jsx_runtime.jsx)(DefaultMappingsTab,{}),selectedTab===PLCEditorTab.SystemUITriggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(UITriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.System}),selectedTab===PLCEditorTab.SystemM94M95Triggers&&/*#__PURE__*/(0,jsx_runtime.jsx)(M94M95TriggersTab,{programType:PLCUtilities/* PLCProgramType */.wM.System}),selectedTab===PLCEditorTab.DataAPICheckpoints&&/*#__PURE__*/(0,jsx_runtime.jsx)(ConfigCheckpointsTab,{},"plc-editor-checkpoints"),selectedTab===PLCEditorTab.DataAPIIconInventory&&/*#__PURE__*/(0,jsx_runtime.jsx)(IconInventoryTab,{},"plc-editor-icon-inventory"),selectedTab===PLCEditorTab.DataAPIDataManagement&&/*#__PURE__*/(0,jsx_runtime.jsx)(DataManagementTab,{}),selectedTab===PLCEditorTab.DataAPIProfiler&&/*#__PURE__*/(0,jsx_runtime.jsx)(ProfilerTab,{}),selectedTab===PLCEditorTab.DataAPIReset&&/*#__PURE__*/(0,jsx_runtime.jsx)(SystemResetComponent,{},"plc-editor-reset"),selectedTab===PLCEditorTab.DataAPIMachineManager&&/*#__PURE__*/(0,jsx_runtime.jsx)(MachineManagerTab,{},"plc-editor-machine-manager")]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:320,borderLeft:1,borderColor:'divider',backgroundColor:'background.paper',display:'flex',flexDirection:'column',overflow:'auto',p:2},children:/*#__PURE__*/(0,jsx_runtime.jsx)(SetupChecklistSection,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCViewerDialog,{open:viewerDialogOpen,onClose:()=>setViewerDialogOpen(false)}),/*#__PURE__*/(0,jsx_runtime.jsx)(MachineInstallationDialog,{open:installDialogOpen,onClose:()=>setInstallDialogOpen(false),onSuccess:()=>{setInstallDialogOpen(false);}}),/*#__PURE__*/(0,jsx_runtime.jsx)(PLCCompilationResultsWithSourceDialog,{open:compilationResultsOpen,onClose:()=>setCompilationResultsOpen(false),result:compilationResult,timestamp:compilationTimestamp,sourceCode:compiledSourceCode,messageFile:compiledMessageFile}),/*#__PURE__*/(0,jsx_runtime.jsx)(ValidationConfirmDialog,{open:validationConfirmOpen,onClose:()=>setValidationConfirmOpen(false),onConfirm:async()=>{if(pendingAction){await pendingAction();setPendingAction(null);}},issues:validationIssues,action:validationAction}),/*#__PURE__*/(0,jsx_runtime.jsx)(TooltipDisplay,{})]});}
 ;// ./src/components/Common/FloatingWindow.tsx
 /**
  * Draggable and resizable floating window component
@@ -48279,7 +50098,7 @@ const navigationItems=[{id:'home',label:'Home',icon:Home/* default */.A},{id:'mi
 const visibleItems=navigationItems.filter(item=>!item.showCondition||item.showCondition(config));// Get incomplete checklist count
 const incompleteCount=checklistLibrary.incompleteItems.length;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{height:'100%',display:'flex',flexDirection:'column'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{flexGrow:1,p:1},children:visibleItems.map(item=>{const IconComponent=item.icon;const isSelected=selectedView===item.id;return/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{mb:1},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(ListItemButton/* default */.A,{selected:isSelected,onClick:()=>{if(item.id==='milling'){// WORKAROUND: Dynamic property for component communication
 // _millingTriggerRun is set by Milling component to reset workflow
-const trigger=ConfigurationState.ConfigurationState.Instance._millingTriggerRun;if(trigger)trigger();}onViewChange(item.id);},sx:{width:75,height:75,borderRadius:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',bgcolor:isSelected?`${colors.darkTextColor}05`:`${colors.lightTextColor}00`,border:isSelected?'1px solid':`1px solid ${colors.lightTextColor}00`,borderColor:isSelected?colors.secondaryColor:`${colors.lightTextColor}00`,color:isSelected?colors.secondaryColor:'text.primary','&:hover':{bgcolor:isSelected?`${colors.darkTextColor}0A`:'action.hover',borderColor:isSelected?colors.primaryColor:`${colors.lightTextColor}00`},'&.Mui-selected':{bgcolor:`${colors.darkTextColor}05`,border:'1px solid',borderColor:colors.secondaryColor,color:colors.secondaryColor,'&:hover':{bgcolor:`${colors.darkTextColor}0A`,borderColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{position:'relative',fontSize:28,mb:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(IconComponent,{}),item.id==='plc'&&incompleteCount>0&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{position:'absolute',top:-4,right:-4,bgcolor:colors.errorColor,color:colors.lightTextColor,borderRadius:'50%',minWidth:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:'bold',px:0.5},children:incompleteCount})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:item.label})]})},item.id);})}),onJogClick&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:1,borderTop:'1px solid',borderColor:'divider'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Jog Controls",placement:"right",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onJogClick,sx:{width:75,height:75,borderRadius:1,border:`1px solid ${colors.lightTextColor}00`,'&:hover':{bgcolor:'action.hover',borderColor:'primary.main'}},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{fontSize:28,mb:0.5},children:/*#__PURE__*/(0,jsx_runtime.jsx)(OpenWith,{})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:"Jog"})]})})})}),onViewerClick&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:1},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"3D Viewer",placement:"right",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onViewerClick,sx:{width:75,height:75,borderRadius:1,border:`1px solid ${colors.lightTextColor}00`,'&:hover':{bgcolor:'action.hover',borderColor:'primary.main'}},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{fontSize:28,mb:0.5},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ThreeDRotation,{})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:"3D View"})]})})})})]});}},"left-navigation");}
+const trigger=ConfigurationState.ConfigurationState.Instance._millingTriggerRun;if(trigger)trigger();}onViewChange(item.id);},sx:{width:75,height:75,borderRadius:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',bgcolor:isSelected?`${colors.darkTextColor}05`:`${colors.lightTextColor}00`,border:isSelected?'1px solid':`1px solid ${colors.lightTextColor}00`,borderColor:isSelected?colors.secondaryColor:`${colors.lightTextColor}00`,color:isSelected?colors.secondaryColor:'text.primary','&:hover':{bgcolor:isSelected?`${colors.darkTextColor}0A`:'action.hover',borderColor:isSelected?colors.primaryColor:`${colors.lightTextColor}00`},'&.Mui-selected':{bgcolor:`${colors.darkTextColor}05`,border:'1px solid',borderColor:colors.secondaryColor,color:colors.secondaryColor,'&:hover':{bgcolor:`${colors.darkTextColor}0A`,borderColor:colors.primaryColor}}},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{position:'relative',fontSize:28,mb:0.5},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(IconComponent,{}),item.id==='plc'&&incompleteCount>0&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{position:'absolute',top:-4,right:-4,bgcolor:colors.errorColor,color:colors.lightTextColor,borderRadius:'50%',minWidth:20,height:20,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:'bold',px:0.5},children:incompleteCount})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:item.label})]})},item.id);})}),MachineInterfaceManager/* MachineInterfaceManager */.y.Instance.isUsingSimulator()&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{px:1,pb:1},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Chip_Chip/* default */.A,{label:"Simulator",size:"small",sx:{width:75,bgcolor:'warning.main',color:'warning.contrastText',fontWeight:'bold',fontSize:'0.6rem',height:20,borderRadius:1}})}),onJogClick&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:1,borderTop:'1px solid',borderColor:'divider'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"Jog Controls",placement:"right",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onJogClick,sx:{width:75,height:75,borderRadius:1,border:`1px solid ${colors.lightTextColor}00`,'&:hover':{bgcolor:'action.hover',borderColor:'primary.main'}},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{fontSize:28,mb:0.5},children:/*#__PURE__*/(0,jsx_runtime.jsx)(OpenWith,{})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:"Jog"})]})})})}),onViewerClick&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:1},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip_Tooltip/* default */.A,{title:"3D Viewer",placement:"right",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{onClick:onViewerClick,sx:{width:75,height:75,borderRadius:1,border:`1px solid ${colors.lightTextColor}00`,'&:hover':{bgcolor:'action.hover',borderColor:'primary.main'}},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',flexDirection:'column',alignItems:'center'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{fontSize:28,mb:0.5},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ThreeDRotation,{})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{fontSize:'0.65rem',textAlign:'center'},children:"3D View"})]})})})})]});}},"left-navigation");}
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/FilterList.js
 var FilterList = __webpack_require__(4190);
 ;// ./src/components/Common/LogViewer.tsx
@@ -48307,14 +50126,6 @@ class LogViewerDrawerComponent extends react.Component{constructor(props){super(
 function Home_Home(_ref){let{onViewChange}=_ref;const[machineState]=(0,react.useState)(()=>data_MachineStateData.MachineStateData.Instance);const[machineData]=(0,react.useState)(()=>Machine_MachineData/* MachineData */.O.Instance);const[simulatorViewData]=(0,react.useState)(()=>ViewDataFactory/* ViewDataFactory */.W.createForContext(ViewDataFactory/* ViewNames */.A.HOME));return/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:'100%',height:'100%',overflow:'hidden'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(FullSizeCNCViewer/* FullSizeCNCViewer */.j,{simulatorViewData:simulatorViewData,machineState:machineState,machineData:machineData,job:ConfigurationState.ConfigurationState.Instance.currentJob||Job.Job.createTestJob()})});}
 ;// ./src/components/Views/Laser.tsx
 class Laser extends react.Component{render(){return/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:3,display:'flex',alignItems:'center',justifyContent:'center',height:'100%'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h4",color:"primary",children:"Laser"})});}}
-;// ./node_modules/@mui/icons-material/esm/Computer.js
-"use client";
-
-
-
-/* harmony default export */ const Computer = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
-  d: "M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2zM4 6h16v10H4z"
-}), 'Computer'));
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Construction.js
 var Construction = __webpack_require__(9193);
 // EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Handyman.js
@@ -50378,6 +52189,26 @@ class CentroidCNCFeatures{constructor(){this.programApi=void 0;const config=Mach
 // M6 T{toolNumber} - Tool change command
 const gcode=`M6 T${toolNumber}`;// Get proposed fixture point from CoordinateUtil
 const proposedFixturePoint=CoordinateUtil.CoordinateUtil.toAPIFixtureOffset();const request={gCode:gcode,fixturePoint:{x:proposedFixturePoint.x,y:proposedFixturePoint.y,z:proposedFixturePoint.z}};await this.programApi.apiCNCProgramRunGCodeCommandPost({runGCodeCommandRequest:request});}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.Tools,'Failed to change tool:',error);throw error;}}}
+;// ./node_modules/@mui/icons-material/esm/ToggleOn.js
+"use client";
+
+
+
+/* harmony default export */ const ToggleOn = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
+  d: "M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5m0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3"
+}), 'ToggleOn'));
+;// ./node_modules/@mui/icons-material/esm/ToggleOff.js
+"use client";
+
+
+
+/* harmony default export */ const ToggleOff = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
+  d: "M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5M7 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3"
+}), 'ToggleOff'));
+;// ./src/components/Common/OutputForceControlDialog.tsx
+function OutputForceControlDialog(_ref){let{open,output,onClose}=_ref;const colors=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;const[currentState,setCurrentState]=(0,react.useState)(output.isActive);const handleForceOn=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.SetOutputState(output.number,true);setCurrentState(true);output.isForced=true;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to force output ON:',error);}};const handleForceOff=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.SetOutputState(output.number,false);setCurrentState(false);output.isForced=true;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to force output OFF:',error);}};const handleReset=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.ResetOutput(output.number);// Refetch forced state from the machine to get current on/off state
+const currentOutput=IOStateData/* IOStateData */.Em.Instance.getOutputByNumber(output.number);if(currentOutput){setCurrentState(currentOutput.isActive);}output.isForced=false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to reset output:',error);}};const handleClose=async()=>{// Reset output when closing dialog
+await handleReset();onClose();};const activeColor=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.successColor;const displayText=currentState?output.activeText:output.inactiveText;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:handleClose,"aria-labelledby":"output-control-title",maxWidth:"sm",fullWidth:true,disableEnforceFocus:true,hideBackdrop:false,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogTitle_DialogTitle/* default */.A,{id:"output-control-title",sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,display:'flex',alignItems:'center',justifyContent:'space-between',py:2,px:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",component:"div",children:"Force Output Control"}),/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:handleClose,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:colors.lightOverlay}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Close/* default */.A,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogContent_DialogContent/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{mt:3,mb:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:2,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:40,height:32,backgroundColor:currentState?activeColor:colors.borderColor,color:currentState?colors.lightTextColor:colors.mutedTextColor,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:1,fontSize:'0.9rem',fontWeight:'bold',flexShrink:0},children:output.number}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"subtitle1",sx:{fontWeight:600},children:output.name}),output.centroidName&&/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{color:colors.mutedTextColor},children:output.centroidName})]})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:2,backgroundColor:currentState?`${activeColor}1A`:`${colors.borderColor}1A`,borderRadius:1,border:`2px solid ${currentState?activeColor:colors.borderColor}`,textAlign:'center'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",sx:{color:currentState?activeColor:colors.mutedTextColor,fontWeight:'bold'},children:displayText})})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"warning.main",sx:{mb:2},children:"\u26A0\uFE0F Job is running - manual control enabled"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{fullWidth:true,variant:"contained",color:"success",size:"large",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleOn,{}),onClick:handleForceOn,disabled:currentState,children:"Force ON"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{fullWidth:true,variant:"contained",color:"error",size:"large",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleOff,{}),onClick:handleForceOff,disabled:!currentState,children:"Force OFF"})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"text.secondary",sx:{display:'block',textAlign:'center'},children:"Output will be reset to program control when dialog is closed"})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{sx:{p:2,gap:1,justifyContent:'flex-end',borderTop:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleReset,color:"warning",children:"Reset Now"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleClose,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Close & Reset"})]})]});}
 ;// ./src/services/src/models/BoardConfiguration.ts
 /* tslint:disable *//* eslint-disable *//**
  * HavenCNC Server API
@@ -50579,22 +52410,14 @@ const proposedFixturePoint=CoordinateUtil.CoordinateUtil.toAPIFixtureOffset();co
      */async apiCNCIOIsInputActiveInputNumberGetRaw(requestParameters,initOverrides){if(requestParameters['inputNumber']==null){throw new runtime/* RequiredError */.Q0('inputNumber','Required parameter "inputNumber" was null or undefined when calling apiCNCIOIsInputActiveInputNumberGet().');}const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/IsInputActive/{inputNumber}`;urlPath=urlPath.replace(`{${"inputNumber"}}`,encodeURIComponent(String(requestParameters['inputNumber'])));const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);if(this.isJsonMime(response.headers.get('content-type'))){return new runtime/* JSONApiResponse */.ko(response);}else{return new runtime/* TextApiResponse */.Pf(response);}}/**
      * Check if specific input is active
      */async apiCNCIOIsInputActiveInputNumberGet(requestParameters,initOverrides){const response=await this.apiCNCIOIsInputActiveInputNumberGetRaw(requestParameters,initOverrides);return await response.value();}/**
-     * Check if input is available
-     */async apiCNCIOIsInputAvailableInputNumberGetRaw(requestParameters,initOverrides){if(requestParameters['inputNumber']==null){throw new runtime/* RequiredError */.Q0('inputNumber','Required parameter "inputNumber" was null or undefined when calling apiCNCIOIsInputAvailableInputNumberGet().');}const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/IsInputAvailable/{inputNumber}`;urlPath=urlPath.replace(`{${"inputNumber"}}`,encodeURIComponent(String(requestParameters['inputNumber'])));const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);if(this.isJsonMime(response.headers.get('content-type'))){return new runtime/* JSONApiResponse */.ko(response);}else{return new runtime/* TextApiResponse */.Pf(response);}}/**
-     * Check if input is available
-     */async apiCNCIOIsInputAvailableInputNumberGet(requestParameters,initOverrides){const response=await this.apiCNCIOIsInputAvailableInputNumberGetRaw(requestParameters,initOverrides);return await response.value();}/**
      * Check if specific output is active
      */async apiCNCIOIsOutputActiveOutputNumberGetRaw(requestParameters,initOverrides){if(requestParameters['outputNumber']==null){throw new runtime/* RequiredError */.Q0('outputNumber','Required parameter "outputNumber" was null or undefined when calling apiCNCIOIsOutputActiveOutputNumberGet().');}const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/IsOutputActive/{outputNumber}`;urlPath=urlPath.replace(`{${"outputNumber"}}`,encodeURIComponent(String(requestParameters['outputNumber'])));const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);if(this.isJsonMime(response.headers.get('content-type'))){return new runtime/* JSONApiResponse */.ko(response);}else{return new runtime/* TextApiResponse */.Pf(response);}}/**
      * Check if specific output is active
      */async apiCNCIOIsOutputActiveOutputNumberGet(requestParameters,initOverrides){const response=await this.apiCNCIOIsOutputActiveOutputNumberGetRaw(requestParameters,initOverrides);return await response.value();}/**
-     * Check if output is available
-     */async apiCNCIOIsOutputAvailableOutputNumberGetRaw(requestParameters,initOverrides){if(requestParameters['outputNumber']==null){throw new runtime/* RequiredError */.Q0('outputNumber','Required parameter "outputNumber" was null or undefined when calling apiCNCIOIsOutputAvailableOutputNumberGet().');}const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/IsOutputAvailable/{outputNumber}`;urlPath=urlPath.replace(`{${"outputNumber"}}`,encodeURIComponent(String(requestParameters['outputNumber'])));const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);if(this.isJsonMime(response.headers.get('content-type'))){return new runtime/* JSONApiResponse */.ko(response);}else{return new runtime/* TextApiResponse */.Pf(response);}}/**
-     * Check if output is available
-     */async apiCNCIOIsOutputAvailableOutputNumberGet(requestParameters,initOverrides){const response=await this.apiCNCIOIsOutputAvailableOutputNumberGetRaw(requestParameters,initOverrides);return await response.value();}/**
-     * Reset all outputs to normal (remove all forced states)
-     */async apiCNCIOResetAllOutputsPostRaw(initOverrides){const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/ResetAllOutputs`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
-     * Reset all outputs to normal (remove all forced states)
-     */async apiCNCIOResetAllOutputsPost(initOverrides){await this.apiCNCIOResetAllOutputsPostRaw(initOverrides);}/**
+     * Reset specified outputs to normal (remove forced state)
+     */async apiCNCIOResetAllOutputsPostRaw(requestParameters,initOverrides){const queryParameters={};const headerParameters={};headerParameters['Content-Type']='application/json';let urlPath=`/api/CNCIO/ResetAllOutputs`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters,body:requestParameters['requestBody']},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
+     * Reset specified outputs to normal (remove forced state)
+     */async apiCNCIOResetAllOutputsPost(){let requestParameters=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};let initOverrides=arguments.length>1?arguments[1]:undefined;await this.apiCNCIOResetAllOutputsPostRaw(requestParameters,initOverrides);}/**
      * Reset output to normal (remove forced state)
      */async apiCNCIOResetOutputOutputNumberPostRaw(requestParameters,initOverrides){if(requestParameters['outputNumber']==null){throw new runtime/* RequiredError */.Q0('outputNumber','Required parameter "outputNumber" was null or undefined when calling apiCNCIOResetOutputOutputNumberPost().');}const queryParameters={};const headerParameters={};let urlPath=`/api/CNCIO/ResetOutput/{outputNumber}`;urlPath=urlPath.replace(`{${"outputNumber"}}`,encodeURIComponent(String(requestParameters['outputNumber'])));const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
      * Reset output to normal (remove forced state)
@@ -50603,28 +52426,8 @@ const proposedFixturePoint=CoordinateUtil.CoordinateUtil.toAPIFixtureOffset();co
      */async apiCNCIOSetOutputStatePostRaw(requestParameters,initOverrides){const queryParameters={};const headerParameters={};headerParameters['Content-Type']='application/json';let urlPath=`/api/CNCIO/SetOutputState`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters,body:SetOutputRequestToJSON(requestParameters['setOutputRequest'])},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
      * Set output state and broadcast the change via SignalR
      */async apiCNCIOSetOutputStatePost(){let requestParameters=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};let initOverrides=arguments.length>1?arguments[1]:undefined;await this.apiCNCIOSetOutputStatePostRaw(requestParameters,initOverrides);}}
-;// ./node_modules/@mui/icons-material/esm/ToggleOn.js
-"use client";
-
-
-
-/* harmony default export */ const ToggleOn = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
-  d: "M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5m0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3"
-}), 'ToggleOn'));
-;// ./node_modules/@mui/icons-material/esm/ToggleOff.js
-"use client";
-
-
-
-/* harmony default export */ const ToggleOff = ((0,createSvgIcon/* default */.A)(/*#__PURE__*/(0,jsx_runtime.jsx)("path", {
-  d: "M17 7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h10c2.76 0 5-2.24 5-5s-2.24-5-5-5M7 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3"
-}), 'ToggleOff'));
-;// ./src/components/Common/OutputForceControlDialog.tsx
-function OutputForceControlDialog(_ref){let{open,output,onClose}=_ref;const colors=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;const[currentState,setCurrentState]=(0,react.useState)(output.isActive);const handleForceOn=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.SetOutputState(output.number,true);setCurrentState(true);output.isForced=true;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to force output ON:',error);}};const handleForceOff=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.SetOutputState(output.number,false);setCurrentState(false);output.isForced=true;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to force output OFF:',error);}};const handleReset=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.io.ResetOutput(output.number);// Refetch forced state from the machine to get current on/off state
-const currentOutput=IOStateData/* IOStateData */.Em.Instance.getOutputByNumber(output.number);if(currentOutput){setCurrentState(currentOutput.isActive);}output.isForced=false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.UserInterface,'Failed to reset output:',error);}};const handleClose=async()=>{// Reset output when closing dialog
-await handleReset();onClose();};const activeColor=data_ConfigurationDataColors/* ConfigurationDataColors */.f.Instance.successColor;const displayText=currentState?output.activeText:output.inactiveText;return/*#__PURE__*/(0,jsx_runtime.jsxs)(Dialog_Dialog/* default */.A,{open:open,onClose:handleClose,"aria-labelledby":"output-control-title",maxWidth:"sm",fullWidth:true,disableEnforceFocus:true,hideBackdrop:false,children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogTitle_DialogTitle/* default */.A,{id:"output-control-title",sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,display:'flex',alignItems:'center',justifyContent:'space-between',py:2,px:3},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",component:"div",children:"Force Output Control"}),/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton_IconButton/* default */.A,{size:"small",onClick:handleClose,sx:{color:colors.lightTextColor,'&:hover':{backgroundColor:colors.lightOverlay}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Close/* default */.A,{})})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogContent_DialogContent/* default */.A,{children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{mt:3,mb:3},children:[/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap:2,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{width:40,height:32,backgroundColor:currentState?activeColor:colors.borderColor,color:currentState?colors.lightTextColor:colors.mutedTextColor,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:1,fontSize:'0.9rem',fontWeight:'bold',flexShrink:0},children:output.number}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{flex:1},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"subtitle1",sx:{fontWeight:600},children:output.name}),output.centroidName&&/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",sx:{color:colors.mutedTextColor},children:output.centroidName})]})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{p:2,backgroundColor:currentState?`${activeColor}1A`:`${colors.borderColor}1A`,borderRadius:1,border:`2px solid ${currentState?activeColor:colors.borderColor}`,textAlign:'center'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"h6",sx:{color:currentState?activeColor:colors.mutedTextColor,fontWeight:'bold'},children:displayText})})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"body2",color:"warning.main",sx:{mb:2},children:"\u26A0\uFE0F Job is running - manual control enabled"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box_Box/* default */.A,{sx:{display:'flex',gap:2,mb:2},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{fullWidth:true,variant:"contained",color:"success",size:"large",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleOn,{}),onClick:handleForceOn,disabled:currentState,children:"Force ON"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{fullWidth:true,variant:"contained",color:"error",size:"large",startIcon:/*#__PURE__*/(0,jsx_runtime.jsx)(ToggleOff,{}),onClick:handleForceOff,disabled:!currentState,children:"Force OFF"})]}),/*#__PURE__*/(0,jsx_runtime.jsx)(Typography_Typography/* default */.A,{variant:"caption",color:"text.secondary",sx:{display:'block',textAlign:'center'},children:"Output will be reset to program control when dialog is closed"})]}),/*#__PURE__*/(0,jsx_runtime.jsxs)(DialogActions_DialogActions/* default */.A,{sx:{p:2,gap:1,justifyContent:'flex-end',borderTop:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleReset,color:"warning",children:"Reset Now"}),/*#__PURE__*/(0,jsx_runtime.jsx)(Button_Button/* default */.A,{onClick:handleClose,variant:"contained",sx:{backgroundColor:colors.primaryColor,'&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:"Close & Reset"})]})]});}
 ;// ./src/centroid/CentroidCNCIO.ts
-class CentroidCNCIO{constructor(){this.api=void 0;this.basePath=void 0;this.definedInputsCache=null;this.definedOutputsCache=null;const config=MachineInterfaceManager/* MachineInterfaceManager */.y.Instance.getServiceConfiguration();this.basePath=(config===null||config===void 0?void 0:config.basePath)||'';this.api=new CNCIOApi(config||undefined);}async GetAvailableInputs(){try{const response=await this.api.apiCNCIOGetAvailableInputsGetRaw();const inputNumbers=await response.value();return inputNumbers||[];}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get available inputs:',error);throw error;}}async GetAvailableOutputs(){try{const response=await this.api.apiCNCIOGetAvailableOutputsGetRaw();const outputNumbers=await response.value();return outputNumbers||[];}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get available outputs:',error);throw error;}}async GetBulkIOStates(){try{var _bulkStates$inputs,_bulkStates$outputs;const response=await this.api.apiCNCIOGetBulkIOStatesGetRaw();const bulkStates=await response.value();const inputs={};const outputs={};(_bulkStates$inputs=bulkStates.inputs)===null||_bulkStates$inputs===void 0?void 0:_bulkStates$inputs.forEach(input=>{if(input.number!==undefined&&input.isOn!==undefined){inputs[input.number]=input.isOn;}});(_bulkStates$outputs=bulkStates.outputs)===null||_bulkStates$outputs===void 0?void 0:_bulkStates$outputs.forEach(output=>{if(output.number!==undefined&&output.isOn!==undefined){outputs[output.number]=output.isOn;}});const readAt=bulkStates.readAt||new Date();return{inputs,outputs,readAt};}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get bulk I/O states:',error);throw error;}}async GetCurrentInputs(){try{// Get defined inputs which includes the current state
+class CentroidCNCIO{constructor(){this.api=void 0;this.basePath=void 0;this.definedInputsCache=null;this.definedOutputsCache=null;const config=MachineInterfaceManager/* MachineInterfaceManager */.y.Instance.getServiceConfiguration();this.basePath=(config===null||config===void 0?void 0:config.basePath)||'';this.api=new CNCIOApi(config||undefined);}async GetBulkIOStates(){try{var _bulkStates$inputs,_bulkStates$outputs;const response=await this.api.apiCNCIOGetBulkIOStatesGetRaw();const bulkStates=await response.value();const inputs={};const outputs={};(_bulkStates$inputs=bulkStates.inputs)===null||_bulkStates$inputs===void 0?void 0:_bulkStates$inputs.forEach(input=>{if(input.number!==undefined&&input.isOn!==undefined){inputs[input.number]=input.isOn;}});(_bulkStates$outputs=bulkStates.outputs)===null||_bulkStates$outputs===void 0?void 0:_bulkStates$outputs.forEach(output=>{if(output.number!==undefined&&output.isOn!==undefined){outputs[output.number]=output.isOn;}});const readAt=bulkStates.readAt||new Date();return{inputs,outputs,readAt};}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get bulk I/O states:',error);throw error;}}async GetCurrentInputs(){try{// Get defined inputs which includes the current state
 const definedInputs=await this.GetDefinedInputs();const result={};definedInputs.forEach(input=>{if(input.number!==undefined&&input.state!==undefined){result[input.number]=input.state;}});return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get current inputs:',error);throw error;}}async GetCurrentOutputs(){try{// Get defined outputs which includes the current state
 const definedOutputs=await this.GetDefinedOutputs();const result={};definedOutputs.forEach(output=>{if(output.number!==undefined&&output.state!==undefined){result[output.number]=output.state;}});return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get current outputs:',error);throw error;}}async GetDefinedInputs(){// Return cached result if available
 if(this.definedInputsCache!==null){return this.definedInputsCache;}try{// Get inputs from System PLC program
@@ -50638,12 +52441,7 @@ const systemProgram=PLCProgram.PLCProgram.Instance(PLCUtilities/* PLCProgramType
 const outputsWithNumbers=plcOutputs.filter(output=>output.number!==null);const outputNumbers=outputsWithNumbers.map(output=>output.number);// Query backend for current state of these outputs
 const stateResponse=await this.api.apiCNCIOGetOutputStatePost({requestBody:outputNumbers});const outputStates=stateResponse||{};// Combine PLC definitions with backend state
 const result=outputsWithNumbers.map(output=>{var _outputStates$toStrin;return{number:output.number,name:output.centroidName,state:(_outputStates$toStrin=outputStates[output.number.toString()])!==null&&_outputStates$toStrin!==void 0?_outputStates$toStrin:false};});// Cache the result
-this.definedOutputsCache=result;return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get defined outputs:',error);throw error;}}async GetBoardConfiguration(){try{const response=await this.api.apiCNCIOGetBoardConfigurationGetRaw();const config=await response.value();return config||{};}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get board configuration:',error);throw error;}}async GetSystemInfo(){try{const response=await this.api.apiCNCIOGetSystemInfoGetRaw();const systemInfo=await response.value();return systemInfo;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get system info:',error);throw error;}}async GetIOAvailability(){try{// Combine the available inputs and outputs
-const[availableInputs,availableOutputs]=await Promise.all([this.GetAvailableInputs(),this.GetAvailableOutputs()]);const result={};// Add inputs to availability map
-availableInputs.forEach(inputNum=>{result[`input_${inputNum}`]=true;});// Add outputs to availability map
-availableOutputs.forEach(outputNum=>{result[`output_${outputNum}`]=true;});return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get IO availability:',error);throw error;}}async IsInputActive(inputNumber){try{const response=await this.api.apiCNCIOIsInputActiveInputNumberGetRaw({inputNumber});const isActive=await response.value();return isActive!==null&&isActive!==void 0?isActive:false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to check input status:',error);throw error;}}async IsOutputActive(outputNumber){try{const response=await this.api.apiCNCIOIsOutputActiveOutputNumberGetRaw({outputNumber});const isActive=await response.value();return isActive!==null&&isActive!==void 0?isActive:false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to check output status:',error);throw error;}}async IsInputAvailable(inputNumber){try{const response=await this.api.apiCNCIOIsInputAvailableInputNumberGetRaw({inputNumber});const isAvailable=await response.value();return isAvailable!==null&&isAvailable!==void 0?isAvailable:false;}catch(error){// If the call fails, the input is not available
-utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`IsInputAvailable: Input ${inputNumber} is not available (error occurred)`,error);return false;}}async IsOutputAvailable(outputNumber){try{const response=await this.api.apiCNCIOIsOutputAvailableOutputNumberGetRaw({outputNumber});const isAvailable=await response.value();return isAvailable!==null&&isAvailable!==void 0?isAvailable:false;}catch(error){// If the call fails, the output is not available
-utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`IsOutputAvailable: Output ${outputNumber} is not available (error occurred)`,error);return false;}}async SetOutputState(outputNumber,state){try{// Find the output to get G-code commands
+this.definedOutputsCache=result;return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get defined outputs:',error);throw error;}}async GetBoardConfiguration(){try{const response=await this.api.apiCNCIOGetBoardConfigurationGetRaw();const config=await response.value();return config||{};}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get board configuration:',error);throw error;}}async GetSystemInfo(){try{const response=await this.api.apiCNCIOGetSystemInfoGetRaw();const systemInfo=await response.value();return systemInfo;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get system info:',error);throw error;}}async GetIOAvailability(){const availableNumbers=getAvailableIONumbers(Machine_MachineData/* MachineData */.O.Instance.boardType,Machine_MachineData/* MachineData */.O.Instance.expansionBoardCount);const result={};availableNumbers.forEach(num=>{result[`input_${num}`]=true;result[`output_${num}`]=true;});return result;}async IsInputActive(inputNumber){try{const response=await this.api.apiCNCIOIsInputActiveInputNumberGetRaw({inputNumber});const isActive=await response.value();return isActive!==null&&isActive!==void 0?isActive:false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to check input status:',error);throw error;}}async IsOutputActive(outputNumber){try{const response=await this.api.apiCNCIOIsOutputActiveOutputNumberGetRaw({outputNumber});const isActive=await response.value();return isActive!==null&&isActive!==void 0?isActive:false;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to check output status:',error);throw error;}}async SetOutputState(outputNumber,state){try{// Find the output to get G-code commands
 const output=IOStateData/* IOStateData */.Em.Instance.getOutputByNumber(outputNumber);if(!output){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Output ${outputNumber} not found in IOStateData`);throw new Error(`Output ${outputNumber} not found`);}// Check if a job is running - Machine already imported at top of file
 const machine=Machine/* Machine */.u5.getInstance();const isJobRunning=await machine.program.IsJobRunning();if(isJobRunning){// Job is running - show force control dialog
 this.showForceControlDialog(output);return;}// No job running - use output's configured G-code commands
@@ -52964,6 +54762,10 @@ let apiStorageType;if(storage.storageType===ICNCProgramStorage/* StorageType */.
  *//**
  * 
  */class MachineConfigurationApi extends runtime/* BaseAPI */.yi{/**
+     * Delete all MongoDB data for a machine (configs, jobs, G-code files).  Does NOT touch local files — only removes the machine from the cloud.  If deleting the currently active machine, provide switchToMachine to switch first.
+     */async apiMachineConfigurationDeleteMachineMachineNameDeleteRaw(requestParameters,initOverrides){if(requestParameters['machineName']==null){throw new runtime/* RequiredError */.Q0('machineName','Required parameter "machineName" was null or undefined when calling apiMachineConfigurationDeleteMachineMachineNameDelete().');}const queryParameters={};if(requestParameters['switchToMachine']!=null){queryParameters['switchToMachine']=requestParameters['switchToMachine'];}const headerParameters={};let urlPath=`/api/MachineConfiguration/DeleteMachine/{machineName}`;urlPath=urlPath.replace(`{${"machineName"}}`,encodeURIComponent(String(requestParameters['machineName'])));const response=await this.request({path:urlPath,method:'DELETE',headers:headerParameters,query:queryParameters},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
+     * Delete all MongoDB data for a machine (configs, jobs, G-code files).  Does NOT touch local files — only removes the machine from the cloud.  If deleting the currently active machine, provide switchToMachine to switch first.
+     */async apiMachineConfigurationDeleteMachineMachineNameDelete(requestParameters,initOverrides){await this.apiMachineConfigurationDeleteMachineMachineNameDeleteRaw(requestParameters,initOverrides);}/**
      * Get configuration file (MongoDB first, then local fallback)
      */async apiMachineConfigurationFileNameGetRaw(requestParameters,initOverrides){if(requestParameters['fileName']==null){throw new runtime/* RequiredError */.Q0('fileName','Required parameter "fileName" was null or undefined when calling apiMachineConfigurationFileNameGet().');}const queryParameters={};const headerParameters={};let urlPath=`/api/MachineConfiguration/{fileName}`;urlPath=urlPath.replace(`{${"fileName"}}`,encodeURIComponent(String(requestParameters['fileName'])));const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
      * Get configuration file (MongoDB first, then local fallback)
@@ -52984,13 +54786,13 @@ let apiStorageType;if(storage.storageType===ICNCProgramStorage/* StorageType */.
      */async apiMachineConfigurationGetMachineNamesGetRaw(initOverrides){const queryParameters={};const headerParameters={};let urlPath=`/api/MachineConfiguration/GetMachineNames`;const response=await this.request({path:urlPath,method:'GET',headers:headerParameters,query:queryParameters},initOverrides);return new runtime/* JSONApiResponse */.ko(response);}/**
      * Get list of available machine names from MongoDB
      */async apiMachineConfigurationGetMachineNamesGet(initOverrides){const response=await this.apiMachineConfigurationGetMachineNamesGetRaw(initOverrides);return await response.value();}/**
-     * Set current machine
+     * Set current machine name.  - New machine: seeds MongoDB with current local config under the new name, then syncs.  - Existing machine: archives current data to zip, seeds new-machine config in MongoDB,    wipes local jobs/gcode, then syncs down from the new machine.
      */async apiMachineConfigurationSetCurrentMachinePostRaw(requestParameters,initOverrides){const queryParameters={};const headerParameters={};headerParameters['Content-Type']='application/json';let urlPath=`/api/MachineConfiguration/SetCurrentMachine`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters,body:SetCurrentMachineRequestToJSON(requestParameters['setCurrentMachineRequest'])},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
-     * Set current machine
+     * Set current machine name.  - New machine: seeds MongoDB with current local config under the new name, then syncs.  - Existing machine: archives current data to zip, seeds new-machine config in MongoDB,    wipes local jobs/gcode, then syncs down from the new machine.
      */async apiMachineConfigurationSetCurrentMachinePost(){let requestParameters=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};let initOverrides=arguments.length>1?arguments[1]:undefined;await this.apiMachineConfigurationSetCurrentMachinePostRaw(requestParameters,initOverrides);}/**
-     * Set current machine name
+     * Set current machine name.  - New machine: seeds MongoDB with current local config under the new name, then syncs.  - Existing machine: archives current data to zip, seeds new-machine config in MongoDB,    wipes local jobs/gcode, then syncs down from the new machine.
      */async apiMachineConfigurationSetMachinePostRaw(requestParameters,initOverrides){const queryParameters={};const headerParameters={};headerParameters['Content-Type']='application/json';let urlPath=`/api/MachineConfiguration/set-machine`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters,body:SetCurrentMachineRequestToJSON(requestParameters['setCurrentMachineRequest'])},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
-     * Set current machine name
+     * Set current machine name.  - New machine: seeds MongoDB with current local config under the new name, then syncs.  - Existing machine: archives current data to zip, seeds new-machine config in MongoDB,    wipes local jobs/gcode, then syncs down from the new machine.
      */async apiMachineConfigurationSetMachinePost(){let requestParameters=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};let initOverrides=arguments.length>1?arguments[1]:undefined;await this.apiMachineConfigurationSetMachinePostRaw(requestParameters,initOverrides);}/**
      * Store current system default PLC as a versioned default
      */async apiMachineConfigurationStoreAsDefaultPLCPostRaw(requestParameters,initOverrides){const queryParameters={};const headerParameters={};headerParameters['Content-Type']='application/json';let urlPath=`/api/MachineConfiguration/StoreAsDefaultPLC`;const response=await this.request({path:urlPath,method:'POST',headers:headerParameters,query:queryParameters,body:StoreDefaultPlcRequestToJSON(requestParameters['storeDefaultPlcRequest'])},initOverrides);return new runtime/* VoidApiResponse */.cK(response);}/**
@@ -53017,8 +54819,10 @@ async GetTravelLimits(){// Return cached value if available
 if(this.cachedTravelLimits){return this.cachedTravelLimits;}return null;}/**
    * Clear the cached travel limits (call when machine configuration changes)
    */clearTravelLimitsCache(){this.cachedTravelLimits=null;}// Machine configuration methods
-async GetMachineNames(){try{const result=await this.machineConfigApi.apiMachineConfigurationGetMachineNamesGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get machine names:',error);throw error;}}async GetCurrentMachineName(){try{const result=await this.machineConfigApi.apiMachineConfigurationGetCurrentMachineGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get current machine name:',error);throw error;}}async SetCurrentMachine(machineName){try{await this.machineConfigApi.apiMachineConfigurationSetCurrentMachinePost({setCurrentMachineRequest:{machineName}});// Reload all data after switching machines
-await data_DataManager.DataManager.Instance.reloadAllData();}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to set current machine to ${machineName}:`,error);throw error;}}async GetDefaultPLC(versionName){try{const result=await this.machineConfigApi.apiMachineConfigurationGetDefaultPLCGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to get default PLC${versionName?` version ${versionName}`:''} from API, falling back to public file:`,error);// Fallback: Load from public file (like simulator mode)
+async GetMachineNames(){try{const result=await this.machineConfigApi.apiMachineConfigurationGetMachineNamesGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get machine names:',error);throw error;}}async GetCurrentMachineName(){try{const result=await this.machineConfigApi.apiMachineConfigurationGetCurrentMachineGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to get current machine name:',error);throw error;}}async SetCurrentMachine(machineName){try{await this.machineConfigApi.apiMachineConfigurationSetCurrentMachinePost({setCurrentMachineRequest:{machineName}});// NOTE: Data reload is intentionally NOT performed here.
+// The caller (e.g. GeneralSection.handleMachineChange) owns the reload so
+// there is only ever a single reloadAllData() call per machine switch.
+}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to set current machine to ${machineName}:`,error);throw error;}}async DeleteMachine(machineName,switchToMachine){try{await this.machineConfigApi.apiMachineConfigurationDeleteMachineMachineNameDelete({machineName,switchToMachine});}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to delete machine ${machineName}:`,error);throw error;}}async GetDefaultPLC(versionName){try{const result=await this.machineConfigApi.apiMachineConfigurationGetDefaultPLCGet();return result;}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to get default PLC${versionName?` version ${versionName}`:''} from API, falling back to public file:`,error);// Fallback: Load from public file (like simulator mode)
 try{const filename='systemdefault.json';const response=await fetch(`/${filename}`);if(!response.ok){throw new Error(`Failed to fetch ${filename}`);}const jsonText=await response.text();// Store this as the default in the API for future use
 try{await this.StoreAsDefaultPLC(versionName||'1.0.0',jsonText,'Initial default PLC loaded from public file',true,'System');utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,'Successfully stored public file as default PLC in API');}catch(storeError){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to store public file as default PLC:',storeError);// Don't throw - we still have the JSON content to return
 }return jsonText;}catch(fallbackError){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Failed to load default PLC from public file:',fallbackError);throw new Error('Failed to get default PLC from both API and public file');}}}async StoreAsDefaultPLC(versionName,jsonData,description,markAsLatest,createdBy){try{utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,`Storing default PLC version ${versionName} via backend API...`);await this.machineConfigApi.apiMachineConfigurationStoreAsDefaultPLCPost({storeDefaultPlcRequest:{versionName,jsonData,description,markAsLatest,createdBy}});utils_Logger/* Logger */.Vy.Instance.log(utils_Logger/* LogCategory */.nh.System,`Successfully stored default PLC version ${versionName} via backend API`);}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,`Failed to store default PLC version ${versionName}:`,error);throw error;}}// Filesystem browsing methods
@@ -53099,7 +54903,7 @@ this.inputOverrides={};// Output override storage (for testing purposes only)
 this.outputOverrides={};// Persistent output states (remembers manual on/off commands)
 this.outputStates={};// Input state caching for stable demo values
 this.cachedInputStates={};this.lastInputCacheUpdate=0;this.INPUT_CACHE_DURATION_MS=5000;}// 5 seconds
-async GetAvailableInputs(){return[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];}async GetAvailableOutputs(){return[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];}async GetCurrentInputs(){const now=Date.now();// Cache input states for demo stability (refresh every 5 seconds)
+async GetCurrentInputs(){const now=Date.now();// Cache input states for demo stability (refresh every 5 seconds)
 if(now-this.lastInputCacheUpdate>this.INPUT_CACHE_DURATION_MS){this.cachedInputStates={};for(let i=1;i<=18;i++){this.cachedInputStates[i]=Math.random()>0.7;// 30% chance of being active
 }this.lastInputCacheUpdate=now;}// Apply any test overrides
 const finalStates={...this.cachedInputStates,...this.inputOverrides};// Update IOStateData with current states for UI reactivity
@@ -53118,9 +54922,7 @@ if(IOStateData/* IOStateData */.Em.Instance.isInitialized){IOStateData/* IOState
 const result=[{number:1,name:'NoFaultOut',state:(_finalStates$17=finalStates[1])!==null&&_finalStates$17!==void 0?_finalStates$17:false},{number:2,name:'SpinFWD',state:(_finalStates$18=finalStates[2])!==null&&_finalStates$18!==void 0?_finalStates$18:false},{number:3,name:'SpinREV',state:(_finalStates$19=finalStates[3])!==null&&_finalStates$19!==void 0?_finalStates$19:false},{number:4,name:'SpindleBrakeRelease',state:(_finalStates$20=finalStates[4])!==null&&_finalStates$20!==void 0?_finalStates$20:false},{number:5,name:'UnclampTool',state:(_finalStates$21=finalStates[5])!==null&&_finalStates$21!==void 0?_finalStates$21:false},{number:6,name:'Flood',state:(_finalStates$22=finalStates[6])!==null&&_finalStates$22!==void 0?_finalStates$22:false},{number:7,name:'Mist',state:(_finalStates$23=finalStates[7])!==null&&_finalStates$23!==void 0?_finalStates$23:false},{number:8,name:'LubePump',state:(_finalStates$24=finalStates[8])!==null&&_finalStates$24!==void 0?_finalStates$24:false},{number:9,name:'DustCollectionOn',state:(_finalStates$25=finalStates[9])!==null&&_finalStates$25!==void 0?_finalStates$25:false},{number:10,name:'CustomOutput1',state:(_finalStates$26=finalStates[10])!==null&&_finalStates$26!==void 0?_finalStates$26:false},{number:11,name:'VacuumPump',state:(_finalStates$27=finalStates[11])!==null&&_finalStates$27!==void 0?_finalStates$27:false},{number:12,name:'DustBootDown',state:(_finalStates$28=finalStates[12])!==null&&_finalStates$28!==void 0?_finalStates$28:false},{number:13,name:'LaserAlignActivate',state:(_finalStates$29=finalStates[13])!==null&&_finalStates$29!==void 0?_finalStates$29:false},{number:14,name:'PopUpPins',state:(_finalStates$30=finalStates[14])!==null&&_finalStates$30!==void 0?_finalStates$30:false},{number:15,name:'AirBlowNozzle',state:(_finalStates$31=finalStates[15])!==null&&_finalStates$31!==void 0?_finalStates$31:false},{number:16,name:'WorkLight',state:(_finalStates$32=finalStates[16])!==null&&_finalStates$32!==void 0?_finalStates$32:false}];return result;}async GetBoardConfiguration(){return{boardType:'Simulator',hasExtensionBoard:false,maxInputs:18,maxOutputs:16};}async GetSystemInfo(){return{systemType:SystemType.NUMBER_0,// Use NUMBER_0 for simulator
 totalInputs:18,totalOutputs:16,baseInputs:18,baseOutputs:16,expansionInputs:0,expansionOutputs:0,expansionBoardCount:0,unlockVersion:'Simulator v1.0.0'};}async GetIOAvailability(){return{'inputs':true,'outputs':true,'analog_inputs':true,'analog_outputs':false,'pwm_outputs':true,'encoder_inputs':true,'high_speed_inputs':false};}async IsInputActive(inputNumber){var _this$cachedInputStat;if(this.inputOverrides.hasOwnProperty(inputNumber)){return this.inputOverrides[inputNumber];}// Return state from cached states
 return(_this$cachedInputStat=this.cachedInputStates[inputNumber])!==null&&_this$cachedInputStat!==void 0?_this$cachedInputStat:false;}async IsOutputActive(outputNumber){var _this$outputStates$ou;if(this.outputOverrides.hasOwnProperty(outputNumber)){return this.outputOverrides[outputNumber];}// Return persistent output state, default to false
-return(_this$outputStates$ou=this.outputStates[outputNumber])!==null&&_this$outputStates$ou!==void 0?_this$outputStates$ou:false;}async IsInputAvailable(inputNumber){// In simulator, inputs 1-18 are available
-return inputNumber>=1&&inputNumber<=18;}async IsOutputAvailable(outputNumber){// In simulator, outputs 1-16 are available
-return outputNumber>=1&&outputNumber<=16;}async SetOutputState(outputNumber,state){// Persist the output state
+return(_this$outputStates$ou=this.outputStates[outputNumber])!==null&&_this$outputStates$ou!==void 0?_this$outputStates$ou:false;}async SetOutputState(outputNumber,state){// Persist the output state
 this.outputStates[outputNumber]=state;// Update IOStateData for immediate UI updates
 if(IOStateData/* IOStateData */.Em.Instance.isInitialized){IOStateData/* IOStateData */.Em.Instance.updateOutputState(outputNumber,state);}// Use enhanced text from output definition
 const output=IOStateData/* IOStateData */.Em.Instance.getOutputByNumber(outputNumber);const displayText=state?output===null||output===void 0?void 0:output.activeText:output===null||output===void 0?void 0:output.inactiveText;const outputName=(output===null||output===void 0?void 0:output.name)||`Output ${outputNumber}`;data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ ${outputName}: ${displayText||(state?'ON':'OFF')}`);}async ResetOutput(outputNumber){// Reset output to false (off)
@@ -53373,11 +55175,11 @@ try{if(!request.checkpointName){throw new Error('Checkpoint name is required');}
 const dataFiles=await this.ListData();// Save snapshot of each data file under checkpoint-specific key
 for(const dataName of dataFiles){const data=await this.GetData(dataName);const checkpointKey=this.getCheckpointKey(request.checkpointName,dataName);localStorage.setItem(checkpointKey,data);}// Update checkpoint metadata
 const checkpoints=await this.ListCheckpoints();const existingIndex=checkpoints.findIndex(cp=>cp.name===request.checkpointName);const checkpointInfo={name:request.checkpointName,fileCount:dataFiles.length,created:new Date().toISOString()};if(existingIndex>=0){checkpoints[existingIndex]=checkpointInfo;}else{checkpoints.push(checkpointInfo);}localStorage.setItem(this.CHECKPOINT_LIST_KEY,JSON.stringify(checkpoints));data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Checkpoint '${request.checkpointName}' saved (localStorage)`);}catch(error){console.error('Failed to save checkpoint:',error);throw error;}}async RestoreCheckpoint(checkpointName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{const result=await this.backendSetup.RestoreCheckpoint(checkpointName);// Trigger DataManager to reload all data
-await data_DataManager.DataManager.Instance.initializeOnStartup();return result;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
+await data_DataManager.DataManager.Instance.reloadAllData();return result;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
 }}// localStorage fallback
 try{const checkpoints=await this.ListCheckpoints();const checkpoint=checkpoints.find(cp=>cp.name===checkpointName);if(!checkpoint){data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`⚠ Checkpoint '${checkpointName}' not found`);return 0;}// Get all checkpoint data files
 const dataFiles=await this.ListData();let restoredCount=0;for(const dataName of dataFiles){const key=this.getCheckpointKey(checkpointName,dataName);const data=localStorage.getItem(key);if(data){await this.SetData({name:dataName,content:data});restoredCount++;}}// Trigger DataManager to reload all data and fire StateManager events
-await data_DataManager.DataManager.Instance.initializeOnStartup();data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Checkpoint '${checkpointName}' restored (${restoredCount} files) (localStorage)`);return restoredCount;}catch(error){console.error(`Failed to restore checkpoint ${checkpointName}:`,error);throw error;}}async DeleteCheckpoint(checkpointName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{await this.backendSetup.DeleteCheckpoint(checkpointName);return;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
+await data_DataManager.DataManager.Instance.reloadAllData();data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Checkpoint '${checkpointName}' restored (${restoredCount} files) (localStorage)`);return restoredCount;}catch(error){console.error(`Failed to restore checkpoint ${checkpointName}:`,error);throw error;}}async DeleteCheckpoint(checkpointName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{await this.backendSetup.DeleteCheckpoint(checkpointName);return;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
 }}// localStorage fallback
 try{const checkpoints=await this.ListCheckpoints();const checkpoint=checkpoints.find(cp=>cp.name===checkpointName);if(!checkpoint){data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`⚠ Checkpoint '${checkpointName}' not found`);return;}// Delete all checkpoint data files
 const dataFiles=await this.ListData();for(const dataName of dataFiles){const key=this.getCheckpointKey(checkpointName,dataName);localStorage.removeItem(key);}// Update checkpoint list
@@ -53391,8 +55193,12 @@ const storedNames=localStorage.getItem('simulator_machine_names');if(storedNames
 }}// localStorage fallback
 return localStorage.getItem('simulator_current_machine')||'Default Machine';}async SetCurrentMachine(machineName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{await this.backendSetup.SetCurrentMachine(machineName);return;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
 }}// localStorage fallback
-localStorage.setItem('simulator_current_machine',machineName);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Switched to machine: ${machineName} (localStorage)`);// Reload all data after switching machines
-await data_DataManager.DataManager.Instance.reloadAllData();}async GetDefaultPLC(versionName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{return await this.backendSetup.GetDefaultPLC(versionName);}catch(error){console.error('Backend failed, falling back to public files:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to public files
+localStorage.setItem('simulator_current_machine',machineName);data_UserMessageQueue.UserMessageQueue.Instance.addMessage(`✓ Switched to machine: ${machineName} (localStorage)`);// NOTE: Data reload is intentionally NOT performed here.
+// The caller (e.g. GeneralSection.handleMachineChange) owns the reload so
+// there is only ever a single reloadAllData() call per machine switch.
+}async DeleteMachine(machineName,switchToMachine){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{await this.backendSetup.DeleteMachine(machineName,switchToMachine);return;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
+}}// localStorage fallback
+const storedNames=localStorage.getItem('simulator_machine_names');const names=storedNames?JSON.parse(storedNames):['Default Machine','Simulator Machine'];const updated=names.filter(n=>n!==machineName);localStorage.setItem('simulator_machine_names',JSON.stringify(updated));if(switchToMachine){localStorage.setItem('simulator_current_machine',switchToMachine);}}async GetDefaultPLC(versionName){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{return await this.backendSetup.GetDefaultPLC(versionName);}catch(error){console.error('Backend failed, falling back to public files:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to public files
 }}// Public files fallback
 try{const filename='systemdefault.json';const response=await fetch(`/${filename}`);if(!response.ok){throw new Error(`Failed to fetch ${filename}`);}const jsonText=await response.text();return jsonText;}catch(error){console.error('Failed to get default PLC from public files:',error);throw error;}}async StoreAsDefaultPLC(versionName,jsonData,description,markAsLatest,createdBy){const useBackend=await this.checkBackendAvailability();if(useBackend&&this.backendSetup){try{await this.backendSetup.StoreAsDefaultPLC(versionName,jsonData,description,markAsLatest,createdBy);return;}catch(error){console.error('Backend failed, falling back to localStorage:',error);this.backendAvailable=false;this.backendSetup=null;// Fall through to localStorage
 }}// localStorage fallback
@@ -53754,1790 +55560,6 @@ return/*#__PURE__*/(0,jsx_runtime.jsx)(statemanager_ObserveState/* ObserveState 
 if(!isServerConnected){return/*#__PURE__*/(0,jsx_runtime.jsxs)(styles_ThemeProvider_ThemeProvider,{theme:theme,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(CssBaseline_CssBaseline,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(ConnectionSplashScreen,{onConnected:()=>setIsServerConnected(true)})]});}// Step 2: Show loading splash screen while loading app data
 if(!appState.isInitialized){return/*#__PURE__*/(0,jsx_runtime.jsxs)(styles_ThemeProvider_ThemeProvider,{theme:theme,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(CssBaseline_CssBaseline,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(LoadingSplashScreen,{})]});}// Step 3: Show main app when initialized
 try{return/*#__PURE__*/(0,jsx_runtime.jsxs)(styles_ThemeProvider_ThemeProvider,{theme:theme,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(CssBaseline_CssBaseline,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{display:'flex',height:'100vh'},children:/*#__PURE__*/(0,jsx_runtime.jsx)(HavenCNCLayout,{isFullscreen:isFullscreen,onToggleFullscreen:toggleFullscreen})}),/*#__PURE__*/(0,jsx_runtime.jsx)(WizardContainer,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(ModalLayer,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(GCodePreviewDialog,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(NotificationArea,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(ResetRequiredWatcher,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(ConnectionOverlay,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(HomePromptDialog,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(LongRunningOperationDialog,{})]});}catch(error){utils_Logger/* Logger */.Vy.Instance.logError(utils_Logger/* LogCategory */.nh.System,'Error in main App component:',error);return/*#__PURE__*/(0,jsx_runtime.jsxs)(styles_ThemeProvider_ThemeProvider,{theme:theme,children:[/*#__PURE__*/(0,jsx_runtime.jsx)(CssBaseline_CssBaseline,{}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box_Box/* default */.A,{sx:{display:'flex',height:'100vh',padding:'20px'},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(Typography_Typography/* default */.A,{variant:"h4",color:"error",children:["Error: ",error instanceof Error?error.message:'Unknown error']})})]});}}},"app-config-theme-observer");}},"app-state-observer");}/* harmony default export */ const src_App = (App_App);
-
-/***/ }),
-
-/***/ 5252:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-var __webpack_unused_export__;
-/**
- * @license React
- * react-reconciler-constants.production.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-exports.ConcurrentRoot = 1;
-exports.ContinuousEventPriority = 8;
-exports.DefaultEventPriority = 32;
-exports.DiscreteEventPriority = 2;
-__webpack_unused_export__ = 268435456;
-__webpack_unused_export__ = 0;
-__webpack_unused_export__ = 0;
-
-/***/ }),
-
-/***/ 5292:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  Q: () => (/* binding */ NumberInput),
-  A: () => (/* binding */ Common_NumberInput)
-});
-
-// EXTERNAL MODULE: ./node_modules/@mui/material/Box/Box.js + 2 modules
-var Box = __webpack_require__(7353);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Tooltip/Tooltip.js + 1 modules
-var Tooltip = __webpack_require__(7739);
-// EXTERNAL MODULE: ./node_modules/@mui/material/TextField/TextField.js + 3 modules
-var TextField = __webpack_require__(5795);
-// EXTERNAL MODULE: ./node_modules/react/index.js
-var react = __webpack_require__(5043);
-// EXTERNAL MODULE: ./src/data/ConfigurationData.ts
-var ConfigurationData = __webpack_require__(7677);
-;// ./src/utils/NumberInputUtil.ts
-/**
- * Number input parsing utilities for handling fractions, mixed numbers, math expressions, and units
- * Extracted from CoordinateUtil for better code organization
- */class NumberInputUtil{/**
-   * Parse text input to number supporting fractions, mixed numbers, math expressions, and units
-   * @param text Input text to parse
-   * @param defaultUnit Default unit ('in' or 'mm')
-   * @param allowNegative Whether negative numbers are allowed
-   * @param allowPositive Whether positive numbers are allowed
-   * @param allowFractions Whether fractions are allowed
-   * @param precision Number of decimal places for result
-   * @param min Minimum allowed value
-   * @param max Maximum allowed value
-   * @returns Object with parsed value and validity flag
-   */static parseNumberInput(text){let defaultUnit=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'in';let allowNegative=arguments.length>2&&arguments[2]!==undefined?arguments[2]:true;let allowPositive=arguments.length>3&&arguments[3]!==undefined?arguments[3]:true;let allowFractions=arguments.length>4&&arguments[4]!==undefined?arguments[4]:true;let precision=arguments.length>5&&arguments[5]!==undefined?arguments[5]:3;let min=arguments.length>6?arguments[6]:undefined;let max=arguments.length>7?arguments[7]:undefined;let currentValue=arguments.length>8?arguments[8]:undefined;if(!text||text.trim()===''){return{value:0,isValid:true};}const trimmedText=text.trim().toLowerCase();// Check for incremental moves: ++value or --value
-if(trimmedText.startsWith('++')||trimmedText.startsWith('--')){const isPositiveIncrement=trimmedText.startsWith('++');const incrementText=trimmedText.substring(2).trim();// Parse the increment value
-const incrementResult=NumberInputUtil.parseNumberInput(incrementText,defaultUnit,true,// Allow negative for the increment value itself
-true,allowFractions,precision,undefined,// No min/max for increment
-undefined,undefined// No current value for recursive call
-);if(!incrementResult.isValid){return{value:0,isValid:false};}const incrementValue=isPositiveIncrement?incrementResult.value:-incrementResult.value;const newValue=(currentValue!==undefined?currentValue:0)+incrementValue;return{value:newValue,isValid:true,isIncremental:true};}// Normalize decimal numbers that start with a decimal point (e.g., ".5" or "-.5")
-// Also handle single + prefix (e.g., "+5" should be treated as "5")
-let normalizedText=trimmedText;if(/^\+[^+]/.test(normalizedText)){normalizedText=normalizedText.substring(1);// Remove single + prefix: +5 -> 5
-}if(/^\./.test(normalizedText)){normalizedText='0'+normalizedText;// .5 -> 0.5
-}else if(/^-\./.test(normalizedText)){normalizedText='-0.'+normalizedText.substring(2);// -.5 -> -0.5
-}// Extract unit if present
-let unitMultiplier=1;let numberPart=normalizedText;if(trimmedText.endsWith('mm')){numberPart=trimmedText.slice(0,-2).trim();unitMultiplier=defaultUnit==='in'?1/25.4:1;// Convert mm to inches if default is inches
-}else if(trimmedText.endsWith('in')||trimmedText.endsWith('"')){numberPart=trimmedText.replace(/in$|"$/,'').trim();unitMultiplier=defaultUnit==='mm'?25.4:1;// Convert inches to mm if default is mm
-}// Handle math expressions (e.g., "10 + 4 1/2", "14 + 2", "10 - 1.5")
-// Exclude simple negative numbers, negative fractions, and negative mixed numbers
-if(/[+-]/.test(numberPart)&&!numberPart.match(/^-?\d+(\.\d+)?$/)&&!numberPart.match(/^-?\d+\/\d+$/)&&!numberPart.match(/^-?\d+\s+\d+\/\d+$/)){const result=NumberInputUtil.parseSimpleMath(numberPart,unitMultiplier,allowFractions,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Handle mixed numbers with space (e.g., "14 1/2")
-if(allowFractions&&/^-?\d+\s+\d+\/\d+$/.test(numberPart)){const result=NumberInputUtil.parseMixedNumber(numberPart,unitMultiplier,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Check for malformed mixed numbers (numbers with space but no fraction)
-if(/^-?\d+\s+\d+$/.test(numberPart)){return{value:0,isValid:false};}// Handle fractions
-if(allowFractions&&numberPart.includes('/')&&!numberPart.includes(' ')){const result=NumberInputUtil.parseFraction(numberPart,unitMultiplier,precision);if(!result.isValid)return result;return NumberInputUtil.validateConstraints(result.value,allowNegative,allowPositive,min,max,precision);}// Handle decimal numbers
-const parsed=parseFloat(numberPart);if(isNaN(parsed)){return{value:0,isValid:false};}const result=parsed*unitMultiplier;return NumberInputUtil.validateConstraints(result,allowNegative,allowPositive,min,max,precision);}/**
-   * Parse fraction text (e.g., "3/4", "-1/8")
-   */static parseFraction(text,unitMultiplier,precision){const parts=text.split('/');if(parts.length!==2){return{value:0,isValid:false};}const numerator=parseFloat(parts[0].trim());const denominator=parseFloat(parts[1].trim());if(isNaN(numerator)||isNaN(denominator)||denominator===0){return{value:0,isValid:false};}const result=numerator/denominator*unitMultiplier;return{value:parseFloat(result.toFixed(precision)),isValid:true};}/**
-   * Parse mixed number text (e.g., "14 1/2", "-2 3/8")
-   */static parseMixedNumber(text,unitMultiplier,precision){const match=text.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);if(!match){return{value:0,isValid:false};}const wholeNumber=parseFloat(match[1]);const numerator=parseFloat(match[2]);const denominator=parseFloat(match[3]);if(isNaN(wholeNumber)||isNaN(numerator)||isNaN(denominator)||denominator===0){return{value:0,isValid:false};}const fraction=numerator/denominator;// For mixed numbers, the fraction is always added to the whole number
-// The sign of the whole number determines the overall sign
-const result=(Math.abs(wholeNumber)+fraction)*(wholeNumber>=0?1:-1)*unitMultiplier;return{value:parseFloat(result.toFixed(precision)),isValid:true};}/**
-   * Parse simple math expressions (e.g., "10 + 4 1/2", "14 + 2", "10 - 1.5")
-   */static parseSimpleMath(text,unitMultiplier,allowFractions,precision){// Split on + or - operators, but preserve the operator
-const parts=[];const operators=[];let currentPart='';let i=0;while(i<text.length){const char=text[i];if((char==='+'||char==='-')&&i>0){// Found an operator (not a negative sign at the start)
-parts.push(currentPart.trim());operators.push(char);currentPart='';}else{currentPart+=char;}i++;}// Add the last part
-if(currentPart.trim()){parts.push(currentPart.trim());}if(parts.length<2||operators.length!==parts.length-1){return{value:0,isValid:false};}// Parse the first value
-let result=NumberInputUtil.parseNumberPart(parts[0],allowFractions,precision);if(!result.isValid)return result;let accumulator=result.value;// Process each subsequent part with its operator
-for(let j=1;j<parts.length;j++){const operator=operators[j-1];const partResult=NumberInputUtil.parseNumberPart(parts[j],allowFractions,precision);if(!partResult.isValid)return partResult;if(operator==='+'){accumulator+=partResult.value;}else if(operator==='-'){accumulator-=partResult.value;}}const finalResult=accumulator*unitMultiplier;return{value:parseFloat(finalResult.toFixed(precision)),isValid:true};}/**
-   * Parse a single number part (decimal, fraction, or mixed number)
-   */static parseNumberPart(text,allowFractions,precision){const trimmed=text.trim();// Handle mixed numbers with space (e.g., "4 1/2")
-if(allowFractions&&/^-?\d+\s+\d+\/\d+$/.test(trimmed)){return NumberInputUtil.parseMixedNumber(trimmed,1,precision);}// Handle fractions
-if(allowFractions&&trimmed.includes('/')&&!trimmed.includes(' ')){return NumberInputUtil.parseFraction(trimmed,1,precision);}// Handle decimal numbers
-const parsed=parseFloat(trimmed);if(isNaN(parsed)){return{value:0,isValid:false};}return{value:parseFloat(parsed.toFixed(precision)),isValid:true};}/**
-   * Validate constraints on a parsed number
-   */static validateConstraints(value,allowNegative,allowPositive,min,max,precision){// Validate constraints
-if(!allowNegative&&value<0){return{value:0,isValid:false};}if(!allowPositive&&value>0){return{value:0,isValid:false};}if(min!==undefined&&value<min){return{value:min,isValid:false};}if(max!==undefined&&value>max){return{value:max,isValid:false};}const finalValue=precision!==undefined?parseFloat(value.toFixed(precision)):value;return{value:finalValue,isValid:true};}}
-// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
-var jsx_runtime = __webpack_require__(579);
-;// ./src/components/Common/NumberInput.tsx
-const NumberInput=_ref=>{let{value,onChange,allowNegative=true,allowPositive=true,allowFractions=true,defaultUnit='in',precision=3,min,max,showHelperText=true,beforeText='',afterText='',textColor,onEditStart,...textFieldProps}=_ref;const[textValue,setTextValue]=(0,react.useState)('');const[isValid,setIsValid]=(0,react.useState)(true);const[isEditing,setIsEditing]=(0,react.useState)(false);const[isFocused,setIsFocused]=(0,react.useState)(false);const[tooltipOpen,setTooltipOpen]=(0,react.useState)(false);const[userInteracted,setUserInteracted]=(0,react.useState)(false);// Get configuration instance
-const config=ConfigurationData/* ConfigurationData */.J.Instance;// Convert number to text on value change (only when not editing and user has interacted)
-(0,react.useEffect)(()=>{if(!isEditing&&!isFocused&&userInteracted){const newText=value.toFixed(precision);setTextValue(newText);}else if(!userInteracted){// On first render before user interaction, show the external value
-const newText=value.toFixed(precision);setTextValue(newText);}},[value,isEditing,isFocused,precision,userInteracted]);const parseTextToNumber=text=>{return NumberInputUtil.parseNumberInput(text,defaultUnit,allowNegative,allowPositive,allowFractions,precision,min,max,value// Pass current value for incremental operations
-);};const handleTextChange=newText=>{setTextValue(newText);setIsEditing(true);setUserInteracted(true);// Notify parent that editing has started
-if(onEditStart){onEditStart();}// Parse to check validity but DON'T auto-replace incremental syntax
-// Let the user finish typing before we evaluate
-const{isValid:valid}=parseTextToNumber(newText);setIsValid(valid);};const evaluateAndCommit=()=>{const{value:parsedValue,isValid:valid}=parseTextToNumber(textValue);if(valid&&parsedValue!==value){onChange(parsedValue);}if(!valid){// Reset to current value if invalid
-const newText=value.toFixed(precision);setTextValue(newText);setIsValid(true);}else{// Format the text nicely
-const newText=parsedValue.toFixed(precision);setTextValue(newText);}setIsEditing(false);};const handleBlur=()=>{evaluateAndCommit();setIsFocused(false);};const handleFocus=e=>{setIsFocused(true);setUserInteracted(true);// Select all text when the input is focused
-e.target.select();};const handleKeyDown=e=>{if(e.key==='Enter'||e.key==='Tab'){evaluateAndCommit();}};// Create tooltip content
-const tooltipContent=/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{children:[beforeText&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{marginBottom:1},children:beforeText}),/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{fontWeight:'bold',marginBottom:0.5},children:"Input Options:"}),/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{component:"ul",sx:{margin:0,paddingLeft:2.5,fontSize:'0.875rem'},children:[/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Decimals: 1.5, -2.75"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Fractions: 1/8, 3/4"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Mixed numbers: 1 1/2, 2 3/8"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Math: 14 + 2, 10 - 1.5"}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Units: 25mm, 1.5in, 2\""}),/*#__PURE__*/(0,jsx_runtime.jsx)("li",{children:"Incremental: ++1, --0.5"})]}),afterText&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{marginTop:1},children:afterText})]});// Handle mouse enter/leave for hover behavior
-const handleMouseEnter=()=>{if(config.shouldShowNumberInputTooltip()){config.decrementTooltipCount();setTooltipOpen(true);}};const handleMouseLeave=()=>{setTooltipOpen(false);};return/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:tooltipContent,arrow:true,placement:"left",open:tooltipOpen,onClose:()=>setTooltipOpen(false),disableHoverListener:!config.shouldShowNumberInputTooltip(),disableFocusListener:!config.shouldShowNumberInputTooltip(),disableTouchListener:!config.shouldShowNumberInputTooltip(),children:/*#__PURE__*/(0,jsx_runtime.jsx)(TextField/* default */.A,{...textFieldProps,value:textValue,onChange:e=>handleTextChange(e.target.value),onBlur:handleBlur,onFocus:handleFocus,onKeyDown:handleKeyDown,onMouseEnter:handleMouseEnter,onMouseLeave:handleMouseLeave,error:!isValid||textFieldProps.error,helperText:showHelperText?!isValid?'Invalid number format':textFieldProps.helperText:undefined,placeholder:allowFractions?'e.g., 1.5, 14 1/2, 14 + 2, 25mm':'e.g., 1.5, 14 + 2, 25mm',sx:{...textFieldProps.sx,'& .MuiOutlinedInput-input':{textAlign:isFocused?'left':'right',transition:'text-align 0.2s ease',color:textColor||'inherit',// Apply custom text color if provided
-fontFamily:'"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',fontVariantNumeric:'slashed-zero'}}})});};/* harmony default export */ const Common_NumberInput = (NumberInput);
-
-/***/ }),
-
-/***/ 5316:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ DialogContent_DialogContent)
-});
-
-// EXTERNAL MODULE: ./node_modules/react/index.js
-var react = __webpack_require__(5043);
-// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
-var clsx = __webpack_require__(8387);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
-var composeClasses = __webpack_require__(8610);
-// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
-var styled = __webpack_require__(4535);
-// EXTERNAL MODULE: ./node_modules/@mui/material/utils/memoTheme.js + 1 modules
-var memoTheme = __webpack_require__(6262);
-// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
-var DefaultPropsProvider = __webpack_require__(8206);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
-var generateUtilityClasses = __webpack_require__(2532);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
-var generateUtilityClass = __webpack_require__(2372);
-;// ./node_modules/@mui/material/DialogContent/dialogContentClasses.js
-
-
-function getDialogContentUtilityClass(slot) {
-  return (0,generateUtilityClass/* default */.Ay)('MuiDialogContent', slot);
-}
-const dialogContentClasses = (0,generateUtilityClasses/* default */.A)('MuiDialogContent', ['root', 'dividers']);
-/* harmony default export */ const DialogContent_dialogContentClasses = ((/* unused pure expression or super */ null && (dialogContentClasses)));
-// EXTERNAL MODULE: ./node_modules/@mui/material/DialogTitle/dialogTitleClasses.js
-var dialogTitleClasses = __webpack_require__(7034);
-// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
-var jsx_runtime = __webpack_require__(579);
-;// ./node_modules/@mui/material/DialogContent/DialogContent.js
-'use client';
-
-
-
-
-
-
-
-
-
-
-
-const useUtilityClasses = ownerState => {
-  const {
-    classes,
-    dividers
-  } = ownerState;
-  const slots = {
-    root: ['root', dividers && 'dividers']
-  };
-  return (0,composeClasses/* default */.A)(slots, getDialogContentUtilityClass, classes);
-};
-const DialogContentRoot = (0,styled/* default */.Ay)('div', {
-  name: 'MuiDialogContent',
-  slot: 'Root',
-  overridesResolver: (props, styles) => {
-    const {
-      ownerState
-    } = props;
-    return [styles.root, ownerState.dividers && styles.dividers];
-  }
-})((0,memoTheme/* default */.A)(_ref => {
-  let {
-    theme
-  } = _ref;
-  return {
-    flex: '1 1 auto',
-    // Add iOS momentum scrolling for iOS < 13.0
-    WebkitOverflowScrolling: 'touch',
-    overflowY: 'auto',
-    padding: '20px 24px',
-    variants: [{
-      props: _ref2 => {
-        let {
-          ownerState
-        } = _ref2;
-        return ownerState.dividers;
-      },
-      style: {
-        padding: '16px 24px',
-        borderTop: `1px solid ${(theme.vars || theme).palette.divider}`,
-        borderBottom: `1px solid ${(theme.vars || theme).palette.divider}`
-      }
-    }, {
-      props: _ref3 => {
-        let {
-          ownerState
-        } = _ref3;
-        return !ownerState.dividers;
-      },
-      style: {
-        [`.${dialogTitleClasses/* default */.A.root} + &`]: {
-          paddingTop: 0
-        }
-      }
-    }]
-  };
-}));
-const DialogContent = /*#__PURE__*/react.forwardRef(function DialogContent(inProps, ref) {
-  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
-    props: inProps,
-    name: 'MuiDialogContent'
-  });
-  const {
-    className,
-    dividers = false,
-    ...other
-  } = props;
-  const ownerState = {
-    ...props,
-    dividers
-  };
-  const classes = useUtilityClasses(ownerState);
-  return /*#__PURE__*/(0,jsx_runtime.jsx)(DialogContentRoot, {
-    className: (0,clsx/* default */.A)(classes.root, className),
-    ownerState: ownerState,
-    ref: ref,
-    ...other
-  });
-});
- false ? 0 : void 0;
-/* harmony default export */ const DialogContent_DialogContent = (DialogContent);
-
-/***/ }),
-
-/***/ 5422:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6734);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(579);
-"use client";
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("path", {
-  d: "M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4m8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7"
-}), 'GpsFixed'));
-
-/***/ }),
-
-/***/ 5434:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   Y: () => (/* binding */ getListItemButtonUtilityClass)
-/* harmony export */ });
-/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
-/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
-
-
-function getListItemButtonUtilityClass(slot) {
-  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiListItemButton', slot);
-}
-const listItemButtonClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiListItemButton', ['root', 'focusVisible', 'dense', 'alignItemsFlexStart', 'disabled', 'divider', 'gutters', 'selected']);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (listItemButtonClasses);
-
-/***/ }),
-
-/***/ 5502:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Pf: () => (/* binding */ TextApiResponse),
-/* harmony export */   Q0: () => (/* binding */ RequiredError),
-/* harmony export */   Vk: () => (/* binding */ Configuration),
-/* harmony export */   cK: () => (/* binding */ VoidApiResponse),
-/* harmony export */   ko: () => (/* binding */ JSONApiResponse),
-/* harmony export */   yi: () => (/* binding */ BaseAPI)
-/* harmony export */ });
-/* unused harmony exports BASE_PATH, DefaultConfig, ResponseError, FetchError, COLLECTION_FORMATS, querystring, exists, mapValues, canConsumeForm, BlobApiResponse */
-/* tslint:disable *//* eslint-disable *//**
- * HavenCNC Server API
- * REST API for CNC server management hosted within WinForms application
- *
- * The version of the OpenAPI document: v1
- * 
- *
- * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).
- * https://openapi-generator.tech
- * Do not edit the class manually.
- */const BASE_PATH="http://localhost".replace(/\/+$/,"");class Configuration{constructor(){let configuration=arguments.length>0&&arguments[0]!==undefined?arguments[0]:{};this.configuration=configuration;}set config(configuration){this.configuration=configuration;}get basePath(){return this.configuration.basePath!=null?this.configuration.basePath:BASE_PATH;}get fetchApi(){return this.configuration.fetchApi;}get middleware(){return this.configuration.middleware||[];}get queryParamsStringify(){return this.configuration.queryParamsStringify||querystring;}get username(){return this.configuration.username;}get password(){return this.configuration.password;}get apiKey(){const apiKey=this.configuration.apiKey;if(apiKey){return typeof apiKey==='function'?apiKey:()=>apiKey;}return undefined;}get accessToken(){const accessToken=this.configuration.accessToken;if(accessToken){return typeof accessToken==='function'?accessToken:async()=>accessToken;}return undefined;}get headers(){return this.configuration.headers;}get credentials(){return this.configuration.credentials;}}const DefaultConfig=new Configuration();/**
- * This is the base class for all generated API classes.
- */class BaseAPI{constructor(){let configuration=arguments.length>0&&arguments[0]!==undefined?arguments[0]:DefaultConfig;this.configuration=configuration;this.middleware=void 0;this.fetchApi=async(url,init)=>{let fetchParams={url,init};for(const middleware of this.middleware){if(middleware.pre){fetchParams=(await middleware.pre({fetch:this.fetchApi,...fetchParams}))||fetchParams;}}let response=undefined;try{response=await(this.configuration.fetchApi||fetch)(fetchParams.url,fetchParams.init);}catch(e){for(const middleware of this.middleware){if(middleware.onError){response=(await middleware.onError({fetch:this.fetchApi,url:fetchParams.url,init:fetchParams.init,error:e,response:response?response.clone():undefined}))||response;}}if(response===undefined){if(e instanceof Error){throw new FetchError(e,'The request failed and the interceptors did not return an alternative response');}else{throw e;}}}for(const middleware of this.middleware){if(middleware.post){response=(await middleware.post({fetch:this.fetchApi,url:fetchParams.url,init:fetchParams.init,response:response.clone()}))||response;}}return response;};this.middleware=configuration.middleware;}withMiddleware(){const next=this.clone();next.middleware=next.middleware.concat(...arguments);return next;}withPreMiddleware(){for(var _len=arguments.length,preMiddlewares=new Array(_len),_key=0;_key<_len;_key++){preMiddlewares[_key]=arguments[_key];}const middlewares=preMiddlewares.map(pre=>({pre}));return this.withMiddleware(...middlewares);}withPostMiddleware(){for(var _len2=arguments.length,postMiddlewares=new Array(_len2),_key2=0;_key2<_len2;_key2++){postMiddlewares[_key2]=arguments[_key2];}const middlewares=postMiddlewares.map(post=>({post}));return this.withMiddleware(...middlewares);}/**
-     * Check if the given MIME is a JSON MIME.
-     * JSON MIME examples:
-     *   application/json
-     *   application/json; charset=UTF8
-     *   APPLICATION/JSON
-     *   application/vnd.company+json
-     * @param mime - MIME (Multipurpose Internet Mail Extensions)
-     * @return True if the given MIME is JSON, false otherwise.
-     */isJsonMime(mime){if(!mime){return false;}return BaseAPI.jsonRegex.test(mime);}async request(context,initOverrides){const{url,init}=await this.createFetchParams(context,initOverrides);const response=await this.fetchApi(url,init);if(response&&response.status>=200&&response.status<300){return response;}throw new ResponseError(response,'Response returned an error code');}async createFetchParams(context,initOverrides){let url=this.configuration.basePath+context.path;if(context.query!==undefined&&Object.keys(context.query).length!==0){// only add the querystring to the URL if there are query parameters.
-// this is done to avoid urls ending with a "?" character which buggy webservers
-// do not handle correctly sometimes.
-url+='?'+this.configuration.queryParamsStringify(context.query);}const headers=Object.assign({},this.configuration.headers,context.headers);Object.keys(headers).forEach(key=>headers[key]===undefined?delete headers[key]:{});const initOverrideFn=typeof initOverrides==="function"?initOverrides:async()=>initOverrides;const initParams={method:context.method,headers,body:context.body,credentials:this.configuration.credentials};const overriddenInit={...initParams,...(await initOverrideFn({init:initParams,context}))};let body;if(isFormData(overriddenInit.body)||overriddenInit.body instanceof URLSearchParams||isBlob(overriddenInit.body)){body=overriddenInit.body;}else if(this.isJsonMime(headers['Content-Type'])){body=JSON.stringify(overriddenInit.body);}else{body=overriddenInit.body;}const init={...overriddenInit,body};return{url,init};}/**
-     * Create a shallow clone of `this` by constructing a new instance
-     * and then shallow cloning data members.
-     */clone(){const constructor=this.constructor;const next=new constructor(this.configuration);next.middleware=this.middleware.slice();return next;}}BaseAPI.jsonRegex=new RegExp('^(:?application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(:?;.*)?$','i');;function isBlob(value){return typeof Blob!=='undefined'&&value instanceof Blob;}function isFormData(value){return typeof FormData!=="undefined"&&value instanceof FormData;}class ResponseError extends Error{constructor(response,msg){super(msg);this.response=response;this.name="ResponseError";}}class FetchError extends Error{constructor(cause,msg){super(msg);this.cause=cause;this.name="FetchError";}}class RequiredError extends Error{constructor(field,msg){super(msg);this.field=field;this.name="RequiredError";}}const COLLECTION_FORMATS={csv:",",ssv:" ",tsv:"\t",pipes:"|"};function querystring(params){let prefix=arguments.length>1&&arguments[1]!==undefined?arguments[1]:'';return Object.keys(params).map(key=>querystringSingleKey(key,params[key],prefix)).filter(part=>part.length>0).join('&');}function querystringSingleKey(key,value){let keyPrefix=arguments.length>2&&arguments[2]!==undefined?arguments[2]:'';const fullKey=keyPrefix+(keyPrefix.length?`[${key}]`:key);if(value instanceof Array){const multiValue=value.map(singleValue=>encodeURIComponent(String(singleValue))).join(`&${encodeURIComponent(fullKey)}=`);return`${encodeURIComponent(fullKey)}=${multiValue}`;}if(value instanceof Set){const valueAsArray=Array.from(value);return querystringSingleKey(key,valueAsArray,keyPrefix);}if(value instanceof Date){return`${encodeURIComponent(fullKey)}=${encodeURIComponent(value.toISOString())}`;}if(value instanceof Object){return querystring(value,fullKey);}return`${encodeURIComponent(fullKey)}=${encodeURIComponent(String(value))}`;}function exists(json,key){const value=json[key];return value!==null&&value!==undefined;}function mapValues(data,fn){const result={};for(const key of Object.keys(data)){result[key]=fn(data[key]);}return result;}function canConsumeForm(consumes){for(const consume of consumes){if('multipart/form-data'===consume.contentType){return true;}}return false;}class JSONApiResponse{constructor(raw){let transformer=arguments.length>1&&arguments[1]!==undefined?arguments[1]:jsonValue=>jsonValue;this.raw=raw;this.transformer=transformer;}async value(){return this.transformer(await this.raw.json());}}class VoidApiResponse{constructor(raw){this.raw=raw;}async value(){return undefined;}}class BlobApiResponse{constructor(raw){this.raw=raw;}async value(){return await this.raw.blob();}}class TextApiResponse{constructor(raw){this.raw=raw;}async value(){return await this.raw.text();}}
-
-/***/ }),
-
-/***/ 5516:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5043);
-/* harmony import */ var _mui_utils_deepmerge__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9172);
-/* harmony import */ var _mui_utils_composeClasses__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8610);
-/* harmony import */ var _InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2559);
-/* harmony import */ var _styles_rootShouldForwardProp_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1475);
-/* harmony import */ var _zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(4535);
-/* harmony import */ var _utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(6262);
-/* harmony import */ var _utils_createSimplePaletteValueFilter_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(2445);
-/* harmony import */ var _DefaultPropsProvider_index_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(8206);
-/* harmony import */ var _filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(4569);
-/* harmony import */ var _utils_index_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(6803);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(579);
-'use client';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const useUtilityClasses = ownerState => {
-  const {
-    classes,
-    disableUnderline,
-    startAdornment,
-    endAdornment,
-    size,
-    hiddenLabel,
-    multiline
-  } = ownerState;
-  const slots = {
-    root: ['root', !disableUnderline && 'underline', startAdornment && 'adornedStart', endAdornment && 'adornedEnd', size === 'small' && `size${(0,_utils_index_js__WEBPACK_IMPORTED_MODULE_10__/* ["default"] */ .A)(size)}`, hiddenLabel && 'hiddenLabel', multiline && 'multiline'],
-    input: ['input']
-  };
-  const composedClasses = (0,_mui_utils_composeClasses__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A)(slots, _filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* .getFilledInputUtilityClass */ .N, classes);
-  return {
-    ...classes,
-    // forward classes to the InputBase
-    ...composedClasses
-  };
-};
-const FilledInputRoot = (0,_zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Ay)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .InputBaseRoot */ .Sh, {
-  shouldForwardProp: prop => (0,_styles_rootShouldForwardProp_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A)(prop) || prop === 'classes',
-  name: 'MuiFilledInput',
-  slot: 'Root',
-  overridesResolver: (props, styles) => {
-    const {
-      ownerState
-    } = props;
-    return [...(0,_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .rootOverridesResolver */ .WC)(props, styles), !ownerState.disableUnderline && styles.underline];
-  }
-})((0,_utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A)(_ref => {
-  let {
-    theme
-  } = _ref;
-  const light = theme.palette.mode === 'light';
-  const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
-  const backgroundColor = light ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.09)';
-  const hoverBackground = light ? 'rgba(0, 0, 0, 0.09)' : 'rgba(255, 255, 255, 0.13)';
-  const disabledBackground = light ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)';
-  return {
-    position: 'relative',
-    backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor,
-    borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-    borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-    transition: theme.transitions.create('background-color', {
-      duration: theme.transitions.duration.shorter,
-      easing: theme.transitions.easing.easeOut
-    }),
-    '&:hover': {
-      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.hoverBg : hoverBackground,
-      // Reset on touch devices, it doesn't add specificity
-      '@media (hover: none)': {
-        backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
-      }
-    },
-    [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.focused}`]: {
-      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.bg : backgroundColor
-    },
-    [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}`]: {
-      backgroundColor: theme.vars ? theme.vars.palette.FilledInput.disabledBg : disabledBackground
-    },
-    variants: [{
-      props: _ref2 => {
-        let {
-          ownerState
-        } = _ref2;
-        return !ownerState.disableUnderline;
-      },
-      style: {
-        '&::after': {
-          left: 0,
-          bottom: 0,
-          content: '""',
-          position: 'absolute',
-          right: 0,
-          transform: 'scaleX(0)',
-          transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeOut
-          }),
-          pointerEvents: 'none' // Transparent to the hover style.
-        },
-        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.focused}:after`]: {
-          // translateX(0) is a workaround for Safari transform scale bug
-          // See https://github.com/mui/material-ui/issues/31766
-          transform: 'scaleX(1) translateX(0)'
-        },
-        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.error}`]: {
-          '&::before, &::after': {
-            borderBottomColor: (theme.vars || theme).palette.error.main
-          }
-        },
-        '&::before': {
-          borderBottom: `1px solid ${theme.vars ? `rgba(${theme.vars.palette.common.onBackgroundChannel} / ${theme.vars.opacity.inputUnderline})` : bottomLineColor}`,
-          left: 0,
-          bottom: 0,
-          content: '"\\00a0"',
-          position: 'absolute',
-          right: 0,
-          transition: theme.transitions.create('border-bottom-color', {
-            duration: theme.transitions.duration.shorter
-          }),
-          pointerEvents: 'none' // Transparent to the hover style.
-        },
-        [`&:hover:not(.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}, .${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.error}):before`]: {
-          borderBottom: `1px solid ${(theme.vars || theme).palette.text.primary}`
-        },
-        [`&.${_filledInputClasses_js__WEBPACK_IMPORTED_MODULE_9__/* ["default"] */ .A.disabled}:before`]: {
-          borderBottomStyle: 'dotted'
-        }
-      }
-    }, ...Object.entries(theme.palette).filter((0,_utils_createSimplePaletteValueFilter_js__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .A)()) // check all the used fields in the style below
-    .map(_ref3 => {
-      let [color] = _ref3;
-      return {
-        props: {
-          disableUnderline: false,
-          color
-        },
-        style: {
-          '&::after': {
-            borderBottom: `2px solid ${(theme.vars || theme).palette[color]?.main}`
-          }
-        }
-      };
-    }), {
-      props: _ref4 => {
-        let {
-          ownerState
-        } = _ref4;
-        return ownerState.startAdornment;
-      },
-      style: {
-        paddingLeft: 12
-      }
-    }, {
-      props: _ref5 => {
-        let {
-          ownerState
-        } = _ref5;
-        return ownerState.endAdornment;
-      },
-      style: {
-        paddingRight: 12
-      }
-    }, {
-      props: _ref6 => {
-        let {
-          ownerState
-        } = _ref6;
-        return ownerState.multiline;
-      },
-      style: {
-        padding: '25px 12px 8px'
-      }
-    }, {
-      props: _ref7 => {
-        let {
-          ownerState,
-          size
-        } = _ref7;
-        return ownerState.multiline && size === 'small';
-      },
-      style: {
-        paddingTop: 21,
-        paddingBottom: 4
-      }
-    }, {
-      props: _ref8 => {
-        let {
-          ownerState
-        } = _ref8;
-        return ownerState.multiline && ownerState.hiddenLabel;
-      },
-      style: {
-        paddingTop: 16,
-        paddingBottom: 17
-      }
-    }, {
-      props: _ref9 => {
-        let {
-          ownerState
-        } = _ref9;
-        return ownerState.multiline && ownerState.hiddenLabel && ownerState.size === 'small';
-      },
-      style: {
-        paddingTop: 8,
-        paddingBottom: 9
-      }
-    }]
-  };
-}));
-const FilledInputInput = (0,_zero_styled_index_js__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Ay)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .InputBaseInput */ .ck, {
-  name: 'MuiFilledInput',
-  slot: 'Input',
-  overridesResolver: _InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* .inputOverridesResolver */ .Oj
-})((0,_utils_memoTheme_js__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A)(_ref0 => {
-  let {
-    theme
-  } = _ref0;
-  return {
-    paddingTop: 25,
-    paddingRight: 12,
-    paddingBottom: 8,
-    paddingLeft: 12,
-    ...(!theme.vars && {
-      '&:-webkit-autofill': {
-        WebkitBoxShadow: theme.palette.mode === 'light' ? null : '0 0 0 100px #266798 inset',
-        WebkitTextFillColor: theme.palette.mode === 'light' ? null : '#fff',
-        caretColor: theme.palette.mode === 'light' ? null : '#fff',
-        borderTopLeftRadius: 'inherit',
-        borderTopRightRadius: 'inherit'
-      }
-    }),
-    ...(theme.vars && {
-      '&:-webkit-autofill': {
-        borderTopLeftRadius: 'inherit',
-        borderTopRightRadius: 'inherit'
-      },
-      [theme.getColorSchemeSelector('dark')]: {
-        '&:-webkit-autofill': {
-          WebkitBoxShadow: '0 0 0 100px #266798 inset',
-          WebkitTextFillColor: '#fff',
-          caretColor: '#fff'
-        }
-      }
-    }),
-    variants: [{
-      props: {
-        size: 'small'
-      },
-      style: {
-        paddingTop: 21,
-        paddingBottom: 4
-      }
-    }, {
-      props: _ref1 => {
-        let {
-          ownerState
-        } = _ref1;
-        return ownerState.hiddenLabel;
-      },
-      style: {
-        paddingTop: 16,
-        paddingBottom: 17
-      }
-    }, {
-      props: _ref10 => {
-        let {
-          ownerState
-        } = _ref10;
-        return ownerState.startAdornment;
-      },
-      style: {
-        paddingLeft: 0
-      }
-    }, {
-      props: _ref11 => {
-        let {
-          ownerState
-        } = _ref11;
-        return ownerState.endAdornment;
-      },
-      style: {
-        paddingRight: 0
-      }
-    }, {
-      props: _ref12 => {
-        let {
-          ownerState
-        } = _ref12;
-        return ownerState.hiddenLabel && ownerState.size === 'small';
-      },
-      style: {
-        paddingTop: 8,
-        paddingBottom: 9
-      }
-    }, {
-      props: _ref13 => {
-        let {
-          ownerState
-        } = _ref13;
-        return ownerState.multiline;
-      },
-      style: {
-        paddingTop: 0,
-        paddingBottom: 0,
-        paddingLeft: 0,
-        paddingRight: 0
-      }
-    }]
-  };
-}));
-const FilledInput = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function FilledInput(inProps, ref) {
-  const props = (0,_DefaultPropsProvider_index_js__WEBPACK_IMPORTED_MODULE_8__/* .useDefaultProps */ .b)({
-    props: inProps,
-    name: 'MuiFilledInput'
-  });
-  const {
-    disableUnderline = false,
-    components = {},
-    componentsProps: componentsPropsProp,
-    fullWidth = false,
-    hiddenLabel,
-    // declare here to prevent spreading to DOM
-    inputComponent = 'input',
-    multiline = false,
-    slotProps,
-    slots = {},
-    type = 'text',
-    ...other
-  } = props;
-  const ownerState = {
-    ...props,
-    disableUnderline,
-    fullWidth,
-    inputComponent,
-    multiline,
-    type
-  };
-  const classes = useUtilityClasses(props);
-  const filledInputComponentsProps = {
-    root: {
-      ownerState
-    },
-    input: {
-      ownerState
-    }
-  };
-  const componentsProps = slotProps ?? componentsPropsProp ? (0,_mui_utils_deepmerge__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A)(filledInputComponentsProps, slotProps ?? componentsPropsProp) : filledInputComponentsProps;
-  const RootSlot = slots.root ?? components.Root ?? FilledInputRoot;
-  const InputSlot = slots.input ?? components.Input ?? FilledInputInput;
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_11__.jsx)(_InputBase_index_js__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .Ay, {
-    slots: {
-      root: RootSlot,
-      input: InputSlot
-    },
-    slotProps: componentsProps,
-    fullWidth: fullWidth,
-    inputComponent: inputComponent,
-    multiline: multiline,
-    ref: ref,
-    type: type,
-    ...other,
-    classes: classes
-  });
-});
- false ? 0 : void 0;
-FilledInput.muiName = 'Input';
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilledInput);
-
-/***/ }),
-
-/***/ 5521:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   k: () => (/* binding */ Condition)
-/* harmony export */ });
-/* harmony import */ var _utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2331);
-/* harmony import */ var _utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(342);
-/* harmony import */ var _IPLCElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7806);
-/* harmony import */ var _PLCUtilities__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1319);
-/**
- * Abstract base class for PLC conditions
- * Conditions are used in logic operations to determine when actions execute
- */class Condition{constructor(){this._comment='';this._enabled=true;this._plcSource=undefined;this._parentElement=undefined;}// Parent statement that contains this condition
-/**
-     * Get the type of condition - must be implemented by derived classes
-     *//**
-     * Comment or description for this condition
-     */get comment(){return this._comment;}set comment(value){this._comment=value;_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__.StateManager.propertyChanged(this,'comment');}/**
-     * Whether this condition is enabled
-     */get enabled(){return this._enabled;}set enabled(value){this._enabled=value;_utils_statemanager_StateManager__WEBPACK_IMPORTED_MODULE_0__.StateManager.propertyChanged(this,'enabled');}get plcSource(){const resolved=_PLCUtilities__WEBPACK_IMPORTED_MODULE_3__/* .PLCUtilities */ .iz.resolvePLCSource(this,false);return resolved!==null?resolved:undefined;}/**
-     * Get the type of this PLC element
-     * Base class returns 'condition', but ConditionGroup overrides to return 'condition-group'
-     */getElementType(){return'condition';}/**
-     * Reset cached state before rendering or code generation
-     * Default implementation does nothing - override in subclasses that need it
-     */preRenderReset(){// Default: no-op
-}/**
-     * Get unique identifier for this condition
-     */getElementId(){return`condition-${this.conditionType}`;}/**
-     * Get the parent element (statement) that contains this condition
-     */getParentElement(){return this._parentElement;}/**
-     * Set the parent element (statement) that contains this condition
-     */setParentElement(parent){this._parentElement=parent;// Clear cached plcSource - will be resolved on next access
-this._plcSource=undefined;}/**
-     * Render the condition to JSX - must be implemented by derived classes
-     * @param mode Rendering mode (Edit, ReadOnly, or Disabled)
-     * @param targetProgramType The program type context for rendering
-     *//**
-     * Get declarations that are used/referenced by this condition - must be implemented by derived classes
-     *//**
-     * Get declarations that are added/defined by this condition - must be implemented by derived classes
-     *//**
-     * Get the PLC logic code for this condition - must be implemented by derived classes
-     *//**
-     * Get validation issues for this condition - must be implemented by derived classes
-     *//**
-     * Get all data elements used by this condition - must be implemented by derived classes
-     *//**
-     * Check if this condition is disabled
-     * Must be implemented by derived classes
-     * @param mode The rendering mode being used
-     * @param targetProgramType The target program type context for checking declaration availability
-     * @returns True if condition should be treated as disabled
-     *//**
-     * Get a short, single-line description of this condition for display in tree views
-     * Example: "havenreset is set" or "spindle_speed > 100"
-     * @returns A human-readable summary of the condition
-     *//**
-     * Determine whether this condition should be output
-     * @param outputType The type of output (Render or PLCCode)
-     * @param availableDeclarations Optional array of available declaration names
-     * @returns OutputState indicating how this condition should be handled
-     */shouldOutput(outputType,availableDeclarations){// TODO: Define proper output logic later
-return _IPLCElement__WEBPACK_IMPORTED_MODULE_2__/* .OutputState */ .J8.Output;}/**
-     * Serialize to JSON
-     */toJSON(){const data=_PLCUtilities__WEBPACK_IMPORTED_MODULE_3__/* .PLCSerializationHelper */ .uH.getStorageData(this);data.conditionType=this.conditionType;return data;}/**
-     * Load from JSON
-     */fromJSON(data){_utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_1__/* .DataUtilities */ .T.loadStorageData(this,data);}}
-
-/***/ }),
-
-/***/ 5540:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ _inheritsLoose)
-});
-
-;// ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
-function _setPrototypeOf(t, e) {
-  return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
-    return t.__proto__ = e, t;
-  }, _setPrototypeOf(t, e);
-}
-
-;// ./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js
-
-function _inheritsLoose(t, o) {
-  t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
-}
-
-
-/***/ }),
-
-/***/ 5563:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  S: () => (/* binding */ AxisCoordinateDisplay)
-});
-
-// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/ArrowForward.js
-var ArrowForward = __webpack_require__(8994);
-// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Clear.js
-var Clear = __webpack_require__(79);
-// EXTERNAL MODULE: ./node_modules/@mui/icons-material/esm/Save.js
-var Save = __webpack_require__(7141);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Box/Box.js + 2 modules
-var Box = __webpack_require__(7353);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Typography/Typography.js
-var Typography = __webpack_require__(4496);
-// EXTERNAL MODULE: ./node_modules/@mui/material/ButtonGroup/ButtonGroup.js + 1 modules
-var ButtonGroup = __webpack_require__(7567);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Tooltip/Tooltip.js + 1 modules
-var Tooltip = __webpack_require__(7739);
-// EXTERNAL MODULE: ./node_modules/@mui/material/IconButton/IconButton.js + 1 modules
-var IconButton = __webpack_require__(7392);
-// EXTERNAL MODULE: ./node_modules/@mui/material/ToggleButton/ToggleButton.js + 1 modules
-var ToggleButton = __webpack_require__(4511);
-// EXTERNAL MODULE: ./src/utils/CoordinateUtil.ts + 2 modules
-var CoordinateUtil = __webpack_require__(7961);
-// EXTERNAL MODULE: ./src/utils/statemanager/StateManager.tsx
-var StateManager = __webpack_require__(2331);
-// EXTERNAL MODULE: ./src/data/ConfigurationState.ts
-var ConfigurationState = __webpack_require__(5011);
-// EXTERNAL MODULE: ./src/data/Common/CoordinateType.ts
-var CoordinateType = __webpack_require__(623);
-// EXTERNAL MODULE: ./src/data/MachineStateData.ts
-var MachineStateData = __webpack_require__(6465);
-;// ./src/data/AxisCoordinateState.ts
-var _AxisCoordinateState;/**
- * Display mode for axis coordinates
- */let CoordinateDisplayType=/*#__PURE__*/function(CoordinateDisplayType){/** Display work coordinates (relative to work zero with tool offsets) */CoordinateDisplayType["Work"]="Work";/** Display machine zero coordinates (absolute machine position) */CoordinateDisplayType["Machine"]="Machine";return CoordinateDisplayType;}({});/**
- * Tracks the state of a single axis coordinate input
- */class AxisState{constructor(){this._userEnteredValue=null;this._isUserEditing=false;this._showButtons='none';}/**
-     * User's entered value (null if not edited)
-     */get userEnteredValue(){return this._userEnteredValue;}set userEnteredValue(value){this._userEnteredValue=value;}/**
-     * Whether user is currently editing this axis
-     */get isUserEditing(){return this._isUserEditing;}set isUserEditing(value){this._isUserEditing=value;}/**
-     * Which buttons to show for this axis
-     */get showButtons(){return this._showButtons;}set showButtons(value){this._showButtons=value;}/**
-     * Clear user input and reset to default state
-     */clear(){this._userEnteredValue=null;this._isUserEditing=false;this._showButtons='none';}}/**
- * Singleton class to manage coordinate display state across all axes
- * Computes display values from machine state and user input
- */class AxisCoordinateState{get X(){return this._X;}set X(value){this._X=value;}get Y(){return this._Y;}set Y(value){this._Y=value;}get Z(){return this._Z;}set Z(value){this._Z=value;}get A(){return this._A;}set A(value){this._A=value;}/**
-     * Get/set the coordinate display type (Work or Machine)
-     */get displayType(){return this._displayType;}set displayType(value){this._displayType=value;StateManager.StateManager.propertyChanged(this,'displayType');// Notify all axes to trigger recalculation of display values
-StateManager.StateManager.propertyChanged(this,'X');StateManager.StateManager.propertyChanged(this,'Y');StateManager.StateManager.propertyChanged(this,'Z');StateManager.StateManager.propertyChanged(this,'A');}/**
-     * Get/set the timestamp when machine mode was activated (null if not in machine mode)
-     */get machineModeStartTime(){return this._machineModeStartTime;}set machineModeStartTime(value){this._machineModeStartTime=value;StateManager.StateManager.propertyChanged(this,'machineModeStartTime');}constructor(){this._axisStates=new Map();this._displayType=CoordinateDisplayType.Work;this._machineModeStartTime=null;// Timestamp when machine mode was activated
-// Define actual properties for state observation
-this._X=0;this._Y=0;this._Z=0;this._A=0;// Initialize common axes
-this.getAxisState('X');this.getAxisState('Y');this.getAxisState('Z');this.getAxisState('A');}static get Instance(){if(!AxisCoordinateState._instance){AxisCoordinateState._instance=new AxisCoordinateState();}return AxisCoordinateState._instance;}/**
-     * Get the state for a specific axis (creates if doesn't exist)
-     */getAxisState(axis){const axisKey=axis.toUpperCase();if(!this._axisStates.has(axisKey)){this._axisStates.set(axisKey,new AxisState());}return this._axisStates.get(axisKey);}/**
-     * Get the display value for an axis
-     * Priority: user entered value > proposed value > current value
-     * Computes coordinates based on displayType (Work or Machine)
-     */getDisplayValue(axis){const state=this.getAxisState(axis);const axisKey=axis.toUpperCase();// Priority 1: User entered value
-if(state.userEnteredValue!==null){return state.userEnteredValue;}const machineState=MachineStateData.MachineStateData.Instance;// Priority 2: Proposed value (from drag or other operations)
-const proposedPos=ConfigurationState.ConfigurationState.Instance.proposedSpindlePosition;if(proposedPos){const coordinates=this._displayType===CoordinateDisplayType.Work?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(proposedPos):CoordinateUtil.CoordinateUtil.toMachineZero(proposedPos);let proposedValue;switch(axisKey){case'X':proposedValue=coordinates.x;break;case'Y':proposedValue=coordinates.y;break;case'Z':proposedValue=coordinates.z;break;case'A':proposedValue=0;break;// A-axis not implemented yet
-default:proposedValue=0;}return proposedValue;}// Priority 3: Current value
-const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const coordinates=this._displayType===CoordinateDisplayType.Work?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos):CoordinateUtil.CoordinateUtil.toMachineZero(currentMachinePos);let currentValue;switch(axisKey){case'X':currentValue=coordinates.x;break;case'Y':currentValue=coordinates.y;break;case'Z':currentValue=coordinates.z;break;case'A':currentValue=0;break;// A-axis not implemented yet
-default:currentValue=0;}return currentValue;}/**
-     * Set user-entered value for an axis
-     */setUserValue(axis,value){const state=this.getAxisState(axis);state.userEnteredValue=value;state.isUserEditing=false;// No longer editing once value is committed
-state.showButtons='go';// Update dummy property to trigger observation
-const axisKey=axis.toUpperCase();if(axisKey==='X')this._X=value;else if(axisKey==='Y')this._Y=value;else if(axisKey==='Z')this._Z=value;else if(axisKey==='A')this._A=value;StateManager.StateManager.propertyChanged(this,axisKey);}/**
-     * Mark that user started editing (but hasn't committed yet)
-     */startEditing(axis){const state=this.getAxisState(axis);state.isUserEditing=true;state.showButtons='go';const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
-     * Stop editing without committing
-     */stopEditing(axis){const state=this.getAxisState(axis);state.isUserEditing=false;const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
-     * Clear user value for an axis
-     */clearAxis(axis){const state=this.getAxisState(axis);state.clear();// Update dummy property to trigger observation
-const axisKey=axis.toUpperCase();if(axisKey==='X')this._X=0;else if(axisKey==='Y')this._Y=0;else if(axisKey==='Z')this._Z=0;else if(axisKey==='A')this._A=0;StateManager.StateManager.propertyChanged(this,axisKey);}/**
-     * Clear all axes
-     */clearAll(){for(const[axis]of this._axisStates){this.clearAxis(axis);}}/**
-     * Set which buttons to show for an axis
-     */setButtonMode(axis,mode){const state=this.getAxisState(axis);state.showButtons=mode;const axisKey=axis.toUpperCase();StateManager.StateManager.propertyChanged(this,axisKey);}/**
-     * Check if axis has user-entered value
-     */hasUserValue(axis){const state=this.getAxisState(axis);return state.userEnteredValue!==null;}/**
-     * Create a MoveAction for a specific axis, using the display value
-     * Returns the MoveAction that should be added to ActionBus
-     */createMoveActionForAxis(axis){// WORKAROUND: Dynamic require to break circular dependency (MoveAction -> CollisionDetection -> MachineData -> ... -> AxisCoordinateState)
-const{MoveAction,MoveType}=__webpack_require__(1178);// Get current coordinates in the selected display type
-const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const machineZeroPos=CoordinateUtil.CoordinateUtil.toMachineZero(currentMachinePos);const isMachineMode=this._displayType===CoordinateDisplayType.Machine;const coordType=isMachineMode?CoordinateType/* CoordinateType */.t.MachineZero:CoordinateType/* CoordinateType */.t.WorkZeroWithOffsets;// Build coordinate with only the specified axis changed
-// Other axes will be undefined so MoveAction will use current position
-let x;let y;let z;switch(axis.toUpperCase()){case'X':x=this.getDisplayValue('X');break;case'Y':y=this.getDisplayValue('Y');break;case'Z':z=this.getDisplayValue('Z');break;case'A':// A-axis not yet implemented
-break;}// Create MoveAction with only the changed axis specified
-// ActionBus will automatically combine this with any existing MoveAction
-return new MoveAction(coordType,x,y,z,undefined,MoveType.Coordinates);}}_AxisCoordinateState=AxisCoordinateState;AxisCoordinateState._instance=void 0;
-// EXTERNAL MODULE: ./src/data/CNCPoint.ts
-var CNCPoint = __webpack_require__(9271);
-// EXTERNAL MODULE: ./src/data/ConfigurationData.ts
-var ConfigurationData = __webpack_require__(7677);
-// EXTERNAL MODULE: ./src/data/ConfigurationDataColors.ts
-var ConfigurationDataColors = __webpack_require__(2561);
-// EXTERNAL MODULE: ./src/data/UserMessageQueue.ts
-var UserMessageQueue = __webpack_require__(3598);
-// EXTERNAL MODULE: ./src/machine/Machine.ts + 2 modules
-var Machine = __webpack_require__(1899);
-// EXTERNAL MODULE: ./src/utils/actions/ActionBus.ts
-var ActionBus = __webpack_require__(8020);
-// EXTERNAL MODULE: ./src/utils/statemanager/ObserveMultiProperties.tsx + 1 modules
-var ObserveMultiProperties = __webpack_require__(9578);
-// EXTERNAL MODULE: ./src/components/Common/NumberInput.tsx + 1 modules
-var NumberInput = __webpack_require__(5292);
-// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
-var jsx_runtime = __webpack_require__(579);
-;// ./src/components/Common/AxisCoordinateDisplay.tsx
-// Module-level state for machine mode timer
-let machineTimerHandle=null;let machineTimerUpdateHandle=null;/**
- * Props for AxisCoordinateDisplay component
- *//**
- * Reusable component for displaying and editing axis coordinates
- * Shows work coordinates with NumberInput controls and Set/Go buttons
- * 
- * Set button: Appears when work coordinate is not at zero - sets work zero to current position
- * Go button: Appears when user has entered a proposed position - moves to that position
- * 
- * @example
- * // Basic usage with X, Y, Z axes
- * <AxisCoordinateDisplay axes={['X', 'Y', 'Z']} />
- * 
- * @example
- * // Custom styling without buttons
- * <AxisCoordinateDisplay 
- *   axes={['X', 'Y']} 
- *   showButtons={false}
- *   inputWidth="150px"
- *   valueFontSize="2rem"
- * />
- */function AxisCoordinateDisplay(_ref){let{axes=['X','Y','Z','A'],showButtons=true,showSetButton=true,reserveButtonSpace=false,inputWidth='150px',labelFontSize='1.5rem',valueFontSize='2.5rem',buttonWidth='80px',buttonHeight='56px',gap=2,axisGap=2,getLabelText=axis=>`${axis}:`,onCoordinateChange,onSetWorkZero,onGoToPosition,instanceKey='axis-coordinate-display',showSpeedToggle=false,showCoordinateTypeToggle=false}=_ref;const colors=ConfigurationDataColors/* ConfigurationDataColors */.f.Instance;const machineState=MachineStateData.MachineStateData.Instance;const axisState=AxisCoordinateState.Instance;const handleCoordinateChange=(axis,value)=>{// This is called when user commits value (Enter/Tab/Blur)
-axisState.setUserValue(axis,value);if(onCoordinateChange){onCoordinateChange(axis,value);}};const handleEditStart=axis=>{// This is called when user starts typing
-axisState.startEditing(axis);};const getButtonType=axis=>{if(!showButtons)return'none';const state=axisState.getAxisState(axis);// If user has entered a value or is editing, show Go buttons
-if(state.userEnteredValue!==null||state.isUserEditing){return'go';}// Check if we should show Set button based on work coordinate value
-const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const workCoordinates=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// Get the work coordinate for the axis
-let workCoordinate;switch(axis.toUpperCase()){case'X':workCoordinate=workCoordinates.x;break;case'Y':workCoordinate=workCoordinates.y;break;case'Z':workCoordinate=workCoordinates.z;break;case'A':workCoordinate=0;// A-axis placeholder
-break;default:return'none';}// If work coordinate is close to 0, don't show Set button
-const tolerance=0.001;const isAtWorkZero=Math.abs(workCoordinate)<tolerance;return isAtWorkZero||!showSetButton?'none':'set';};const handleSetWorkZero=async axis=>{if(onSetWorkZero){onSetWorkZero(axis);}else{// Set work zero to current machine position for this axis
-const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;const currentWorkZero=machineState.currentWorkZero;const currentWorkCoords=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// To make current tool tip position become 0, we need to adjust currentWorkZero
-// by the current work coordinate value
-// Formula: newWorkZero = currentWorkZero + currentWorkCoords
-let newWorkZero;switch(axis.toUpperCase()){case'X':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x+currentWorkCoords.x,currentWorkZero.y,currentWorkZero.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'Y':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x,currentWorkZero.y+currentWorkCoords.y,currentWorkZero.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'Z':newWorkZero=new CNCPoint/* CNCPoint */.V(currentWorkZero.x,currentWorkZero.y,currentWorkZero.z+currentWorkCoords.z,CoordinateType/* CoordinateType */.t.MachineZero);break;case'A':// A-axis placeholder - for now just keep current work zero
-newWorkZero=currentWorkZero;break;default:newWorkZero=currentWorkZero;}// Update the machine state (updates local fixture data)
-machineState.currentWorkZero=newWorkZero;// Notify the server about the fixture point change
-try{await Machine/* Machine */.u5.getInstance().movement.SetCurrentFixturePoint();// Note: Fixture auto-save is triggered by StateManager.propertyChanged in Fixture setters
-}catch(error){UserMessageQueue.UserMessageQueue.Instance.addMessage(`❌ Failed to update fixture on server: ${error}`);}}axisState.clearAxis(axis);};const handleGoToPosition=axis=>{if(onGoToPosition){onGoToPosition(axis);}else{// Create MoveAction using AxisCoordinateState method
-// ActionBus will automatically combine this with any existing MoveAction
-const moveAction=axisState.createMoveActionForAxis(axis);ActionBus/* ActionBus */.B.Instance.addAction(moveAction);}// Clear only the axis that was moved
-axisState.clearAxis(axis);};const handleClear=()=>{axisState.clearAll();};const handleJogSpeedChange=async()=>{try{const machine=Machine/* Machine */.u5.getInstance();await machine.movement.SetFastJog(!ConfigurationState.ConfigurationState.Instance.jogFastMode);}catch(error){console.error('Failed to set jog speed:',error);}};const handleCoordinateTypeChange=()=>{const isCurrentlyWork=axisState.displayType===CoordinateDisplayType.Work;const newType=isCurrentlyWork?CoordinateDisplayType.Machine:CoordinateDisplayType.Work;// Clear any existing timer
-if(machineTimerHandle){clearTimeout(machineTimerHandle);machineTimerHandle=null;}if(machineTimerUpdateHandle){clearInterval(machineTimerUpdateHandle);machineTimerUpdateHandle=null;}// If switching to Machine mode, start countdown timer
-if(isCurrentlyWork){const duration=ConfigurationData/* ConfigurationData */.J.Instance.machineModeDuration*1000;// Convert seconds to milliseconds
-axisState.machineModeStartTime=Date.now();// Update progress every 50ms for smooth animation
-machineTimerUpdateHandle=setInterval(()=>{// Force re-render by notifying state change
-StateManager.StateManager.propertyChanged(axisState,'machineModeStartTime');},50);// Auto-switch back to Work mode after duration
-machineTimerHandle=setTimeout(()=>{if(machineTimerUpdateHandle){clearInterval(machineTimerUpdateHandle);machineTimerUpdateHandle=null;}machineTimerHandle=null;axisState.machineModeStartTime=null;axisState.displayType=CoordinateDisplayType.Work;},duration);}else{axisState.machineModeStartTime=null;}axisState.displayType=newType;};return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{display:'flex',flexDirection:'column',gap:axisGap},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(ObserveMultiProperties/* ObserveMultiProperties */.P,{listenTo:[{object:machineState,properties:['currentWorkZero','currentToolOffsets','currentToolNumber']},{object:ConfigurationState.ConfigurationState.Instance,properties:['isHomed','proposedSpindlePosition','currentMachinePoint']},{object:axisState,properties:['X','Y','Z','A']}],control:()=>{return/*#__PURE__*/(0,jsx_runtime.jsx)(jsx_runtime.Fragment,{children:axes.map(axis=>{const currentMachinePos=ConfigurationState.ConfigurationState.Instance.currentMachinePoint;// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const workCoordinates=CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(currentMachinePos);// Get proposed position if it exists
-const proposedPos=ConfigurationState.ConfigurationState.Instance.proposedSpindlePosition;// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const proposedWorkCoordinates=proposedPos?CoordinateUtil.CoordinateUtil.toWorkZeroWithOffsets(proposedPos):null;// let currentWorkValue: number;
-// let proposedWorkValue: number | null = null;
-switch(axis.toUpperCase()){case'X':// currentWorkValue = workCoordinates.x;
-// proposedWorkValue = proposedWorkCoordinates?.x ?? null;
-break;case'Y':// currentWorkValue = workCoordinates.y;
-// proposedWorkValue = proposedWorkCoordinates?.y ?? null;
-break;case'Z':// currentWorkValue = workCoordinates.z;
-// proposedWorkValue = proposedWorkCoordinates?.z || null;
-break;case'A':// currentWorkValue = 0;
-// proposedWorkValue = null; // A-axis not implemented yet
-break;default:// currentWorkValue = 0;
-// proposedWorkValue = null;
-break;}const displayValue=axisState.getDisplayValue(axis);const buttonType=getButtonType(axis);const hasUserValue=axisState.hasUserValue(axis);return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{display:'flex',alignItems:'center',gap},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Typography/* default */.A,{sx:{minWidth:'40px',fontSize:labelFontSize,fontWeight:'bold'},children:getLabelText(axis)}),ConfigurationState.ConfigurationState.Instance.isHomed?/*#__PURE__*/(0,jsx_runtime.jsx)(NumberInput/* NumberInput */.Q,{value:displayValue,onChange:value=>handleCoordinateChange(axis,value),onEditStart:()=>handleEditStart(axis),precision:3,allowNegative:true,allowPositive:true,allowFractions:true,showHelperText:false,beforeText:`${axisState.displayType===CoordinateDisplayType.Machine?'Machine':'Work'} coordinate ${axis} - position relative to ${axisState.displayType===CoordinateDisplayType.Machine?'machine zero':'work zero'}`,afterText:"Press Enter/Tab to move, or use Set button to set work zero to current position.",size:"medium",variant:"outlined",textColor:hasUserValue?colors.successColor:undefined,sx:{width:inputWidth,'& .MuiOutlinedInput-input':{fontFamily:'monospace',fontSize:valueFontSize,fontWeight:'bold',padding:'12px 16px',textAlign:'right'},'& .MuiOutlinedInput-root':{backgroundColor:axisState.displayType===CoordinateDisplayType.Machine?`${colors.primaryColor}15`:colors.lightTextColor,'& fieldset':{borderWidth:'2px',borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor},'&:hover fieldset':{borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor},'&.Mui-focused fieldset':{borderColor:axisState.displayType===CoordinateDisplayType.Machine?colors.primaryColor:colors.borderColor}}}}):/*#__PURE__*/(0,jsx_runtime.jsx)(Typography/* default */.A,{sx:{width:inputWidth,fontFamily:'monospace',fontSize:'1.2rem',fontWeight:'bold',padding:'12px 16px',textAlign:'right',backgroundColor:colors.lightBackgroundColor,border:`2px solid ${colors.borderColor}`,borderRadius:'4px',color:colors.borderColor,display:'flex',alignItems:'center',justifyContent:'flex-end',lineHeight:1,whiteSpace:'nowrap'},children:"---.--"}),ConfigurationState.ConfigurationState.Instance.isHomed&&(showButtons||reserveButtonSpace)&&/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{minWidth:reserveButtonSpace?'180px':'auto',display:'flex',alignItems:'center',justifyContent:'flex-start'},children:[buttonType==='go'&&/*#__PURE__*/(0,jsx_runtime.jsxs)(ButtonGroup/* default */.A,{variant:"contained",sx:{height:buttonHeight},children:[/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Go to position",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleGoToPosition(axis),tabIndex:-1,sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,borderRadius:'4px 0 0 4px','&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(ArrowForward/* default */.A,{})})}),/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Clear",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleClear(),tabIndex:-1,sx:{backgroundColor:colors.secondaryColor,color:colors.lightTextColor,borderRadius:'0 4px 4px 0','&:hover':{backgroundColor:colors.secondaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Clear/* default */.A,{})})})]}),buttonType==='set'&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:"Set work zero",children:/*#__PURE__*/(0,jsx_runtime.jsx)(IconButton/* default */.A,{size:"medium",onClick:()=>handleSetWorkZero(axis),tabIndex:-1,sx:{backgroundColor:colors.primaryColor,color:colors.lightTextColor,borderRadius:'4px','&:hover':{backgroundColor:colors.primaryColor,opacity:0.9}},children:/*#__PURE__*/(0,jsx_runtime.jsx)(Save/* default */.A,{})})})]})]},axis);})});}},instanceKey),(showSpeedToggle||showCoordinateTypeToggle)&&/*#__PURE__*/(0,jsx_runtime.jsx)(ObserveMultiProperties/* ObserveMultiProperties */.P,{listenTo:[{object:ConfigurationState.ConfigurationState.Instance,properties:['jogFastMode']},{object:axisState,properties:['displayType','machineModeStartTime']}],control:()=>{const isFast=ConfigurationState.ConfigurationState.Instance.jogFastMode;const isWork=axisState.displayType===CoordinateDisplayType.Work;// Calculate progress percentage
-let progressPercent=0;if(!isWork&&axisState.machineModeStartTime){const elapsed=Date.now()-axisState.machineModeStartTime;const duration=ConfigurationData/* ConfigurationData */.J.Instance.machineModeDuration*1000;// Convert seconds to milliseconds
-progressPercent=Math.min(100,elapsed/duration*100);}return/*#__PURE__*/(0,jsx_runtime.jsxs)(Box/* default */.A,{sx:{mt:1,display:'flex',gap:1},children:[showSpeedToggle&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:isFast?'Click to switch to Slow Jog':'Click to switch to Fast Jog',arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsxs)(ToggleButton/* default */.A,{value:"fast",selected:isFast,onChange:handleJogSpeedChange,sx:{minWidth:'60px',fontWeight:'bold',fontSize:'0.75rem',padding:'4px 8px',backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,color:colors.lightTextColor,border:'none','&:hover':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,opacity:0.85},'&.Mui-selected':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:isFast?colors.primaryColor:colors.secondaryColor,opacity:0.85}}},children:["Speed: ",isFast?'Fast':'Slow']})}),showCoordinateTypeToggle&&/*#__PURE__*/(0,jsx_runtime.jsx)(Tooltip/* default */.A,{title:isWork?'Click to switch to Machine Coordinates':'Click to switch to Work Coordinates',arrow:true,children:/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{position:'relative',display:'inline-block'},children:/*#__PURE__*/(0,jsx_runtime.jsxs)(ToggleButton/* default */.A,{value:"work",selected:isWork,onChange:handleCoordinateTypeChange,sx:{minWidth:'70px',fontWeight:'bold',fontSize:'0.75rem',padding:'4px 8px',backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,color:colors.lightTextColor,border:'none',position:'relative',overflow:'hidden','&:hover':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,opacity:0.85},'&.Mui-selected':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,color:colors.lightTextColor,'&:hover':{backgroundColor:isWork?colors.secondaryColor:colors.primaryColor,opacity:0.85}}},children:[!isWork&&axisState.machineModeStartTime&&/*#__PURE__*/(0,jsx_runtime.jsx)(Box/* default */.A,{sx:{position:'absolute',top:0,left:0,height:'100%',width:`${progressPercent}%`,backgroundColor:colors.secondaryColor,transition:'width 50ms linear',pointerEvents:'none'}}),/*#__PURE__*/(0,jsx_runtime.jsxs)("span",{style:{position:'relative',zIndex:1},children:["Display: ",isWork?'Work':'Machine']})]})})})]});}},`${instanceKey}-toggle-buttons`)]});}
-
-/***/ }),
-
-/***/ 5599:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (/* binding */ ConditionGroupEditor)
-/* harmony export */ });
-/* harmony import */ var _mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(141);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7353);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7392);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4496);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2518);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(2143);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(688);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(5043);
-/* harmony import */ var _data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(2561);
-/* harmony import */ var _utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(3740);
-/* harmony import */ var _utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(1392);
-/* harmony import */ var _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(8132);
-/* harmony import */ var _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(3251);
-/* harmony import */ var _data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(7806);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(579);
-/**
- * ConditionGroupEditor - UI component for editing condition groups
- * Supports recursive nested groups with AND/OR/XOR operations
- */function ConditionGroupEditor(props){const{conditionGroup,onChanged,depth=0,isRoot=false,renderMode=_data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__/* .PLCRenderMode */ .LH.Edit,targetProgramType}=props;const[addMenuAnchor,setAddMenuAnchor]=(0,react__WEBPACK_IMPORTED_MODULE_7__.useState)(null);const isReadOnly=renderMode===_data_IPLCElement__WEBPACK_IMPORTED_MODULE_13__/* .PLCRenderMode */ .LH.ReadOnly;const[groupTypeMenuAnchor,setGroupTypeMenuAnchor]=(0,react__WEBPACK_IMPORTED_MODULE_7__.useState)(null);const colors=_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance;const handleAddCondition=type=>{let newCondition;if(type==='single'){newCondition=new _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__/* .DataCondition */ .i();}else{const newGroup=new _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .ConditionGroup */ .Z(_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.And);// Add a default DataCondition to the new group
-const defaultCondition=new _data_DataCondition__WEBPACK_IMPORTED_MODULE_12__/* .DataCondition */ .i();newGroup.addCondition(defaultCondition);newCondition=newGroup;}conditionGroup.addCondition(newCondition);setAddMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();};const handleRemoveCondition=condition=>{conditionGroup.removeCondition(condition);onChanged===null||onChanged===void 0?void 0:onChanged();};// TODO: Implement condition reordering UI
-// const handleMoveConditionUp = (condition: Condition) => {
-//     const index = conditionGroup.conditions.indexOf(condition);
-//     if (index > 0) {
-//         conditionGroup.conditions.splice(index, 1);
-//         conditionGroup.conditions.splice(index - 1, 0, condition);
-//         onChanged?.();
-//     }
-// };
-// const handleMoveConditionDown = (condition: Condition) => {
-//     const index = conditionGroup.conditions.indexOf(condition);
-//     if (index >= 0 && index < conditionGroup.conditions.length - 1) {
-//         conditionGroup.conditions.splice(index, 1);
-//         conditionGroup.conditions.splice(index + 1, 0, condition);
-//         onChanged?.();
-//     }
-// };
-const handleConditionChanged=()=>{onChanged===null||onChanged===void 0?void 0:onChanged();};return/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.Fragment,{children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__/* .ObserveState */ .Q,{listenTo:conditionGroup,properties:['groupType','conditions'],control:()=>{// All groups use flex layout with braces that span content height
-return/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'inline-flex',alignItems:'stretch',borderTop:`0.75px dashed ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.borderColor}`,borderBottom:`0.75px dashed ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{fontFamily:'monospace',fontSize:'24px',mr:0.5,width:'10px',borderLeft:`1.5px solid ${colors.secondaryBorderColor}`,borderTop:`1.5px solid ${colors.secondaryBorderColor}`,borderBottom:`1.5px solid ${colors.secondaryBorderColor}`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',gap:0.5,py:isRoot?0:0.5},children:conditionGroup.conditions.length===0?!isReadOnly?/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A,{size:"small",onClick:e=>setAddMenuAnchor(e.currentTarget),sx:{color:colors.primaryColor,fontSize:'12px',px:1,py:0.5,borderRadius:1,border:`1px dashed ${colors.borderColor}`,'&:hover':{backgroundColor:`${colors.primaryColor}20`,borderColor:colors.primaryColor}},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A,{fontSize:"small",sx:{mr:0.5}}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{variant:"caption",sx:{fontFamily:'monospace'},children:"pick"})]}):/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{variant:"caption",sx:{fontFamily:'monospace',fontStyle:'italic',color:colors.mutedTextColor},children:"empty"}):(()=>{// Separate inline conditions from nested groups
-const inlineConditions=[];const nestedGroups=[];conditionGroup.conditions.forEach(condition=>{if(condition instanceof _data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .ConditionGroup */ .Z){nestedGroups.push(condition);}else{inlineConditions.push(condition);}});const rows=[];// Render all inline conditions first as a single row
-if(inlineConditions.length>0){const inlineElements=[];inlineConditions.forEach((condition,idx)=>{const originalIndex=conditionGroup.conditions.indexOf(condition);if(idx>0){inlineElements.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(react__WEBPACK_IMPORTED_MODULE_7__.Fragment,{children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{component:"span",sx:{mx:0.5},children:" "}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:isReadOnly?undefined:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",disabled:isReadOnly,sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__/* ["default"] */ .A,{component:"span",sx:{mx:0.5},children:" "})]},`combiner-${originalIndex}`));}inlineElements.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{component:"span",onMouseEnter:e=>{if(!isReadOnly){const rect=e.currentTarget.getBoundingClientRect();_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.showTooltip(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',minWidth:150,bgcolor:'background.paper',borderRadius:1,boxShadow:2,border:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('single');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Data Element"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('group');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Group"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleRemoveCondition(condition);_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px',color:'error.main','&:hover':{backgroundColor:'error.main',color:colors.lightTextColor}},children:"Delete Element"})]}),{top:rect.top,left:rect.right+5});}},onMouseLeave:()=>{if(!isReadOnly){_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltipWithDelay(300);}},sx:{display:'inline-flex',alignItems:'center',gap:0.5,'&:hover':{backgroundColor:`${colors.primaryColor}10`,borderRadius:1,px:0.5}},children:/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_utils_statemanager_ObserveState__WEBPACK_IMPORTED_MODULE_9__/* .ObserveState */ .Q,{listenTo:condition,properties:['dataElement','comparisonOperator','memoryBitState','useConstant','comparisonValue','comparisonElement'],control:()=>condition.render(renderMode,targetProgramType)},`data-condition-${originalIndex}`)},originalIndex));});rows.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',alignItems:'center',gap:1},children:[inlineElements,nestedGroups.length>0&&/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:isReadOnly?undefined:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",disabled:isReadOnly,sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()})]},"inline-conditions"));}// Render nested groups, each on its own row with combiner
-nestedGroups.forEach((group,idx)=>{const originalIndex=conditionGroup.conditions.indexOf(group);const isLastGroup=idx===nestedGroups.length-1;rows.push(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',alignItems:'center',gap:1},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{onMouseEnter:e=>{if(!isReadOnly){const rect=e.currentTarget.getBoundingClientRect();_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.showTooltip(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{display:'flex',flexDirection:'column',minWidth:150,bgcolor:'background.paper',borderRadius:1,boxShadow:2,border:`1px solid ${colors.borderColor}`},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('single');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Data Element"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleAddCondition('group');_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px','&:hover':{backgroundColor:`${colors.primaryColor}20`}},children:"Add Group"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{handleRemoveCondition(group);_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltip();},sx:{py:1,px:2,fontSize:'14px',color:'error.main','&:hover':{backgroundColor:'error.main',color:colors.lightTextColor}},children:"Delete Group"})]}),{top:rect.top,left:rect.right+5});}},onMouseLeave:()=>{if(!isReadOnly){_utils_TooltipManager__WEBPACK_IMPORTED_MODULE_10__/* .TooltipManager */ .J.Instance.hideTooltipWithDelay(300);}},sx:{ml:2,'&:hover':{backgroundColor:`${colors.primaryColor}10`,borderRadius:1,px:0.5}},children:/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(ConditionGroupEditor,{conditionGroup:group,onChanged:handleConditionChanged,depth:depth+1,isRoot:false,renderMode:renderMode,targetProgramType:targetProgramType})}),!isLastGroup&&/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A,{onClick:e=>setGroupTypeMenuAnchor(e.currentTarget),size:"small",sx:{fontFamily:'monospace',fontSize:'11px',minWidth:'auto',px:1,py:0.25,textTransform:'lowercase',fontWeight:'bold',color:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor,border:`1px solid ${_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}`,backgroundColor:'transparent','&:hover':{backgroundColor:`${colors.secondaryBorderColor}20`,borderColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_8__/* .ConfigurationDataColors */ .f.Instance.mutedTextColor}},children:conditionGroup.groupType.toLowerCase()})]},originalIndex));});return rows;})()}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{sx:{fontFamily:'monospace',fontSize:'24px',ml:0.5,width:'10px',borderRight:`1.5px solid ${colors.secondaryBorderColor}`,borderTop:`1.5px solid ${colors.secondaryBorderColor}`,borderBottom:`1.5px solid ${colors.secondaryBorderColor}`,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}})]});}},`condition-group-editor-${depth}`),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A,{anchorEl:groupTypeMenuAnchor,open:Boolean(groupTypeMenuAnchor),onClose:()=>setGroupTypeMenuAnchor(null),anchorOrigin:{vertical:'bottom',horizontal:'left'},transformOrigin:{vertical:'top',horizontal:'left'},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.And;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"and"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.Or;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"or"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>{conditionGroup.groupType=_data_ConditionGroup__WEBPACK_IMPORTED_MODULE_11__/* .GroupType */ .M.Xor;setGroupTypeMenuAnchor(null);onChanged===null||onChanged===void 0?void 0:onChanged();},children:"xor"})]}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .A,{anchorEl:addMenuAnchor,open:Boolean(addMenuAnchor),onClose:()=>{setAddMenuAnchor(null);},anchorOrigin:{vertical:'bottom',horizontal:'right'},transformOrigin:{vertical:'top',horizontal:'right'},children:[/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>handleAddCondition('single'),children:"Single Condition"}),/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .A,{onClick:()=>handleAddCondition('group'),children:"Condition Group"})]})]});}
-
-/***/ }),
-
-/***/ 5658:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   K: () => (/* binding */ getDividerUtilityClass)
-/* harmony export */ });
-/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
-/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
-
-
-function getDividerUtilityClass(slot) {
-  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiDivider', slot);
-}
-const dividerClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiDivider', ['root', 'absolute', 'fullWidth', 'inset', 'middle', 'flexItem', 'light', 'vertical', 'withChildren', 'withChildrenVertical', 'textAlignRight', 'textAlignLeft', 'wrapper', 'wrapperVertical']);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dividerClasses);
-
-/***/ }),
-
-/***/ 5671:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   b: () => (/* binding */ getListItemTextUtilityClass)
-/* harmony export */ });
-/* harmony import */ var _mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2532);
-/* harmony import */ var _mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2372);
-
-
-function getListItemTextUtilityClass(slot) {
-  return (0,_mui_utils_generateUtilityClass__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Ay)('MuiListItemText', slot);
-}
-const listItemTextClasses = (0,_mui_utils_generateUtilityClasses__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)('MuiListItemText', ['root', 'multiline', 'dense', 'inset', 'primary', 'secondary']);
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (listItemTextClasses);
-
-/***/ }),
-
-/***/ 5701:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6734);
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(579);
-"use client";
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_utils_createSvgIcon_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("path", {
-  d: "m18.25 7.6-5.5-3.18c-.46-.27-1.04-.27-1.5 0L5.75 7.6c-.46.27-.75.76-.75 1.3v6.35c0 .54.29 1.03.75 1.3l5.5 3.18c.46.27 1.04.27 1.5 0l5.5-3.18c.46-.27.75-.76.75-1.3V8.9c0-.54-.29-1.03-.75-1.3M7 14.96v-4.62l4 2.32v4.61zm5-4.03L8 8.61l4-2.31 4 2.31zm1 6.34v-4.61l4-2.32v4.62zM7 2H3.5C2.67 2 2 2.67 2 3.5V7h2V4h3zm10 0h3.5c.83 0 1.5.67 1.5 1.5V7h-2V4h-3zM7 22H3.5c-.83 0-1.5-.67-1.5-1.5V17h2v3h3zm10 0h3.5c.83 0 1.5-.67 1.5-1.5V17h-2v3h-3z"
-}), 'ViewInAr'));
-
-/***/ }),
-
-/***/ 5721:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ List_List)
-});
-
-// EXTERNAL MODULE: ./node_modules/react/index.js
-var react = __webpack_require__(5043);
-// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
-var clsx = __webpack_require__(8387);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
-var composeClasses = __webpack_require__(8610);
-// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
-var styled = __webpack_require__(4535);
-// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
-var DefaultPropsProvider = __webpack_require__(8206);
-// EXTERNAL MODULE: ./node_modules/@mui/material/List/ListContext.js
-var ListContext = __webpack_require__(1347);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
-var generateUtilityClasses = __webpack_require__(2532);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
-var generateUtilityClass = __webpack_require__(2372);
-;// ./node_modules/@mui/material/List/listClasses.js
-
-
-function getListUtilityClass(slot) {
-  return (0,generateUtilityClass/* default */.Ay)('MuiList', slot);
-}
-const listClasses = (0,generateUtilityClasses/* default */.A)('MuiList', ['root', 'padding', 'dense', 'subheader']);
-/* harmony default export */ const List_listClasses = ((/* unused pure expression or super */ null && (listClasses)));
-// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
-var jsx_runtime = __webpack_require__(579);
-;// ./node_modules/@mui/material/List/List.js
-'use client';
-
-
-
-
-
-
-
-
-
-
-const useUtilityClasses = ownerState => {
-  const {
-    classes,
-    disablePadding,
-    dense,
-    subheader
-  } = ownerState;
-  const slots = {
-    root: ['root', !disablePadding && 'padding', dense && 'dense', subheader && 'subheader']
-  };
-  return (0,composeClasses/* default */.A)(slots, getListUtilityClass, classes);
-};
-const ListRoot = (0,styled/* default */.Ay)('ul', {
-  name: 'MuiList',
-  slot: 'Root',
-  overridesResolver: (props, styles) => {
-    const {
-      ownerState
-    } = props;
-    return [styles.root, !ownerState.disablePadding && styles.padding, ownerState.dense && styles.dense, ownerState.subheader && styles.subheader];
-  }
-})({
-  listStyle: 'none',
-  margin: 0,
-  padding: 0,
-  position: 'relative',
-  variants: [{
-    props: _ref => {
-      let {
-        ownerState
-      } = _ref;
-      return !ownerState.disablePadding;
-    },
-    style: {
-      paddingTop: 8,
-      paddingBottom: 8
-    }
-  }, {
-    props: _ref2 => {
-      let {
-        ownerState
-      } = _ref2;
-      return ownerState.subheader;
-    },
-    style: {
-      paddingTop: 0
-    }
-  }]
-});
-const List = /*#__PURE__*/react.forwardRef(function List(inProps, ref) {
-  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
-    props: inProps,
-    name: 'MuiList'
-  });
-  const {
-    children,
-    className,
-    component = 'ul',
-    dense = false,
-    disablePadding = false,
-    subheader,
-    ...other
-  } = props;
-  const context = react.useMemo(() => ({
-    dense
-  }), [dense]);
-  const ownerState = {
-    ...props,
-    component,
-    dense,
-    disablePadding
-  };
-  const classes = useUtilityClasses(ownerState);
-  return /*#__PURE__*/(0,jsx_runtime.jsx)(ListContext/* default */.A.Provider, {
-    value: context,
-    children: /*#__PURE__*/(0,jsx_runtime.jsxs)(ListRoot, {
-      as: component,
-      className: (0,clsx/* default */.A)(classes.root, className),
-      ref: ref,
-      ownerState: ownerState,
-      ...other,
-      children: [subheader, children]
-    })
-  });
-});
- false ? 0 : void 0;
-/* harmony default export */ const List_List = (List);
-
-/***/ }),
-
-/***/ 5760:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   W: () => (/* binding */ InputMappingStatement)
-/* harmony export */ });
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7353);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4496);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5043);
-/* harmony import */ var _data_ConfigurationData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7677);
-/* harmony import */ var _data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(2561);
-/* harmony import */ var _utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(342);
-/* harmony import */ var _data_PLCProgram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9561);
-/* harmony import */ var _data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(1319);
-/* harmony import */ var _BasePLCStatement__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(1569);
-/**
- * Input Mapping Statement
- * System-only statement with no UI that outputs input mapping code
- * Maps raw hardware inputs to processed memory bits with optional inversion
- * Only available in SystemDefault PLC programs
- */class InputMappingStatement extends _BasePLCStatement__WEBPACK_IMPORTED_MODULE_8__/* .BasePLCStatement */ .e{/**
-     * Get a short, single-line description for display in tree views
-     * @returns A human-readable summary
-     */getShortDescription(){return'Map hardware inputs';}/**
-     * Validate the statement
-     */validate(){return undefined;// Always valid
-}/**
-     * Render the statement (informational display only, no editable properties)
-     */render(mode){const config=_data_ConfigurationData__WEBPACK_IMPORTED_MODULE_3__/* .ConfigurationData */ .J.Instance;const colors=_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__/* .ConfigurationDataColors */ .f.Instance;return/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .A,{sx:{padding:2,backgroundColor:_data_ConfigurationDataColors__WEBPACK_IMPORTED_MODULE_4__/* .ConfigurationDataColors */ .f.Instance.selectionColor,// Light blue background for system-only statements
-border:`1px solid ${colors.borderColor}`,borderRadius:1,opacity:this._enabled?1:0.5}},[/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{key:'title',variant:'subtitle2',sx:{color:colors.primaryColor,fontWeight:'bold'}},'Input Mapping'),/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_mui_material__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .A,{key:'description',variant:'body2',sx:{marginTop:0.5}},'Maps raw hardware inputs to processed memory bits with inversion (system only)')]);}/**
-     * Get declarations used by this statement
-     */getUsedDeclarations(){return[];}/**
-     * Get declarations added by this statement
-     */getAddedDeclarations(){// Validate that this statement has a valid plcSource
-if(!this.plcSource){throw new Error('InputMappingStatement: plcSource is not set. Statement must be added to a program before calling getAddedDeclarations()');}// CRITICAL: InputMappingStatement should ONLY be used in SystemDefault program
-const myProgramType=this.plcSource.getProgramType();if(myProgramType!==_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__/* .PLCProgramType */ .wM.SystemDefault){throw new Error(`InputMappingStatement can only be used in SystemDefault program, but found in ${myProgramType} program`);}return[];}/**
-     * Get PLC logic code
-     * Generates input mapping code for all defined inputs with inversion support
-     */getPLCLogic(availableDeclarations){if(!this._enabled){return[];}const lines=[];// Get the System PLC program to access user-defined inputs
-const program=_data_PLCProgram__WEBPACK_IMPORTED_MODULE_6__.PLCProgram.Instance(_data_PLCUtilities__WEBPACK_IMPORTED_MODULE_7__/* .PLCProgramType */ .wM.System);const inputs=program.inputs;if(inputs.length===0){return['; Input Mapping - Standard handling','; (No inputs defined)'];}lines.push('; Input Mapping - Standard handling');for(const input of inputs){const inputName=input.centroidName;// Add _RAW suffix to get hardware input name (ESTOPOK_I -> ESTOPOK_I_RAW)
-// Memory bit keeps original name (ESTOPOK_I)
-const hwName=`${inputName}_RAW`;// Generate the IF statement based on inversion
-if(input.isInverted){// Inverted: IF NOT hardware input THEN set memory bit
-lines.push(`IF (!${hwName}) THEN (${inputName}) ; Inverted`);}else{// Normal: IF hardware input THEN set memory bit
-lines.push(`IF ${hwName} THEN (${inputName})`);}}lines.push('; End Input Mapping');return lines;}/**
-     * Get validation issues
-     */getValidationIssues(){return[];}/**
-     * Get all data elements (none for this statement)
-     */getDataElements(){return[];}/**
-     * Clone the statement
-     */clone(){const cloned=new InputMappingStatement();cloned._comment=this._comment;cloned._enabled=this._enabled;return cloned;}/**
-     * Serialize to JSON
-     */toJSON(){return{type:'InputMappingStatement',..._utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__/* .DataUtilities */ .T.getStorageData(this,['_parentElement','_plcSource'])};}/**
-     * Deserialize from JSON
-     */fromJSON(data){_utils_storage_DataUtilities__WEBPACK_IMPORTED_MODULE_5__/* .DataUtilities */ .T.loadStorageData(this,data,['_parentElement','_plcSource']);}}
-
-/***/ }),
-
-/***/ 5795:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  A: () => (/* binding */ TextField_TextField)
-});
-
-// EXTERNAL MODULE: ./node_modules/react/index.js
-var react = __webpack_require__(5043);
-// EXTERNAL MODULE: ./node_modules/clsx/dist/clsx.mjs
-var clsx = __webpack_require__(8387);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/composeClasses/composeClasses.js
-var composeClasses = __webpack_require__(8610);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/useId/useId.js
-var useId = __webpack_require__(5844);
-// EXTERNAL MODULE: ./node_modules/@mui/material/styles/styled.js
-var styled = __webpack_require__(4535);
-// EXTERNAL MODULE: ./node_modules/@mui/material/DefaultPropsProvider/DefaultPropsProvider.js
-var DefaultPropsProvider = __webpack_require__(8206);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Input/Input.js
-var Input = __webpack_require__(3360);
-// EXTERNAL MODULE: ./node_modules/@mui/material/FilledInput/FilledInput.js
-var FilledInput = __webpack_require__(5516);
-// EXTERNAL MODULE: ./node_modules/@mui/material/OutlinedInput/OutlinedInput.js + 1 modules
-var OutlinedInput = __webpack_require__(4050);
-// EXTERNAL MODULE: ./node_modules/@mui/material/InputLabel/InputLabel.js + 3 modules
-var InputLabel = __webpack_require__(9190);
-// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/FormControl.js + 1 modules
-var FormControl = __webpack_require__(3193);
-// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/formControlState.js
-var formControlState = __webpack_require__(4827);
-// EXTERNAL MODULE: ./node_modules/@mui/material/FormControl/useFormControl.js
-var useFormControl = __webpack_require__(5213);
-// EXTERNAL MODULE: ./node_modules/@mui/material/utils/memoTheme.js + 1 modules
-var memoTheme = __webpack_require__(6262);
-// EXTERNAL MODULE: ./node_modules/@mui/material/utils/capitalize.js
-var capitalize = __webpack_require__(6803);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClasses/generateUtilityClasses.js
-var generateUtilityClasses = __webpack_require__(2532);
-// EXTERNAL MODULE: ./node_modules/@mui/utils/esm/generateUtilityClass/generateUtilityClass.js
-var generateUtilityClass = __webpack_require__(2372);
-;// ./node_modules/@mui/material/FormHelperText/formHelperTextClasses.js
-
-
-function getFormHelperTextUtilityClasses(slot) {
-  return (0,generateUtilityClass/* default */.Ay)('MuiFormHelperText', slot);
-}
-const formHelperTextClasses = (0,generateUtilityClasses/* default */.A)('MuiFormHelperText', ['root', 'error', 'disabled', 'sizeSmall', 'sizeMedium', 'contained', 'focused', 'filled', 'required']);
-/* harmony default export */ const FormHelperText_formHelperTextClasses = (formHelperTextClasses);
-// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
-var jsx_runtime = __webpack_require__(579);
-;// ./node_modules/@mui/material/FormHelperText/FormHelperText.js
-'use client';
-
-var _span;
-
-
-
-
-
-
-
-
-
-
-
-
-const useUtilityClasses = ownerState => {
-  const {
-    classes,
-    contained,
-    size,
-    disabled,
-    error,
-    filled,
-    focused,
-    required
-  } = ownerState;
-  const slots = {
-    root: ['root', disabled && 'disabled', error && 'error', size && `size${(0,capitalize/* default */.A)(size)}`, contained && 'contained', focused && 'focused', filled && 'filled', required && 'required']
-  };
-  return (0,composeClasses/* default */.A)(slots, getFormHelperTextUtilityClasses, classes);
-};
-const FormHelperTextRoot = (0,styled/* default */.Ay)('p', {
-  name: 'MuiFormHelperText',
-  slot: 'Root',
-  overridesResolver: (props, styles) => {
-    const {
-      ownerState
-    } = props;
-    return [styles.root, ownerState.size && styles[`size${(0,capitalize/* default */.A)(ownerState.size)}`], ownerState.contained && styles.contained, ownerState.filled && styles.filled];
-  }
-})((0,memoTheme/* default */.A)(_ref => {
-  let {
-    theme
-  } = _ref;
-  return {
-    color: (theme.vars || theme).palette.text.secondary,
-    ...theme.typography.caption,
-    textAlign: 'left',
-    marginTop: 3,
-    marginRight: 0,
-    marginBottom: 0,
-    marginLeft: 0,
-    [`&.${FormHelperText_formHelperTextClasses.disabled}`]: {
-      color: (theme.vars || theme).palette.text.disabled
-    },
-    [`&.${FormHelperText_formHelperTextClasses.error}`]: {
-      color: (theme.vars || theme).palette.error.main
-    },
-    variants: [{
-      props: {
-        size: 'small'
-      },
-      style: {
-        marginTop: 4
-      }
-    }, {
-      props: _ref2 => {
-        let {
-          ownerState
-        } = _ref2;
-        return ownerState.contained;
-      },
-      style: {
-        marginLeft: 14,
-        marginRight: 14
-      }
-    }]
-  };
-}));
-const FormHelperText = /*#__PURE__*/react.forwardRef(function FormHelperText(inProps, ref) {
-  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
-    props: inProps,
-    name: 'MuiFormHelperText'
-  });
-  const {
-    children,
-    className,
-    component = 'p',
-    disabled,
-    error,
-    filled,
-    focused,
-    margin,
-    required,
-    variant,
-    ...other
-  } = props;
-  const muiFormControl = (0,useFormControl/* default */.A)();
-  const fcs = (0,formControlState/* default */.A)({
-    props,
-    muiFormControl,
-    states: ['variant', 'size', 'disabled', 'error', 'filled', 'focused', 'required']
-  });
-  const ownerState = {
-    ...props,
-    component,
-    contained: fcs.variant === 'filled' || fcs.variant === 'outlined',
-    variant: fcs.variant,
-    size: fcs.size,
-    disabled: fcs.disabled,
-    error: fcs.error,
-    filled: fcs.filled,
-    focused: fcs.focused,
-    required: fcs.required
-  };
-
-  // This issue explains why this is required: https://github.com/mui/material-ui/issues/42184
-  delete ownerState.ownerState;
-  const classes = useUtilityClasses(ownerState);
-  return /*#__PURE__*/(0,jsx_runtime.jsx)(FormHelperTextRoot, {
-    as: component,
-    className: (0,clsx/* default */.A)(classes.root, className),
-    ref: ref,
-    ...other,
-    ownerState: ownerState,
-    children: children === ' ' ?
-    // notranslate needed while Google Translate will not fix zero-width space issue
-    _span || (_span = /*#__PURE__*/(0,jsx_runtime.jsx)("span", {
-      className: "notranslate",
-      "aria-hidden": true,
-      children: "\u200B"
-    })) : children
-  });
-});
- false ? 0 : void 0;
-/* harmony default export */ const FormHelperText_FormHelperText = (FormHelperText);
-// EXTERNAL MODULE: ./node_modules/@mui/material/Select/Select.js + 4 modules
-var Select = __webpack_require__(2221);
-;// ./node_modules/@mui/material/TextField/textFieldClasses.js
-
-
-function getTextFieldUtilityClass(slot) {
-  return (0,generateUtilityClass/* default */.Ay)('MuiTextField', slot);
-}
-const textFieldClasses = (0,generateUtilityClasses/* default */.A)('MuiTextField', ['root']);
-/* harmony default export */ const TextField_textFieldClasses = ((/* unused pure expression or super */ null && (textFieldClasses)));
-// EXTERNAL MODULE: ./node_modules/@mui/material/utils/useSlot.js
-var useSlot = __webpack_require__(4162);
-;// ./node_modules/@mui/material/TextField/TextField.js
-'use client';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const variantComponent = {
-  standard: Input/* default */.A,
-  filled: FilledInput/* default */.A,
-  outlined: OutlinedInput/* default */.A
-};
-const TextField_useUtilityClasses = ownerState => {
-  const {
-    classes
-  } = ownerState;
-  const slots = {
-    root: ['root']
-  };
-  return (0,composeClasses/* default */.A)(slots, getTextFieldUtilityClass, classes);
-};
-const TextFieldRoot = (0,styled/* default */.Ay)(FormControl/* default */.A, {
-  name: 'MuiTextField',
-  slot: 'Root',
-  overridesResolver: (props, styles) => styles.root
-})({});
-
-/**
- * The `TextField` is a convenience wrapper for the most common cases (80%).
- * It cannot be all things to all people, otherwise the API would grow out of control.
- *
- * ## Advanced Configuration
- *
- * It's important to understand that the text field is a simple abstraction
- * on top of the following components:
- *
- * - [FormControl](/material-ui/api/form-control/)
- * - [InputLabel](/material-ui/api/input-label/)
- * - [FilledInput](/material-ui/api/filled-input/)
- * - [OutlinedInput](/material-ui/api/outlined-input/)
- * - [Input](/material-ui/api/input/)
- * - [FormHelperText](/material-ui/api/form-helper-text/)
- *
- * If you wish to alter the props applied to the `input` element, you can do so as follows:
- *
- * ```jsx
- * const inputProps = {
- *   step: 300,
- * };
- *
- * return <TextField id="time" type="time" inputProps={inputProps} />;
- * ```
- *
- * For advanced cases, please look at the source of TextField by clicking on the
- * "Edit this page" button above. Consider either:
- *
- * - using the upper case props for passing values directly to the components
- * - using the underlying components directly as shown in the demos
- */
-const TextField = /*#__PURE__*/react.forwardRef(function TextField(inProps, ref) {
-  const props = (0,DefaultPropsProvider/* useDefaultProps */.b)({
-    props: inProps,
-    name: 'MuiTextField'
-  });
-  const {
-    autoComplete,
-    autoFocus = false,
-    children,
-    className,
-    color = 'primary',
-    defaultValue,
-    disabled = false,
-    error = false,
-    FormHelperTextProps: FormHelperTextPropsProp,
-    fullWidth = false,
-    helperText,
-    id: idOverride,
-    InputLabelProps: InputLabelPropsProp,
-    inputProps: inputPropsProp,
-    InputProps: InputPropsProp,
-    inputRef,
-    label,
-    maxRows,
-    minRows,
-    multiline = false,
-    name,
-    onBlur,
-    onChange,
-    onFocus,
-    placeholder,
-    required = false,
-    rows,
-    select = false,
-    SelectProps: SelectPropsProp,
-    slots = {},
-    slotProps = {},
-    type,
-    value,
-    variant = 'outlined',
-    ...other
-  } = props;
-  const ownerState = {
-    ...props,
-    autoFocus,
-    color,
-    disabled,
-    error,
-    fullWidth,
-    multiline,
-    required,
-    select,
-    variant
-  };
-  const classes = TextField_useUtilityClasses(ownerState);
-  if (false) // removed by dead control flow
-{}
-  const id = (0,useId/* default */.A)(idOverride);
-  const helperTextId = helperText && id ? `${id}-helper-text` : undefined;
-  const inputLabelId = label && id ? `${id}-label` : undefined;
-  const InputComponent = variantComponent[variant];
-  const externalForwardedProps = {
-    slots,
-    slotProps: {
-      input: InputPropsProp,
-      inputLabel: InputLabelPropsProp,
-      htmlInput: inputPropsProp,
-      formHelperText: FormHelperTextPropsProp,
-      select: SelectPropsProp,
-      ...slotProps
-    }
-  };
-  const inputAdditionalProps = {};
-  const inputLabelSlotProps = externalForwardedProps.slotProps.inputLabel;
-  if (variant === 'outlined') {
-    if (inputLabelSlotProps && typeof inputLabelSlotProps.shrink !== 'undefined') {
-      inputAdditionalProps.notched = inputLabelSlotProps.shrink;
-    }
-    inputAdditionalProps.label = label;
-  }
-  if (select) {
-    // unset defaults from textbox inputs
-    if (!SelectPropsProp || !SelectPropsProp.native) {
-      inputAdditionalProps.id = undefined;
-    }
-    inputAdditionalProps['aria-describedby'] = undefined;
-  }
-  const [RootSlot, rootProps] = (0,useSlot/* default */.A)('root', {
-    elementType: TextFieldRoot,
-    shouldForwardComponentProp: true,
-    externalForwardedProps: {
-      ...externalForwardedProps,
-      ...other
-    },
-    ownerState,
-    className: (0,clsx/* default */.A)(classes.root, className),
-    ref,
-    additionalProps: {
-      disabled,
-      error,
-      fullWidth,
-      required,
-      color,
-      variant
-    }
-  });
-  const [InputSlot, inputProps] = (0,useSlot/* default */.A)('input', {
-    elementType: InputComponent,
-    externalForwardedProps,
-    additionalProps: inputAdditionalProps,
-    ownerState
-  });
-  const [InputLabelSlot, inputLabelProps] = (0,useSlot/* default */.A)('inputLabel', {
-    elementType: InputLabel/* default */.A,
-    externalForwardedProps,
-    ownerState
-  });
-  const [HtmlInputSlot, htmlInputProps] = (0,useSlot/* default */.A)('htmlInput', {
-    elementType: 'input',
-    externalForwardedProps,
-    ownerState
-  });
-  const [FormHelperTextSlot, formHelperTextProps] = (0,useSlot/* default */.A)('formHelperText', {
-    elementType: FormHelperText_FormHelperText,
-    externalForwardedProps,
-    ownerState
-  });
-  const [SelectSlot, selectProps] = (0,useSlot/* default */.A)('select', {
-    elementType: Select/* default */.A,
-    externalForwardedProps,
-    ownerState
-  });
-  const InputElement = /*#__PURE__*/(0,jsx_runtime.jsx)(InputSlot, {
-    "aria-describedby": helperTextId,
-    autoComplete: autoComplete,
-    autoFocus: autoFocus,
-    defaultValue: defaultValue,
-    fullWidth: fullWidth,
-    multiline: multiline,
-    name: name,
-    rows: rows,
-    maxRows: maxRows,
-    minRows: minRows,
-    type: type,
-    value: value,
-    id: id,
-    inputRef: inputRef,
-    onBlur: onBlur,
-    onChange: onChange,
-    onFocus: onFocus,
-    placeholder: placeholder,
-    inputProps: htmlInputProps,
-    slots: {
-      input: slots.htmlInput ? HtmlInputSlot : undefined
-    },
-    ...inputProps
-  });
-  return /*#__PURE__*/(0,jsx_runtime.jsxs)(RootSlot, {
-    ...rootProps,
-    children: [label != null && label !== '' && /*#__PURE__*/(0,jsx_runtime.jsx)(InputLabelSlot, {
-      htmlFor: id,
-      id: inputLabelId,
-      ...inputLabelProps,
-      children: label
-    }), select ? /*#__PURE__*/(0,jsx_runtime.jsx)(SelectSlot, {
-      "aria-describedby": helperTextId,
-      id: id,
-      labelId: inputLabelId,
-      value: value,
-      input: InputElement,
-      ...selectProps,
-      children: children
-    }) : InputElement, helperText && /*#__PURE__*/(0,jsx_runtime.jsx)(FormHelperTextSlot, {
-      id: helperTextId,
-      ...formHelperTextProps,
-      children: helperText
-    })]
-  });
-});
- false ? 0 : void 0;
-/* harmony default export */ const TextField_TextField = (TextField);
 
 /***/ }),
 
@@ -64204,7 +64226,7 @@ PLCInputName["EStopOk"]="ESTOPOK_I";PLCInputName["EStopOk2"]="ESTOPOK2_I";// Spi
 PLCInputName["SpindleOk"]="SPINDLEOK_I";// Tool Management & ATC
 PLCInputName["ToolIsUnclamped"]="TOOLISUNCLAMPED_I";PLCInputName["ToolUnclampButton"]="TOOLUNCLAMPBUTTON_I";PLCInputName["ToolIsClamped"]="TOOLCLAMPED_I";PLCInputName["ToolIsPresent_I"]="TOOLISPRESENT_I";PLCInputName["DrawBarReleased"]="DRAWBARRELEASED_I";PLCInputName["DrawBarIsUp"]="DRAWBARISUP_I";PLCInputName["DrawBarIsDown"]="DRAWBARISDOWN_I";PLCInputName["ATC_AirPressureOk"]="ATC_AIRPRESSUREOK_I";// Axis Control & Limits
 PLCInputName["XAxisHomeLimitOk"]="x_AXISLIMITOK_I";PLCInputName["YAxisHomeLimitOk"]="Y_AXISLIMITOK_I";PLCInputName["ZAxisHomeLimitOk"]="Z_AXISLIMITOK_I";PLCInputName["XAxisLimitOk"]="X_AXISLIMIT_I";PLCInputName["YAxisLimitOk"]="Y_AXISLIMIT_I";PLCInputName["ZAxisLimitOk"]="Z_AXISLIMIT_I";PLCInputName["AAxisHomeLimitOk"]="A_AXISHOMELIMITOK_I";PLCInputName["AAxisLimitOk"]="A_AXISLIMIT_I";PLCInputName["HomeLimitAll"]="HOMELIMITALL_I";PLCInputName["SlavedHomeInput"]="SLAVEDHOMEINPUT_I";// Drive Status
-PLCInputName["DriveOk"]="DRIVEOK_I";PLCInputName["Axis1DriveOk"]="AXIS1DRIVEOK_I";PLCInputName["Axis2DriveOk"]="AXIS2DRIVEOK_I";PLCInputName["Axis3DriveOk"]="AXIS3DRIVEOK_I";PLCInputName["Axis4DriveOk"]="AXIS4DRIVEOK_I";// Probe Functions
+PLCInputName["DriveFault"]="DRIVEOK_I";PLCInputName["XAxisFault"]="XAXIS_FAULT_I";PLCInputName["YAxisFault"]="YAXIS_FAULT_I";PLCInputName["ZAxisFault"]="ZAXIS_FAULT_I";PLCInputName["AAxisFault"]="AAXIS_FAULT_I";// Probe Functions
 PLCInputName["ProbeDetect"]="PROBEDETECT_I";PLCInputName["ProbeTripped"]="PROBETRIPPED_I";// Coolant & Air Pressure
 PLCInputName["LubeOk"]="LUBEOK_I";PLCInputName["AirPressureLowMessage"]="AIRPRESSURELOWMESSAGE_I";PLCInputName["AirPressureLowStop"]="AIRPRESSURELOWSTOP_I";// Control Buttons
 PLCInputName["CycleStart2"]="CYCLESTART2_I";PLCInputName["FeedHold2"]="FEEDHOLD2_I";PLCInputName["CycleCancel2"]="CYCLECANCEL2_I";PLCInputName["ToolCheck2"]="TOOLCHECK2_I";// Laser Functions
@@ -64217,7 +64239,7 @@ PLCInputName["FixedToolTouchPlate"]="FIXED_TOOL_TOUCH_PLATE_I";PLCInputName["Mat
  */let PLCOutputName=/*#__PURE__*/function(PLCOutputName){// System Status
 PLCOutputName["NoFaultOut"]="NOFAULTOUT_O";PLCOutputName["DriveResetOut"]="DRIVERESETOUT_O";// Spindle Control
 PLCOutputName["SpinFWD"]="SPINFWD_O";PLCOutputName["SpinREV"]="SPINREV_O";PLCOutputName["SpindleBrakeRelease"]="SPINDLEBRAKERELEASE_O";// Tool Management & ATC
-PLCOutputName["UnclampTool"]="UNCLAMPTOOL_O";PLCOutputName["DrawBarUp_O"]="DRAWBARUP_O";PLCOutputName["ATCAirBlowActivate"]="ATCAIRBLOWACTIVATE_O";// Coolant & Auxiliary
+PLCOutputName["UnclampTool"]="UNCLAMPTOOL_O";PLCOutputName["DrawBarUp_O"]="DRAWBARUP_O";// Coolant & Auxiliary
 PLCOutputName["Flood"]="FLOOD_O";PLCOutputName["Mist"]="MIST_O";PLCOutputName["LubePump"]="LUBEPUMP_O";PLCOutputName["RouterVacuumHoldDown"]="ROUTERVACUUMHOLDDOWN_O";PLCOutputName["DustCollectionOn"]="DUSTCOLLECTIONON_O";// Router/Mill Specific
 PLCOutputName["DustFootActivate"]="DUSTFOOTACTIVATE_O";PLCOutputName["LaserAlignActivate"]="LASERALIGNACTIVATE_O";PLCOutputName["AirBlowNozzle"]="AIRBLOWNOZZLE_O";PLCOutputName["LaserPointer"]="LASERPOINTER_O";PLCOutputName["PositioningPins"]="POSITIONINGPINS_O";// Laser Functions
 PLCOutputName["LaserEnable"]="LASERENABLE_O";PLCOutputName["LaserReset"]="LASERRESET_O";PLCOutputName["AlignmentLaserEnable_O"]="ALIGNMENTLASERENABLE_O";PLCOutputName["LaserStandby_O"]="LASERSTANDBY_O";PLCOutputName["FiberLaserReset_O"]="FIBERLASERRESE T_O";PLCOutputName["LaserDeploy_O"]="LASERDEPLOY_O";// PWM and Special Outputs
@@ -81328,6 +81350,8 @@ __webpack_require__.d(__webpack_exports__, {
   d: () => (/* binding */ SetupChecklistLibrary)
 });
 
+// EXTERNAL MODULE: ./src/utils/DataReloadNotifier.ts
+var DataReloadNotifier = __webpack_require__(8437);
 // EXTERNAL MODULE: ./src/utils/Logger.ts
 var Logger = __webpack_require__(4002);
 // EXTERNAL MODULE: ./src/utils/statemanager/StateManager.tsx
@@ -81581,8 +81605,9 @@ StateManager.StateManager.propertyChanged(this,'manuallyConfirmed');},['previewG
 var _SetupChecklistLibrary;/**
  * Library of setup checklist items
  * Singleton pattern for managing all setup checklist items
- */class SetupChecklistLibrary{constructor(){this._items=[];}// Private constructor for singleton
-/**
+ */class SetupChecklistLibrary{constructor(){this._items=[];// Re-notify observers whenever all data is reloaded (e.g. after a machine switch)
+// so that completionCheck() results are recalculated against the fresh singleton data.
+DataReloadNotifier/* DataReloadNotifier */.s.Instance.addListener(DataReloadNotifier/* DataReloadEvent */.E.AllDataReloaded,()=>{StateManager.StateManager.propertyChanged(this,'items');});}/**
      * Get the singleton instance
      */static get Instance(){if(!SetupChecklistLibrary._instance){SetupChecklistLibrary._instance=new SetupChecklistLibrary();// Ensure default items exist when instance is first created
 SetupChecklistLibrary._instance.ensureDefaultItemsExist();}return SetupChecklistLibrary._instance;}/**
@@ -81626,6 +81651,9 @@ this.saveAsync();}/**
      */resetItem(item){item.manuallyConfirmed=false;// State change will be propagated through listener set up in addItem
 // Auto-save checklist after reset
 this.saveAsync();}/**
+     * Reset all manually-confirmed items back to unconfirmed.
+     * Call this when initializing a new machine so the checklist starts fresh.
+     */resetAllManualConfirmations(){this._items.forEach(item=>{item.manuallyConfirmed=false;});StateManager.StateManager.propertyChanged(this,'items');this.saveAsync();}/**
      * Auto-complete all items that have completionCheck() returning true
      */autoCompleteAll(){const autoCompletable=this.autoCompletableItems;autoCompletable.forEach(item=>{item.manuallyConfirmed=true;});if(autoCompletable.length>0){// Sort items to maintain default order
 this.sortItemsByDefaultOrder();StateManager.StateManager.propertyChanged(this,'items');}}/**
@@ -148363,7 +148391,7 @@ Transition.EXITING = EXITING;
 /************************************************************************/
 var __webpack_exports__ = {};
 console.log('=== INDEX STARTING ===');const src_React=__webpack_require__(5043);const ReactDOM=__webpack_require__(4391);console.log('=== REACT LOADED ===',src_React.version);// Import the App component and ErrorBoundary
-const App=(__webpack_require__(5246)/* ["default"] */ .A);const ErrorBoundary=(__webpack_require__(3974)/* ["default"] */ .A);const container=document.getElementById('root');if(container){const root=ReactDOM.createRoot(container);root.render(src_React.createElement(ErrorBoundary,null,src_React.createElement(App)));}
+const App=(__webpack_require__(5829)/* ["default"] */ .A);const ErrorBoundary=(__webpack_require__(3974)/* ["default"] */ .A);const container=document.getElementById('root');if(container){const root=ReactDOM.createRoot(container);root.render(src_React.createElement(ErrorBoundary,null,src_React.createElement(App)));}
 /******/ })()
 ;
-//# sourceMappingURL=main.dc03a25f.js.map
+//# sourceMappingURL=main.94ea28bd.js.map
