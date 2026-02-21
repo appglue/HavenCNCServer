@@ -130,12 +130,12 @@ namespace HavenCNCServer.WPF.Controls
         {
             return level switch
             {
-                LogLevel.Success => System.Drawing.Color.Green,
-                LogLevel.Error => System.Drawing.Color.Red,
-                LogLevel.Warning => System.Drawing.Color.Orange,
-                LogLevel.Info => System.Drawing.Color.Black,
-                LogLevel.Debug => System.Drawing.Color.Gray,
-                _ => System.Drawing.Color.Black
+                LogLevel.Success => System.Drawing.Color.FromArgb(106, 230, 106),   // bright green
+                LogLevel.Error => System.Drawing.Color.FromArgb(255, 100, 100),   // soft bright red
+                LogLevel.Warning => System.Drawing.Color.FromArgb(255, 210, 50),   // amber/gold
+                LogLevel.Info => System.Drawing.Color.FromArgb(212, 212, 212),   // light gray
+                LogLevel.Debug => System.Drawing.Color.FromArgb(128, 128, 128),   // dimmed gray
+                _ => System.Drawing.Color.FromArgb(212, 212, 212)
             };
         }
 

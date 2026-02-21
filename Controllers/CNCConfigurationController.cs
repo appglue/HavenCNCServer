@@ -465,16 +465,33 @@ namespace HavenCNCServer.Controllers
                     .ToList();
 
                 LoggingService.Log($"Received {configuredAxes.Count} configured axes");
+                foreach (var axis in configuredAxes)
+                    LoggingService.Log($"  -> Axis {axis.AxisNumber}: type='{axis.AxisType}' masterAxisName='{axis.MasterAxisName ?? "(none)"}'");
 
-                // Ensure configured axes are visible in DRO (unhide them) BEFORE configuring
+                try
+                {
+                    var axesJson = System.Text.Json.JsonSerializer.Serialize(
+                        configuredAxes,
+                        new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    LoggingService.Log($"Axes JSON payload:\n{axesJson}");
+                }
+                catch (Exception jsonEx)
+                {
+                    LoggingService.Log($"  (could not serialize axes JSON: {jsonEx.Message})", LoggingService.LogLevel.Warning);
+                }
+
+                // Ensure configured axes are visible in DRO (unhide them) BEFORE configuring.
+                // Exception: axes with AxisType "N" (slave/none) are hidden by default.
                 foreach (var axis in configuredAxes)
                 {
                     if (!axis.HideFromDRO.HasValue)
                     {
-                        // If not explicitly set, show it in DRO
-                        axis.HideFromDRO = false;
-                        LoggingService.Log($"  Setting Axis {axis.AxisNumber} ({axis.AxisType}) to show in DRO");
+                        bool isNone = string.Equals(axis.AxisType, "N", System.StringComparison.OrdinalIgnoreCase);
+                        axis.HideFromDRO = isNone;
+                        LoggingService.Log($"  Axis {axis.AxisNumber} ({axis.AxisType}): HideFromDRO defaulted to {axis.HideFromDRO} (slave/none={isNone})");
                     }
+                    if (!string.IsNullOrEmpty(axis.MasterAxisName))
+                        LoggingService.Log($"  Axis {axis.AxisNumber} ({axis.AxisType}): slave of '{axis.MasterAxisName}', directionReversal={axis.DirectionReversal}");
                 }
 
                 // Configure the machine with the provided axes
@@ -494,15 +511,19 @@ namespace HavenCNCServer.Controllers
                 {
 
                     // CNC12 has 6 axis slots - set unused slots to 'N' (None) and hide from DRO
-                    // This prevents unconfigured axes from showing as "U" or other default letters
+                    // This prevents unconfigured axes from showing as "U" or other default letters.
+                    // Use the highest axis number present (not just count) so slave axes in higher
+                    // slots (e.g. Axis 4 paired to X) are not overwritten.
                     int maxAxes = 6;
-                    int configuredCount = configuredAxes.Count;
+                    int highestConfiguredAxis = configuredAxes.Count > 0
+                        ? configuredAxes.Max(a => a.AxisNumber)
+                        : 0;
 
-                    if (configuredCount < maxAxes)
+                    if (highestConfiguredAxis < maxAxes)
                     {
-                        LoggingService.Log($"Configuring unused axis slots {configuredCount + 1}-{maxAxes} as 'N' (None)");
+                        LoggingService.Log($"Configuring unused axis slots {highestConfiguredAxis + 1}-{maxAxes} as 'N' (None)");
 
-                        for (int axisNum = configuredCount + 1; axisNum <= maxAxes; axisNum++)
+                        for (int axisNum = highestConfiguredAxis + 1; axisNum <= maxAxes; axisNum++)
                         {
                             try
                             {

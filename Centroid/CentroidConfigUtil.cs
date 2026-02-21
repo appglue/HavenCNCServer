@@ -649,149 +649,46 @@ namespace HavenCNCServer.Centroid
 
                 LoggingService.Log("  Setting spindle parameters...");
 
-                // Core parameters via CNCUtils.SetParameterValue() - only set if provided
-                if (config.EncoderCounts.HasValue)
+                // Max/min speed in high range
+                if (config.MaxSpeed.HasValue)
                 {
-                    LoggingService.Log($"    Encoder Counts: {config.EncoderCounts.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                    LoggingService.Log($"    Max Speed: {config.MaxSpeed.Value} RPM");
+                    cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed.Value);
                 }
 
-                if (config.SpindleAxis.HasValue)
+                if (config.MinSpeed.HasValue)
                 {
-                    LoggingService.Log($"    Spindle Axis: {config.SpindleAxis.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                    LoggingService.Log($"    Min Speed: {config.MinSpeed.Value} RPM");
+                    cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
                 }
 
-                if (config.LowGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    Low Gear Ratio: {config.LowGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
-                }
-
-                if (config.MediumGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    Medium Gear Ratio: {config.MediumGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
-                }
-
-                if (config.HighGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    High Gear Ratio: {config.HighGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
-                }
-
-                if (config.AnalogRange.HasValue)
-                {
-                    LoggingService.Log($"    Analog Range: {config.AnalogRange.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
-                }
-
-                if (config.RtgDisplay.HasValue)
-                {
-                    LoggingService.Log($"    RTG Display: {config.RtgDisplay.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RtgDisplay.Value ? 1 : 0);
-                }
-
+                // SpindleOk delay
                 if (config.OkDelay.HasValue)
                 {
                     LoggingService.Log($"    OK Delay: {config.OkDelay.Value}s");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_OK_DELAY_PARM, (int)(config.OkDelay.Value * 1000));
                 }
 
-                if (config.FanDelay.HasValue)
-                {
-                    LoggingService.Log($"    Fan Delay: {config.FanDelay.Value}s");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
-                }
-
-                // Speed configuration via API calls (commented out as it depends on MainWindow)
-                // if (config.MaxSpeed.HasValue)
-                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed.Value);
-                // if (config.MinSpeed.HasValue)
-                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
-
-                // Configure spindle parameter 78 bit field only if encoder or scaling settings are provided
-                if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue || config.SpindleScalingEnabled.HasValue)
-                {
-                    int spindleControl = 0;
-                    if (config.EncoderEnabled == true) spindleControl |= 1;          // Bit 0: Primary Encoder Enable
-                    if (config.SecondSpindleEnabled == true) spindleControl |= 8;     // Bit 3: Second Spindle Encoder
-                    if (config.SpindleScalingEnabled == true) spindleControl |= 16;   // Bit 4: Spindle Scaling Enable
-                    LoggingService.Log($"    Spindle Control Flags: EncoderEnabled={config.EncoderEnabled}, SecondSpindle={config.SecondSpindleEnabled}, Scaling={config.SpindleScalingEnabled}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
-                }
-
-                // Configure deceleration time
-                if (config.DecelTime.HasValue)
-                {
-                    LoggingService.Log($"    Decel Time: {config.DecelTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
-                }
-
-                // Configure rigid tapping parameters
-                if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue)
-                {
-                    double rpmValue = config.MinimumRigidTappingRPM ?? config.RigidTappingSlowSpeed ?? 0;
-                    LoggingService.Log($"    Rigid Tapping Slow Speed: {rpmValue} RPM");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, rpmValue);
-                }
-
-                if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue)
-                {
-                    double timeValue = config.DurationForMinRigidTappingRPM ?? config.RigidTappingSlowTime ?? 0;
-                    LoggingService.Log($"    Rigid Tapping Slow Time: {timeValue}s");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, timeValue);
-                }
-
-                if (config.SpindleDrift.HasValue)
-                {
-                    LoggingService.Log($"    Spindle Drift: {config.SpindleDrift.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
-                }
-
-                if (config.RigidTappingZAxisSyncDistance.HasValue)
-                {
-                    LoggingService.Log($"    Rigid Tapping Z-Axis Sync Distance: {config.RigidTappingZAxisSyncDistance.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
-                }
-
-                // Configure rigid tapping parameter 36 bit field for enable, override and index pulse settings
-                if (config.RigidTappingEnabled.HasValue || config.AllowSpindleOverride.HasValue || config.DoNotWaitForIndexPulse.HasValue)
-                {
-                    int rigidTappingControl = 0;
-                    if (config.RigidTappingEnabled == true) rigidTappingControl |= 1;           // Enable rigid tapping
-                    if (config.DoNotWaitForIndexPulse == true) rigidTappingControl |= 2;       // Bit 1: Do Not Wait For Index Pulse
-                    if (config.AllowSpindleOverride == true) rigidTappingControl |= 4;         // Bit 2: Allow Spindle Override
-                    LoggingService.Log($"    Rigid Tapping Control: Enabled={config.RigidTappingEnabled}, NoIndexWait={config.DoNotWaitForIndexPulse}, AllowOverride={config.AllowSpindleOverride}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, rigidTappingControl);
-                }
-
-                // Configure threading/tapping acceleration/deceleration distance
-                if (config.ThreadingTappingAccelDecelDistance.HasValue)
-                {
-                    LoggingService.Log($"    Threading/Tapping Accel/Decel Distance: {config.ThreadingTappingAccelDecelDistance.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
-                }
-
-                // Configure SSV parameters
-                if (config.SsvCycleTime.HasValue)
-                {
-                    LoggingService.Log($"    SSV Cycle Time: {config.SsvCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SsvCycleTime.Value);
-                }
-
-                if (config.SsvAmount.HasValue)
-                {
-                    LoggingService.Log($"    SSV Amount: {config.SsvAmount.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SsvAmount.Value);
-                }
-
-                // Configure FRV parameters
-                if (config.FrvCycleTime.HasValue)
-                {
-                    LoggingService.Log($"    FRV Cycle Time: {config.FrvCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FrvCycleTime.Value);
-                }
+                // ── Parameters below are not currently used in setup ──────────────────────
+                // if (config.EncoderCounts.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                // if (config.SpindleAxis.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                // if (config.LowGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
+                // if (config.MediumGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
+                // if (config.HighGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
+                // if (config.AnalogRange.HasValue) CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
+                // if (config.RtgDisplay.HasValue) CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RtgDisplay.Value ? 1 : 0);
+                // if (config.FanDelay.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
+                // if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue || config.SpindleScalingEnabled.HasValue) { /* P78 bit field */ }
+                // if (config.DecelTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
+                // if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue) { /* RT slow speed */ }
+                // if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue) { /* RT slow time */ }
+                // if (config.SpindleDrift.HasValue) CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
+                // if (config.RigidTappingZAxisSyncDistance.HasValue) CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
+                // if (config.RigidTappingEnabled.HasValue || config.AllowSpindleOverride.HasValue || config.DoNotWaitForIndexPulse.HasValue) { /* P36 bit field */ }
+                // if (config.ThreadingTappingAccelDecelDistance.HasValue) CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
+                // if (config.SsvCycleTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SsvCycleTime.Value);
+                // if (config.SsvAmount.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SsvAmount.Value);
+                // if (config.FrvCycleTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FrvCycleTime.Value);
 
                 LoggingService.Log("Primary spindle configured successfully");
                 return true;
