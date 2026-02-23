@@ -101,12 +101,12 @@ namespace HavenCNCServer.Controllers
         // ========== CAM Project Endpoints ==========
 
         /// <summary>
-        /// List all CAM projects with paging and sorting
+        /// List all CAM projects with sorting
         /// POST /api/CamStorage/projects/list
         /// </summary>
         [HttpPost("projects/list")]
-        [ProducesResponseType(typeof(PagedResult<CamProjectMetadata>), 200)]
-        public async Task<IActionResult> ListProjects([FromBody] PageRequest request)
+        [ProducesResponseType(typeof(List<CamProjectMetadata>), 200)]
+        public async Task<IActionResult> ListProjects([FromBody] ListJobsRequest request)
         {
             try
             {
@@ -146,20 +146,13 @@ namespace HavenCNCServer.Controllers
                 // Apply sorting
                 var sorted = ApplySorting(allProjects, request.SortBy, request.SortDirection);
 
-                // Apply paging
-                var totalCount = sorted.Count;
-                var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
-                var skip = (request.Page - 1) * request.PageSize;
-                var paged = sorted.Skip(skip).Take(request.PageSize).ToList();
-
-                return Ok(new PagedResult<CamProjectMetadata>
+                // Apply maxCount cap
+                if (request.MaxCount.HasValue && request.MaxCount.Value > 0)
                 {
-                    Items = paged,
-                    TotalCount = totalCount,
-                    Page = request.Page,
-                    PageSize = request.PageSize,
-                    TotalPages = totalPages
-                });
+                    sorted = sorted.Take(request.MaxCount.Value).ToList();
+                }
+
+                return Ok(sorted);
             }
             catch (Exception ex)
             {
@@ -328,13 +321,13 @@ namespace HavenCNCServer.Controllers
                 // Parse and update category
                 using var doc = JsonDocument.Parse(existingData);
                 var root = doc.RootElement;
-                
+
                 // Create updated JSON with new category
                 using var stream = new MemoryStream();
                 using (var writer = new Utf8JsonWriter(stream))
                 {
                     writer.WriteStartObject();
-                    
+
                     // Copy all existing properties
                     foreach (var property in root.EnumerateObject())
                     {
@@ -343,18 +336,18 @@ namespace HavenCNCServer.Controllers
                             property.WriteTo(writer);
                         }
                     }
-                    
+
                     // Write new category
                     if (request.Category != null)
                     {
                         writer.WriteString("category", request.Category);
                     }
-                    
+
                     writer.WriteEndObject();
                 }
-                
+
                 var updatedData = System.Text.Encoding.UTF8.GetString(stream.ToArray());
-                
+
                 // Save updated project
                 var version = await _camFileManager.IncrementAndWriteAsync(id, updatedData);
 

@@ -616,9 +616,9 @@ namespace HavenCNCServer.Controllers
 
                 LogInfo($"🗑️ Deleting all MongoDB data for machine '{machineName}'", "MachineConfig");
 
-                var (configs, jobs, gcode) = await _mongoService.DeleteAllForMachineAsync(machineName);
+                var (configs, jobs, gcode, camProjects) = await _mongoService.DeleteAllForMachineAsync(machineName);
 
-                LogSuccess($"✓ Deleted machine '{machineName}': {configs} config(s), {jobs} job(s), {gcode} G-code file(s)", "MachineConfig");
+                LogSuccess($"✓ Deleted machine '{machineName}': {configs} config(s), {jobs} job(s), {gcode} G-code file(s), {camProjects} CAM project(s)", "MachineConfig");
                 return Ok(new
                 {
                     message = $"Machine '{machineName}' deleted from MongoDB",

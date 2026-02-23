@@ -695,5 +695,67 @@ namespace HavenCNCServer.Services
                 return new System.Collections.Generic.List<CamProjectDocument>();
             }
         }
+
+        /// <summary>
+        /// Delete ALL documents for a given machine name across all collections:
+        /// machine configurations, jobs, G-code files, and CAM projects.
+        /// Returns counts of deleted documents per collection.
+        /// </summary>
+        public async Task<(long configs, long jobs, long gcode, long camProjects)> DeleteAllForMachineAsync(string machineName)
+        {
+            if (!IsConnected) return (0, 0, 0, 0);
+
+            long configs = 0, jobs = 0, gcode = 0, camProjects = 0;
+
+            try
+            {
+                var configFilter = Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var configResult = await _machineConfigCollection!.DeleteManyAsync(configFilter);
+                configs = configResult.DeletedCount;
+                LogInfo($"Deleted {configs} config document(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete configs for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
+                var jobFilter = Builders<JobDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var jobResult = await _jobCollection!.DeleteManyAsync(jobFilter);
+                jobs = jobResult.DeletedCount;
+                LogInfo($"Deleted {jobs} job(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete jobs for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
+                var gcodeFilter = Builders<GCodeFileDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var gcodeResult = await _gcodeCollection!.DeleteManyAsync(gcodeFilter);
+                gcode = gcodeResult.DeletedCount;
+                LogInfo($"Deleted {gcode} G-code file(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete G-code files for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            try
+            {
+                var camFilter = Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var camResult = await _camProjectCollection!.DeleteManyAsync(camFilter);
+                camProjects = camResult.DeletedCount;
+                LogInfo($"Deleted {camProjects} CAM project(s) for machine '{machineName}'", "MongoDB");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete CAM projects for machine '{machineName}': {ex.Message}", "MongoDB");
+            }
+
+            return (configs, jobs, gcode, camProjects);
+        }
     }
 }
