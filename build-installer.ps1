@@ -52,41 +52,4 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 Write-Host "Build completed" -ForegroundColor Green
-
-Write-Host "Creating installer..." -ForegroundColor Cyan
-$InnoPath = @(
-    "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-    "${env:ProgramFiles}\Inno Setup 6\ISCC.exe",
-    "${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe",
-    "${env:ProgramFiles}\Inno Setup 5\ISCC.exe"
-) | Where-Object { Test-Path $_ } | Select-Object -First 1
-
-if (-not $InnoPath) {
-    Write-Warning "Inno Setup not found. Installer creation skipped."
-    Write-Host "To create installer, install Inno Setup from https://jrsoftware.org/isdl.php" -ForegroundColor Yellow
-    Write-Host "Build completed without installer." -ForegroundColor Green
-    exit 0
-}
-
-Write-Host "Using Inno Setup: $InnoPath" -ForegroundColor Yellow
-& $InnoPath setup.iss
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Installer creation failed"
-    exit 1
-}
-
-Write-Host "Installer created successfully!" -ForegroundColor Green
-
-# Copy installer to D drive if it exists
-if (Test-Path "D:\") {
-    $installerPath = "installer\HavenCNCServer-Setup-1.0.0.exe"
-    if (Test-Path $installerPath) {
-        try {
-            Copy-Item $installerPath "D:\" -Force
-            Write-Host "Installer copied to D:\" -ForegroundColor Cyan
-        }
-        catch {
-            Write-Warning "Failed to copy installer to D:\: $_"
-        }
-    }
-}
+Write-Host "Run your external installer project to package the output." -ForegroundColor Yellow

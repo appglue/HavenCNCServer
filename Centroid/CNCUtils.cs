@@ -1168,5 +1168,139 @@ namespace HavenCNCServer.Centroid
             }
         }
 
+        /// <summary>
+        /// Launch CNC12 if it's not already running
+        /// </summary>
+        /// <returns>True if CNC12 was launched or is already running, false if launch failed</returns>
+        public static bool LaunchCNC12()
+        {
+            try
+            {
+                // First, check if we have an active connection - if so, CNC12 must be running
+                if (CNCConnectionManager.IsConnected)
+                {
+                    LogInfo("CNC12 is already running (connected)", "CNCUtils");
+                    return true;
+                }
+
+                // No connection, check the process directly
+                var cnc12ProcessName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
+                bool isRunning = processes.Length > 0;
+
+                // Clean up process handles
+                foreach (var p in processes)
+                {
+                    try { p.Dispose(); } catch { }
+                }
+
+                if (isRunning)
+                {
+                    LogInfo("CNC12 is already running (process found)", "CNCUtils");
+                    return true;
+                }
+
+                var cnc12Path = SettingsManager.Settings.Cnc.Cnc12Path;
+
+                if (string.IsNullOrWhiteSpace(cnc12Path))
+                {
+                    LogError("CNC12 path not configured in settings", "CNCUtils");
+                    return false;
+                }
+
+                // Build the executable path
+                var exePath = System.IO.Path.Combine(cnc12Path, $"{cnc12ProcessName}.exe");
+
+                if (!System.IO.File.Exists(exePath))
+                {
+                    LogError($"CNC12 executable not found at: {exePath}", "CNCUtils");
+                    return false;
+                }
+
+                LogInfo($"Launching CNC12 from: {exePath}", "CNCUtils");
+
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exePath,
+                    WorkingDirectory = cnc12Path,
+                    UseShellExecute = true
+                };
+
+                var process = System.Diagnostics.Process.Start(startInfo);
+                if (process == null)
+                {
+                    LogError("Failed to start CNC12 process", "CNCUtils");
+                    return false;
+                }
+
+                LogSuccess($"CNC12 launched successfully (PID: {process.Id})", "CNCUtils");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error launching CNC12: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Exit CNC12 gracefully using the CentroidAPI ExitSoftware method
+        /// </summary>
+        /// <returns>True if exit command was sent successfully, false otherwise</returns>
+        public static bool ExitCNC12()
+        {
+            try
+            {
+                // First, check if we have an active connection - if so, CNC12 is running
+                bool isRunning = CNCConnectionManager.IsConnected;
+
+                // If no connection, check the process directly
+                if (!isRunning)
+                {
+                    var cnc12ProcessName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                    var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
+                    isRunning = processes.Length > 0;
+
+                    // Clean up process handles
+                    foreach (var p in processes)
+                    {
+                        try { p.Dispose(); } catch { }
+                    }
+                }
+
+                if (!isRunning)
+                {
+                    LogInfo("CNC12 is not running, no need to exit", "CNCUtils");
+                    return true;
+                }
+
+                var cncPipe = CNCConnectionManager.GetCNCPipe();
+                if (cncPipe == null)
+                {
+                    LogWarning("CNC connection not available, cannot send exit command", "CNCUtils");
+                    return false;
+                }
+
+                LogInfo("Sending exit command to CNC12...", "CNCUtils");
+
+                var result = cncPipe.system.ExitSoftware();
+                if (result == CNCPipe.ReturnCode.SUCCESS)
+                {
+                    LogSuccess("CNC12 exit command sent successfully", "CNCUtils");
+                    return true;
+                }
+                else
+                {
+                    LogError($"Failed to send CNC12 exit command: {result}", "CNCUtils");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error exiting CNC12: {ex.Message}", "CNCUtils");
+                return false;
+            }
+        }
+
     }
 }

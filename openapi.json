@@ -14,22 +14,22 @@
         "tags": [
           "CamStorage"
         ],
-        "summary": "List all CAM projects with paging and sorting\r\nPOST /api/CamStorage/projects/list",
+        "summary": "List all CAM projects with sorting\r\nPOST /api/CamStorage/projects/list",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             }
           }
@@ -40,17 +40,26 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CamProjectMetadata"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CamProjectMetadata"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CamProjectMetadata"
+                  }
                 }
               }
             }
@@ -819,6 +828,56 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/ProbeConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CNCConfiguration/ConfigureMpg": {
+      "post": {
+        "tags": [
+          "CNCConfiguration"
+        ],
+        "summary": "Configure wireless MPG device type, active axes, and jog performance mode",
+        "requestBody": {
+          "description": "MPG configuration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpgConfiguration"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpgConfiguration"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpgConfiguration"
               }
             }
           }
@@ -1765,92 +1824,41 @@
         "tags": [
           "CNCIO"
         ],
-        "summary": "Reset all outputs to normal (remove all forced states)",
+        "summary": "Reset specified outputs to normal (remove forced state)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/CNCIO/IsInputAvailable/{inputNumber}": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Check if input is available",
-        "parameters": [
-          {
-            "name": "inputNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/CNCIO/IsOutputAvailable/{outputNumber}": {
-      "get": {
-        "tags": [
-          "CNCIO"
-        ],
-        "summary": "Check if output is available",
-        "parameters": [
-          {
-            "name": "outputNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
           }
         }
       }
@@ -5277,22 +5285,22 @@
         "tags": [
           "JobStorage"
         ],
-        "summary": "List all jobs with paging and sorting\r\nPOST /api/JobStorage/jobs/list",
+        "summary": "List all jobs (flat array, served from in-memory cache)\r\nPOST /api/JobStorage/jobs/list",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PageRequest"
+                "$ref": "#/components/schemas/ListJobsRequest"
               }
             }
           }
@@ -5303,17 +5311,26 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
                 }
               }
             }
@@ -5582,17 +5599,26 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GCodeFileMetadataPagedResult"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
                 }
               }
             }
@@ -5634,17 +5660,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/GCodeFileData"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/GCodeFileData"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/GCodeFileData"
                 }
               }
             }
@@ -5752,6 +5778,236 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/jobs/{id}/category": {
+      "put": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Update a job's category (lightweight — no full re-fetch needed)\r\nPUT /api/JobStorage/jobs/{id}/category",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateJobCategoryRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateJobCategoryRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateJobCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/gcode/category": {
+      "put": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Update a G-code file's category\r\nPUT /api/JobStorage/gcode/category",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGCodeCategoryRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGCodeCategoryRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGCodeCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/jobs/search": {
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Full-text search across job metadata (searches in-memory cache)\r\nPOST /api/JobStorage/jobs/search",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobSearchRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobSearchRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobMetadata"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/JobStorage/gcode/search": {
+      "post": {
+        "tags": [
+          "JobStorage"
+        ],
+        "summary": "Full-text search across G-code file metadata\r\nPOST /api/JobStorage/gcode/search",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GCodeSearchRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GCodeSearchRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GCodeSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GCodeFileMetadata"
+                  }
                 }
               }
             }
@@ -5914,7 +6170,39 @@
         "tags": [
           "MachineConfiguration"
         ],
-        "summary": "Set current machine name",
+        "summary": "Set current machine name.\r\n- New machine: seeds MongoDB with current local config under the new name, then syncs.\r\n- Existing machine: archives current data to zip, seeds new-machine config in MongoDB,\r\n  wipes local jobs/gcode, then syncs down from the new machine.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCurrentMachineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/SetCurrentMachine": {
+      "post": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Set current machine name.\r\n- New machine: seeds MongoDB with current local config under the new name, then syncs.\r\n- Existing machine: archives current data to zip, seeds new-machine config in MongoDB,\r\n  wipes local jobs/gcode, then syncs down from the new machine.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6010,39 +6298,6 @@
         }
       }
     },
-    "/api/MachineConfiguration/SetCurrentMachine": {
-      "post": {
-        "tags": [
-          "MachineConfiguration"
-        ],
-        "summary": "Set current machine",
-        "requestBody": {
-          "description": "Machine name to switch to",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetCurrentMachineRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/MachineConfiguration/GetDefaultPLC": {
       "get": {
         "tags": [
@@ -6102,6 +6357,59 @@
         "responses": {
           "200": {
             "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MachineConfiguration/DeleteMachine/{machineName}": {
+      "delete": {
+        "tags": [
+          "MachineConfiguration"
+        ],
+        "summary": "Delete all MongoDB data for a machine (configs, jobs, G-code files).\r\nDoes NOT touch local files — only removes the machine from the cloud.\r\nIf deleting the currently active machine, provide switchToMachine to switch first.",
+        "parameters": [
+          {
+            "name": "machineName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "switchToMachine",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
           }
         }
       }
@@ -6718,10 +7026,9 @@
             "description": "Whether axis direction is reversed",
             "nullable": true
           },
-          "MasterAxis": {
-            "type": "integer",
-            "description": "Master axis for pairing (0 = none, 1-8 = master axis number)",
-            "format": "int32",
+          "MasterAxisName": {
+            "type": "string",
+            "description": "Master axis label (e.g. \"X\", \"Y\", \"Z\") — resolved to an axis number at configure time\r\nby matching against the AxisType of other axes in the same configuration call.\r\nSet to null or omit for no pairing.",
             "nullable": true
           },
           "IsRotary": {
@@ -6941,36 +7248,6 @@
         "additionalProperties": false,
         "description": "Lightweight CAM project metadata for list operations"
       },
-      "CamProjectMetadataPagedResult": {
-        "type": "object",
-        "properties": {
-          "Items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CamProjectMetadata"
-            },
-            "nullable": true
-          },
-          "TotalCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "Page": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Paged result wrapper"
-      },
       "CheckpointInfo": {
         "type": "object",
         "properties": {
@@ -7104,6 +7381,9 @@
           },
           "GlobalSystem": {
             "$ref": "#/components/schemas/GlobalSystemConfiguration"
+          },
+          "Mpg": {
+            "$ref": "#/components/schemas/MpgConfiguration"
           }
         },
         "additionalProperties": false,
@@ -7195,6 +7475,60 @@
         "additionalProperties": false,
         "description": "Drive information for filesystem navigation"
       },
+      "GCodeFileData": {
+        "type": "object",
+        "properties": {
+          "FileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Directory": {
+            "type": "string",
+            "nullable": true
+          },
+          "Content": {
+            "type": "string",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaterialType": {
+            "type": "string",
+            "nullable": true
+          },
+          "EstimatedTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "Size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "LineCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "IsManaged": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Full G-code file: metadata + content combined\r\nReturned by GET /gcode"
+      },
       "GCodeFileMetadata": {
         "type": "object",
         "properties": {
@@ -7236,40 +7570,43 @@
           },
           "IsManaged": {
             "type": "boolean"
+          },
+          "LineCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false,
         "description": "G-Code file metadata (for list operations)\r\nIncludes source indicator (managed vs external)"
       },
-      "GCodeFileMetadataPagedResult": {
+      "GCodeSearchRequest": {
         "type": "object",
         "properties": {
-          "Items": {
+          "Query": {
+            "type": "string",
+            "nullable": true
+          },
+          "Directories": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GCodeFileMetadata"
+              "type": "string"
             },
             "nullable": true
           },
-          "TotalCount": {
-            "type": "integer",
-            "format": "int32"
+          "FileExtensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           },
-          "Page": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
+          "MaxCount": {
             "type": "integer",
             "format": "int32"
           }
         },
         "additionalProperties": false,
-        "description": "Paged result wrapper"
+        "description": "Request to search G-code files"
       },
       "GlobalSystemConfiguration": {
         "type": "object",
@@ -7476,7 +7813,7 @@
       "JobMetadata": {
         "type": "object",
         "properties": {
-          "JobId": {
+          "Id": {
             "type": "string",
             "nullable": true
           },
@@ -7525,36 +7862,6 @@
         "additionalProperties": false,
         "description": "Lightweight job metadata for list operations"
       },
-      "JobMetadataPagedResult": {
-        "type": "object",
-        "properties": {
-          "Items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/JobMetadata"
-            },
-            "nullable": true
-          },
-          "TotalCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "Page": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "TotalPages": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Paged result wrapper"
-      },
       "JobOperationResponse": {
         "type": "object",
         "properties": {
@@ -7580,6 +7887,21 @@
         },
         "additionalProperties": false,
         "description": "Response model for job operations"
+      },
+      "JobSearchRequest": {
+        "type": "object",
+        "properties": {
+          "Query": {
+            "type": "string",
+            "nullable": true
+          },
+          "MaxCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to search jobs"
       },
       "JogIncrementSpeed": {
         "enum": [
@@ -7608,12 +7930,37 @@
             },
             "nullable": true
           },
-          "Paging": {
-            "$ref": "#/components/schemas/PageRequest"
+          "SortBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "SortDirection": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Request to list G-code files"
+        "description": "Request to list G-code files (no paging)"
+      },
+      "ListJobsRequest": {
+        "type": "object",
+        "properties": {
+          "MaxCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "SortBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "SortDirection": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to list jobs — replaces old paged PageRequest"
       },
       "MachinePoint": {
         "type": "object",
@@ -7676,6 +8023,29 @@
         ],
         "type": "integer",
         "description": "Types of movement commands",
+        "format": "int32"
+      },
+      "MpgConfiguration": {
+        "type": "object",
+        "properties": {
+          "WirelessMpgType": {
+            "$ref": "#/components/schemas/WirelessMpgType"
+          },
+          "Performance": {
+            "$ref": "#/components/schemas/MpgPerformanceMode"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Wireless MPG and MPG performance configuration.\r\nControls Parameter 411 (device type), Parameter 218 (active axes bitmask),\r\nand Parameter 855 (jog performance mode)."
+      },
+      "MpgPerformanceMode": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "description": "MPG jog response performance mode — maps to Parameter 855 (MPG_PERFORMANCE_MODE_PARAM).",
         "format": "int32"
       },
       "PLCComparisonResult": {
@@ -7813,29 +8183,6 @@
         },
         "additionalProperties": false,
         "description": "Represents PWM output configuration"
-      },
-      "PageRequest": {
-        "type": "object",
-        "properties": {
-          "Page": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "PageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "SortBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "SortDirection": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Request model for paging and sorting"
       },
       "ParameterInfo": {
         "type": "object",
@@ -8554,190 +8901,21 @@
       "SpindleConfiguration": {
         "type": "object",
         "properties": {
-          "EncoderCounts": {
-            "type": "integer",
-            "description": "Encoder counts per spindle revolution",
-            "format": "int32",
-            "nullable": true
-          },
-          "SpindleAxis": {
-            "type": "integer",
-            "description": "Spindle axis number (5 standard, 8 for AcornSix/Hickory)",
-            "format": "int32",
-            "nullable": true
-          },
-          "LowGearRatio": {
-            "type": "number",
-            "description": "Low gear ratio",
-            "format": "double",
-            "nullable": true
-          },
-          "MediumGearRatio": {
-            "type": "number",
-            "description": "Medium gear ratio",
-            "format": "double",
-            "nullable": true
-          },
-          "HighGearRatio": {
-            "type": "number",
-            "description": "High gear ratio",
-            "format": "double",
-            "nullable": true
-          },
           "MaxSpeed": {
             "type": "integer",
-            "description": "Maximum spindle speed",
+            "description": "Maximum spindle speed in high range",
             "format": "int32",
             "nullable": true
           },
           "MinSpeed": {
             "type": "integer",
-            "description": "Minimum spindle speed",
-            "format": "int32",
-            "nullable": true
-          },
-          "AnalogRange": {
-            "type": "integer",
-            "description": "Analog output voltage range (0-3)",
+            "description": "Minimum spindle speed in high range",
             "format": "int32",
             "nullable": true
           },
           "OkDelay": {
             "type": "number",
             "description": "Spindle OK delay in seconds",
-            "format": "double",
-            "nullable": true
-          },
-          "FanDelay": {
-            "type": "number",
-            "description": "Cooling fan delay in seconds",
-            "format": "double",
-            "nullable": true
-          },
-          "EncoderEnabled": {
-            "type": "boolean",
-            "description": "Enable spindle encoder",
-            "nullable": true
-          },
-          "RigidTappingEnabled": {
-            "type": "boolean",
-            "description": "Enable rigid tapping",
-            "nullable": true
-          },
-          "RtgDisplay": {
-            "type": "boolean",
-            "description": "Enable RTG (Real Time Graphics) display",
-            "nullable": true
-          },
-          "SpindleScalingEnabled": {
-            "type": "boolean",
-            "description": "Enable spindle speed scaling (Parameter 78 bit 4)",
-            "nullable": true
-          },
-          "SecondSpindleEnabled": {
-            "type": "boolean",
-            "description": "Enable second spindle",
-            "nullable": true
-          },
-          "DecelTime": {
-            "type": "number",
-            "description": "Spindle deceleration time in seconds",
-            "format": "double",
-            "nullable": true
-          },
-          "RigidTappingSlowSpeed": {
-            "type": "number",
-            "description": "Rigid tapping slow spindle speed",
-            "format": "double",
-            "nullable": true
-          },
-          "RigidTappingSlowTime": {
-            "type": "number",
-            "description": "Rigid tapping slow spindle time",
-            "format": "double",
-            "nullable": true
-          },
-          "ThreadingTappingAccelDecelDistance": {
-            "type": "number",
-            "description": "Threading and tapping acceleration/deceleration distance",
-            "format": "double",
-            "nullable": true
-          },
-          "MinimumRigidTappingRPM": {
-            "type": "integer",
-            "description": "Minimum Rigid Tapping RPM (Parameter 68)",
-            "format": "int32",
-            "nullable": true
-          },
-          "DurationForMinRigidTappingRPM": {
-            "type": "number",
-            "description": "Duration For Min. Rigid Tapping RPM in seconds (Parameter 69)",
-            "format": "double",
-            "nullable": true
-          },
-          "SpindleDrift": {
-            "type": "integer",
-            "description": "Spindle Drift in degrees (Parameter 82)",
-            "format": "int32",
-            "nullable": true
-          },
-          "SpindleAccelDecelTime": {
-            "type": "integer",
-            "description": "Spindle Accel/Decel Time",
-            "format": "int32",
-            "nullable": true
-          },
-          "MFuncBottomHoleG84": {
-            "type": "string",
-            "description": "M Func To Run At Bottom Of Hole G84 Tapping",
-            "nullable": true
-          },
-          "MFuncTopHoleG74Counter": {
-            "type": "string",
-            "description": "M Func To Run At Top Of Hole For G74 Counter Tapping",
-            "nullable": true
-          },
-          "MFuncBottomHoleG74LeftHand": {
-            "type": "string",
-            "description": "M Func To Run At Bottom Of Hole G74 Tapping (Left Hand Taps)",
-            "nullable": true
-          },
-          "MFuncTopHoleG84Counter": {
-            "type": "string",
-            "description": "M Func To Run At Top Of Hole For G84 Counter Tapping",
-            "nullable": true
-          },
-          "RigidTappingZAxisSyncDistance": {
-            "type": "integer",
-            "description": "Rigid Tapping Z Axis Sync Distance (Parameter 241)",
-            "format": "int32",
-            "nullable": true
-          },
-          "AllowSpindleOverride": {
-            "type": "boolean",
-            "description": "Allow Spindle Override (Parameter 36 bit 2)",
-            "nullable": true
-          },
-          "DoNotWaitForIndexPulse": {
-            "type": "boolean",
-            "description": "Do Not Wait For Index Pulse (Parameter 36 bit 1)",
-            "nullable": true
-          },
-          "SsvCycleTime": {
-            "type": "number",
-            "description": "SSV (Spindle Speed Variation) cycle time",
-            "format": "double",
-            "nullable": true
-          },
-          "SsvAmount": {
-            "type": "number",
-            "description": "SSV (Spindle Speed Variation) amount percentage",
-            "format": "double",
-            "nullable": true
-          },
-          "FrvCycleTime": {
-            "type": "number",
-            "description": "FRV (Feed Rate Variation) cycle time",
             "format": "double",
             "nullable": true
           }
@@ -9236,6 +9414,52 @@
         },
         "additionalProperties": false,
         "description": "Request to update CAM project category"
+      },
+      "UpdateGCodeCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "FileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Directory": {
+            "type": "string",
+            "nullable": true
+          },
+          "FileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to update a G-code file's category"
+      },
+      "UpdateJobCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "Category": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to update a job's category"
+      },
+      "WirelessMpgType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          -1
+        ],
+        "type": "integer",
+        "description": "Wireless MPG device type — maps to Parameter 411 (MPG_TYPE_PARM).\r\nUse None to disable the wireless MPG (sets P218 = 0).",
+        "format": "int32"
       }
     }
   }

@@ -298,6 +298,14 @@ namespace HavenCNCServer.Centroid.Data
         /// <summary>Time delay to start parameter</summary>
         TIME_DELAY_TO_START = 850,
         /// <summary>Time delay before reverse parameter</summary>
-        TIME_DELAY_BEFORE_REVERSE = 851
+        TIME_DELAY_BEFORE_REVERSE = 851,
+
+        // Wireless MPG Parameters
+        /// <summary>Wireless MPG device type (0=CWP-4, 1=WMPG-4, 2=WMPG-6, 3=WMPG-4 Plasma)</summary>
+        MPG_TYPE_PARM = 411,
+        /// <summary>USB MPG active axes bitmask (Axis1=1, Axis2=2, Axis3=4, Axis4=8, Axis5=16, Axis6=32)</summary>
+        USB_MPG_OPTIONS_PARM = 218,
+        /// <summary>MPG jog performance mode (0=Smooth, 1=Balanced, 2=Quick)</summary>
+        MPG_PERFORMANCE_MODE_PARAM = 855
     }
 }

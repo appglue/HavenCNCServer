@@ -112,6 +112,31 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
+        /// Delete a single configuration file from MongoDB for a given machine.
+        /// </summary>
+        public async Task<bool> DeleteFileAsync(string machineName, string fileName)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<MachineConfigurationDocument>.Filter.And(
+                    Builders<MachineConfigurationDocument>.Filter.Eq(x => x.MachineName, machineName),
+                    Builders<MachineConfigurationDocument>.Filter.Eq(x => x.FileName, fileName)
+                );
+
+                await _machineConfigCollection!.DeleteOneAsync(filter);
+                LogInfo($"Deleted {fileName} from MongoDB for machine '{machineName}'", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete {fileName} from MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Get list of distinct machine names from MongoDB
         /// </summary>
         public async Task<System.Collections.Generic.List<string>> GetMachineNamesAsync()

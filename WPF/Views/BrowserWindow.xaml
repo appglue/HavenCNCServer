@@ -7,7 +7,7 @@
         Height="800"
         Width="1200"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized"
+        WindowState="Normal"
         Background="{DynamicResource MaterialDesign.Brush.Background}"
         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
         TextElement.FontWeight="Regular"
@@ -16,5 +16,5 @@
 
     <!-- WebView2 -->
     <wv2:WebView2 x:Name="webView"
-                  Source="http://localhost:5000"/>
+                  Source="http://localhost:5000?url_to_havencnc_server=http://localhost:5000"/>
 </Window>

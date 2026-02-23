@@ -45,6 +45,15 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
+        /// Returns true if the version file exists for this job.
+        /// Jobs without a version file are treated as version 0 but should be healed.
+        /// </summary>
+        public bool HasVersionFile(string jobId)
+        {
+            return File.Exists(GetVersionFilePath(jobId));
+        }
+
+        /// <summary>
         /// Check if job exists locally
         /// </summary>
         public bool Exists(string jobId)
@@ -67,7 +76,6 @@ namespace HavenCNCServer.Services
                 }
 
                 var data = await File.ReadAllTextAsync(filePath);
-                Log($"Read job from local file: {jobId}, {data.Length} bytes", LogLevel.Debug, "JobFileManager");
                 return data;
             }
             catch (Exception ex)
@@ -97,7 +105,61 @@ namespace HavenCNCServer.Services
         }
 
         /// <summary>
-        /// Delete job file and version file
+        /// Get the tombstone file path for a job (marks it as pending deletion from MongoDB)
+        /// </summary>
+        public string GetTombstonePath(string jobId)
+        {
+            return Path.Combine(_baseDirectory, $"{jobId}.deleted");
+        }
+
+        /// <summary>
+        /// Returns true if this job has a pending delete tombstone
+        /// </summary>
+        public bool IsTombstoned(string jobId)
+        {
+            return File.Exists(GetTombstonePath(jobId));
+        }
+
+        /// <summary>
+        /// Returns all job IDs that have a pending tombstone (need deleting from MongoDB)
+        /// </summary>
+        public string[] GetPendingTombstones()
+        {
+            try
+            {
+                var files = Directory.GetFiles(_baseDirectory, "*.deleted");
+                var ids = new System.Collections.Generic.List<string>();
+                foreach (var f in files)
+                    ids.Add(Path.GetFileNameWithoutExtension(f)); // strips .deleted
+                return ids.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Log($"Error listing tombstones: {ex.Message}", LogLevel.Error, "JobFileManager");
+                return Array.Empty<string>();
+            }
+        }
+
+        /// <summary>
+        /// Removes the tombstone file once MongoDB deletion has been confirmed
+        /// </summary>
+        public void RemoveTombstone(string jobId)
+        {
+            try
+            {
+                var path = GetTombstonePath(jobId);
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error removing tombstone for {jobId}: {ex.Message}", LogLevel.Warning, "JobFileManager");
+            }
+        }
+
+        /// <summary>
+        /// Delete job file and version file, leaving a tombstone so the sync can
+        /// propagate the deletion to MongoDB when it next connects.
         /// </summary>
         public async Task<bool> DeleteAsync(string jobId)
         {
@@ -105,19 +167,31 @@ namespace HavenCNCServer.Services
             {
                 var filePath = GetFilePath(jobId);
                 var versionPath = GetVersionFilePath(jobId);
+                var tombstonePath = GetTombstonePath(jobId);
+
+                bool existed = File.Exists(filePath) || File.Exists(versionPath);
 
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
+                    Log($"Deleted job file: {jobId}.json", LogLevel.Info, "JobFileManager");
                 }
 
                 if (File.Exists(versionPath))
                 {
                     File.Delete(versionPath);
+                    Log($"Deleted version file: {jobId}.json.version", LogLevel.Info, "JobFileManager");
                 }
 
-                Log($"Deleted job files: {jobId}", LogLevel.Info, "JobFileManager");
-                return await Task.FromResult(true);
+                // Write tombstone so the sync loop can delete from MongoDB later
+                await File.WriteAllTextAsync(tombstonePath, DateTime.UtcNow.ToString("O"));
+                Log($"Tombstone written for job: {jobId}", LogLevel.Info, "JobFileManager");
+
+                if (!existed)
+                    Log($"Job {jobId} was not found locally — tombstone still written to propagate delete to MongoDB", LogLevel.Warning, "JobFileManager");
+
+                // Return true as long as we could write the tombstone (deletion intent recorded)
+                return true;
             }
             catch (Exception ex)
             {
@@ -203,6 +277,11 @@ namespace HavenCNCServer.Services
 
                     // Remove .json extension to get job ID
                     var jobId = Path.GetFileNameWithoutExtension(file);
+
+                    // Skip tombstoned jobs
+                    if (IsTombstoned(jobId))
+                        continue;
+
                     jobIds.Add(jobId);
                 }
 

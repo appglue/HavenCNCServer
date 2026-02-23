@@ -20,6 +20,12 @@ namespace HavenCNCServer.Controllers
         private static MongoDbService? _mongoDbService;
         private static string? _machineName;
 
+        /// <summary>
+        /// In-memory metadata cache — populated on store/sync, invalidated on delete.
+        /// Max 500 jobs means this stays small and re-reads are never needed for listing.
+        /// </summary>
+        private static readonly Dictionary<string, JobMetadata> _jobMetadataCache = new();
+
         public static async Task InitializeAsync()
         {
             try
@@ -68,6 +74,44 @@ namespace HavenCNCServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Called after a machine switch. Reloads the machine name from settings,
+        /// clears the in-memory cache, and re-syncs jobs/gcode from MongoDB.
+        /// </summary>
+        public static async Task ReinitializeAsync()
+        {
+            try
+            {
+                LogInfo("🔄 JobStorageController.ReinitializeAsync — reloading for new machine", "JobStorage");
+
+                // Clear in-memory cache
+                _jobMetadataCache.Clear();
+
+                // Recreate file managers (pointing at same directories — contents were wiped by caller)
+                _jobFileManager = new JobFileManager();
+                _gcodeFileManager = new GCodeFileManager();
+
+                // Reload machine name from settings
+                var settingsPath = Path.Combine(@"C:\havencncdata", "machineDataStorageSettings.json");
+                if (System.IO.File.Exists(settingsPath))
+                {
+                    var localSettings = JsonSerializer.Deserialize<LocalMachineSettings>(System.IO.File.ReadAllText(settingsPath));
+                    _machineName = localSettings?.CurrentMachineName ?? Environment.MachineName;
+                }
+
+                LogInfo($"New machine name: {_machineName}", "JobStorage");
+
+                // Sync jobs and gcode for the new machine
+                await SyncRecentItemsAsync();
+
+                LogSuccess($"✓ JobStorageController reinitialized for machine '{_machineName}'", "JobStorage");
+            }
+            catch (Exception ex)
+            {
+                LogError($"JobStorageController reinitialization failed: {ex.Message}", "JobStorage");
+            }
+        }
+
         private static async Task SyncRecentItemsAsync()
         {
             if (_mongoDbService == null || !_mongoDbService.IsConnected || _jobFileManager == null || _gcodeFileManager == null || _machineName == null)
@@ -78,25 +122,62 @@ namespace HavenCNCServer.Controllers
 
             try
             {
-                // Download last 20 jobs
-                LogInfo("Syncing recent jobs from MongoDB...", "JobStorage");
-                var recentJobs = await _mongoDbService.GetRecentJobsAsync(_machineName, 20);
+                // ---- Step 0: flush pending local tombstones to MongoDB ----
+                var pendingTombstones = _jobFileManager.GetPendingTombstones();
+                if (pendingTombstones.Length > 0)
+                {
+                    LogInfo($"Processing {pendingTombstones.Length} pending job deletion(s) against MongoDB...", "JobStorage");
+                    foreach (var tombstoneId in pendingTombstones)
+                    {
+                        try
+                        {
+                            await _mongoDbService.DeleteJobAsync(tombstoneId, _machineName);
+                            _jobFileManager.RemoveTombstone(tombstoneId);
+                            LogInfo($"  ✓ Deleted {tombstoneId} from MongoDB and removed tombstone", "JobStorage");
+                        }
+                        catch (Exception ex)
+                        {
+                            LogWarning($"  ✗ Could not delete {tombstoneId} from MongoDB (will retry next sync): {ex.Message}", "JobStorage");
+                        }
+                    }
+                }
+
+                // Sync all jobs from MongoDB (up to our 500-job cap).
+                // Using ListJobsAsync instead of GetRecentJobsAsync(20) ensures a new/reinstalled
+                // machine gets all its jobs back, not just the most-recent 20.
+                LogInfo("Syncing all jobs from MongoDB...", "JobStorage");
+                var recentJobs = await _mongoDbService.ListJobsAsync(_machineName);
                 int jobsSynced = 0;
                 foreach (var job in recentJobs)
                 {
+                    // Don't re-download a job the user has already deleted locally
+                    if (_jobFileManager.IsTombstoned(job.JobId))
+                        continue;
+
                     var localVersion = await _jobFileManager.GetVersionAsync(job.JobId);
-                    if (job.Version > localVersion)
+                    if (job.Version > localVersion && job.Data != null)
                     {
                         await _jobFileManager.WriteAsync(job.JobId, job.Data);
                         await _jobFileManager.WriteVersionAsync(job.JobId, job.Version);
                         jobsSynced++;
                     }
-                }
-                LogInfo($"✓ Synced {jobsSynced} jobs from MongoDB", "JobStorage");
 
-                // Download last 20 gcode files
-                LogInfo("Syncing recent G-code files from MongoDB...", "JobStorage");
-                var recentFiles = await _mongoDbService.GetRecentGCodeFilesAsync(_machineName, 20);
+                    // Populate cache from MongoDB metadata if available
+                    if (job.Metadata != null)
+                    {
+                        job.Metadata.Id = job.JobId;
+                        _jobMetadataCache[job.JobId] = job.Metadata;
+                    }
+                    else if (!_jobMetadataCache.ContainsKey(job.JobId) && job.Data != null)
+                    {
+                        _jobMetadataCache[job.JobId] = ExtractJobMetadata(job.JobId, job.Data);
+                    }
+                }
+                LogInfo($"✓ Synced {jobsSynced} job(s) from MongoDB ({recentJobs.Count} total on server)", "JobStorage");
+
+                // Sync all managed G-code files from MongoDB
+                LogInfo("Syncing all G-code files from MongoDB...", "JobStorage");
+                var recentFiles = await _mongoDbService.ListGCodeFilesAsync(_machineName);
                 int filesSynced = 0;
                 foreach (var file in recentFiles)
                 {
@@ -108,7 +189,24 @@ namespace HavenCNCServer.Controllers
                         filesSynced++;
                     }
                 }
-                LogInfo($"✓ Synced {filesSynced} G-code files from MongoDB", "JobStorage");
+                LogInfo($"✓ Synced {filesSynced} G-code file(s) from MongoDB ({recentFiles.Count} total on server)", "JobStorage");
+
+                // ---- Heal: stamp version=0 on any local job that is missing its version file ----
+                // This can happen if jobs were written by old code paths or if the process
+                // crashed between WriteAsync and WriteVersionAsync.
+                var allLocalIds = _jobFileManager.GetAllJobIds();
+                int healed = 0;
+                foreach (var localId in allLocalIds)
+                {
+                    if (!_jobFileManager.HasVersionFile(localId))
+                    {
+                        await _jobFileManager.WriteVersionAsync(localId, 0);
+                        healed++;
+                        LogInfo($"Healed missing version file for job: {localId}", "JobStorage");
+                    }
+                }
+                if (healed > 0)
+                    LogInfo($"✓ Healed {healed} job(s) with missing version files", "JobStorage");
             }
             catch (Exception ex)
             {
@@ -119,65 +217,41 @@ namespace HavenCNCServer.Controllers
         // ========== Job Endpoints ==========
 
         /// <summary>
-        /// List all jobs with paging and sorting
+        /// List all jobs (flat array, served from in-memory cache)
         /// POST /api/JobStorage/jobs/list
         /// </summary>
         [HttpPost("jobs/list")]
-        [ProducesResponseType(typeof(PagedResult<JobMetadata>), 200)]
-        public async Task<IActionResult> ListJobs([FromBody] PageRequest request)
+        [ProducesResponseType(typeof(List<JobMetadata>), 200)]
+        public async Task<IActionResult> ListJobs([FromBody] ListJobsRequest request)
         {
             try
             {
                 if (_jobFileManager == null || _machineName == null)
                     return StatusCode(500, new { error = "Job storage not initialized" });
 
-                var allJobs = new List<JobMetadata>();
-
-                // 1. Get jobs from MongoDB
-                if (_mongoDbService != null && _mongoDbService.IsConnected)
-                {
-                    var mongoJobs = await _mongoDbService.ListJobsAsync(_machineName);
-                    foreach (var doc in mongoJobs)
-                    {
-                        if (doc.Metadata != null)
-                        {
-                            allJobs.Add(doc.Metadata);
-                        }
-                    }
-                }
-
-                // 2. Get jobs from local storage (not in MongoDB)
+                // Ensure all local jobs are in the cache.
+                // We always check (not just when empty) because sync may have only
+                // populated the most-recent 20 from MongoDB — older local-only jobs
+                // would be silently omitted if we stopped at Count == 0.
                 var localJobIds = _jobFileManager.GetAllJobIds();
                 foreach (var jobId in localJobIds)
                 {
-                    if (allJobs.Any(j => j.Name == jobId))
-                        continue;  // Already have from MongoDB
-
+                    if (_jobMetadataCache.ContainsKey(jobId)) continue;
                     var data = await _jobFileManager.ReadAsync(jobId);
                     if (data != null)
-                    {
-                        var metadata = ExtractJobMetadata(jobId, data);
-                        allJobs.Add(metadata);
-                    }
+                        _jobMetadataCache[jobId] = ExtractJobMetadata(jobId, data);
                 }
+
+                var allJobs = _jobMetadataCache.Values.ToList();
 
                 // Apply sorting
                 var sorted = ApplySorting(allJobs, request.SortBy, request.SortDirection);
 
-                // Apply paging
-                var totalCount = sorted.Count;
-                var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
-                var skip = (request.Page - 1) * request.PageSize;
-                var paged = sorted.Skip(skip).Take(request.PageSize).ToList();
+                // Apply maxCount cap
+                var maxCount = request.MaxCount ?? 500;
+                var result = sorted.Take(maxCount).ToList();
 
-                return Ok(new PagedResult<JobMetadata>
-                {
-                    Items = paged,
-                    TotalCount = totalCount,
-                    Page = request.Page,
-                    PageSize = request.PageSize,
-                    TotalPages = totalPages
-                });
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -250,6 +324,10 @@ namespace HavenCNCServer.Controllers
                 // Write to local first
                 var version = await _jobFileManager.IncrementAndWriteAsync(request.JobId, request.Data);
 
+                // Upsert metadata cache
+                metadata.Id = request.JobId;
+                _jobMetadataCache[request.JobId] = metadata;
+
                 // Sync to MongoDB in background
                 if (_mongoDbService != null)
                 {
@@ -260,6 +338,9 @@ namespace HavenCNCServer.Controllers
                         await mongoService.SaveJobAsync(request.JobId, machineName, request.Data, version, metadata);
                     });
                 }
+
+                // Fire-and-forget prune so it doesn't slow down the store response
+                _ = Task.Run(() => PruneOldJobsAsync());
 
                 return Ok(new StoreResponse
                 {
@@ -295,15 +376,22 @@ namespace HavenCNCServer.Controllers
 
                 var localDeleted = await _jobFileManager.DeleteAsync(id);
 
-                // Delete from MongoDB in background
-                if (_mongoDbService != null)
+                // Remove from metadata cache immediately
+                _jobMetadataCache.Remove(id);
+
+                // Attempt immediate MongoDB delete; tombstone ensures retry on next sync if offline
+                if (_mongoDbService != null && _mongoDbService.IsConnected)
                 {
-                    var machineName = _machineName;
-                    var mongoService = _mongoDbService;
-                    _ = Task.Run(async () =>
+                    try
                     {
-                        await mongoService.DeleteJobAsync(id, machineName);
-                    });
+                        await _mongoDbService.DeleteJobAsync(id, _machineName);
+                        // Deletion confirmed — remove tombstone so sync doesn't try again
+                        _jobFileManager.RemoveTombstone(id);
+                    }
+                    catch (Exception mongoEx)
+                    {
+                        Log($"MongoDB delete failed for job {id} (tombstone retained for retry): {mongoEx.Message}", LogLevel.Warning, "JobStorageController");
+                    }
                 }
 
                 if (localDeleted)
@@ -381,7 +469,7 @@ namespace HavenCNCServer.Controllers
         /// POST /api/JobStorage/gcode/list
         /// </summary>
         [HttpPost("gcode/list")]
-        [ProducesResponseType(typeof(PagedResult<GCodeFileMetadata>), 200)]
+        [ProducesResponseType(typeof(List<GCodeFileMetadata>), 200)]
         public async Task<IActionResult> ListGCodeFiles([FromBody] ListGCodeFilesRequest request)
         {
             try
@@ -391,18 +479,37 @@ namespace HavenCNCServer.Controllers
 
                 var allFiles = new List<GCodeFileMetadata>();
 
-                // 1. Scan external directories
+                // 1. Scan external directories (includes LineCount from file content)
                 if (request.Directories != null)
                 {
                     foreach (var directory in request.Directories)
                     {
                         var externalFiles = _gcodeFileManager.ScanExternalDirectory(directory, request.FileExtensions);
+                        // Populate LineCount for each external file
+                        foreach (var f in externalFiles)
+                        {
+                            try
+                            {
+                                var content = await _gcodeFileManager.ReadExternalAsync(f.Directory, f.Name);
+                                f.LineCount = CountLines(content);
+                            }
+                            catch { /* non-critical */ }
+                        }
                         allFiles.AddRange(externalFiles);
                     }
                 }
 
-                // 2. Get managed files from local directory
+                // 2. Get managed files from local directory (includes LineCount)
                 var managedFiles = _gcodeFileManager.GetManagedFileMetadata();
+                foreach (var f in managedFiles)
+                {
+                    try
+                    {
+                        var content = await _gcodeFileManager.ReadManagedAsync(f.FileId!);
+                        f.LineCount = CountLines(content);
+                    }
+                    catch { /* non-critical */ }
+                }
                 allFiles.AddRange(managedFiles);
 
                 // 3. Get files from MongoDB (may have additional metadata)
@@ -411,7 +518,6 @@ namespace HavenCNCServer.Controllers
                     var mongoFiles = await _mongoDbService.ListGCodeFilesAsync(_machineName);
                     foreach (var doc in mongoFiles)
                     {
-                        // Check if already in list from local managed directory
                         var existing = allFiles.FirstOrDefault(f => f.FileId == doc.FileId);
                         if (existing != null)
                         {
@@ -424,6 +530,8 @@ namespace HavenCNCServer.Controllers
                         else
                         {
                             // Add from MongoDB only (not in local managed)
+                            var lineCount = 0;
+                            try { lineCount = CountLines(doc.Data); } catch { }
                             allFiles.Add(new GCodeFileMetadata
                             {
                                 FileId = doc.FileId,
@@ -435,29 +543,16 @@ namespace HavenCNCServer.Controllers
                                 EstimatedTime = doc.EstimatedTime,
                                 LastModified = doc.Timestamp,
                                 Size = doc.Size,
-                                IsManaged = true
+                                IsManaged = true,
+                                LineCount = lineCount
                             });
                         }
                     }
                 }
 
-                // Apply sorting
-                var sorted = ApplySorting(allFiles, request.Paging.SortBy, request.Paging.SortDirection);
-
-                // Apply paging
-                var totalCount = sorted.Count;
-                var totalPages = (int)Math.Ceiling(totalCount / (double)request.Paging.PageSize);
-                var skip = (request.Paging.Page - 1) * request.Paging.PageSize;
-                var paged = sorted.Skip(skip).Take(request.Paging.PageSize).ToList();
-
-                return Ok(new PagedResult<GCodeFileMetadata>
-                {
-                    Items = paged,
-                    TotalCount = totalCount,
-                    Page = request.Paging.Page,
-                    PageSize = request.Paging.PageSize,
-                    TotalPages = totalPages
-                });
+                // Apply sorting and return flat array
+                var sorted = ApplySorting(allFiles, request.SortBy, request.SortDirection);
+                return Ok(sorted);
             }
             catch (Exception ex)
             {
@@ -467,11 +562,11 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Fetch G-code file content
+        /// Fetch G-code file — returns metadata + content combined
         /// GET /api/JobStorage/gcode?fileId={id}&directory={dir}&fileName={name}
         /// </summary>
         [HttpGet("gcode")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(GCodeFileData), 200)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> FetchGCodeFile([FromQuery] string? fileId, [FromQuery] string? directory, [FromQuery] string? fileName)
         {
@@ -480,39 +575,64 @@ namespace HavenCNCServer.Controllers
                 if (_gcodeFileManager == null || _machineName == null)
                     return StatusCode(500, new { error = "G-code storage not initialized" });
 
-                // If fileId provided, fetch managed file
+                // ---- Managed file (by fileId) ----
                 if (!string.IsNullOrEmpty(fileId))
                 {
-                    // Try MongoDB first
+                    string? content = null;
+                    GCodeFileDocument? mongoDoc = null;
+
                     if (_mongoDbService != null && _mongoDbService.IsConnected)
                     {
-                        var mongoDoc = await _mongoDbService.LoadGCodeFileAsync(fileId, _machineName);
-                        if (mongoDoc != null)
-                        {
-                            return Ok(mongoDoc.Data);
-                        }
+                        mongoDoc = await _mongoDbService.LoadGCodeFileAsync(fileId, _machineName);
+                        content = mongoDoc?.Data;
                     }
 
-                    // Fallback to local managed
-                    var managedData = await _gcodeFileManager.ReadManagedAsync(fileId);
-                    if (managedData != null)
+                    if (content == null)
+                        content = await _gcodeFileManager.ReadManagedAsync(fileId);
+
+                    if (content == null)
+                        return NotFound(new { error = $"Managed G-code file not found: {fileId}" });
+
+                    var fileInfo = _gcodeFileManager.GetManagedFileMetadata().FirstOrDefault(f => f.FileId == fileId);
+
+                    return Ok(new GCodeFileData
                     {
-                        return Ok(managedData);
-                    }
-
-                    return NotFound(new { error = $"Managed G-code file not found: {fileId}" });
+                        FileId = fileId,
+                        Name = mongoDoc?.FileName ?? fileInfo?.Name ?? fileId,
+                        Directory = "managed",
+                        Content = content,
+                        Category = mongoDoc?.Category ?? fileInfo?.Category,
+                        Description = mongoDoc?.Description ?? fileInfo?.Description,
+                        MaterialType = mongoDoc?.MaterialType ?? fileInfo?.MaterialType,
+                        EstimatedTime = mongoDoc?.EstimatedTime ?? fileInfo?.EstimatedTime,
+                        LastModified = fileInfo?.LastModified ?? (mongoDoc?.Timestamp ?? DateTime.UtcNow),
+                        Size = content.Length,
+                        LineCount = CountLines(content),
+                        IsManaged = true
+                    });
                 }
 
-                // If directory and fileName provided, fetch external file
+                // ---- External file (by directory + fileName) ----
                 if (!string.IsNullOrEmpty(directory) && !string.IsNullOrEmpty(fileName))
                 {
-                    var externalData = await _gcodeFileManager.ReadExternalAsync(directory, fileName);
-                    if (externalData != null)
-                    {
-                        return Ok(externalData);
-                    }
+                    var content = await _gcodeFileManager.ReadExternalAsync(directory, fileName);
+                    if (content == null)
+                        return NotFound(new { error = $"External G-code file not found: {directory}/{fileName}" });
 
-                    return NotFound(new { error = $"External G-code file not found: {directory}/{fileName}" });
+                    var fullPath = Path.Combine(directory, fileName);
+                    var fileInfo = System.IO.File.Exists(fullPath) ? new System.IO.FileInfo(fullPath) : null;
+
+                    return Ok(new GCodeFileData
+                    {
+                        FileId = null,
+                        Name = fileName,
+                        Directory = directory,
+                        Content = content,
+                        LastModified = fileInfo?.LastWriteTimeUtc ?? DateTime.UtcNow,
+                        Size = content.Length,
+                        LineCount = CountLines(content),
+                        IsManaged = false
+                    });
                 }
 
                 return BadRequest(new { error = "Either fileId or (directory + fileName) must be provided" });
@@ -630,6 +750,249 @@ namespace HavenCNCServer.Controllers
             catch (Exception ex)
             {
                 Log($"Error deleting G-code file {fileId}: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        // ========== Category Endpoints ==========
+
+        /// <summary>
+        /// Update a job's category (lightweight — no full re-fetch needed)
+        /// PUT /api/JobStorage/jobs/{id}/category
+        /// </summary>
+        [HttpPut("jobs/{id}/category")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateJobCategory(string id, [FromBody] UpdateJobCategoryRequest request)
+        {
+            try
+            {
+                if (_jobFileManager == null || _machineName == null)
+                    return StatusCode(500, new { error = "Job storage not initialized" });
+
+                var data = await _jobFileManager.ReadAsync(id);
+                if (data == null)
+                    return NotFound(new { error = $"Job not found: {id}" });
+
+                // Patch the category field in the JSON
+                using var doc = JsonDocument.Parse(data);
+                var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(data) ?? new();
+                dict["category"] = JsonSerializer.SerializeToElement(request.Category);
+                var updatedData = JsonSerializer.Serialize(dict);
+
+                var version = await _jobFileManager.IncrementAndWriteAsync(id, updatedData);
+
+                // Update cache
+                if (_jobMetadataCache.TryGetValue(id, out var cached))
+                {
+                    cached.Category = request.Category;
+                }
+                else
+                {
+                    var meta = ExtractJobMetadata(id, updatedData);
+                    _jobMetadataCache[id] = meta;
+                }
+
+                // Background MongoDB sync
+                if (_mongoDbService != null)
+                {
+                    var machineName = _machineName;
+                    var mongoService = _mongoDbService;
+                    var meta = _jobMetadataCache[id];
+                    _ = Task.Run(async () =>
+                    {
+                        await mongoService.SaveJobAsync(id, machineName, updatedData, version, meta);
+                    });
+                }
+
+                return Ok(new { message = $"Category updated for job {id}" });
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating category for job {id}: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update a G-code file's category
+        /// PUT /api/JobStorage/gcode/category
+        /// </summary>
+        [HttpPut("gcode/category")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateGCodeCategory([FromBody] UpdateGCodeCategoryRequest request)
+        {
+            try
+            {
+                if (_gcodeFileManager == null || _machineName == null)
+                    return StatusCode(500, new { error = "G-code storage not initialized" });
+
+                // Managed file
+                if (!string.IsNullOrEmpty(request.FileId))
+                {
+                    var exists = await _gcodeFileManager.ReadManagedAsync(request.FileId) != null;
+                    if (!exists && (_mongoDbService == null || !_mongoDbService.IsConnected))
+                        return NotFound(new { error = $"G-code file not found: {request.FileId}" });
+
+                    // Update MongoDB metadata only (category is not embedded in the .nc content)
+                    if (_mongoDbService != null && _mongoDbService.IsConnected)
+                    {
+                        var doc = await _mongoDbService.LoadGCodeFileAsync(request.FileId, _machineName);
+                        if (doc != null)
+                        {
+                            await _mongoDbService.SaveGCodeFileAsync(
+                                doc.FileId, doc.FileName, _machineName, doc.Data, doc.Version + 1,
+                                request.Category, doc.Description, doc.MaterialType, doc.EstimatedTime);
+                        }
+                    }
+
+                    return Ok(new { message = $"Category updated for G-code file {request.FileId}" });
+                }
+
+                // External file — category stored in MongoDB only
+                if (!string.IsNullOrEmpty(request.Directory) && !string.IsNullOrEmpty(request.FileName))
+                {
+                    if (_mongoDbService != null && _mongoDbService.IsConnected)
+                    {
+                        var mongoFiles = await _mongoDbService.ListGCodeFilesAsync(_machineName);
+                        var match = mongoFiles.FirstOrDefault(f => f.FileName == request.FileName);
+                        if (match != null)
+                        {
+                            await _mongoDbService.SaveGCodeFileAsync(
+                                match.FileId, match.FileName, _machineName, match.Data, match.Version + 1,
+                                request.Category, match.Description, match.MaterialType, match.EstimatedTime);
+                            return Ok(new { message = $"Category updated for external G-code file {request.FileName}" });
+                        }
+                    }
+                    return NotFound(new { error = $"External G-code file not found in MongoDB: {request.FileName}" });
+                }
+
+                return BadRequest(new { error = "Either fileId or (directory + fileName) must be provided" });
+            }
+            catch (Exception ex)
+            {
+                Log($"Error updating G-code category: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        // ========== Search Endpoints ==========
+
+        /// <summary>
+        /// Full-text search across job metadata (searches in-memory cache)
+        /// POST /api/JobStorage/jobs/search
+        /// </summary>
+        [HttpPost("jobs/search")]
+        [ProducesResponseType(typeof(List<JobMetadata>), 200)]
+        public IActionResult SearchJobs([FromBody] JobSearchRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Query))
+                    return Ok(new List<JobMetadata>());
+
+                var q = request.Query.Trim().ToLowerInvariant();
+
+                var results = _jobMetadataCache.Values
+                    .Where(j =>
+                        (j.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (j.Category?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (j.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (j.MaterialType?.Contains(q, StringComparison.OrdinalIgnoreCase) == true))
+                    .OrderByDescending(j => j.LastModified)
+                    .Take(request.MaxCount)
+                    .ToList();
+
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error searching jobs: {ex.Message}", LogLevel.Error, "JobStorageController");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Full-text search across G-code file metadata
+        /// POST /api/JobStorage/gcode/search
+        /// </summary>
+        [HttpPost("gcode/search")]
+        [ProducesResponseType(typeof(List<GCodeFileMetadata>), 200)]
+        public async Task<IActionResult> SearchGCodeFiles([FromBody] GCodeSearchRequest request)
+        {
+            try
+            {
+                if (_gcodeFileManager == null || _machineName == null)
+                    return StatusCode(500, new { error = "G-code storage not initialized" });
+
+                if (string.IsNullOrWhiteSpace(request.Query))
+                    return Ok(new List<GCodeFileMetadata>());
+
+                var q = request.Query.Trim();
+
+                // Build metadata list from managed + requested external directories
+                var allFiles = new List<GCodeFileMetadata>();
+
+                var managedFiles = _gcodeFileManager.GetManagedFileMetadata();
+                allFiles.AddRange(managedFiles);
+
+                if (request.Directories != null)
+                {
+                    var extensions = request.FileExtensions ?? new[] { ".nc", ".txt", ".tap" };
+                    foreach (var dir in request.Directories)
+                    {
+                        var externalFiles = _gcodeFileManager.ScanExternalDirectory(dir, extensions);
+                        allFiles.AddRange(externalFiles);
+                    }
+                }
+
+                // Augment managed files with MongoDB metadata
+                if (_mongoDbService != null && _mongoDbService.IsConnected)
+                {
+                    var mongoFiles = await _mongoDbService.ListGCodeFilesAsync(_machineName);
+                    foreach (var doc in mongoFiles)
+                    {
+                        var existing = allFiles.FirstOrDefault(f => f.FileId == doc.FileId);
+                        if (existing != null)
+                        {
+                            existing.Category = doc.Category;
+                            existing.Description = doc.Description;
+                            existing.MaterialType = doc.MaterialType;
+                        }
+                        else
+                        {
+                            allFiles.Add(new GCodeFileMetadata
+                            {
+                                FileId = doc.FileId,
+                                Name = doc.FileName,
+                                Directory = "mongodb",
+                                Category = doc.Category,
+                                Description = doc.Description,
+                                MaterialType = doc.MaterialType,
+                                LastModified = doc.Timestamp,
+                                Size = doc.Size,
+                                IsManaged = true
+                            });
+                        }
+                    }
+                }
+
+                var results = allFiles
+                    .Where(f =>
+                        (f.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (f.Category?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (f.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) == true) ||
+                        (f.MaterialType?.Contains(q, StringComparison.OrdinalIgnoreCase) == true))
+                    .OrderByDescending(f => f.LastModified)
+                    .Take(request.MaxCount)
+                    .ToList();
+
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error searching G-code files: {ex.Message}", LogLevel.Error, "JobStorageController");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -759,24 +1122,125 @@ namespace HavenCNCServer.Controllers
 
         // ========== Helper Methods ==========
 
-        private JobMetadata ExtractJobMetadata(string jobId, string jobData)
+        /// <summary>
+        /// Ensures the local job store does not exceed 500 jobs.
+        /// If it does, deletes the oldest jobs that have no category until the count is at or below 500.
+        /// Jobs with a category are never auto-deleted.
+        /// </summary>
+        private async Task PruneOldJobsAsync()
         {
+            const int maxJobs = 500;
+
+            if (_jobFileManager == null) return;
+
             try
             {
-                // Try to parse job JSON to extract metadata
+                // Use cache if populated, otherwise enumerate files
+                List<(string jobId, DateTime createdAt, string? category)> jobInfos;
+
+                if (_jobMetadataCache.Count > 0)
+                {
+                    jobInfos = _jobMetadataCache.Values
+                        .Select(m => (m.Id, m.CreatedAt, m.Category))
+                        .ToList();
+                }
+                else
+                {
+                    var allIds = _jobFileManager.GetAllJobIds();
+                    if (allIds.Length <= maxJobs) return;
+
+                    jobInfos = new List<(string, DateTime, string?)>();
+                    foreach (var jobId in allIds)
+                    {
+                        var data = await _jobFileManager.ReadAsync(jobId);
+                        if (data == null) continue;
+                        var meta = ExtractJobMetadata(jobId, data);
+                        jobInfos.Add((jobId, meta.CreatedAt, meta.Category));
+                    }
+                }
+
+                if (jobInfos.Count <= maxJobs) return;
+
+                // Only uncategorised jobs are eligible for pruning
+                var uncategorised = jobInfos
+                    .Where(j => string.IsNullOrEmpty(j.category))
+                    .OrderBy(j => j.createdAt)  // oldest first
+                    .ToList();
+
+                int totalJobs = jobInfos.Count;
+                int toDelete = totalJobs - maxJobs;
+
+                if (toDelete <= 0 || uncategorised.Count == 0) return;
+
+                var candidates = uncategorised.Take(toDelete).ToList();
+
+                Log($"Pruning {candidates.Count} old uncategorised job(s) (total={totalJobs}, limit={maxJobs})", LogLevel.Info, "JobStorageController");
+
+                foreach (var (jobId, _, _) in candidates)
+                {
+                    await _jobFileManager.DeleteAsync(jobId);
+                    _jobMetadataCache.Remove(jobId);
+
+                    if (_mongoDbService != null && _mongoDbService.IsConnected)
+                    {
+                        try
+                        {
+                            await _mongoDbService.DeleteJobAsync(jobId, _machineName!);
+                            _jobFileManager.RemoveTombstone(jobId);
+                        }
+                        catch (Exception mongoEx)
+                        {
+                            Log($"Prune: MongoDB delete failed for {jobId} (tombstone retained): {mongoEx.Message}", LogLevel.Warning, "JobStorageController");
+                        }
+                    }
+
+                    Log($"Pruned job: {jobId}", LogLevel.Info, "JobStorageController");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Error during job pruning: {ex.Message}", LogLevel.Warning, "JobStorageController");
+            }
+        }
+
+        private static int CountLines(string? content)
+        {
+            if (string.IsNullOrEmpty(content)) return 0;
+            return content.Split('\n').Count(l => !string.IsNullOrWhiteSpace(l));
+        }
+
+        private static JobMetadata ExtractJobMetadata(string jobId, string jobData)
+        {
+            // Try to get the actual file modification time — much more accurate than UtcNow
+            DateTime lastModified = DateTime.UtcNow;
+            if (_jobFileManager != null)
+            {
+                var filePath = _jobFileManager.GetFilePath(jobId);
+                if (System.IO.File.Exists(filePath))
+                    lastModified = System.IO.File.GetLastWriteTimeUtc(filePath);
+            }
+
+            try
+            {
                 using var doc = JsonDocument.Parse(jobData);
                 var root = doc.RootElement;
 
+                // Also honour any lastModified / updatedAt stored inside the JSON itself
+                if (root.TryGetProperty("lastModified", out var lm) && lm.TryGetDateTime(out var lmDt))
+                    lastModified = lmDt;
+                else if (root.TryGetProperty("updatedAt", out var ua) && ua.TryGetDateTime(out var uaDt))
+                    lastModified = uaDt;
+
                 return new JobMetadata
                 {
-                    JobId = jobId,
+                    Id = jobId,
                     Name = root.TryGetProperty("name", out var name) ? name.GetString() ?? jobId : jobId,
                     ExecutionCount = root.TryGetProperty("executionCount", out var execCount) ? execCount.GetInt32() : 0,
-                    LastRunDate = root.TryGetProperty("lastRunDate", out var lastRun) ? lastRun.GetDateTime() : (DateTime?)null,
+                    LastRunDate = root.TryGetProperty("lastRunDate", out var lastRun) && lastRun.TryGetDateTime(out var lrDt) ? lrDt : (DateTime?)null,
                     Category = root.TryGetProperty("category", out var category) ? category.GetString() : null,
                     Size = jobData.Length,
-                    LastModified = DateTime.UtcNow,
-                    CreatedAt = root.TryGetProperty("createdAt", out var created) ? created.GetDateTime() : DateTime.UtcNow,
+                    LastModified = lastModified,
+                    CreatedAt = root.TryGetProperty("createdAt", out var created) && created.TryGetDateTime(out var caDt) ? caDt : lastModified,
                     Description = root.TryGetProperty("description", out var desc) ? desc.GetString() : null,
                     MaterialType = root.TryGetProperty("materialType", out var material) ? material.GetString() : null,
                     EstimatedTime = root.TryGetProperty("estimatedTime", out var time) ? time.GetString() : null
@@ -787,11 +1251,11 @@ namespace HavenCNCServer.Controllers
                 Log($"Error extracting job metadata from {jobId}: {ex.Message}", LogLevel.Warning, "JobStorageController");
                 return new JobMetadata
                 {
-                    JobId = jobId,
+                    Id = jobId,
                     Name = jobId,
                     Size = jobData.Length,
-                    LastModified = DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
+                    LastModified = lastModified,
+                    CreatedAt = lastModified
                 };
             }
         }

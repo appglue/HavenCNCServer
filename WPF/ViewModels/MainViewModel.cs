@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using HavenCNCServer.Centroid;
 using HavenCNCServer.Centroid.Events;
 using HavenCNCServer.Services;
+using static HavenCNCServer.Services.LoggingService;
 using HavenCNCServer.Models;
 using HavenCNCServer.WPF.Views;
 
@@ -44,9 +45,28 @@ public partial class MainViewModel : BaseViewModel, IEventSubscriber
     [ObservableProperty]
     private bool requiresReset;
 
+    // CNC12 control computed properties
+    public bool CanStartCnc12 => !IsCnc12Running;
+    public bool CanRestartCnc12 => IsCnc12Running;
+    public bool CanShutdownCnc12 => IsCnc12Running;
+
+    // Timer to monitor CNC12 process status
+    private DispatcherTimer? _cnc12MonitorTimer;
+
+    // When true, the user explicitly shut down CNC12 — suppress auto-restart
+    private bool _userInitiatedShutdown = false;
+
     partial void OnRequiresResetChanged(bool value)
     {
         ResetButtonLabel = value ? "RESET" : "ESTOP";
+    }
+
+    partial void OnIsCnc12RunningChanged(bool value)
+    {
+        // Update computed properties when CNC12 running state changes
+        OnPropertyChanged(nameof(CanStartCnc12));
+        OnPropertyChanged(nameof(CanRestartCnc12));
+        OnPropertyChanged(nameof(CanShutdownCnc12));
     }
 
     public MainViewModel()
@@ -58,12 +78,48 @@ public partial class MainViewModel : BaseViewModel, IEventSubscriber
 
             // Subscribe to CNCEventBus for server status updates
             CNCEventBus.Instance.Subscribe(this);
+
+            // Start timer to monitor CNC12 process status every 2 seconds
+            _cnc12MonitorTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(2)
+            };
+            _cnc12MonitorTimer.Tick += Cnc12MonitorTimer_Tick;
+            _cnc12MonitorTimer.Start();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"MainViewModel constructor error: {ex}");
             Console.WriteLine($"MainViewModel constructor error: {ex}");
             throw new Exception($"MainViewModel initialization failed: {ex.Message}", ex);
+        }
+    }
+
+    private async void Cnc12MonitorTimer_Tick(object? sender, EventArgs e)
+    {
+        bool wasRunning = IsCnc12Running;
+
+        // Refresh running state from the actual process list
+        await UpdateCnc12RunningState();
+
+        // If CNC12 just stopped and the user did NOT intentionally shut it down, restart it
+        if (wasRunning && !IsCnc12Running && !_userInitiatedShutdown)
+        {
+            Log("CNC12 stopped unexpectedly — auto-restarting...", LoggingService.LogLevel.Warning, "MainViewModel");
+            UpdateStatus("CNC12 stopped unexpectedly. Restarting...");
+
+            var started = await Task.Run(() => CNCUtils.LaunchCNC12());
+            if (started)
+            {
+                UpdateStatus("CNC12 restarted automatically");
+                await Task.Delay(3000);
+                await UpdateCnc12RunningState();
+                await CNCConnectionManager.ConnectAsync();
+            }
+            else
+            {
+                UpdateStatus("Failed to auto-restart CNC12");
+            }
         }
     }
 
@@ -365,6 +421,178 @@ public partial class MainViewModel : BaseViewModel, IEventSubscriber
         {
             await Task.Run(() => CNCUtils.StopSkinEvent((SkinEvent)57));
         }
+    }
+
+    [RelayCommand]
+    private async Task StartCnc12()
+    {
+        try
+        {
+            UpdateStatus("Starting CNC12...");
+
+            var success = await Task.Run(() => CNCUtils.LaunchCNC12());
+
+            if (success)
+            {
+                UpdateStatus("CNC12 started successfully");
+                // Give CNC12 time to initialize
+                await Task.Delay(3000);
+
+                // Update the running state
+                await UpdateCnc12RunningState();
+
+                // Try to connect
+                UpdateStatus("Connecting to CNC12...");
+                await CNCConnectionManager.ConnectAsync();
+            }
+            else
+            {
+                UpdateStatus("Failed to start CNC12");
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatus($"Error starting CNC12: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ShutdownCnc12()
+    {
+        try
+        {
+            var result = System.Windows.MessageBox.Show(
+                "Are you sure you want to shutdown CNC12?\n\nThis will close the CNC12 application.",
+                "Confirm Shutdown",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            // Flag that this is an intentional shutdown so the monitor does not auto-restart
+            _userInitiatedShutdown = true;
+
+            UpdateStatus("Shutting down CNC12...");
+
+            var success = await Task.Run(() => CNCUtils.ExitCNC12());
+
+            if (success)
+            {
+                UpdateStatus("CNC12 shutdown command sent");
+                // Give it time to shut down
+                await Task.Delay(2000);
+
+                // Update the running state
+                await UpdateCnc12RunningState();
+            }
+            else
+            {
+                UpdateStatus("Failed to send shutdown command to CNC12");
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatus($"Error shutting down CNC12: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestartCnc12()
+    {
+        try
+        {
+            var result = System.Windows.MessageBox.Show(
+                "Are you sure you want to restart CNC12?\n\nThis will close and reopen the CNC12 application.",
+                "Confirm Restart",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            UpdateStatus("Restarting CNC12...");
+
+            // Suppress auto-restart while we intentionally stop it
+            _userInitiatedShutdown = true;
+
+            // First, shut down CNC12
+            var shutdownSuccess = await Task.Run(() => CNCUtils.ExitCNC12());
+
+            if (shutdownSuccess)
+            {
+                UpdateStatus("CNC12 shutdown, waiting before restart...");
+                // Wait for shutdown to complete
+                await Task.Delay(3000);
+
+                // Update the running state
+                await UpdateCnc12RunningState();
+
+                // Relaunch — this is not a user-initiated permanent shutdown
+                _userInitiatedShutdown = false;
+
+                // Now start it again
+                UpdateStatus("Starting CNC12...");
+                var startSuccess = await Task.Run(() => CNCUtils.LaunchCNC12());
+
+                if (startSuccess)
+                {
+                    UpdateStatus("CNC12 restarted successfully");
+                    // Give CNC12 time to initialize
+                    await Task.Delay(3000);
+
+                    // Update the running state
+                    await UpdateCnc12RunningState();
+
+                    // Try to connect
+                    UpdateStatus("Connecting to CNC12...");
+                    await CNCConnectionManager.ConnectAsync();
+                }
+                else
+                {
+                    UpdateStatus("Failed to restart CNC12");
+                }
+            }
+            else
+            {
+                UpdateStatus("Failed to shutdown CNC12 for restart");
+            }
+        }
+        catch (Exception ex)
+        {
+            UpdateStatus($"Error restarting CNC12: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Update the CNC12 running state by checking the process directly
+    /// </summary>
+    private async Task UpdateCnc12RunningState()
+    {
+        await Task.Run(() =>
+        {
+            var cnc12ProcessName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+            var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
+            bool isRunning = processes.Length > 0;
+
+            // Clean up process handles
+            foreach (var p in processes)
+            {
+                try { p.Dispose(); } catch { }
+            }
+
+            // Update on UI thread
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsCnc12Running = isRunning;
+            });
+        });
     }
 
     [RelayCommand]

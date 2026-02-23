@@ -40,6 +40,17 @@ namespace HavenCNCServer
         {
             try
             {
+                // Parse command line arguments
+                bool launchBrowser = true;
+                foreach (var arg in args)
+                {
+                    if (arg.Equals("--no-browser", StringComparison.OrdinalIgnoreCase) ||
+                        arg.Equals("-nb", StringComparison.OrdinalIgnoreCase))
+                    {
+                        launchBrowser = false;
+                    }
+                }
+
                 // Ensure console is available for logging (WPF apps don't have console by default)
                 if (!AttachConsole(ATTACH_PARENT_PROCESS))
                 {
@@ -50,6 +61,10 @@ namespace HavenCNCServer
                 Console.WriteLine("HavenCNC Server - Console Output Enabled");
                 Console.WriteLine("==========================================================");
                 Console.WriteLine("Starting HavenCNC Server (WPF UI)...");
+                if (!launchBrowser)
+                {
+                    Console.WriteLine("Browser UI auto-launch disabled via command line");
+                }
 
                 // Create cancellation token for coordinated shutdown
                 _cancellationTokenSource = new CancellationTokenSource();
@@ -90,6 +105,22 @@ namespace HavenCNCServer
                 var mainWindow = new WPF.MainWindow();
                 app.MainWindow = mainWindow;
                 mainWindow.Show();
+
+                // Auto-launch browser UI if enabled
+                if (launchBrowser)
+                {
+                    Console.WriteLine("Auto-launching browser UI...");
+                    // Delay slightly to let the main window and API initialize
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(2000);
+                        app.Dispatcher.Invoke(() =>
+                        {
+                            var browserWindow = new WPF.Views.BrowserWindow();
+                            browserWindow.Show();
+                        });
+                    });
+                }
 
                 Console.WriteLine("Running WPF application...");
                 app.Run();
@@ -173,6 +204,36 @@ namespace HavenCNCServer
             {
                 // Subscribe to CNC connection status changes
                 CNCConnectionManager.ConnectionStatusChanged += OnCNCConnectionStatusChanged;
+
+                // Check if CNC12 is running by checking the process directly (not cached)
+                var cnc12ProcessName = SettingsManager.Settings.Cnc.Cnc12ProcessName;
+                var processes = System.Diagnostics.Process.GetProcessesByName(cnc12ProcessName);
+                bool isCnc12Running = processes.Length > 0;
+
+                // Clean up process handles
+                foreach (var p in processes)
+                {
+                    try { p.Dispose(); } catch { }
+                }
+
+                if (!isCnc12Running)
+                {
+                    LogInfo("CNC12 is not running - attempting to start...", "CNC");
+                    if (CNCUtils.LaunchCNC12())
+                    {
+                        LogSuccess("CNC12 started successfully", "CNC");
+                        // Give CNC12 time to fully initialize before attempting connection
+                        Thread.Sleep(3000);
+                    }
+                    else
+                    {
+                        LogError("Failed to start CNC12 - connection may not be possible", "CNC");
+                    }
+                }
+                else
+                {
+                    LogInfo("CNC12 is already running", "CNC");
+                }
 
                 // Force connection for WPF (unlike WinForms, WPF doesn't have manual connect UI)
                 _ = Task.Run(async () =>

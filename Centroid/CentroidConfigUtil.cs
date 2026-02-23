@@ -649,149 +649,46 @@ namespace HavenCNCServer.Centroid
 
                 LoggingService.Log("  Setting spindle parameters...");
 
-                // Core parameters via CNCUtils.SetParameterValue() - only set if provided
-                if (config.EncoderCounts.HasValue)
+                // Max/min speed in high range
+                if (config.MaxSpeed.HasValue)
                 {
-                    LoggingService.Log($"    Encoder Counts: {config.EncoderCounts.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                    LoggingService.Log($"    Max Speed: {config.MaxSpeed.Value} RPM");
+                    cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed.Value);
                 }
 
-                if (config.SpindleAxis.HasValue)
+                if (config.MinSpeed.HasValue)
                 {
-                    LoggingService.Log($"    Spindle Axis: {config.SpindleAxis.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                    LoggingService.Log($"    Min Speed: {config.MinSpeed.Value} RPM");
+                    cncPipe.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
                 }
 
-                if (config.LowGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    Low Gear Ratio: {config.LowGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
-                }
-
-                if (config.MediumGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    Medium Gear Ratio: {config.MediumGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
-                }
-
-                if (config.HighGearRatio.HasValue)
-                {
-                    LoggingService.Log($"    High Gear Ratio: {config.HighGearRatio.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
-                }
-
-                if (config.AnalogRange.HasValue)
-                {
-                    LoggingService.Log($"    Analog Range: {config.AnalogRange.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
-                }
-
-                if (config.RtgDisplay.HasValue)
-                {
-                    LoggingService.Log($"    RTG Display: {config.RtgDisplay.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RtgDisplay.Value ? 1 : 0);
-                }
-
+                // SpindleOk delay
                 if (config.OkDelay.HasValue)
                 {
                     LoggingService.Log($"    OK Delay: {config.OkDelay.Value}s");
                     CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_OK_DELAY_PARM, (int)(config.OkDelay.Value * 1000));
                 }
 
-                if (config.FanDelay.HasValue)
-                {
-                    LoggingService.Log($"    Fan Delay: {config.FanDelay.Value}s");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
-                }
-
-                // Speed configuration via API calls (commented out as it depends on MainWindow)
-                // if (config.MaxSpeed.HasValue)
-                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MAX, config.MaxSpeed.Value);
-                // if (config.MinSpeed.HasValue)
-                //     MainWindow.skin.state.SetHighRangeSpindleSpeed(CNCPipe.State.Value.MIN, config.MinSpeed.Value);
-
-                // Configure spindle parameter 78 bit field only if encoder or scaling settings are provided
-                if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue || config.SpindleScalingEnabled.HasValue)
-                {
-                    int spindleControl = 0;
-                    if (config.EncoderEnabled == true) spindleControl |= 1;          // Bit 0: Primary Encoder Enable
-                    if (config.SecondSpindleEnabled == true) spindleControl |= 8;     // Bit 3: Second Spindle Encoder
-                    if (config.SpindleScalingEnabled == true) spindleControl |= 16;   // Bit 4: Spindle Scaling Enable
-                    LoggingService.Log($"    Spindle Control Flags: EncoderEnabled={config.EncoderEnabled}, SecondSpindle={config.SecondSpindleEnabled}, Scaling={config.SpindleScalingEnabled}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_PARM, spindleControl);
-                }
-
-                // Configure deceleration time
-                if (config.DecelTime.HasValue)
-                {
-                    LoggingService.Log($"    Decel Time: {config.DecelTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
-                }
-
-                // Configure rigid tapping parameters
-                if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue)
-                {
-                    double rpmValue = config.MinimumRigidTappingRPM ?? config.RigidTappingSlowSpeed ?? 0;
-                    LoggingService.Log($"    Rigid Tapping Slow Speed: {rpmValue} RPM");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_SPEED_PARM, rpmValue);
-                }
-
-                if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue)
-                {
-                    double timeValue = config.DurationForMinRigidTappingRPM ?? config.RigidTappingSlowTime ?? 0;
-                    LoggingService.Log($"    Rigid Tapping Slow Time: {timeValue}s");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SLOW_SPINDLE_TIME_PARM, timeValue);
-                }
-
-                if (config.SpindleDrift.HasValue)
-                {
-                    LoggingService.Log($"    Spindle Drift: {config.SpindleDrift.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
-                }
-
-                if (config.RigidTappingZAxisSyncDistance.HasValue)
-                {
-                    LoggingService.Log($"    Rigid Tapping Z-Axis Sync Distance: {config.RigidTappingZAxisSyncDistance.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
-                }
-
-                // Configure rigid tapping parameter 36 bit field for enable, override and index pulse settings
-                if (config.RigidTappingEnabled.HasValue || config.AllowSpindleOverride.HasValue || config.DoNotWaitForIndexPulse.HasValue)
-                {
-                    int rigidTappingControl = 0;
-                    if (config.RigidTappingEnabled == true) rigidTappingControl |= 1;           // Enable rigid tapping
-                    if (config.DoNotWaitForIndexPulse == true) rigidTappingControl |= 2;       // Bit 1: Do Not Wait For Index Pulse
-                    if (config.AllowSpindleOverride == true) rigidTappingControl |= 4;         // Bit 2: Allow Spindle Override
-                    LoggingService.Log($"    Rigid Tapping Control: Enabled={config.RigidTappingEnabled}, NoIndexWait={config.DoNotWaitForIndexPulse}, AllowOverride={config.AllowSpindleOverride}");
-                    CNCUtils.SetParameterValue(CentroidParameters.RIGID_TAPPING_PARM, rigidTappingControl);
-                }
-
-                // Configure threading/tapping acceleration/deceleration distance
-                if (config.ThreadingTappingAccelDecelDistance.HasValue)
-                {
-                    LoggingService.Log($"    Threading/Tapping Accel/Decel Distance: {config.ThreadingTappingAccelDecelDistance.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
-                }
-
-                // Configure SSV parameters
-                if (config.SsvCycleTime.HasValue)
-                {
-                    LoggingService.Log($"    SSV Cycle Time: {config.SsvCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SsvCycleTime.Value);
-                }
-
-                if (config.SsvAmount.HasValue)
-                {
-                    LoggingService.Log($"    SSV Amount: {config.SsvAmount.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SsvAmount.Value);
-                }
-
-                // Configure FRV parameters
-                if (config.FrvCycleTime.HasValue)
-                {
-                    LoggingService.Log($"    FRV Cycle Time: {config.FrvCycleTime.Value}");
-                    CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FrvCycleTime.Value);
-                }
+                // ── Parameters below are not currently used in setup ──────────────────────
+                // if (config.EncoderCounts.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COUNTS_REV_PARM, config.EncoderCounts.Value);
+                // if (config.SpindleAxis.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_AXIS_PARM, config.SpindleAxis.Value);
+                // if (config.LowGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.LOW_GEAR_RATIO_PARM, (int)(config.LowGearRatio.Value * 1000));
+                // if (config.MediumGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.MED_LOW_GEAR_RATIO_PARM, (int)(config.MediumGearRatio.Value * 1000));
+                // if (config.HighGearRatio.HasValue) CNCUtils.SetParameterValue(CentroidParameters.HIGH_GEAR_RATIO_PARM, (int)(config.HighGearRatio.Value * 1000));
+                // if (config.AnalogRange.HasValue) CNCUtils.SetParameterValue(CentroidParameters.PLC_ANALOG_PARM, config.AnalogRange.Value);
+                // if (config.RtgDisplay.HasValue) CNCUtils.SetParameterValue(CentroidParameters.RTG_DISPLAY_PARM, config.RtgDisplay.Value ? 1 : 0);
+                // if (config.FanDelay.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_COOLING_FAN_DELAY_TIMER, (int)(config.FanDelay.Value * 1000));
+                // if (config.EncoderEnabled.HasValue || config.SecondSpindleEnabled.HasValue || config.SpindleScalingEnabled.HasValue) { /* P78 bit field */ }
+                // if (config.DecelTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SPINDLE_DECEL_TIME_PARM, config.DecelTime.Value);
+                // if (config.RigidTappingSlowSpeed.HasValue || config.MinimumRigidTappingRPM.HasValue) { /* RT slow speed */ }
+                // if (config.RigidTappingSlowTime.HasValue || config.DurationForMinRigidTappingRPM.HasValue) { /* RT slow time */ }
+                // if (config.SpindleDrift.HasValue) CNCUtils.SetParameterValue(CentroidParameters.RT_SPINDLE_CUTOFF_DRIFT_PARM, config.SpindleDrift.Value);
+                // if (config.RigidTappingZAxisSyncDistance.HasValue) CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_ROT_DEG_STEP_AMT_PARM, config.RigidTappingZAxisSyncDistance.Value);
+                // if (config.RigidTappingEnabled.HasValue || config.AllowSpindleOverride.HasValue || config.DoNotWaitForIndexPulse.HasValue) { /* P36 bit field */ }
+                // if (config.ThreadingTappingAccelDecelDistance.HasValue) CNCUtils.SetParameterValue(CentroidParameters.THREADING_AND_TAPPING_ACCEL_DECEL_DISTANCE_PARM, config.ThreadingTappingAccelDecelDistance.Value);
+                // if (config.SsvCycleTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SSV_CYCLE_TIME, config.SsvCycleTime.Value);
+                // if (config.SsvAmount.HasValue) CNCUtils.SetParameterValue(CentroidParameters.SSV_AMOUNT, config.SsvAmount.Value);
+                // if (config.FrvCycleTime.HasValue) CNCUtils.SetParameterValue(CentroidParameters.FRV_CYCLE_TIME, config.FrvCycleTime.Value);
 
                 LoggingService.Log("Primary spindle configured successfully");
                 return true;
@@ -1620,7 +1517,8 @@ namespace HavenCNCServer.Centroid
             TouchPlateConfiguration? touchPlate = null,
             SecondSpindleConfiguration? secondSpindle = null,
             GlobalSystemConfiguration? globalSystem = null,
-            RotaryConfiguration? rotary = null)
+            RotaryConfiguration? rotary = null,
+            MpgConfiguration? mpg = null)
         {
             try
             {
@@ -1656,6 +1554,87 @@ namespace HavenCNCServer.Centroid
                     LoggingService.Log($"  Axis {axis.AxisType} configured successfully");
                 }
                 LoggingService.Log($"Step 2/9: All {axes.Count} axes configured successfully");
+
+                // Step 2b: Slave axis pairing — must run after ALL axes are configured so that
+                // (a) master axis parameters are already written and (b) we can resolve names to numbers.
+                // Per Centroid wizard behaviour, ALL motion parameters must be copied from master → slave
+                // (CNC12 will not sync them automatically just because P554 is set).
+                var slaveAxes = axes.Where(a => !string.IsNullOrEmpty(a.MasterAxisName)).ToList();
+                if (slaveAxes.Count > 0)
+                {
+                    LoggingService.Log($"Step 2b: Configuring {slaveAxes.Count} slave axis pairing(s)...");
+                    var cncPipeForPairing = CNCConnectionManager.GetCNCPipe();
+
+                    foreach (var slaveConfig in slaveAxes)
+                    {
+                        // Resolve master axis name to number
+                        var masterConfig = axes.FirstOrDefault(a =>
+                            string.Equals(a.AxisType, slaveConfig.MasterAxisName, System.StringComparison.OrdinalIgnoreCase));
+                        if (masterConfig == null)
+                        {
+                            LoggingService.Log($"  WARNING: Could not find master axis named '{slaveConfig.MasterAxisName}' — skipping pairing for Axis {slaveConfig.AxisNumber}", LoggingService.LogLevel.Warning);
+                            continue;
+                        }
+                        int masterAxisNumber = masterConfig.AxisNumber;
+                        LoggingService.Log($"  Resolved master axis name '{slaveConfig.MasterAxisName}' → Axis {masterAxisNumber}");
+
+                        // ── 1. Set the pairing parameter (P554 / P555) ────────────────────
+                        ConfigureAxisPairing(slaveConfig.AxisNumber, masterAxisNumber);
+                        LoggingService.Log($"  ✓ Paired Axis {slaveConfig.AxisNumber} ({slaveConfig.AxisType}) → master Axis {masterAxisNumber}");
+
+                        if (cncPipeForPairing == null)
+                        {
+                            LoggingService.Log("  WARNING: CNC pipe unavailable — cannot copy master parameters to slave", LoggingService.LogLevel.Warning);
+                            continue;
+                        }
+
+                        var slaveEnum = (CNCPipe.Axes)(slaveConfig.AxisNumber - 1);
+                        var masterEnum = (CNCPipe.Axes)(masterAxisNumber - 1);
+
+                        // ── 2. Apply motion parameters: slave value takes priority, master fills gaps ──
+                        // If the slave was sent with its own values, those are used.
+                        // If a value is null on the slave, it falls back to the master's value.
+
+                        var stepsPerRev = slaveConfig.StepsPerRevolution ?? masterConfig.StepsPerRevolution;
+                        var turnsRatio = slaveConfig.OverallTurnsRatio ?? masterConfig.OverallTurnsRatio;
+                        var lash = slaveConfig.LashCompensation ?? masterConfig.LashCompensation;
+                        var maxRate = slaveConfig.MaxRate ?? masterConfig.MaxRate;
+                        var fastJogPlus = slaveConfig.FastJogPlusDirection ?? masterConfig.FastJogPlusDirection;
+                        var fastJogMinus = slaveConfig.FastJogMinusDirection ?? masterConfig.FastJogMinusDirection;
+                        var fastJog = slaveConfig.FastJogRate ?? masterConfig.FastJogRate;
+                        var slowJog = slaveConfig.SlowJogRate ?? masterConfig.SlowJogRate;
+                        var accel = slaveConfig.AccelDecel ?? masterConfig.AccelDecel;
+                        var plusLimit = slaveConfig.PlusTravelLimit ?? masterConfig.PlusTravelLimit;
+                        var minusLimit = slaveConfig.MinusTravelLimit ?? masterConfig.MinusTravelLimit;
+                        var isRotary = slaveConfig.IsRotary ?? masterConfig.IsRotary;
+
+                        if (stepsPerRev.HasValue) { cncPipeForPairing.axis.SetCountsPerTurn(slaveEnum, stepsPerRev.Value); LoggingService.Log($"    StepsPerRevolution → {stepsPerRev.Value}"); }
+                        if (turnsRatio.HasValue) { cncPipeForPairing.axis.SetScrewPitch(slaveEnum, turnsRatio.Value); LoggingService.Log($"    ScrewPitch → {turnsRatio.Value}"); }
+                        if (lash.HasValue) { cncPipeForPairing.axis.SetLashComp(slaveEnum, lash.Value); LoggingService.Log($"    LashCompensation → {lash.Value}"); }
+                        if (maxRate.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.MAX, maxRate.Value); LoggingService.Log($"    MaxRate → {maxRate.Value}"); }
+                        if (fastJogPlus.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG_PLUS, fastJogPlus.Value); LoggingService.Log($"    FastJogPlus → {fastJogPlus.Value}"); }
+                        if (fastJogMinus.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG_MINUS, fastJogMinus.Value); LoggingService.Log($"    FastJogMinus → {fastJogMinus.Value}"); }
+                        if (fastJog.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.FAST_JOG, fastJog.Value); LoggingService.Log($"    FastJogRate → {fastJog.Value}"); }
+                        if (slowJog.HasValue) { cncPipeForPairing.axis.SetRate(slaveEnum, CNCPipe.Axis.Rate.SLOW_JOG, slowJog.Value); LoggingService.Log($"    SlowJogRate → {slowJog.Value}"); }
+                        if (accel.HasValue) { cncPipeForPairing.axis.SetAccelTime(slaveEnum, accel.Value); LoggingService.Log($"    AccelDecel → {accel.Value}"); }
+                        if (plusLimit.HasValue) { cncPipeForPairing.axis.SetTravelLimit(slaveEnum, CNCPipe.Axis.Direction.PLUS, plusLimit.Value); LoggingService.Log($"    PlusTravelLimit → {plusLimit.Value}"); }
+                        if (minusLimit.HasValue) { cncPipeForPairing.axis.SetTravelLimit(slaveEnum, CNCPipe.Axis.Direction.MINUS, minusLimit.Value); LoggingService.Log($"    MinusTravelLimit → {minusLimit.Value}"); }
+                        if (isRotary.HasValue)
+                        {
+                            ConfigureAxisProperties(new AxisConfiguration { AxisNumber = slaveConfig.AxisNumber, IsRotary = isRotary });
+                            LoggingService.Log($"    IsRotary → {isRotary.Value}");
+                        }
+
+                        // ── 3. Compute and apply slave reversal relative to master ─────────
+                        // DirectionReversal on the slave means "run opposite to master".
+                        bool masterReversed = masterConfig.DirectionReversal ?? false;
+                        bool wantOpposite = slaveConfig.DirectionReversal ?? false;
+                        bool slaveReversed = wantOpposite ? !masterReversed : masterReversed;
+                        cncPipeForPairing.axis.SetAxisReversal(slaveEnum, slaveReversed);
+                        LoggingService.Log($"  ✓ Slave Axis {slaveConfig.AxisNumber} reversal = {slaveReversed} (master={masterReversed}, opposite={wantOpposite})");
+                    }
+                    LoggingService.Log("Step 2b: Slave axis pairing complete");
+                }
 
                 // Step 3: Configure spindle
                 LoggingService.Log("Step 3/9: Configuring primary spindle...");
@@ -1739,17 +1718,33 @@ namespace HavenCNCServer.Centroid
                 // Step 8: Configure rotary settings if provided
                 if (rotary != null)
                 {
-                    LoggingService.Log("Step 8/8: Configuring rotary settings...");
+                    LoggingService.Log("Step 8/9: Configuring rotary settings...");
                     if (!ConfigureRotary(rotary))
                     {
                         LoggingService.Log("ERROR: Rotary configuration failed", LoggingService.LogLevel.Error);
                         return false;
                     }
-                    LoggingService.Log("Step 8/8: Rotary settings configured successfully");
+                    LoggingService.Log("Step 8/9: Rotary settings configured successfully");
                 }
                 else
                 {
-                    LoggingService.Log("Step 8/8: Skipping rotary configuration (not provided)");
+                    LoggingService.Log("Step 8/9: Skipping rotary configuration (not provided)");
+                }
+
+                // Step 9: Configure MPG if provided
+                if (mpg != null)
+                {
+                    LoggingService.Log("Step 9/9: Configuring MPG...");
+                    if (!ConfigureMpg(mpg))
+                    {
+                        LoggingService.Log("ERROR: MPG configuration failed", LoggingService.LogLevel.Error);
+                        return false;
+                    }
+                    LoggingService.Log("Step 9/9: MPG configured successfully");
+                }
+                else
+                {
+                    LoggingService.Log("Step 9/9: Skipping MPG configuration (not provided)");
                 }
 
                 LoggingService.Log("=== Complete Machine Configuration Finished Successfully ===");
@@ -1759,6 +1754,51 @@ namespace HavenCNCServer.Centroid
             {
                 LoggingService.Log($"CRITICAL ERROR in ConfigureCompleteMachine: {ex.Message}", LoggingService.LogLevel.Error);
                 LoggingService.Log($"Stack trace: {ex.StackTrace}", LoggingService.LogLevel.Error);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Configures wireless MPG type, active axes, and jog performance mode.
+        /// P411 = device type, P218 = active axes bitmask, P855 = performance mode.
+        /// When WirelessMpgType is None, P218 is zeroed to disable the MPG.
+        /// </summary>
+        /// <param name="config">MPG configuration</param>
+        /// <returns>True if successful</returns>
+        public static bool ConfigureMpg(MpgConfiguration config)
+        {
+            try
+            {
+                LoggingService.Log("Configuring MPG...");
+
+                if (config.WirelessMpgType == WirelessMpgType.None)
+                {
+                    // Disable USB MPG — zero the active axes bitmask
+                    CNCUtils.SetParameterValue(CentroidParameters.USB_MPG_OPTIONS_PARM, 0);
+                    LoggingService.Log("  Wireless MPG disabled (P218 = 0)");
+                }
+                else
+                {
+                    // Set device type (P411)
+                    CNCUtils.SetParameterValue(CentroidParameters.MPG_TYPE_PARM, (int)config.WirelessMpgType);
+                    LoggingService.Log($"  MPG type: {config.WirelessMpgType} (P411 = {(int)config.WirelessMpgType})");
+
+                    // Set active axes bitmask (P218) — always 3-axis: X(1) + Y(2) + Z(4) = 7
+                    const int threeAxisBitmask = 7;
+                    CNCUtils.SetParameterValue(CentroidParameters.USB_MPG_OPTIONS_PARM, threeAxisBitmask);
+                    LoggingService.Log($"  Active axes: 3-axis (X+Y+Z), P218 = {threeAxisBitmask}");
+                }
+
+                // Set MPG performance mode (P855)
+                CNCUtils.SetParameterValue(CentroidParameters.MPG_PERFORMANCE_MODE_PARAM, (int)config.Performance);
+                LoggingService.Log($"  MPG performance: {config.Performance} (P855 = {(int)config.Performance})");
+
+                LoggingService.Log("MPG configuration completed successfully");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LoggingService.Log($"EXCEPTION in ConfigureMpg: {ex.Message}", LoggingService.LogLevel.Error);
                 return false;
             }
         }
