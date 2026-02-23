@@ -175,6 +175,7 @@ namespace HavenCNCServer.Services
                         await Task.Delay(1000); // Wait for API to be fully ready
                         await Controllers.MachineConfigurationController.InitializeAsync();
                         await Controllers.JobStorageController.InitializeAsync();
+                        await Controllers.CamStorageController.InitializeAsync();
                     }
                     catch (Exception ex)
                     {

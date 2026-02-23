@@ -19,6 +19,7 @@ namespace HavenCNCServer.Services
         private IMongoCollection<DefaultPlcVersionDocument>? _defaultPlcCollection;
         private IMongoCollection<JobDocument>? _jobCollection;
         private IMongoCollection<GCodeFileDocument>? _gcodeCollection;
+        private IMongoCollection<CamProjectDocument>? _camProjectCollection;
         private bool _isConnected = false;
 
         public MongoDbService(MongoDbSettings settings)
@@ -42,6 +43,7 @@ namespace HavenCNCServer.Services
                 _defaultPlcCollection = _database.GetCollection<DefaultPlcVersionDocument>(_settings.DefaultPlcVersionsCollection);
                 _jobCollection = _database.GetCollection<JobDocument>("jobs");
                 _gcodeCollection = _database.GetCollection<GCodeFileDocument>("gcodeFiles");
+                _camProjectCollection = _database.GetCollection<CamProjectDocument>("camProjects");
 
                 _client.GetDatabase("admin").RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
                 _isConnected = true;
@@ -538,6 +540,134 @@ namespace HavenCNCServer.Services
             {
                 LogError($"Failed to list G-code files from MongoDB: {ex.Message}", "MongoDB");
                 return new System.Collections.Generic.List<GCodeFileDocument>();
+            }
+        }
+
+        // ========== CAM Project Storage Methods ==========
+
+        /// <summary>
+        /// Save CAM project to MongoDB
+        /// </summary>
+        public async Task<bool> SaveCamProjectAsync(string projectId, string machineName, string data, long version, CamProjectMetadata? metadata)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<CamProjectDocument>.Filter.And(
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.ProjectId, projectId),
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                var update = Builders<CamProjectDocument>.Update
+                    .Set(x => x.ProjectId, projectId)
+                    .Set(x => x.MachineName, machineName)
+                    .Set(x => x.Data, data)
+                    .Set(x => x.Version, version)
+                    .Set(x => x.Timestamp, DateTime.UtcNow)
+                    .Set(x => x.Metadata, metadata);
+
+                await _camProjectCollection!.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
+                LogInfo($"Saved CAM project {projectId} v{version} to MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to save CAM project {projectId} to MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Load CAM project from MongoDB
+        /// </summary>
+        public async Task<CamProjectDocument?> LoadCamProjectAsync(string projectId, string machineName)
+        {
+            if (!IsConnected) return null;
+
+            try
+            {
+                var filter = Builders<CamProjectDocument>.Filter.And(
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.ProjectId, projectId),
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                return await _camProjectCollection!.Find(filter).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to load CAM project {projectId} from MongoDB: {ex.Message}", "MongoDB");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Delete CAM project from MongoDB
+        /// </summary>
+        public async Task<bool> DeleteCamProjectAsync(string projectId, string machineName)
+        {
+            if (!IsConnected) return false;
+
+            try
+            {
+                var filter = Builders<CamProjectDocument>.Filter.And(
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.ProjectId, projectId),
+                    Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName)
+                );
+
+                await _camProjectCollection!.DeleteOneAsync(filter);
+                LogInfo($"Deleted CAM project {projectId} from MongoDB", "MongoDB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to delete CAM project {projectId} from MongoDB: {ex.Message}", "MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get last N CAM projects for a machine from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<CamProjectDocument>> GetRecentCamProjectsAsync(string machineName, int limit = 20)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<CamProjectDocument>();
+
+            try
+            {
+                var filter = Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<CamProjectDocument>.Sort.Descending(x => x.Timestamp);
+
+                var projects = await _camProjectCollection!.Find(filter).Sort(sort).Limit(limit).ToListAsync();
+                LogInfo($"Retrieved {projects.Count} recent CAM projects from MongoDB", "MongoDB");
+                return projects;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to get recent CAM projects from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<CamProjectDocument>();
+            }
+        }
+
+        /// <summary>
+        /// List all CAM projects for a machine (metadata only) from MongoDB
+        /// </summary>
+        public async Task<System.Collections.Generic.List<CamProjectDocument>> ListCamProjectsAsync(string machineName)
+        {
+            if (!IsConnected) return new System.Collections.Generic.List<CamProjectDocument>();
+
+            try
+            {
+                var filter = Builders<CamProjectDocument>.Filter.Eq(x => x.MachineName, machineName);
+                var sort = Builders<CamProjectDocument>.Sort.Descending(x => x.Timestamp);
+
+                var projects = await _camProjectCollection!.Find(filter).Sort(sort).ToListAsync();
+                return projects;
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to list CAM projects from MongoDB: {ex.Message}", "MongoDB");
+                return new System.Collections.Generic.List<CamProjectDocument>();
             }
         }
     }

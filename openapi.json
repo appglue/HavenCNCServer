@@ -9,6 +9,267 @@
     "version": "v1"
   },
   "paths": {
+    "/api/CamStorage/projects/list": {
+      "post": {
+        "tags": [
+          "CamStorage"
+        ],
+        "summary": "List all CAM projects with paging and sorting\r\nPOST /api/CamStorage/projects/list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CamProjectMetadataPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CamStorage/projects/{id}": {
+      "get": {
+        "tags": [
+          "CamStorage"
+        ],
+        "summary": "Fetch a specific CAM project by ID\r\nGET /api/CamStorage/projects/{id}",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "CamStorage"
+        ],
+        "summary": "Delete a CAM project\r\nDELETE /api/CamStorage/projects/{id}",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CamStorage/projects": {
+      "post": {
+        "tags": [
+          "CamStorage"
+        ],
+        "summary": "Store a CAM project\r\nPOST /api/CamStorage/projects",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreCamProjectRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreCamProjectRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreCamProjectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/CamStorage/projects/{id}/category": {
+      "put": {
+        "tags": [
+          "CamStorage"
+        ],
+        "summary": "Update CAM project category\r\nPUT /api/CamStorage/projects/{id}/category",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCamProjectCategoryRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCamProjectCategoryRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCamProjectCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/CNCConfiguration/GetData/{name}": {
       "get": {
         "tags": [
@@ -6645,6 +6906,71 @@
         "additionalProperties": false,
         "description": "CNC server status information"
       },
+      "CamProjectMetadata": {
+        "type": "object",
+        "properties": {
+          "ProjectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true
+          },
+          "Category": {
+            "type": "string",
+            "nullable": true
+          },
+          "Description": {
+            "type": "string",
+            "nullable": true
+          },
+          "Size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Lightweight CAM project metadata for list operations"
+      },
+      "CamProjectMetadataPagedResult": {
+        "type": "object",
+        "properties": {
+          "Items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CamProjectMetadata"
+            },
+            "nullable": true
+          },
+          "TotalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "PageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Paged result wrapper"
+      },
       "CheckpointInfo": {
         "type": "object",
         "properties": {
@@ -8460,6 +8786,24 @@
         "description": "Storage type enumeration",
         "format": "int32"
       },
+      "StoreCamProjectRequest": {
+        "type": "object",
+        "properties": {
+          "ProjectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "Data": {
+            "type": "string",
+            "nullable": true
+          },
+          "Metadata": {
+            "$ref": "#/components/schemas/CamProjectMetadata"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to store a CAM project"
+      },
       "StoreDefaultPlcRequest": {
         "type": "object",
         "properties": {
@@ -8881,6 +9225,17 @@
         },
         "additionalProperties": false,
         "description": "Represents touch plate configuration system"
+      },
+      "UpdateCamProjectCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "Category": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request to update CAM project category"
       }
     }
   }
