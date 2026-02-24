@@ -31,18 +31,24 @@
             <RichTextBox.Resources>
                 <!-- Dark scrollbar track -->
                 <Style TargetType="ScrollBar">
-                    <Setter Property="Background" Value="#2D2D2D"/>
-                    <Setter Property="Width" Value="12"/>
+                    <Setter Property="Background"
+                            Value="#2D2D2D"/>
+                    <Setter Property="Width"
+                            Value="12"/>
                     <Style.Triggers>
-                        <Trigger Property="Orientation" Value="Horizontal">
-                            <Setter Property="Height" Value="12"/>
-                            <Setter Property="Width" Value="Auto"/>
+                        <Trigger Property="Orientation"
+                                Value="Horizontal">
+                            <Setter Property="Height"
+                                    Value="12"/>
+                            <Setter Property="Width"
+                                    Value="Auto"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
                 <!-- Scrollbar thumb -->
                 <Style TargetType="Thumb">
-                    <Setter Property="Background" Value="#606060"/>
+                    <Setter Property="Background"
+                            Value="#606060"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="Thumb">
@@ -50,11 +56,15 @@
                                         CornerRadius="3"
                                         Margin="2"/>
                                 <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#909090"/>
+                                    <Trigger Property="IsMouseOver"
+                                            Value="True">
+                                        <Setter Property="Background"
+                                                Value="#909090"/>
                                     </Trigger>
-                                    <Trigger Property="IsDragging" Value="True">
-                                        <Setter Property="Background" Value="#B0B0B0"/>
+                                    <Trigger Property="IsDragging"
+                                            Value="True">
+                                        <Setter Property="Background"
+                                                Value="#B0B0B0"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -66,7 +76,9 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="RepeatButton">
-                                <Border Background="Transparent" Height="0" Width="0"/>
+                                <Border Background="Transparent"
+                                        Height="0"
+                                        Width="0"/>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
