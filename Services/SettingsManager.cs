@@ -201,27 +201,40 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static string GetCncProgramsDirectory()
         {
+            // Check configured directory first
             if (!string.IsNullOrEmpty(Settings.Files.CncProgramsDirectory) &&
                 Directory.Exists(Settings.Files.CncProgramsDirectory))
             {
+                LoggingService.Log($"Using configured CNC programs directory: {Settings.Files.CncProgramsDirectory}", LoggingService.LogLevel.Debug, "SettingsManager");
                 return Settings.Files.CncProgramsDirectory;
+            }
+            else if (!string.IsNullOrEmpty(Settings.Files.CncProgramsDirectory))
+            {
+                LoggingService.Log($"Configured CNC programs directory does not exist: {Settings.Files.CncProgramsDirectory}", LoggingService.LogLevel.Warning, "SettingsManager");
             }
 
             // Auto-detect CNC12 programs directory
             string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "CNC12", "Programs");
+            LoggingService.Log($"Checking for CNC12 in My Documents: {documentsPath}", LoggingService.LogLevel.Debug, "SettingsManager");
             if (Directory.Exists(documentsPath))
             {
+                LoggingService.Log($"Using auto-detected CNC programs directory (Documents): {documentsPath}", LoggingService.LogLevel.Info, "SettingsManager");
                 return documentsPath;
             }
 
             string defaultPath = @"C:\CNC12\Programs";
+            LoggingService.Log($"Checking default CNC12 path: {defaultPath}", LoggingService.LogLevel.Debug, "SettingsManager");
             if (Directory.Exists(defaultPath))
             {
+                LoggingService.Log($"Using auto-detected CNC programs directory (default): {defaultPath}", LoggingService.LogLevel.Info, "SettingsManager");
                 return defaultPath;
             }
 
             // Fall back to temp directory
-            return Settings.Files.TempFilesDirectory;
+            string tempDir = Settings.Files.TempFilesDirectory;
+            LoggingService.Log($"WARNING: No CNC12 Programs directory found! Falling back to temp directory: {tempDir}", LoggingService.LogLevel.Warning, "SettingsManager");
+            LoggingService.Log($"This may cause 'file not found' errors in CNC12. Please configure CncProgramsDirectory in settings.", LoggingService.LogLevel.Warning, "SettingsManager");
+            return tempDir;
         }
 
         /// <summary>

@@ -124,6 +124,10 @@ namespace HavenCNCServer.Models
             var programsDir = SettingsManager.GetCncProgramsDirectory();
             _filePath = Path.Combine(programsDir, fileName);
 
+            // Log the absolute path being used for debugging
+            LoggingService.LogInfo($"Job {_jobId} will use file path: {Path.GetFullPath(_filePath)}", "CNCJob");
+            LoggingService.LogInfo($"Job {_jobId} programs directory: {programsDir}", "CNCJob");
+
             // Initialize current line to first non-comment line
             UpdateCurrentLine();
         }
@@ -211,13 +215,24 @@ namespace HavenCNCServer.Models
                     // This prevents "file in use" errors when CNC12 tries to open it immediately after
                     await Task.Delay(100);
 
+                    // Verify file exists and log absolute path
+                    string absolutePath = Path.GetFullPath(_filePath);
+                    if (!IOFile.Exists(absolutePath))
+                    {
+                        LastError = $"File was not created successfully at: {absolutePath}";
+                        LoggingService.LogError(LastError, "CNCJob");
+                        return false;
+                    }
+
+                    LoggingService.LogInfo($"Job {_jobId} file verified at: {absolutePath}", "CNCJob");
+                    LoggingService.LogInfo($"Job {_jobId} file size: {new FileInfo(absolutePath).Length} bytes", "CNCJob");
+
                     // Create the G65 command - use full absolute path
                     commandToExecute = string.IsNullOrEmpty(_gcodeParameterString)
-                        ? $"G65 \"{_filePath}\""
-                        : $"G65 \"{_filePath}\" {_gcodeParameterString}";
+                        ? $"G65 \"{absolutePath}\""
+                        : $"G65 \"{absolutePath}\" {_gcodeParameterString}";
 
                     LoggingService.LogInfo($"Job {_jobId} starting with {TotalLines} G-code lines", "CNCJob");
-                    LoggingService.LogInfo($"Job {_jobId} file written to: {_filePath}", "CNCJob");
                     System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Starting job with command: {commandToExecute}");
                     LoggingService.LogInfo($"Job {_jobId} executing G65 command: {commandToExecute}", "CNCJob");
                 }
@@ -679,6 +694,17 @@ namespace HavenCNCServer.Models
 
                 IOFile.WriteAllLines(tempFilePath, remainingLines);
 
+                // Verify file exists and log absolute path
+                string absoluteTempPath = Path.GetFullPath(tempFilePath);
+                if (!IOFile.Exists(absoluteTempPath))
+                {
+                    LastError = $"Temp file was not created successfully at: {absoluteTempPath}";
+                    LoggingService.LogError(LastError, "CNCJob");
+                    return false;
+                }
+
+                LoggingService.LogInfo($"Job {_jobId} step-run file created at: {absoluteTempPath}", "CNCJob");
+
                 // Get CNC pipe
                 var cncPipe = CNCConnectionManager.GetCNCPipe();
                 if (cncPipe == null)
@@ -686,10 +712,10 @@ namespace HavenCNCServer.Models
                     throw new InvalidOperationException("Cannot run from current step: No CNC connection");
                 }
 
-                // Create the G65 command for remaining lines
+                // Create the G65 command for remaining lines - use absolute path
                 string g65Command = string.IsNullOrEmpty(_gcodeParameterString)
-                    ? $"G65 \"{tempFilePath}\""
-                    : $"G65 \"{tempFilePath}\" {_gcodeParameterString}";
+                    ? $"G65 \"{absoluteTempPath}\""
+                    : $"G65 \"{absoluteTempPath}\" {_gcodeParameterString}";
 
                 System.Diagnostics.Debug.WriteLine($"[CNCJob {_jobId}] Running from step {StepLineNumber} with command: {g65Command}");
                 LoggingService.LogInfo($"Job {_jobId} running from step {StepLineNumber} with {remainingLines.Length} remaining lines", "CNCJob");
