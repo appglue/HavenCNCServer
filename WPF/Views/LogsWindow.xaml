@@ -4,14 +4,13 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:HavenCNCServer.WPF.Controls"
         Title="Application Logs"
-        Height="600"
-        Width="800"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="Manual"
         Background="{DynamicResource MaterialDesign.Brush.Background}"
         TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
-        FontFamily="{DynamicResource MaterialDesignFont}">
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Loaded="Window_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -25,6 +24,22 @@
                                   Padding="16"
                                   materialDesign:ElevationAssist.Elevation="Dp4">
             <DockPanel>
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Button x:Name="btnCopyLogs"
+                            Content="Copy Logs"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="White"
+                            Margin="5,0"
+                            Click="BtnCopyLogs_Click"/>
+                    <Button x:Name="btnClearLogs"
+                            Content="Clear Logs"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="White"
+                            Margin="5,0"
+                            Click="BtnClearLogs_Click"/>
+                </StackPanel>
                 <TextBlock Text="Application Logs"
                            VerticalAlignment="Center"
                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
@@ -32,7 +47,71 @@
         </materialDesign:ColorZone>
 
         <!-- Log Viewer -->
-        <controls:LogViewerControl Grid.Row="1"
-                Margin="10"/>
+        <RichTextBox Grid.Row="1"
+                     x:Name="txtLogs"
+                     IsReadOnly="True"
+                     VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas"
+                     FontSize="11"
+                     Background="#1E1E1E"
+                     Foreground="#D4D4D4"
+                     Margin="10">
+            <RichTextBox.Resources>
+                <!-- Dark scrollbar track -->
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Background"
+                            Value="#2D2D2D"/>
+                    <Setter Property="Width"
+                            Value="12"/>
+                    <Style.Triggers>
+                        <Trigger Property="Orientation"
+                                 Value="Horizontal">
+                            <Setter Property="Height"
+                                    Value="12"/>
+                            <Setter Property="Width"
+                                    Value="Auto"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <!-- Scrollbar thumb -->
+                <Style TargetType="Thumb">
+                    <Setter Property="Background"
+                            Value="#606060"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Thumb">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="3"
+                                        Margin="2"/>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#909090"/>
+                                    </Trigger>
+                                    <Trigger Property="IsDragging"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#B0B0B0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <!-- Hide repeat buttons (arrows) so only the thumb shows -->
+                <Style TargetType="RepeatButton">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="RepeatButton">
+                                <Border Background="Transparent"
+                                        Height="0"
+                                        Width="0"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
     </Grid>
 </Window>

@@ -206,6 +206,11 @@ namespace HavenCNCServer.Centroid.Events
             // Miscellaneous errors (900-999)
             if (errorCode >= 901 && errorCode <= 949)
             {
+                // Error 913 is "File not found" - critical error
+                if (errorCode == 913)
+                {
+                    return MessageEventType.MiscellaneousError;
+                }
                 return MessageEventType.MiscellaneousError;
             }
 

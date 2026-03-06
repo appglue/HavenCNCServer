@@ -144,11 +144,6 @@ namespace HavenCNCServer.Controllers
                 result = CNCUtils.StopSkinEvent(26);
             }
 
-            if (result)
-            {
-                // Update the incremental mode state (inverted: continuous = !incremental)
-                CNCMovementController.UpdateIncrementalMode(!isContinuous);
-            }
             return result ? Ok(new { success = true, message = $"Jog mode set to {(isContinuous ? "continuous" : "incremental")}" })
                           : StatusCode(500, new { success = false, message = "Failed to set jog mode" });
         }
@@ -176,11 +171,6 @@ namespace HavenCNCServer.Controllers
 
             LogInfo($"TriggerSkinEvent result: {result}", "CNCUIController");
 
-            if (result)
-            {
-                // Update the increment speed state and broadcast
-                CNCMovementController.UpdateJogIncrementSpeed(speed);
-            }
             return result ? Ok(new { success = true, message = $"Jog {speed} mode activated" })
                           : StatusCode(500, new { success = false, message = "Failed to trigger event" });
         }
@@ -205,11 +195,6 @@ namespace HavenCNCServer.Controllers
                 result = CNCUtils.StopSkinEvent(38);
             }
 
-            if (result)
-            {
-                // Update the slow jog mode state (inverted: fast = !slow)
-                CNCMovementController.UpdateSlowJogMode(!isFast);
-            }
             return result ? Ok(new { success = true, message = $"Jog speed set to {(isFast ? "fast" : "slow")}" })
                           : StatusCode(500, new { success = false, message = "Failed to set jog speed" });
         }

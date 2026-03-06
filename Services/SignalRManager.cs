@@ -561,7 +561,6 @@ namespace HavenCNCServer.Services
                         IsJobRunning = isJobRunning,
                         RequiresReset = requiresReset,
                         IsHomed = isHomed,
-                        JogSettings = Controllers.CNCMovementController.GetJogSettingsForStatus(),
                         PlcVersion = new
                         {
                             Major = versionMajor,

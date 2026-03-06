@@ -14,7 +14,7 @@ namespace HavenCNCServer.WPF.Controls
     /// </summary>
     public partial class LogViewerControl : System.Windows.Controls.UserControl
     {
-        private const int MaxLines = 10000;
+        private const int MaxLines = 50;
 
         public LogViewerControl()
         {

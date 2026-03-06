@@ -14,7 +14,7 @@ namespace HavenCNCServer.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class CNCProgramController : ControllerBase
+    public class CNCProgramController : ControllerBase, IEventSubscriber
     {
         #region Job Management
 
@@ -24,6 +24,15 @@ namespace HavenCNCServer.Controllers
         private static CNCJob? _currentJob = null;
 
         private static readonly object _jobLock = new object();
+
+        /// <summary>
+        /// Static constructor to set up event subscriptions
+        /// </summary>
+        static CNCProgramController()
+        {
+            // Subscribe to CNC events for error detection
+            CNCEventBus.Instance.Subscribe(new JobErrorMonitor());
+        }
 
         /// <summary>
         /// Cancellation token for job monitoring task
@@ -57,6 +66,18 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
+        /// Get the current active job (for internal use by error monitoring)
+        /// </summary>
+        /// <returns>Current job or null</returns>
+        internal static CNCJob? GetCurrentJob()
+        {
+            lock (_jobLock)
+            {
+                return _currentJob;
+            }
+        }
+
+        /// <summary>
         /// Monitor current job for completion
         /// </summary>
         private static async void StartMonitoringJob(string jobId)
@@ -83,9 +104,20 @@ namespace HavenCNCServer.Controllers
                     }
                     else if (!isRunning && wasRunning)
                     {
-                        // Job completed - detected via polling
-                        LogSuccess($"✓ Job {jobId} completed (detected by polling)", "CNCProgramController");
-                        HandleJobCompletion(jobId);
+                        // Job stopped - check if due to error or normal completion
+                        // Note: HandleJobCompletion will be called by JobErrorMonitor if error detected
+                        // If we reach here without error, it's normal completion
+                        await Task.Delay(500, token); // Give error monitor time to detect errors
+                        
+                        // Check if job still exists (error monitor may have already handled it)
+                        lock (_jobLock)
+                        {
+                            if (_currentJob != null && _currentJob.JobId == jobId)
+                            {
+                                LogSuccess($"✓ Job {jobId} completed normally (detected by polling)", "CNCProgramController");
+                                HandleJobCompletion(jobId, true, null);
+                            }
+                        }
                         break;
                     }
 
@@ -106,7 +138,7 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Handle job completion - clear current job and send completion event
         /// </summary>
-        private static void HandleJobCompletion(string jobId)
+        private static void HandleJobCompletion(string jobId, bool success = true, string? errorMessage = null)
         {
             CNCJob? completedJob;
 
@@ -118,29 +150,43 @@ namespace HavenCNCServer.Controllers
 
             if (completedJob != null)
             {
-                // Ensure job is marked as completed when detected via polling
-                completedJob.MarkCompleted(null);
+                // Mark job as completed with error if provided
+                completedJob.MarkCompleted(errorMessage);
 
                 // Calculate job duration
                 var duration = completedJob.CompletedAt.HasValue && completedJob.StartedAt.HasValue
                     ? completedJob.CompletedAt.Value - completedJob.StartedAt.Value
                     : TimeSpan.Zero;
 
+                // Determine final success status
+                bool finalSuccess = success && completedJob.IsComplete && string.IsNullOrEmpty(completedJob.LastError);
+                string? finalErrorMessage = errorMessage ?? completedJob.LastError;
+
                 // Push job completed event
                 var jobCompletedEvent = new JobCompletedEvent
                 {
                     Timestamp = DateTime.Now,
-                    Message = $"Job {completedJob.JobId} completed",
+                    Message = finalSuccess 
+                        ? $"Job {completedJob.JobId} completed successfully" 
+                        : $"Job {completedJob.JobId} failed: {finalErrorMessage}",
                     JobId = completedJob.JobId,
-                    Success = completedJob.IsComplete && string.IsNullOrEmpty(completedJob.LastError),
-                    ErrorMessage = completedJob.LastError,
+                    Success = finalSuccess,
+                    ErrorMessage = finalErrorMessage,
                     Duration = duration,
                     LinesExecuted = completedJob.LineNumber,
                     FilePath = completedJob.FilePath
                 };
 
                 CNCEventBus.Instance.PublishMessage(jobCompletedEvent);
-                LogSuccess($"✓ Job {jobId} completion event sent", "CNCProgramController");
+                
+                if (finalSuccess)
+                {
+                    LogSuccess($"✓ Job {jobId} completed successfully", "CNCProgramController");
+                }
+                else
+                {
+                    LogError($"✗ Job {jobId} failed: {finalErrorMessage}", "CNCProgramController");
+                }
 
                 // Dispose the completed job
                 completedJob.Dispose();
@@ -1096,5 +1142,97 @@ namespace HavenCNCServer.Controllers
         }
 
         #endregion
+
+        #region IEventSubscriber Implementation (for non-static controller instances)
+
+        public EventTypeFlags GetSubscribedEvents()
+        {
+            return EventTypeFlags.None; // Static JobErrorMonitor handles event subscriptions
+        }
+
+        public void OnPositionUpdate(DROEvent position) { }
+        public void OnLogMessage(LogEvent log) { }
+        public void OnServerStatus(ServerStatusEvent status) { }
+        public void OnCNCMessage(ICentroidEvent message) { }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Internal class to monitor CNC messages for job errors (particularly error 913 - file not found)
+    /// </summary>
+    internal class JobErrorMonitor : IEventSubscriber
+    {
+        public EventTypeFlags GetSubscribedEvents()
+        {
+            return EventTypeFlags.Messages; // Subscribe to CNC messages
+        }
+
+        public void OnPositionUpdate(DROEvent position) { }
+        public void OnLogMessage(LogEvent log) { }
+        public void OnServerStatus(ServerStatusEvent status) { }
+
+        public void OnCNCMessage(ICentroidEvent message)
+        {
+            if (message is MessageEvent messageEvent)
+            {
+                // Check for critical errors that indicate job failure
+                bool isCriticalError = false;
+                string? errorDescription = null;
+
+                // Error 913 - File not found
+                if (messageEvent.EventCode == 913)
+                {
+                    isCriticalError = true;
+                    errorDescription = $"File not found (Error 913): {messageEvent.Message}";
+                    LogError($"🚨 Critical error detected during job execution: {errorDescription}", "JobErrorMonitor");
+                }
+                // Other miscellaneous errors (900-949 range) that could indicate job failure
+                else if (messageEvent.EventCode >= 900 && messageEvent.EventCode <= 949)
+                {
+                    // Check if it's a genuine error that should stop the job
+                    if (messageEvent.Message.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+                        messageEvent.Message.Contains("fail", StringComparison.OrdinalIgnoreCase) ||
+                        messageEvent.Message.Contains("not found", StringComparison.OrdinalIgnoreCase) ||
+                        messageEvent.Message.Contains("invalid", StringComparison.OrdinalIgnoreCase))
+                    {
+                        isCriticalError = true;
+                        errorDescription = $"Error {messageEvent.EventCode}: {messageEvent.Message}";
+                        LogError($"🚨 Critical error detected during job execution: {errorDescription}", "JobErrorMonitor");
+                    }
+                }
+                // Syntax errors (500-599)
+                else if (messageEvent.EventType == MessageEventType.SyntaxError ||
+                         messageEvent.EventType == MessageEventType.GCodeError)
+                {
+                    isCriticalError = true;
+                    errorDescription = $"Syntax error {messageEvent.EventCode}: {messageEvent.Message}";
+                    LogError($"🚨 Syntax error detected during job execution: {errorDescription}", "JobErrorMonitor");
+                }
+                // System faults (400-499)
+                else if (messageEvent.EventType == MessageEventType.SystemFault ||
+                         messageEvent.EventType == MessageEventType.AxisFault ||
+                         messageEvent.EventType == MessageEventType.LimitError)
+                {
+                    isCriticalError = true;
+                    errorDescription = $"{messageEvent.EventType} {messageEvent.EventCode}: {messageEvent.Message}";
+                    LogError($"🚨 System fault detected during job execution: {errorDescription}", "JobErrorMonitor");
+                }
+
+                // If critical error detected and a job is running, mark it as failed
+                if (isCriticalError)
+                {
+                    var currentJob = CNCProgramController.GetCurrentJob();
+                    if (currentJob != null && currentJob.IsRunning)
+                    {
+                        LogWarning($"⚠ Marking job {currentJob.JobId} as failed due to critical error", "JobErrorMonitor");
+                        // Use reflection to call the private static HandleJobCompletion method
+                        typeof(CNCProgramController)
+                            .GetMethod("HandleJobCompletion", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                            ?.Invoke(null, new object?[] { currentJob.JobId, false, errorDescription });
+                    }
+                }
+            }
+        }
     }
 }
