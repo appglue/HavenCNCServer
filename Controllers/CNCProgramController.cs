@@ -79,6 +79,7 @@ namespace HavenCNCServer.Controllers
 
         /// <summary>
         /// Monitor current job for completion
+        /// Polls frequently to catch even very short jobs
         /// </summary>
         private static async void StartMonitoringJob(string jobId)
         {
@@ -90,38 +91,65 @@ namespace HavenCNCServer.Controllers
             {
                 LogInfo($"📊 Started monitoring job {jobId}", "CNCProgramController");
 
-                await Task.Delay(100, token); // Initial delay for job to start
-                bool wasRunning = false;
+                await Task.Delay(50, token); // Initial delay for job to start
+
+                bool everDetectedRunning = false;
+                int pollCount = 0;
+                int elapsedMs = 0;
+                const int POLL_INTERVAL_MS = 100;
+                const int TIMEOUT_MS = 1000; // 1 second timeout if job never detected
 
                 while (!token.IsCancellationRequested)
                 {
                     var isRunning = IsJobRunning();
+                    pollCount++;
+                    elapsedMs += POLL_INTERVAL_MS;
 
-                    if (isRunning && !wasRunning)
+                    if (isRunning)
                     {
-                        wasRunning = true;
-                        LogSuccess($"✓ Job {jobId} detected as running", "CNCProgramController");
-                    }
-                    else if (!isRunning && wasRunning)
-                    {
-                        // Job stopped - check if due to error or normal completion
-                        // Note: HandleJobCompletion will be called by JobErrorMonitor if error detected
-                        // If we reach here without error, it's normal completion
-                        await Task.Delay(500, token); // Give error monitor time to detect errors
-
-                        // Check if job still exists (error monitor may have already handled it)
-                        lock (_jobLock)
+                        if (!everDetectedRunning)
                         {
-                            if (_currentJob != null && _currentJob.JobId == jobId)
-                            {
-                                LogSuccess($"✓ Job {jobId} completed normally (detected by polling)", "CNCProgramController");
-                                HandleJobCompletion(jobId, true, null);
-                            }
+                            everDetectedRunning = true;
+                            LogSuccess($"✓ Job {jobId} detected as running (poll #{pollCount})", "CNCProgramController");
                         }
-                        break;
+                    }
+                    else // !isRunning
+                    {
+                        if (everDetectedRunning)
+                        {
+                            // Job was running and now stopped - normal completion
+                            LogSuccess($"✓ Job {jobId} completed (detected after {pollCount} polls, ~{elapsedMs}ms)", "CNCProgramController");
+
+                            // Small delay to let any error signals settle
+                            await Task.Delay(200, token);
+
+                            // Check if job still exists (error monitor may have already handled it)
+                            lock (_jobLock)
+                            {
+                                if (_currentJob != null && _currentJob.JobId == jobId)
+                                {
+                                    LogInfo($"Broadcasting JobCompleted event for {jobId}", "CNCProgramController");
+                                    HandleJobCompletion(jobId, true, null);
+                                }
+                            }
+                            break;
+                        }
+                        else if (elapsedMs >= TIMEOUT_MS)
+                        {
+                            // Job never detected as running after 1 second - probably completed too fast
+                            lock (_jobLock)
+                            {
+                                if (_currentJob != null && _currentJob.JobId == jobId)
+                                {
+                                    LogWarning($"Job {jobId} never detected as running after {TIMEOUT_MS}ms ({pollCount} polls) - assuming completed", "CNCProgramController");
+                                    HandleJobCompletion(jobId, true, null);
+                                }
+                            }
+                            break;
+                        }
                     }
 
-                    await Task.Delay(250, token); // Poll every 250ms
+                    await Task.Delay(POLL_INTERVAL_MS, token);
                 }
             }
             catch (OperationCanceledException)
