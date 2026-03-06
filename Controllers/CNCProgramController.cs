@@ -108,7 +108,7 @@ namespace HavenCNCServer.Controllers
                         // Note: HandleJobCompletion will be called by JobErrorMonitor if error detected
                         // If we reach here without error, it's normal completion
                         await Task.Delay(500, token); // Give error monitor time to detect errors
-                        
+
                         // Check if job still exists (error monitor may have already handled it)
                         lock (_jobLock)
                         {
@@ -166,8 +166,8 @@ namespace HavenCNCServer.Controllers
                 var jobCompletedEvent = new JobCompletedEvent
                 {
                     Timestamp = DateTime.Now,
-                    Message = finalSuccess 
-                        ? $"Job {completedJob.JobId} completed successfully" 
+                    Message = finalSuccess
+                        ? $"Job {completedJob.JobId} completed successfully"
                         : $"Job {completedJob.JobId} failed: {finalErrorMessage}",
                     JobId = completedJob.JobId,
                     Success = finalSuccess,
@@ -178,7 +178,7 @@ namespace HavenCNCServer.Controllers
                 };
 
                 CNCEventBus.Instance.PublishMessage(jobCompletedEvent);
-                
+
                 if (finalSuccess)
                 {
                     LogSuccess($"✓ Job {jobId} completed successfully", "CNCProgramController");
