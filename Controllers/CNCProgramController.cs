@@ -19,9 +19,14 @@ namespace HavenCNCServer.Controllers
         #region Job Management
 
         /// <summary>
-        /// Current active CNC job (only one job can run at a time)
+        /// Current/last CNC job - kept until new job starts
         /// </summary>
         private static CNCJob? _currentJob = null;
+
+        /// <summary>
+        /// Track if completion event was already sent for current job
+        /// </summary>
+        private static bool _completionEventSent = false;
 
         private static readonly object _jobLock = new object();
 
@@ -117,19 +122,23 @@ namespace HavenCNCServer.Controllers
                     {
                         if (everDetectedRunning)
                         {
-                            // Job was running and now stopped - normal completion
-                            LogSuccess($"✓ Job {jobId} completed (detected after {pollCount} polls, ~{elapsedMs}ms)", "CNCProgramController");
+                            // Job was running and now stopped - completion detected
+                            LogSuccess($"✓ Job {jobId} stopped running (detected after {pollCount} polls, ~{elapsedMs}ms)", "CNCProgramController");
 
-                            // Small delay to let any error signals settle
-                            await Task.Delay(200, token);
+                            // Wait 1 second for error monitor to process any error/cancellation messages
+                            await Task.Delay(1000, token);
 
-                            // Check if job still exists (error monitor may have already handled it)
+                            // Check if job still exists (error monitor hasn't handled it)
                             lock (_jobLock)
                             {
                                 if (_currentJob != null && _currentJob.JobId == jobId)
                                 {
-                                    LogInfo($"Broadcasting JobCompleted event for {jobId}", "CNCProgramController");
+                                    LogInfo($"No error detected - broadcasting JobCompleted event for {jobId}", "CNCProgramController");
                                     HandleJobCompletion(jobId, true, null);
+                                }
+                                else
+                                {
+                                    LogInfo($"Job {jobId} already handled by error monitor", "CNCProgramController");
                                 }
                             }
                             break;
@@ -169,14 +178,28 @@ namespace HavenCNCServer.Controllers
         private static void HandleJobCompletion(string jobId, bool success = true, string? errorMessage = null)
         {
             CNCJob? completedJob;
+            bool alreadySent;
 
             lock (_jobLock)
             {
                 completedJob = _currentJob;
-                _currentJob = null;
+                alreadySent = _completionEventSent;
+
+                // Mark that we're sending completion event
+                if (completedJob != null && completedJob.JobId == jobId)
+                {
+                    _completionEventSent = true;
+                }
             }
 
-            if (completedJob != null)
+            // Don't send duplicate events
+            if (alreadySent)
+            {
+                LogInfo($"Completion event already sent for job {jobId}, skipping", "CNCProgramController");
+                return;
+            }
+
+            if (completedJob != null && completedJob.JobId == jobId)
             {
                 // Mark job as completed with error if provided
                 completedJob.MarkCompleted(errorMessage);
@@ -215,9 +238,14 @@ namespace HavenCNCServer.Controllers
                 {
                     LogError($"✗ Job {jobId} failed: {finalErrorMessage}", "CNCProgramController");
                 }
-
-                // Dispose the completed job
-                completedJob.Dispose();
+            }
+            else if (completedJob == null)
+            {
+                LogWarning($"HandleJobCompletion called but no job found for {jobId}", "CNCProgramController");
+            }
+            else
+            {
+                LogWarning($"HandleJobCompletion called for {jobId} but current job is {completedJob.JobId}", "CNCProgramController");
             }
 
             // Cancel monitoring task
@@ -247,8 +275,8 @@ namespace HavenCNCServer.Controllers
 
                     var success = job.Stop();
 
-                    // Clear current job and stop monitoring
-                    _currentJob = null;
+                    // Don't clear current job - let error messages find it
+                    // Job will be cleared when new job starts
                     _monitorCancellation?.Cancel();
 
                     return new JobOperationResponse
@@ -296,8 +324,7 @@ namespace HavenCNCServer.Controllers
                             Message = success ? "Job stopped successfully" : _currentJob.LastError ?? "Unknown error"
                         });
 
-                        // Clear current job and stop monitoring
-                        _currentJob = null;
+                        // Don't clear current job - let error messages find it
                         _monitorCancellation?.Cancel();
                     }
 
@@ -555,7 +582,10 @@ namespace HavenCNCServer.Controllers
                 {
                     LogInfo($"Creating new CNC job with {request.GCodeLines.Length} lines", "Program");
                     job = new CNCJob(request.GCodeLines, request.GcodeParameterString);
+
+                    // Clear previous job and reset completion flag
                     _currentJob = job;
+                    _completionEventSent = false;
                 }
 
                 // Push job started event
@@ -580,11 +610,8 @@ namespace HavenCNCServer.Controllers
                     {
                         LogError($"Failed to start job {job.JobId}: {job.LastError}", "Program");
 
-                        // Clear current job on failure
-                        lock (_jobLock)
-                        {
-                            _currentJob = null;
-                        }
+                        // Don't clear job on failure - let it be cleared on next job start
+                        // This allows error messages to find the failed job
 
                         return new RunGCodeResponse
                         {
@@ -964,11 +991,11 @@ namespace HavenCNCServer.Controllers
 
                     var success = currentJob.EndStepRun();
 
-                    // Clear current job since step run is ending
+                    // Don't clear job - let it be cleared on next job start
+                    // This allows error messages to find the job
                     if (success)
                     {
                         currentJob.Dispose();
-                        _currentJob = null;
                     }
 
                     return new JobOperationResponse
@@ -1204,6 +1231,12 @@ namespace HavenCNCServer.Controllers
         {
             if (message is MessageEvent messageEvent)
             {
+                // Log all messages with error codes 300-399 for debugging
+                if (messageEvent.EventCode >= 300 && messageEvent.EventCode <= 399)
+                {
+                    LogInfo($"JobErrorMonitor received message: Code={messageEvent.EventCode}, Type={messageEvent.EventType}, Message={messageEvent.Message}", "JobErrorMonitor");
+                }
+
                 // Check for critical errors that indicate job failure
                 bool isCriticalError = false;
                 string? errorDescription = null;
@@ -1246,7 +1279,14 @@ namespace HavenCNCServer.Controllers
                     errorDescription = $"{messageEvent.EventType} {messageEvent.EventCode}: {messageEvent.Message}";
                     LogError($"🚨 System fault detected during job execution: {errorDescription}", "JobErrorMonitor");
                 }
-                // Job cancellation (user abort)
+                // Job cancellation (327 Fault)
+                else if (messageEvent.EventCode == 327 && messageEvent.Message.Contains("fault", StringComparison.OrdinalIgnoreCase))
+                {
+                    isCriticalError = true;
+                    errorDescription = $"Job cancelled: {messageEvent.Message}";
+                    LogWarning($"⚠️ Job cancellation detected (327 Fault): {errorDescription}", "JobErrorMonitor");
+                }
+                // Generic job cancellation detection
                 else if (messageEvent.EventType == MessageEventType.JobCancelled)
                 {
                     isCriticalError = true;
@@ -1254,17 +1294,22 @@ namespace HavenCNCServer.Controllers
                     LogWarning($"⚠️ Job cancellation detected: {errorDescription}", "JobErrorMonitor");
                 }
 
-                // If critical error detected and a job is running, mark it as failed
+                // If critical error detected, mark job as failed
                 if (isCriticalError)
                 {
                     var currentJob = CNCProgramController.GetCurrentJob();
-                    if (currentJob != null && currentJob.IsRunning)
+
+                    if (currentJob != null)
                     {
-                        LogWarning($"⚠ Marking job {currentJob.JobId} as failed due to critical error", "JobErrorMonitor");
+                        LogWarning($"⚠️ Marking job {currentJob.JobId} as failed due to: {errorDescription}", "JobErrorMonitor");
                         // Use reflection to call the private static HandleJobCompletion method
                         typeof(CNCProgramController)
                             .GetMethod("HandleJobCompletion", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
                             ?.Invoke(null, new object?[] { currentJob.JobId, false, errorDescription });
+                    }
+                    else
+                    {
+                        LogWarning($"Error message received but no job found: {errorDescription}", "JobErrorMonitor");
                     }
                 }
             }
