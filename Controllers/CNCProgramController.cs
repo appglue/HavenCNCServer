@@ -1246,6 +1246,13 @@ namespace HavenCNCServer.Controllers
                     errorDescription = $"{messageEvent.EventType} {messageEvent.EventCode}: {messageEvent.Message}";
                     LogError($"🚨 System fault detected during job execution: {errorDescription}", "JobErrorMonitor");
                 }
+                // Job cancellation (user abort)
+                else if (messageEvent.EventType == MessageEventType.JobCancelled)
+                {
+                    isCriticalError = true;
+                    errorDescription = $"Job cancelled: {messageEvent.Message}";
+                    LogWarning($"⚠️ Job cancellation detected: {errorDescription}", "JobErrorMonitor");
+                }
 
                 // If critical error detected and a job is running, mark it as failed
                 if (isCriticalError)
