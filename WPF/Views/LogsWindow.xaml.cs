@@ -73,7 +73,8 @@ namespace HavenCNCServer.WPF.Views
 
         public void AppendLogEntry(string text, System.Drawing.Color color)
         {
-            Dispatcher.Invoke(() =>
+            // CRITICAL FIX: Use BeginInvoke to prevent deadlocks
+            Dispatcher.BeginInvoke(() =>
             {
                 try
                 {
@@ -104,7 +105,8 @@ namespace HavenCNCServer.WPF.Views
 
         public void Clear()
         {
-            Dispatcher.Invoke(() =>
+            // CRITICAL FIX: Use BeginInvoke to prevent deadlocks
+            Dispatcher.BeginInvoke(() =>
             {
                 txtLogs.Document.Blocks.Clear();
             });
