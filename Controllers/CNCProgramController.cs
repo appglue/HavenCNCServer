@@ -128,7 +128,7 @@ namespace HavenCNCServer.Controllers
                             if (localJob != null && localJob.JobId == jobId)
                             {
                                 LogInfo($"No error detected - broadcasting JobCompleted event for {jobId}", "CNCProgramController");
-                                HandleJobCompletion(jobId, true, null);
+                                HandleJobCompletion(jobId, true, null, detectedByPolling: true);
                             }
                             else
                             {
@@ -143,7 +143,7 @@ namespace HavenCNCServer.Controllers
                             if (localJob != null && localJob.JobId == jobId)
                             {
                                 LogWarning($"Job {jobId} never detected as running after {TIMEOUT_MS}ms ({pollCount} polls) - assuming completed", "CNCProgramController");
-                                HandleJobCompletion(jobId, true, null);
+                                HandleJobCompletion(jobId, true, null, detectedByPolling: true);
                             }
                             break;
                         }
@@ -166,7 +166,7 @@ namespace HavenCNCServer.Controllers
         /// <summary>
         /// Handle job completion - clear current job and send completion event
         /// </summary>
-        private static void HandleJobCompletion(string jobId, bool success = true, string? errorMessage = null)
+        private static void HandleJobCompletion(string jobId, bool success = true, string? errorMessage = null, bool detectedByPolling = false)
         {
             var completedJob = _currentJob;
             var alreadySent = _completionEventSent;
@@ -203,7 +203,7 @@ namespace HavenCNCServer.Controllers
                 {
                     Timestamp = DateTime.Now,
                     Message = finalSuccess
-                        ? $"Job {completedJob.JobId} completed successfully"
+                        ? $"Job {completedJob.JobId} completed successfully{(detectedByPolling ? " (by polling)" : "")}"
                         : $"Job {completedJob.JobId} failed: {finalErrorMessage}",
                     JobId = completedJob.JobId,
                     Success = finalSuccess,

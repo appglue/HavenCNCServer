@@ -27,7 +27,9 @@ namespace HavenCNCServer.WPF.Controls
 
         public void AppendLogEntry(string text, System.Drawing.Color color)
         {
-            Dispatcher.Invoke(() =>
+            // CRITICAL FIX: Use BeginInvoke (non-blocking) instead of Invoke (blocking)
+            // Invoke() while holding a lock causes deadlocks when UI thread tries to log
+            Dispatcher.BeginInvoke(() =>
             {
                 try
                 {
