@@ -60,6 +60,15 @@ namespace HavenCNCServer.Controllers
             "ProgramStorage"
         );
 
+        private static readonly string RecentMDIDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HavenCNCServer",
+            "ProgramStorage",
+            "MDIRecents"
+        );
+
+        private const int MaxRecentMDI = 20;
+
         private static readonly string IndexFilePath = Path.Combine(StorageDirectory, "_index.json");
 
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
@@ -73,17 +82,16 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         public CNCProgramStorageController()
         {
-            // Ensure storage directory exists
+            // Ensure storage directories exist
             if (!Directory.Exists(StorageDirectory))
-            {
                 Directory.CreateDirectory(StorageDirectory);
-            }
+
+            if (!Directory.Exists(RecentMDIDirectory))
+                Directory.CreateDirectory(RecentMDIDirectory);
 
             // Initialize index if it doesn't exist
             if (!IOFile.Exists(IndexFilePath))
-            {
                 SaveIndex(new List<StorageIndexEntry>());
-            }
         }
 
         /// <summary>
@@ -333,17 +341,69 @@ namespace HavenCNCServer.Controllers
         }
 
         /// <summary>
-        /// Get all action storage names
+        /// Get the file path for a recent MDI slot (1 = newest)
         /// </summary>
-        [HttpGet("Actions/Names")]
-        public List<string> GetActionStorageNames()
+        private static string GetRecentMDIFilePath(int slot) =>
+            Path.Combine(RecentMDIDirectory, $"recent_{slot:D2}.json");
+
+        /// <summary>
+        /// Push a new MDI recent. Shifts existing slots down (1→2, 2→3 … 19→20)
+        /// and saves the new entry as slot 1. Slot 21 is silently dropped.
+        /// POST api/CNCProgramStorage/MDI/Recents
+        /// </summary>
+        [HttpPost("MDI/Recents")]
+        public void AddMDIRecent([FromBody][Required] ProgramStorage storage)
         {
-            var index = LoadIndex();
-            return index
-                .Where(e => e.ExposeAsAction)
-                .Select(e => e.ActionCategoryName)
-                .OrderBy(n => n)
-                .ToList();
+            if (!Directory.Exists(RecentMDIDirectory))
+                Directory.CreateDirectory(RecentMDIDirectory);
+
+            // Shift: rename slot 19→20, 18→19, … 1→2
+            for (int i = MaxRecentMDI - 1; i >= 1; i--)
+            {
+                var src = GetRecentMDIFilePath(i);
+                var dst = GetRecentMDIFilePath(i + 1);
+                if (IOFile.Exists(src))
+                {
+                    if (IOFile.Exists(dst)) IOFile.Delete(dst);
+                    IOFile.Move(src, dst);
+                }
+            }
+
+            // Save new entry as slot 1
+            storage.Name = "recent_01";
+            storage.CreatedAt = DateTime.Now;
+            storage.UpdatedAt = DateTime.Now;
+            storage.StorageType = StorageType.MDI;
+            storage.ExposeAsAction = false;
+
+            var json = JsonSerializer.Serialize(storage, JsonOptions);
+            IOFile.WriteAllText(GetRecentMDIFilePath(1), json);
+        }
+
+        /// <summary>
+        /// Get all MDI recents, newest first (slot 1 = most recent).
+        /// GET api/CNCProgramStorage/MDI/Recents
+        /// </summary>
+        [HttpGet("MDI/Recents")]
+        public List<ProgramStorage> GetMDIRecents()
+        {
+            var result = new List<ProgramStorage>();
+
+            for (int i = 1; i <= MaxRecentMDI; i++)
+            {
+                var path = GetRecentMDIFilePath(i);
+                if (!IOFile.Exists(path)) break; // slots are contiguous — first gap means done
+
+                try
+                {
+                    var json = IOFile.ReadAllText(path);
+                    var storage = JsonSerializer.Deserialize<ProgramStorage>(json, JsonOptions);
+                    if (storage != null) result.Add(storage);
+                }
+                catch { /* skip corrupt slot */ }
+            }
+
+            return result;
         }
 
     }

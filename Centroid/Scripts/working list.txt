@@ -1,0 +1,42 @@
+I want to do the drill pattern now.  drill patten can have a direction, spacing and (count or extent).  1 is default for count (the origional one).
+
+extent lets us pick an element and gap (cam value) at which to stop the drill pattern.  so, if a cabinet is shorter, we will drill less holes.
+
+we need to have a drop down to pick drill type that match to the gcode.  one extra option is 'pocket' which lets us speify a bigger size for the hole than the bit.  if they specify a bigger size, we are actually pocketing and we need to have number of passes so we can step down.  we cannot specify a size smaller than.
+
+if they click on any of the drill hole shapes we select the drill pattern.  individiaul holes cannot be adjusted.
+
+this operation has an offset, color and name like others.  they also can pick (canvalue) the origional coordinate.
+
+
+
+the mirred part offset code that you just wrote does not seem to be taking into account all geometry.  we shoudl flatten and look at the furthest extent of all geometry
+
+clicking on a mirrored part does not select it. it also does not apppear in the breadcrumbs.  it is a part, just without indeendent shapes
+
+feed rate and spindle speed need to have defaults in the tool setup.  also, recommended depth of cut.  when we pick a tool in cam, these values should be set.  add to tool data and to tool ui.  default to 1/2 of the bit diameter for depth and 15000 for spidle speed and 150 for feed rate.
+
+when we select a point, we cannot select from mirrored or duplicated parts. 
+
+in drill, when we are picking initial position, we can pick a coordinate or click in any empty space to get an absolute.  this seems to be another selection mode
+
+we only get drill hole size when we specify pocket
+
+we already know the depth of the material.  we need a tooggle to speciy hole depth as material or specify.   specify is a cam value.
+
+in drill extent, we need to pick a point that we are extending to.  we will only use one coordinate from this point.
+
+
+
+
+
+whhen we create a mirrored or duplicated part, in the dialg, we need additional settings for which part, mirror direction and the x/y offset.  the x/y offset can be defined or relative to current part.  if relative, specify gap and depending on the direction, we reference the dimension line that is the furthest from this and then provide an offset.
+
+we are not supporting tapping at this point.  remove this from drill options.
+
+drill needs a drill decent speed (not sure this is the right name)
+
+
+
+
+for pocket, trace and profile, make the number of passes to have a toggle gruop for auto that will use (if configured) the recommended depth of cut to compute how many passes we need.

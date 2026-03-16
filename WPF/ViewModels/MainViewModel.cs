@@ -461,18 +461,6 @@ public partial class MainViewModel : BaseViewModel, IEventSubscriber
     {
         try
         {
-            var result = System.Windows.MessageBox.Show(
-                "Are you sure you want to shutdown CNC12?\n\nThis will close the CNC12 application.",
-                "Confirm Shutdown",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning,
-                MessageBoxResult.No);
-
-            if (result != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
             // Flag that this is an intentional shutdown so the monitor does not auto-restart
             _userInitiatedShutdown = true;
 

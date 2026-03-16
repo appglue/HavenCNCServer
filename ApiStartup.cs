@@ -98,10 +98,8 @@ namespace HavenCNCServer
         /// <param name="env">The web host environment</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            // Always show developer exception page - this is a local-only server application
+            app.UseDeveloperExceptionPage();
 
             // Enable Swagger
             app.UseSwagger();

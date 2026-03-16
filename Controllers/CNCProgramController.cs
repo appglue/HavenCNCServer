@@ -28,8 +28,6 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         private static bool _completionEventSent = false;
 
-        private static readonly object _jobLock = new object();
-
         /// <summary>
         /// Static constructor to set up event subscriptions
         /// </summary>
@@ -76,10 +74,7 @@ namespace HavenCNCServer.Controllers
         /// <returns>Current job or null</returns>
         internal static CNCJob? GetCurrentJob()
         {
-            lock (_jobLock)
-            {
-                return _currentJob;
-            }
+            return _currentJob;
         }
 
         /// <summary>
@@ -129,30 +124,26 @@ namespace HavenCNCServer.Controllers
                             await Task.Delay(1000, token);
 
                             // Check if job still exists (error monitor hasn't handled it)
-                            lock (_jobLock)
+                            var localJob = _currentJob;
+                            if (localJob != null && localJob.JobId == jobId)
                             {
-                                if (_currentJob != null && _currentJob.JobId == jobId)
-                                {
-                                    LogInfo($"No error detected - broadcasting JobCompleted event for {jobId}", "CNCProgramController");
-                                    HandleJobCompletion(jobId, true, null);
-                                }
-                                else
-                                {
-                                    LogInfo($"Job {jobId} already handled by error monitor", "CNCProgramController");
-                                }
+                                LogInfo($"No error detected - broadcasting JobCompleted event for {jobId}", "CNCProgramController");
+                                HandleJobCompletion(jobId, true, null);
+                            }
+                            else
+                            {
+                                LogInfo($"Job {jobId} already handled by error monitor", "CNCProgramController");
                             }
                             break;
                         }
                         else if (elapsedMs >= TIMEOUT_MS)
                         {
                             // Job never detected as running after 1 second - probably completed too fast
-                            lock (_jobLock)
+                            var localJob = _currentJob;
+                            if (localJob != null && localJob.JobId == jobId)
                             {
-                                if (_currentJob != null && _currentJob.JobId == jobId)
-                                {
-                                    LogWarning($"Job {jobId} never detected as running after {TIMEOUT_MS}ms ({pollCount} polls) - assuming completed", "CNCProgramController");
-                                    HandleJobCompletion(jobId, true, null);
-                                }
+                                LogWarning($"Job {jobId} never detected as running after {TIMEOUT_MS}ms ({pollCount} polls) - assuming completed", "CNCProgramController");
+                                HandleJobCompletion(jobId, true, null);
                             }
                             break;
                         }
@@ -177,19 +168,13 @@ namespace HavenCNCServer.Controllers
         /// </summary>
         private static void HandleJobCompletion(string jobId, bool success = true, string? errorMessage = null)
         {
-            CNCJob? completedJob;
-            bool alreadySent;
+            var completedJob = _currentJob;
+            var alreadySent = _completionEventSent;
 
-            lock (_jobLock)
+            // Mark that we're sending completion event
+            if (completedJob != null && completedJob.JobId == jobId)
             {
-                completedJob = _currentJob;
-                alreadySent = _completionEventSent;
-
-                // Mark that we're sending completion event
-                if (completedJob != null && completedJob.JobId == jobId)
-                {
-                    _completionEventSent = true;
-                }
+                _completionEventSent = true;
             }
 
             // Don't send duplicate events
@@ -265,28 +250,25 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var job = _currentJob;
+                if (job == null)
                 {
-                    var job = _currentJob;
-                    if (job == null)
-                    {
-                        throw new InvalidOperationException("No job is currently running");
-                    }
-
-                    var success = job.Stop();
-
-                    // Don't clear current job - let error messages find it
-                    // Job will be cleared when new job starts
-                    _monitorCancellation?.Cancel();
-
-                    return new JobOperationResponse
-                    {
-                        Success = success,
-                        JobId = job.JobId,
-                        Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error",
-                        Error = success ? null : job.LastError
-                    };
+                    throw new InvalidOperationException("No job is currently running");
                 }
+
+                var success = job.Stop();
+
+                // Don't clear current job - let error messages find it
+                // Job will be cleared when new job starts
+                _monitorCancellation?.Cancel();
+
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = job.JobId,
+                    Message = success ? "Job stopped successfully" : job.LastError ?? "Unknown error",
+                    Error = success ? null : job.LastError
+                };
             }
             catch (Exception ex)
             {
@@ -309,27 +291,25 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var results = new List<JobOperationResponse>();
+                var localJob = _currentJob;
+
+                if (localJob != null && localJob.IsRunning)
                 {
-                    var results = new List<JobOperationResponse>();
-
-                    if (_currentJob != null && _currentJob.IsRunning)
+                    var success = localJob.Stop();
+                    results.Add(new JobOperationResponse
                     {
-                        var success = _currentJob.Stop();
-                        results.Add(new JobOperationResponse
-                        {
-                            JobId = _currentJob.JobId,
-                            Success = success,
-                            Error = success ? null : _currentJob.LastError,
-                            Message = success ? "Job stopped successfully" : _currentJob.LastError ?? "Unknown error"
-                        });
+                        JobId = localJob.JobId,
+                        Success = success,
+                        Error = success ? null : localJob.LastError,
+                        Message = success ? "Job stopped successfully" : localJob.LastError ?? "Unknown error"
+                    });
 
-                        // Don't clear current job - let error messages find it
-                        _monitorCancellation?.Cancel();
-                    }
-
-                    return new StopAllJobsResponse { StoppedJobs = results.Count, Results = results };
+                    // Don't clear current job - let error messages find it
+                    _monitorCancellation?.Cancel();
                 }
+
+                return new StopAllJobsResponse { StoppedJobs = results.Count, Results = results };
             }
             catch (Exception ex)
             {
@@ -359,23 +339,20 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var job = _currentJob;
+                if (job == null)
                 {
-                    var job = _currentJob;
-                    if (job == null)
-                    {
-                        throw new InvalidOperationException("No job is currently available to resume");
-                    }
-
-                    var success = job.Resume();
-                    return new JobOperationResponse
-                    {
-                        Success = success,
-                        JobId = job.JobId,
-                        Message = success ? "Job resumed successfully" : job.LastError ?? "Unknown error",
-                        Error = success ? null : job.LastError
-                    };
+                    throw new InvalidOperationException("No job is currently available to resume");
                 }
+
+                var success = job.Resume();
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = job.JobId,
+                    Message = success ? "Job resumed successfully" : job.LastError ?? "Unknown error",
+                    Error = success ? null : job.LastError
+                };
             }
             catch (Exception ex)
             {
@@ -398,23 +375,20 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var job = _currentJob;
+                if (job == null)
                 {
-                    var job = _currentJob;
-                    if (job == null)
-                    {
-                        throw new InvalidOperationException("No job is currently running to pause");
-                    }
-
-                    var success = job.Pause();
-                    return new JobOperationResponse
-                    {
-                        Success = success,
-                        JobId = job.JobId,
-                        Message = success ? "Job paused successfully" : job.LastError ?? "Unknown error",
-                        Error = success ? null : job.LastError
-                    };
+                    throw new InvalidOperationException("No job is currently running to pause");
                 }
+
+                var success = job.Pause();
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = job.JobId,
+                    Message = success ? "Job paused successfully" : job.LastError ?? "Unknown error",
+                    Error = success ? null : job.LastError
+                };
             }
             catch (Exception ex)
             {
@@ -443,24 +417,21 @@ namespace HavenCNCServer.Controllers
                     throw new ArgumentException("Line number must be greater than 0");
                 }
 
-                lock (_jobLock)
+                var job = _currentJob;
+                if (job == null)
                 {
-                    var job = _currentJob;
-                    if (job == null)
-                    {
-                        throw new InvalidOperationException("No job is currently available to resume");
-                    }
-
-                    var success = job.ResumeAt(lineNumber);
-                    return new ResumeJobAtResponse
-                    {
-                        Success = success,
-                        JobId = job.JobId,
-                        LineNumber = lineNumber,
-                        Message = success ? $"Job resumed at line {lineNumber}" : job.LastError ?? "Unknown error",
-                        Error = success ? null : job.LastError
-                    };
+                    throw new InvalidOperationException("No job is currently available to resume");
                 }
+
+                var success = job.ResumeAt(lineNumber);
+                return new ResumeJobAtResponse
+                {
+                    Success = success,
+                    JobId = job.JobId,
+                    LineNumber = lineNumber,
+                    Message = success ? $"Job resumed at line {lineNumber}" : job.LastError ?? "Unknown error",
+                    Error = success ? null : job.LastError
+                };
             }
             catch (Exception ex)
             {
@@ -577,16 +548,12 @@ namespace HavenCNCServer.Controllers
                 LogInfo("✓ Centroid state verified - ready to create job", "Program");
 
                 // Create a new CNC job
-                CNCJob job;
-                lock (_jobLock)
-                {
-                    LogInfo($"Creating new CNC job with {request.GCodeLines.Length} lines", "Program");
-                    job = new CNCJob(request.GCodeLines, request.GcodeParameterString);
+                LogInfo($"Creating new CNC job with {request.GCodeLines.Length} lines", "Program");
+                var job = new CNCJob(request.GCodeLines, request.GcodeParameterString);
 
-                    // Clear previous job and reset completion flag
-                    _currentJob = job;
-                    _completionEventSent = false;
-                }
+                // Clear previous job and reset completion flag
+                _currentJob = job;
+                _completionEventSent = false;
 
                 // Push job started event
                 var jobStartedEvent = new JobStartedEvent
@@ -778,17 +745,14 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    var currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        return Array.Empty<string>();
-                    }
-
-                    // Return all G-code lines from the job
-                    return currentJob.GCodeLines;
+                    return Array.Empty<string>();
                 }
+
+                // Return all G-code lines from the job
+                return currentJob.GCodeLines;
             }
             catch (Exception ex)
             {
@@ -805,16 +769,13 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    var currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        return 0;
-                    }
-
-                    return currentJob.LineNumber;
+                    return 0;
                 }
+
+                return currentJob.LineNumber;
             }
             catch (Exception ex)
             {
@@ -841,32 +802,29 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    var currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        return null;
-                    }
-
-                    return new JobDetails
-                    {
-                        JobId = currentJob.JobId,
-                        LineNumber = currentJob.LineNumber,
-                        CurrentLine = currentJob.CurrentLine,
-                        IsRunning = currentJob.IsRunning,
-                        IsPaused = currentJob.IsPaused,
-                        IsComplete = currentJob.IsComplete,
-                        CreatedAt = currentJob.CreatedAt,
-                        StartedAt = currentJob.StartedAt,
-                        CompletedAt = currentJob.CompletedAt,
-                        TotalLines = currentJob.TotalLines,
-                        FilePath = currentJob.FilePath,
-                        LastError = currentJob.LastError,
-                        IsStepRunMode = currentJob.IsStepRunMode,
-                        StepLineNumber = currentJob.StepLineNumber
-                    };
+                    return null;
                 }
+
+                return new JobDetails
+                {
+                    JobId = currentJob.JobId,
+                    LineNumber = currentJob.LineNumber,
+                    CurrentLine = currentJob.CurrentLine,
+                    IsRunning = currentJob.IsRunning,
+                    IsPaused = currentJob.IsPaused,
+                    IsComplete = currentJob.IsComplete,
+                    CreatedAt = currentJob.CreatedAt,
+                    StartedAt = currentJob.StartedAt,
+                    CompletedAt = currentJob.CompletedAt,
+                    TotalLines = currentJob.TotalLines,
+                    FilePath = currentJob.FilePath,
+                    LastError = currentJob.LastError,
+                    IsStepRunMode = currentJob.IsStepRunMode,
+                    StepLineNumber = currentJob.StepLineNumber
+                };
             }
             catch (Exception ex)
             {
@@ -908,12 +866,8 @@ namespace HavenCNCServer.Controllers
                 }
 
                 // Create a new job in step run mode
-                CNCJob job;
-                lock (_jobLock)
-                {
-                    job = CNCJob.CreateStepRunJob(gCodeLines, gcodeParameterString);
-                    _currentJob = job;
-                }
+                var job = CNCJob.CreateStepRunJob(gCodeLines, gcodeParameterString);
+                _currentJob = job;
 
                 // Push job started event
                 var jobStartedEvent = new JobStartedEvent
@@ -976,36 +930,33 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    var currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        throw new InvalidOperationException("No job available to end step run mode");
-                    }
-
-                    if (!currentJob.IsStepRunMode)
-                    {
-                        throw new InvalidOperationException("Current job is not in step run mode");
-                    }
-
-                    var success = currentJob.EndStepRun();
-
-                    // Don't clear job - let it be cleared on next job start
-                    // This allows error messages to find the job
-                    if (success)
-                    {
-                        currentJob.Dispose();
-                    }
-
-                    return new JobOperationResponse
-                    {
-                        Success = success,
-                        JobId = currentJob.JobId,
-                        Message = success ? "Step run mode ended successfully" : currentJob.LastError ?? "Unknown error",
-                        Error = success ? null : currentJob.LastError
-                    };
+                    throw new InvalidOperationException("No job available to end step run mode");
                 }
+
+                if (!currentJob.IsStepRunMode)
+                {
+                    throw new InvalidOperationException("Current job is not in step run mode");
+                }
+
+                var success = currentJob.EndStepRun();
+
+                // Don't clear job - let it be cleared on next job start
+                // This allows error messages to find the job
+                if (success)
+                {
+                    currentJob.Dispose();
+                }
+
+                return new JobOperationResponse
+                {
+                    Success = success,
+                    JobId = currentJob.JobId,
+                    Message = success ? "Step run mode ended successfully" : currentJob.LastError ?? "Unknown error",
+                    Error = success ? null : currentJob.LastError
+                };
             }
             catch (Exception ex)
             {
@@ -1028,19 +979,15 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                CNCJob? currentJob;
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        throw new InvalidOperationException("No job available for step execution");
-                    }
+                    throw new InvalidOperationException("No job available for step execution");
+                }
 
-                    if (!currentJob.IsStepRunMode)
-                    {
-                        throw new InvalidOperationException("Current job is not in step run mode");
-                    }
+                if (!currentJob.IsStepRunMode)
+                {
+                    throw new InvalidOperationException("Current job is not in step run mode");
                 }
 
                 // Send "about to execute" step event
@@ -1109,19 +1056,15 @@ namespace HavenCNCServer.Controllers
         {
             try
             {
-                CNCJob? currentJob;
-                lock (_jobLock)
+                var currentJob = _currentJob;
+                if (currentJob == null)
                 {
-                    currentJob = _currentJob;
-                    if (currentJob == null)
-                    {
-                        throw new InvalidOperationException("No job available to run from current step");
-                    }
+                    throw new InvalidOperationException("No job available to run from current step");
+                }
 
-                    if (!currentJob.IsStepRunMode)
-                    {
-                        throw new InvalidOperationException("Current job is not in step run mode");
-                    }
+                if (!currentJob.IsStepRunMode)
+                {
+                    throw new InvalidOperationException("Current job is not in step run mode");
                 }
 
                 // Send "about to execute" step event for run from current step
@@ -1200,15 +1143,16 @@ namespace HavenCNCServer.Controllers
 
         #region IEventSubscriber Implementation (for non-static controller instances)
 
+        [NonAction]
         public EventTypeFlags GetSubscribedEvents()
         {
             return EventTypeFlags.None; // Static JobErrorMonitor handles event subscriptions
         }
 
-        public void OnPositionUpdate(DROEvent position) { }
-        public void OnLogMessage(LogEvent log) { }
-        public void OnServerStatus(ServerStatusEvent status) { }
-        public void OnCNCMessage(ICentroidEvent message) { }
+        [NonAction] public void OnPositionUpdate(DROEvent position) { }
+        [NonAction] public void OnLogMessage(LogEvent log) { }
+        [NonAction] public void OnServerStatus(ServerStatusEvent status) { }
+        [NonAction] public void OnCNCMessage(ICentroidEvent message) { }
 
         #endregion
     }
@@ -1278,6 +1222,13 @@ namespace HavenCNCServer.Controllers
                     isCriticalError = true;
                     errorDescription = $"{messageEvent.EventType} {messageEvent.EventCode}: {messageEvent.Message}";
                     LogError($"🚨 System fault detected during job execution: {errorDescription}", "JobErrorMonitor");
+                }
+                // Probe errors (318-337 range, classified as ProbeError)
+                else if (messageEvent.EventType == MessageEventType.ProbeError)
+                {
+                    isCriticalError = true;
+                    errorDescription = $"Probe error {messageEvent.EventCode}: {messageEvent.Message}";
+                    LogError($"🚨 Probe error detected during job execution: {errorDescription}", "JobErrorMonitor");
                 }
                 // Job cancellation (327 Fault)
                 else if (messageEvent.EventCode == 327 && messageEvent.Message.Contains("fault", StringComparison.OrdinalIgnoreCase))

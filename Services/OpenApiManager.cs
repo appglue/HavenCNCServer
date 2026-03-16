@@ -20,17 +20,7 @@ namespace HavenCNCServer.Services
         {
             try
             {
-                var projectRoot = Directory.GetCurrentDirectory();
-                var openApiPath = Path.Combine(projectRoot, "openapi.json");
-                
-                // Check if openapi.json already exists
-                if (File.Exists(openApiPath))
-                {
-                    LogInfo("OpenAPI specification file already exists, skipping auto-generation", "OpenAPI");
-                    return;
-                }
-
-                LogInfo("OpenAPI specification file not found, generating automatically...", "OpenAPI");
+                LogInfo("Generating OpenAPI specification...", "OpenAPI");
                 await GenerateSpecificationAsync(apiUrl);
             }
             catch (Exception ex)
@@ -49,37 +39,44 @@ namespace HavenCNCServer.Services
         {
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(10);
-            
-            // Download the OpenAPI specification
+
             var openApiUrl = $"{apiUrl}/swagger/v1/swagger.json";
-            var response = await httpClient.GetAsync(openApiUrl);
-            
-            if (response.IsSuccessStatusCode)
+
+            // Retry up to 10 times with 1s gap - server may not be ready immediately
+            string? openApiJson = null;
+            for (int attempt = 1; attempt <= 10; attempt++)
             {
-                var openApiJson = await response.Content.ReadAsStringAsync();
-                
-                // Save to project root
-                var projectRoot = Directory.GetCurrentDirectory();
-                var openApiPath = Path.Combine(projectRoot, "openapi.json");
-                await File.WriteAllTextAsync(openApiPath, openApiJson);
-                
-                // Also save to bin directory for easy access
-                var binPath = Path.Combine(projectRoot, "bin", "Debug", "net8.0-windows", "openapi.json");
-                var binDir = Path.GetDirectoryName(binPath);
-                if (!Directory.Exists(binDir))
+                try
                 {
-                    Directory.CreateDirectory(binDir!);
+                    var response = await httpClient.GetAsync(openApiUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        openApiJson = await response.Content.ReadAsStringAsync();
+                        LogInfo($"OpenAPI spec fetched on attempt {attempt}", "OpenAPI");
+                        break;
+                    }
+                    var body = await response.Content.ReadAsStringAsync();
+                    LogWarning($"OpenAPI fetch attempt {attempt} returned {response.StatusCode}, retrying...", "OpenAPI");
+                    if (attempt == 1 || attempt == 10)
+                        LogError($"Swagger error body: {body.Substring(0, Math.Min(1000, body.Length))}", "OpenAPI");
                 }
-                await File.WriteAllTextAsync(binPath, openApiJson);
-                
-                LogSuccess("OpenAPI specification generated successfully!", "OpenAPI");
-                LogInfo($"Saved to: {openApiPath}", "OpenAPI");
-                LogInfo($"Also saved to: {binPath}", "OpenAPI");
+                catch (Exception ex)
+                {
+                    LogWarning($"OpenAPI fetch attempt {attempt} failed: {ex.Message}, retrying...", "OpenAPI");
+                }
+                await Task.Delay(1000);
             }
-            else
-            {
-                throw new HttpRequestException($"Failed to download OpenAPI specification. Status: {response.StatusCode}");
-            }
+
+            if (openApiJson == null)
+                throw new HttpRequestException($"Failed to download OpenAPI specification from {openApiUrl} after 10 attempts");
+
+            // Save to project root
+            var projectRoot = Directory.GetCurrentDirectory();
+            var openApiPath = Path.Combine(projectRoot, "openapi.json");
+            await File.WriteAllTextAsync(openApiPath, openApiJson);
+
+            LogSuccess("OpenAPI specification generated successfully!", "OpenAPI");
+            LogInfo($"Saved to: {openApiPath}", "OpenAPI");
         }
 
         /// <summary>

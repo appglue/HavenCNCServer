@@ -158,14 +158,14 @@ namespace HavenCNCServer.Services
                 }, _cancellationTokenSource.Token); // Pass cancellation token to Task.Run
 
                 // Give the server a moment to start
-                await Task.Delay(2000);
+                await Task.Delay(3000);
 
                 UpdateStatus("API Server Running", Color.Green);
                 LogSuccess($"API server started successfully at {_apiUrl}", "API");
                 LogInfo($"Swagger UI available at {SwaggerUrl}", "API");
 
-                // Auto-generate OpenAPI specification if it doesn't exist
-                await OpenApiManager.AutoGenerateIfNeededAsync(_apiUrl);
+                // Generate OpenAPI specification (retries internally until Swagger is ready)
+                _ = Task.Run(() => OpenApiManager.AutoGenerateIfNeededAsync(_apiUrl));
 
                 // Trigger one-time controller startup initialization
                 _ = Task.Run(async () =>

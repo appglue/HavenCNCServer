@@ -1,21 +1,83 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace HavenCNCServer.Services
 {
     /// <summary>
-    /// Centralized logging service for the application
-    /// Manages log messages with automatic line limiting and UI updates
+    /// Centralized logging service for the application.
+    /// Log() is lock-free: entries are enqueued and written to file immediately.
+    /// A background timer dispatches entries to UI targets without holding any lock.
     /// </summary>
     public static class LoggingService
     {
-        private static readonly object _lock = new object();
+        // Lock-free queue - Log() just enqueues, nothing else
+        private static readonly ConcurrentQueue<LogEntry> _pendingEntries = new ConcurrentQueue<LogEntry>();
+
+        // Only ever touched by the dispatch timer thread - no locks needed
         private static readonly List<LogEntry> _logEntries = new List<LogEntry>();
-        private static readonly HashSet<ILogTarget> _targets = new HashSet<ILogTarget>();
+        private static readonly List<ILogTarget> _targets = new List<ILogTarget>();
+
+        // File writer - only written by the dispatch timer thread
+        private static StreamWriter? _fileWriter;
+
+        // Timer to dispatch pending entries to UI targets
+        private static readonly System.Threading.Timer _dispatchTimer;
+
+        static LoggingService()
+        {
+            // Set up file logging
+            try
+            {
+                var logDir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "HavenCNCServer", "Logs");
+                Directory.CreateDirectory(logDir);
+                var logFile = Path.Combine(logDir, $"havenCNC_{DateTime.Now:yyyyMMdd}.log");
+                _fileWriter = new StreamWriter(logFile, append: true, encoding: Encoding.UTF8) { AutoFlush = true };
+            }
+            catch { /* file logging unavailable */ }
+
+            // Dispatch pending entries to UI every 100ms - no locks anywhere
+            _dispatchTimer = new System.Threading.Timer(DispatchPendingEntries, null, 100, 100);
+        }
+
+        /// <summary>
+        /// Drains the pending queue, writes to file, updates _logEntries and all targets.
+        /// Only this timer callback touches _logEntries, _targets and _fileWriter - no locks needed.
+        /// </summary>
+        private static void DispatchPendingEntries(object? _)
+        {
+            if (_pendingEntries.IsEmpty) return;
+
+            while (_pendingEntries.TryDequeue(out var entry))
+            {
+                // Write to file
+                try { _fileWriter?.WriteLine(entry.FormatForDisplay()); }
+                catch { }
+
+                // Add to in-memory list
+                _logEntries.Add(entry);
+                while (_logEntries.Count > MaxLogEntries)
+                    _logEntries.RemoveAt(0);
+            }
+
+            // Remove disposed targets
+            _targets.RemoveAll(t => t.IsDisposed);
+
+            // Update all targets - no lock held
+            foreach (var target in _targets)
+            {
+                try { target.UpdateLog(_logEntries); }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error updating log target: {ex.Message}"); }
+            }
+        }
 
         /// <summary>
         /// Maximum number of log entries to keep in memory
@@ -374,14 +436,8 @@ namespace HavenCNCServer.Services
         public static void AddTarget(ILogTarget target)
         {
             if (target == null) return;
-
-            lock (_lock)
-            {
-                _targets.Add(target);
-
-                // Send current log entries to the new target
-                target.UpdateLog(_logEntries);
-            }
+            _targets.Add(target);
+            target.UpdateLog(_logEntries);
         }
 
         /// <summary>
@@ -390,15 +446,12 @@ namespace HavenCNCServer.Services
         public static void RemoveTarget(ILogTarget target)
         {
             if (target == null) return;
-
-            lock (_lock)
-            {
-                _targets.Remove(target);
-            }
+            _targets.Remove(target);
         }
 
         /// <summary>
-        /// Log a message with specified level and source
+        /// Log a message - lock-free. Writes to console and file immediately,
+        /// enqueues for UI dispatch via background timer.
         /// </summary>
         public static void Log(string message, LogLevel level = LogLevel.Info, string source = "System")
         {
@@ -406,7 +459,6 @@ namespace HavenCNCServer.Services
 
             var entry = new LogEntry(message, level, source);
 
-            // Write to console immediately (critical for shutdown debugging)
             var levelPrefix = level switch
             {
                 LogLevel.Error => "[ERROR]",
@@ -417,54 +469,9 @@ namespace HavenCNCServer.Services
             };
             Console.WriteLine($"{entry.Timestamp:HH:mm:ss.fff} {levelPrefix} [{source}] {message}");
 
-            // During shutdown, skip UI updates to avoid blocking
-            if (ShutdownManager.IsShuttingDown)
-            {
-                // Still add to log entries for file logging, but skip UI updates
-                lock (_lock)
-                {
-                    _logEntries.Add(entry);
-                    while (_logEntries.Count > MaxLogEntries)
-                    {
-                        _logEntries.RemoveAt(0);
-                    }
-                }
-                return;
-            }
+            // Enqueue - timer will write to file and update UI
+            _pendingEntries.Enqueue(entry);
 
-            lock (_lock)
-            {
-                // Add the new entry
-                _logEntries.Add(entry);
-
-                // Trim old entries if we exceed the limit
-                while (_logEntries.Count > MaxLogEntries)
-                {
-                    _logEntries.RemoveAt(0);
-                }
-
-                // Clean up disposed targets
-                var disposedTargets = _targets.Where(t => t.IsDisposed).ToList();
-                foreach (var disposedTarget in disposedTargets)
-                {
-                    _targets.Remove(disposedTarget);
-                }
-
-                // Update all targets
-                foreach (var target in _targets)
-                {
-                    try
-                    {
-                        target.UpdateLog(_logEntries);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error updating log target: {ex.Message}");
-                    }
-                }
-            }
-
-            // Fire the event
             LogEntryAdded?.Invoke(entry);
         }
 
@@ -513,10 +520,7 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static IReadOnlyList<LogEntry> GetAllEntries()
         {
-            lock (_lock)
-            {
-                return _logEntries.ToList();
-            }
+            return _logEntries.ToList();
         }
 
         /// <summary>
@@ -524,22 +528,11 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static void Clear()
         {
-            lock (_lock)
+            _logEntries.Clear();
+            foreach (var target in _targets)
             {
-                _logEntries.Clear();
-
-                // Update all targets
-                foreach (var target in _targets)
-                {
-                    try
-                    {
-                        target.UpdateLog(_logEntries);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error updating log target: {ex.Message}");
-                    }
-                }
+                try { target.UpdateLog(Array.Empty<LogEntry>()); }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Error updating log target: {ex.Message}"); }
             }
         }
 
@@ -548,10 +541,7 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static IReadOnlyList<LogEntry> GetEntriesByLevel(LogLevel level)
         {
-            lock (_lock)
-            {
-                return _logEntries.Where(e => e.Level == level).ToList();
-            }
+            return _logEntries.Where(e => e.Level == level).ToList();
         }
 
         /// <summary>
@@ -559,10 +549,7 @@ namespace HavenCNCServer.Services
         /// </summary>
         public static IReadOnlyList<LogEntry> GetEntriesBySource(string source)
         {
-            lock (_lock)
-            {
-                return _logEntries.Where(e => string.Equals(e.Source, source, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+            return _logEntries.Where(e => string.Equals(e.Source, source, StringComparison.OrdinalIgnoreCase)).ToList();
         }
     }
 }

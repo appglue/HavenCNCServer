@@ -2138,19 +2138,6 @@
         }
       }
     },
-    "/api/CNCMovement/GetJogSettings": {
-      "get": {
-        "tags": [
-          "CNCMovement"
-        ],
-        "summary": "Get current jog settings",
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/CNCMovement/SetIncrementalMode": {
       "post": {
         "tags": [
@@ -3066,12 +3053,43 @@
         }
       }
     },
-    "/api/CNCProgramStorage/Actions/Names": {
+    "/api/CNCProgramStorage/MDI/Recents": {
+      "post": {
+        "tags": [
+          "CNCProgramStorage"
+        ],
+        "summary": "Push a new MDI recent. Shifts existing slots down (1→2, 2→3 … 19→20)\r\nand saves the new entry as slot 1. Slot 21 is silently dropped.\r\nPOST api/CNCProgramStorage/MDI/Recents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramStorage"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
       "get": {
         "tags": [
           "CNCProgramStorage"
         ],
-        "summary": "Get all action storage names",
+        "summary": "Get all MDI recents, newest first (slot 1 = most recent).\r\nGET api/CNCProgramStorage/MDI/Recents",
         "responses": {
           "200": {
             "description": "Success",
@@ -3080,7 +3098,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/ProgramStorage"
                   }
                 }
               },
@@ -3088,7 +3106,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/ProgramStorage"
                   }
                 }
               },
@@ -3096,7 +3114,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/ProgramStorage"
                   }
                 }
               }
