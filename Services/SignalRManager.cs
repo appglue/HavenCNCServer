@@ -5,6 +5,7 @@ using HavenCNCServer.Centroid;
 using HavenCNCServer.Models;
 using System;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using static HavenCNCServer.Services.LoggingService;
 
@@ -677,248 +678,137 @@ namespace HavenCNCServer.Services
     }
 
     /// <summary>
-    /// Event listener that forwards CNC events to SignalR clients
-    /// Uses a dedicated thread with queue to ensure ordered delivery
+    /// Event listener that forwards CNC events to SignalR clients.
+    /// DRO events are throttled to 100ms intervals (latest-value-wins).
+    /// All other system events are forwarded immediately via a bounded channel.
     /// </summary>
-    /// <summary>
-    /// Event listener for broadcasting CNC events to SignalR clients via the new CNCEventBus
-    /// </summary>
-    public class SignalREventListener : IEventSubscriber
+    public class SignalREventListener : IEventSubscriber, IDisposable
     {
         private readonly IHubContext<CNCMessageHub> _hubContext;
-        private long _skippedDroEventCount = 0;
 
-        // Queue-based processing for ordered message delivery
-        private readonly System.Collections.Concurrent.BlockingCollection<ICentroidEvent> _messageQueue;
-        private readonly Thread _processingThread;
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private bool _isRunning = false;
+        // DRO path: volatile field holds the latest pending DRO; 100ms timer flushes it
+        private volatile DROEvent? _pendingDro;
+        private readonly System.Threading.Timer _droTimer;
+
+        // System messages path: bounded channel drained by a single async task
+        private readonly Channel<ICentroidEvent> _systemChannel;
 
         /// <summary>
-        /// Initializes a new instance of the SignalREventListener class with a dedicated message queue processor
+        /// Creates the listener, starts the 100ms DRO flush timer and the system-message drain task.
         /// </summary>
-        /// <param name="hubContext">The SignalR hub context for broadcasting messages</param>
         public SignalREventListener(IHubContext<CNCMessageHub> hubContext)
         {
             _hubContext = hubContext;
-            _messageQueue = new System.Collections.Concurrent.BlockingCollection<ICentroidEvent>(boundedCapacity: 1000);
-            _cancellationTokenSource = new CancellationTokenSource();
 
-            // Start dedicated processing thread for ordered delivery
-            _processingThread = new Thread(ProcessMessageQueue)
-            {
-                Name = "SignalR-MessageProcessor",
-                IsBackground = true,
-                Priority = ThreadPriority.AboveNormal // Higher priority for real-time messages
-            };
-            _isRunning = true;
-            _processingThread.Start();
+            // 100ms DRO flush timer — sends whatever the latest pending DRO is
+            _droTimer = new System.Threading.Timer(_ => FlushDro(), null,
+                dueTime: TimeSpan.FromMilliseconds(100),
+                period: TimeSpan.FromMilliseconds(100));
 
-            LogInfo("SignalR message queue processor started with bounded capacity of 1000", "SignalR");
+            // Bounded channel for system messages — drops oldest if the drain loop stalls
+            _systemChannel = Channel.CreateBounded<ICentroidEvent>(
+                new BoundedChannelOptions(200)
+                {
+                    FullMode = BoundedChannelFullMode.DropOldest,
+                    SingleReader = true,
+                    SingleWriter = false
+                });
+
+            _ = Task.Run(DrainSystemChannel);
+
+            LogInfo("SignalREventListener started: DRO=100ms timer, system=channel(200)", "SignalR");
         }
 
-        /// <summary>
-        /// Specify which event types this subscriber wants to receive (all types)
-        /// </summary>
-        public EventTypeFlags GetSubscribedEvents()
-        {
-            return EventTypeFlags.All; // Subscribe to all event types
-        }
+        /// <summary>Subscribe to all event types.</summary>
+        public EventTypeFlags GetSubscribedEvents() => EventTypeFlags.All;
 
         /// <summary>
-        /// Receive position/DRO update from event bus
+        /// DRO update: store the latest value; the 100ms timer will flush it.
+        /// Dropped entirely when CNC is not connected.
         /// </summary>
         public void OnPositionUpdate(DROEvent position)
         {
-            if (!_isRunning)
-            {
-                return;
-            }
-
-            // Try to add to queue without blocking
-            if (!_messageQueue.TryAdd(position))
-            {
-                // Queue is full - log and drop the event
-                LogWarning($"SignalR message queue full - dropping DROEvent", "SignalR");
-            }
+            if (!CNCConnectionManager.IsConnected) return;
+            Interlocked.Exchange(ref _pendingDro, position);
         }
 
         /// <summary>
-        /// Receive log message from event bus
-        /// </summary>
-        public void OnLogMessage(LogEvent log)
-        {
-            if (!_isRunning)
-            {
-                return;
-            }
-
-            // Try to add to queue without blocking
-            if (!_messageQueue.TryAdd(log))
-            {
-                // Queue is full - log and drop the event
-                LogWarning($"SignalR message queue full - dropping LogEvent", "SignalR");
-            }
-        }
-
-        /// <summary>
-        /// Receive CNC message from event bus
+        /// System message (job events, errors, etc.): write to channel for immediate async delivery.
         /// </summary>
         public void OnCNCMessage(ICentroidEvent message)
         {
-            if (!_isRunning)
-            {
-                return;
-            }
+            _systemChannel.Writer.TryWrite(message);
+        }
 
-            // Try to add to queue without blocking
-            if (!_messageQueue.TryAdd(message))
+        /// <summary>Log events are already visible in system messages — no-op.</summary>
+        public void OnLogMessage(LogEvent log) { }
+
+        /// <summary>Server status is handled by the heartbeat — no-op.</summary>
+        public void OnServerStatus(ServerStatusEvent status) { }
+
+        /// <summary>
+        /// Timer callback: atomically grab the latest pending DRO and send it via "DROUpdate".
+        /// </summary>
+        private void FlushDro()
+        {
+            var dro = Interlocked.Exchange(ref _pendingDro, null);
+            if (dro == null) return;
+
+            _ = Task.Run(async () =>
             {
-                // Queue is full - log and drop the event
-                LogWarning($"SignalR message queue full - dropping {message.GetType().Name} event", "SignalR");
-            }
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                    await _hubContext.Clients.Group("CNCClients")
+                        .SendAsync("DROUpdate", dro.ToSignalRData(), cts.Token);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception ex)
+                {
+                    LogWarning($"DRO send failed: {ex.Message}", "SignalR");
+                }
+            });
         }
 
         /// <summary>
-        /// Receive server status update from event bus
+        /// Async drain loop: reads system messages from the channel and broadcasts via "ReceiveCNCMessage".
         /// </summary>
-        public void OnServerStatus(ServerStatusEvent status)
+        private async Task DrainSystemChannel()
         {
-            // Not interested - we generate the server status in SendHeartbeat
-        }
-
-        // LEGACY SUPPORT: Keep ICNCEventListener interface for compatibility during migration
-        /// <summary>
-        /// Receives a CNC event and queues it for processing and broadcast to SignalR clients
-        /// </summary>
-        /// <param name="centroidEvent">The CNC event to process and broadcast</param>
-        public void EventReceived(ICentroidEvent centroidEvent)
-        {
-            if (!_isRunning)
-            {
-                return;
-            }
-
-            // Try to add to queue without blocking
-            if (!_messageQueue.TryAdd(centroidEvent))
-            {
-                // Queue is full - log and drop the event
-                LogWarning($"SignalR message queue full - dropping {centroidEvent.GetType().Name} event", "SignalR");
-            }
-        }
-
-        /// <summary>
-        /// Dedicated thread that processes messages from queue in order
-        /// </summary>
-        private void ProcessMessageQueue()
-        {
-            LogInfo("SignalR message processor thread started", "SignalR");
-
             try
             {
-                foreach (var centroidEvent in _messageQueue.GetConsumingEnumerable(_cancellationTokenSource.Token))
+                await foreach (var evt in _systemChannel.Reader.ReadAllAsync())
                 {
                     try
                     {
-                        ProcessEventAsync(centroidEvent).Wait();
+                        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                        var messageData = new
+                        {
+                            EventType = evt.GetType().Name,
+                            Timestamp = DateTime.UtcNow,
+                            Data = evt is ISignalRSerializable s ? s.ToSignalRData() : (object)evt
+                        };
+                        await _hubContext.Clients.Group("CNCClients")
+                            .SendAsync("ReceiveCNCMessage", messageData, cts.Token);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception ex)
                     {
-                        LogError($"Error processing event in queue: {ex.Message}", "SignalR");
+                        LogWarning($"System message send failed: {ex.Message}", "SignalR");
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                LogInfo("SignalR message processor cancelled", "SignalR");
             }
             catch (Exception ex)
             {
-                LogError($"Fatal error in SignalR message processor: {ex.Message}", "SignalR");
+                LogError($"System channel drain error: {ex.Message}", "SignalR");
             }
         }
 
-        /// <summary>
-        /// Process a single event and send to SignalR
-        /// </summary>
-        private async Task ProcessEventAsync(ICentroidEvent centroidEvent)
-        {
-            var messageType = centroidEvent.GetType().Name;
-
-            // Reset skipped counter when connection is restored and we get a non-DRO event or connected DRO event
-            if (CNCConnectionManager.IsConnected && _skippedDroEventCount > 0)
-            {
-                LogSuccess($"🔄 CNC12 reconnected - Reset DRO skip counter (was {_skippedDroEventCount} events)", "SignalR");
-                _skippedDroEventCount = 0;
-            }
-
-            // Skip DRO events when CNC12 is not connected to prevent flood of disconnection events
-            if (messageType == "DROEvent" && !CNCConnectionManager.IsConnected)
-            {
-                // Special logging to track DRO events during disconnection
-                var droEvent = centroidEvent as DROEvent;
-                var positionInfo = droEvent != null ?
-                    $" - Position: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}" :
-                    "";
-
-                // Only log this occasionally to avoid log spam, but show position data
-                if (DateTime.Now.Second % 15 == 0) // Log once every 15 seconds
-                {
-                    LogWarning($"⚠️ DRO event received while CNC12 disconnected{positionInfo} - Skipping SignalR broadcast", "SignalR");
-                }
-
-                // Count total skipped events (log every 100 events)
-                if (_skippedDroEventCount % 100 == 0)
-                {
-                    LogInfo($"📊 Total DRO events skipped during disconnection: {_skippedDroEventCount}", "SignalR");
-                }
-                _skippedDroEventCount++;
-
-                return;
-            }
-
-            var messageData = new
-            {
-                EventType = messageType,
-                Timestamp = DateTime.UtcNow,
-                Data = SerializeEvent(centroidEvent)
-            };
-
-            // Send to all clients in CNCClients group
-            await _hubContext.Clients.Group("CNCClients").SendAsync("ReceiveCNCMessage", messageData);
-        }
-
-        private static object SerializeEvent(ICentroidEvent centroidEvent)
-        {
-            // If the event implements ISignalRSerializable, let it serialize itself
-            if (centroidEvent is ISignalRSerializable serializableEvent)
-            {
-                return serializableEvent.ToSignalRData();
-            }
-
-            // Fallback: return the event object as-is for JSON serialization
-            // This preserves all properties without transformation
-            return centroidEvent;
-        }
-
-        /// <summary>
-        /// Stop the message processor and clean up resources
-        /// </summary>
         public void Dispose()
         {
-            _isRunning = false;
-            _cancellationTokenSource.Cancel();
-            _messageQueue.CompleteAdding();
-
-            if (!_processingThread.Join(TimeSpan.FromSeconds(5)))
-            {
-                LogWarning("SignalR message processor thread did not stop within timeout", "SignalR");
-            }
-
-            _messageQueue.Dispose();
-            _cancellationTokenSource.Dispose();
-
-            LogInfo("SignalR message processor stopped", "SignalR");
+            _droTimer.Dispose();
+            _systemChannel.Writer.TryComplete();
+            LogInfo("SignalREventListener disposed", "SignalR");
         }
     }
 }

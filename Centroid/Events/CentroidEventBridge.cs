@@ -579,45 +579,15 @@ namespace HavenCNCServer.Centroid.Events
         /// </summary>
         private static void InitializeFileLogging()
         {
-            try
-            {
-                // Use configured log directory from settings
-                var logsDir = SettingsManager.Settings.Logging.LogDirectory;
-
-                Directory.CreateDirectory(logsDir);
-
-                // Create main summary log
-                var logFileName = $"JobListener_{DateTime.Now:yyyyMMdd_HHmmss}.log";
-                var logFilePath = Path.Combine(logsDir, logFileName);
-
-                _logWriter = new StreamWriter(logFilePath, true);
-                _logWriter.AutoFlush = true;
-
-                _logWriter.WriteLine($"=== Job Listener Session Started: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ===");
-                _logWriter.WriteLine($"Log file: {logFilePath}");
-                _logWriter.WriteLine("");
-
-                LogInfo($"Job listener detailed logging to: {logFilePath}", "JobInfo");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Failed to initialize job listener file logging: {ex.Message}", "JobInfo");
-            }
+            // File logging disabled — events are visible in the system log
         }
 
         /// <summary>
-        /// Log message to file with timestamp
+        /// Log message to file with timestamp — currently disabled
         /// </summary>
         private static void LogToFile(string message)
         {
-            try
-            {
-                _logWriter?.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error writing to job listener log file: {ex.Message}", "JobInfo");
-            }
+            // File logging disabled
         }
 
 
@@ -768,7 +738,7 @@ namespace HavenCNCServer.Centroid.Events
                 {
                     // Process message with duplicate detection first
                     var commType = packet.CommunicationType.ToString();
-                    bool isDuplicate = ProcessMessageWithDuplicateDetection(commType, packet);
+                    bool isDuplicate = ProcessMessageWithDuplicateDetection(commType, packet, packetHash);
 
                     // Report count summary to main log every 100 messages
                     ReportMessageCount();
@@ -787,13 +757,10 @@ namespace HavenCNCServer.Centroid.Events
         /// <summary>
         /// Process a CNC message with duplicate detection - returns true if duplicate
         /// </summary>
-        private static bool ProcessMessageWithDuplicateDetection(string commType, CNCPipe.InboundComm.CommPacket packet)
+        private static bool ProcessMessageWithDuplicateDetection(string commType, CNCPipe.InboundComm.CommPacket packet, string packetHash)
         {
             try
             {
-                // Calculate hash of all packet data for duplicate detection
-                var packetHash = CalculatePacketHash(packet);
-
                 // Check if this is a duplicate message
                 if (_lastMessageHashes.ContainsKey(commType))
                 {
@@ -835,16 +802,12 @@ namespace HavenCNCServer.Centroid.Events
                             return false; // Skip all logging for unchanged DRO positions
                         }
 
-                        // Log position details since positions changed
+                        // Log position to file only — skip full property dump on this hot path
                         if (droEvent != null)
                         {
-                            LogToFile($"    DRO Position Update:");
-                            LogToFile($"    Positions: X:{droEvent.Axis1:F4}, Y:{droEvent.Axis2:F4}, Z:{droEvent.Axis3:F4}");
-
-                            // Also log to main UI with coordinates
-                            LogInfo($"📍 DRO: X:{droEvent.Axis1:F4} Y:{droEvent.Axis2:F4} Z:{droEvent.Axis3:F4}", "JobInfo");
+                            LogToFile($"    DRO: X:{droEvent.Axis1:F4} Y:{droEvent.Axis2:F4} Z:{droEvent.Axis3:F4}");
                         }
-                        break;
+                        return false; // Skip LogAllPacketPropertiesToFile for DRO (performance)
 
                     case "CNC12_SHUT_DOWN":
                         ProcessShutdownMessage(packet, "CNC12");
